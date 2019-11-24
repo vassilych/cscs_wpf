@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29509.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfCSCS", "WpfCSCS.csproj", "{4408FFC3-E42E-426D-A8D8-4695781B8FFC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4408FFC3-E42E-426D-A8D8-4695781B8FFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4408FFC3-E42E-426D-A8D8-4695781B8FFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4408FFC3-E42E-426D-A8D8-4695781B8FFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4408FFC3-E42E-426D-A8D8-4695781B8FFC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5F180A51-E2F7-4189-8C46-B84C8E5D9FC2}
+	EndGlobalSection
+EndGlobal
