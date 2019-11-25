@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfCSCS"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="WPF App" Height="450" Width="800">
     <Grid>
         <TabControl HorizontalAlignment="Left" Height="450" VerticalAlignment="Top" Width="800">
-            <TabItem Header="TabItem1">
+            <TabItem Header="Settings">
                 <Grid Background="#FFE5E5E5" Margin="0,0,-396.6,-204">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="95*"/>
@@ -24,10 +24,18 @@
                     <TextBox Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="69,96,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Name="textbox1"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="TabItem2">
+            <TabItem Header="SQL Tests">
                 <Grid Background="#FFE5E5E5" Margin="0,0,-399.6,-208">
-                    <DataGrid HorizontalAlignment="Left" Height="260" Margin="18,25,0,0" VerticalAlignment="Top" Width="619" Name ="listview1" AutoGenerateColumns="True"/>
+                    <DataGrid HorizontalAlignment="Left" Height="260" Margin="126,55,0,0" VerticalAlignment="Top" Width="340" Name ="listview1" AutoGenerateColumns="True"/>
                     <Button Content="Button" HorizontalAlignment="Left" Margin="256,341,0,0" VerticalAlignment="Top" Width="75" Name ="button13"/>
+                    <Button Content="Add Data" HorizontalAlignment="Left" Margin="614,26,0,0" VerticalAlignment="Top" Width="95" Name ="button12"/>
+                    <TextBox HorizontalAlignment="Left" Height="23" Margin="123,24,0,0" TextWrapping="Wrap" ToolTip="Beat Meier" Text="" VerticalAlignment="Top" Width="120" Name="textbox4"/>
+                    <TextBox HorizontalAlignment="Left" Height="23" Margin="299,24,0,0" TextWrapping="Wrap" ToolTip="20000" Text="" VerticalAlignment="Top" Width="120" Name="textbox5"/>
+                    <TextBox HorizontalAlignment="Left" Height="23" Margin="469,24,0,0" TextWrapping="Wrap" ToolTip="beat@n.ch" Text="" VerticalAlignment="Top" Width="120" Name="textbox6"/>
+                    <Label Content="Name:" HorizontalAlignment="Left" Margin="80,22,0,0" VerticalAlignment="Top" Name="label3"/>
+                    <Label Content="Salary:" HorizontalAlignment="Left" Margin="248,22,0,0" VerticalAlignment="Top" Name="label4"/>
+                    <Label Content="Email:" HorizontalAlignment="Left" Margin="426,22,0,0" VerticalAlignment="Top" Name="label5"/>
+                    <Button Content="Delete Selected" HorizontalAlignment="Left" Margin="614,55,0,0" VerticalAlignment="Top" Width="95" Name ="button14"/>
                 </Grid>
             </TabItem>
         </TabControl>

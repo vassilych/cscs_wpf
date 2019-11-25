@@ -48,6 +48,7 @@ namespace WpfCSCS
             ParserFunction.RegisterFunction("SetText", new SetTextWidgetFunction());
             ParserFunction.RegisterFunction("AddWidgetData", new AddWidgetDataFunction());
             ParserFunction.RegisterFunction("SetWidgetOptions", new SetWidgetOptionsFunction());
+            ParserFunction.RegisterFunction("GetSelected", new GetSelectedFunction());
 
             ParserFunction.RegisterFunction("MessageBox", new MessageBoxFunction());
 
@@ -335,6 +336,41 @@ namespace WpfCSCS
             }
         }
     }
+
+    class GetSelectedFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            var widgetName = Utils.GetSafeString(args, 0);
+            var widget = CSCS_GUI.GetWidget(widgetName);
+            if (widget == null)
+            {
+                return Variable.EmptyInstance;
+            }
+
+            if (widget is DataGrid)
+            {
+                Variable selectedItems = new Variable(Variable.VarType.ARRAY);
+                var dg = widget as DataGrid;
+                var sel = dg.SelectedItems;
+                int total = sel.Count;
+                for (int i = 0; i < total; i++)
+                {
+                    var item = sel[i] as ExpandoObject;
+                    var itemList = item.ToList();
+                    selectedItems.AddVariable(new Variable(itemList[0].Value.ToString()));
+                }
+                return selectedItems;
+            }
+
+            return GetTextWidgetFunction.GetText(widget);
+        }
+    }
+
+
     class GetTextWidgetFunction : ParserFunction
     {
         protected override Variable Evaluate(ParsingScript script)

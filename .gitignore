@@ -1,0 +1,10 @@
+
+*.ide-shm
+*.ide-wal
+*.ide
+*.lock
+*.cache
+[Bb]in/
+[Oo]bj/
+*.resources
+.vs/WpfCSCS/v16/.suo
