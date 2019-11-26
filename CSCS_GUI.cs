@@ -81,6 +81,12 @@ namespace WpfCSCS
         public static bool AddPreActionHandler(string name, string action, Control widget)
         {
             s_preActionHandlers[name] = action;
+            if (widget is ComboBox)
+            {
+                var combo = widget as ComboBox;
+                combo.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(Widget_PreClick);
+                return true;
+            }
             widget.MouseDown += new MouseButtonEventHandler(Widget_PreClick);
             return true;
         }
@@ -142,16 +148,23 @@ namespace WpfCSCS
         }
         private static void Widget_PreClick(object sender, MouseButtonEventArgs e)
         {
-            ButtonBase widget = sender as ButtonBase;
+            Control widget = sender as Control;
             if (widget == null || e.ChangedButton != MouseButton.Left)
             {
                 return;
             }
 
+            var arg = e.ToString();
+            if (widget is ComboBox)
+            {
+                var comboBox = widget as ComboBox;
+                arg = comboBox.Text;
+            }
+
             string funcName;
             if (s_preActionHandlers.TryGetValue(widget.Name, out funcName))
             {
-                CustomFunction.Run(funcName, new Variable(widget.Name), new Variable(e.ToString()));
+                CustomFunction.Run(funcName, new Variable(widget.Name), new Variable(arg));
             }
         }
         private static void Widget_KeyDown(object sender, KeyEventArgs e)

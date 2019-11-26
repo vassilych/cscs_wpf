@@ -3,6 +3,7 @@
     return;
   }
   data = OpenFile();
+  SetText(answerLabel, "Open: " + data);
   //SetText("textBox1", data);
 }
 
@@ -11,7 +12,8 @@ function button2_Clicked(sender, load) {
     return;
   }
   text = GetText("textBox1");
-  SaveFile(text);
+  data = SaveFile(text);
+  SetText(answerLabel, "Save: " + data);
 }
 
 function button3_Clicked(sender, load) {
@@ -19,7 +21,7 @@ function button3_Clicked(sender, load) {
     return;
   }
   result = MessageBox("Are you happy?", title, "YesNoCancel", "question");
-  SetText(answerLabel, result);
+  SetText(answerLabel, "MessageBox result: " + result);
   SetText("button8", result);
 }
 
@@ -217,7 +219,7 @@ function combobox1_PreClicked(sender, load) {
   if (!refresh) {
     return;
   }
-   SetText(answerLabel, sender + " is pre-clicked, current=" + GetText(sender));
+   SetText(answerLabel, sender + " pre-clicked: " + load);
 }
 
 function checkBox1_Clicked(sender, load) {

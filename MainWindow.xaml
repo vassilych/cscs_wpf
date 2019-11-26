@@ -15,27 +15,33 @@
                         <ColumnDefinition Width="37*"/>
                         <ColumnDefinition Width="1058*"/>
                     </Grid.ColumnDefinitions>
-                    <Button Content="Button" Grid.Column="2" HorizontalAlignment="Left" Margin="10.2,25,0,0" VerticalAlignment="Top" Width="75" Name="button1"/>
-                    <Button Content="Button" Grid.Column="2" HorizontalAlignment="Left" Margin="137.2,25,0,0" VerticalAlignment="Top" Width="75" Name="button2"/>
+                    <Button Content="Button" HorizontalAlignment="Left" Margin="95,28,0,0" VerticalAlignment="Top" Width="75" Name="button1" Grid.ColumnSpan="3"/>
+                    <Button Content="Button" HorizontalAlignment="Left" Margin="95,81,0,0" VerticalAlignment="Top" Width="75" Name="button2" Grid.ColumnSpan="3"/>
                     <CheckBox Content="Refresh" Grid.Column="2" HorizontalAlignment="Left" Margin="342,25,0,0" VerticalAlignment="Top" Name="checkbox1"/>
                     <ComboBox Grid.Column="2" HorizontalAlignment="Left" Margin="499.2,25,0,0" VerticalAlignment="Top" Width="120" Name="combobox1"/>
-                    <Label Content="Label" Grid.Column="2" HorizontalAlignment="Left" Margin="303.2,96,0,0" VerticalAlignment="Top" Name="label1"/>
+                    <Label Content="Label" Grid.Column="2" HorizontalAlignment="Left" Margin="91,104,0,0" VerticalAlignment="Top" Name="label1" RenderTransformOrigin="-1.01,0.906" Width="360" Height="180"/>
                     <Button Content="Button" Grid.Column="2" HorizontalAlignment="Left" Margin="233,25,0,0" VerticalAlignment="Top" Width="75" Name="button3"/>
-                    <TextBox Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="69,96,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Name="textbox1"/>
+                    <TextBox Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="499,99,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Name="textbox1"/>
                 </Grid>
             </TabItem>
             <TabItem Header="SQL Tests">
                 <Grid Background="#FFE5E5E5" Margin="0,0,-399.6,-208">
-                    <DataGrid HorizontalAlignment="Left" Height="260" Margin="126,55,0,0" VerticalAlignment="Top" Width="340" Name ="listview1" AutoGenerateColumns="True"/>
-                    <Button Content="Button" HorizontalAlignment="Left" Margin="256,341,0,0" VerticalAlignment="Top" Width="75" Name ="button13"/>
-                    <Button Content="Add Data" HorizontalAlignment="Left" Margin="614,26,0,0" VerticalAlignment="Top" Width="95" Name ="button12"/>
-                    <TextBox HorizontalAlignment="Left" Height="23" Margin="123,24,0,0" TextWrapping="Wrap" ToolTip="Beat Meier" Text="" VerticalAlignment="Top" Width="120" Name="textbox4"/>
-                    <TextBox HorizontalAlignment="Left" Height="23" Margin="299,24,0,0" TextWrapping="Wrap" ToolTip="20000" Text="" VerticalAlignment="Top" Width="120" Name="textbox5"/>
-                    <TextBox HorizontalAlignment="Left" Height="23" Margin="469,24,0,0" TextWrapping="Wrap" ToolTip="beat@n.ch" Text="" VerticalAlignment="Top" Width="120" Name="textbox6"/>
-                    <Label Content="Name:" HorizontalAlignment="Left" Margin="80,22,0,0" VerticalAlignment="Top" Name="label3"/>
-                    <Label Content="Salary:" HorizontalAlignment="Left" Margin="248,22,0,0" VerticalAlignment="Top" Name="label4"/>
-                    <Label Content="Email:" HorizontalAlignment="Left" Margin="426,22,0,0" VerticalAlignment="Top" Name="label5"/>
-                    <Button Content="Delete Selected" HorizontalAlignment="Left" Margin="614,55,0,0" VerticalAlignment="Top" Width="95" Name ="button14"/>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="4*"/>
+                        <ColumnDefinition Width="6*"/>
+                        <ColumnDefinition Width="7*"/>
+                        <ColumnDefinition Width="580*"/>
+                    </Grid.ColumnDefinitions>
+                    <DataGrid HorizontalAlignment="Left" Height="260" Margin="92,55,0,0" VerticalAlignment="Top" Width="340" Name ="listview1" AutoGenerateColumns="True" Grid.Column="3"/>
+                    <Button Content="Button" HorizontalAlignment="Left" Margin="222,341,0,0" VerticalAlignment="Top" Width="75" Name ="button13" Grid.Column="3"/>
+                    <Button Content="Add Data" HorizontalAlignment="Left" Margin="580,26,0,0" VerticalAlignment="Top" Width="95" Name ="button12" Grid.Column="3"/>
+                    <TextBox HorizontalAlignment="Left" Height="23" Margin="89,24,0,0" TextWrapping="Wrap" ToolTip="Beat Meier" Text="" VerticalAlignment="Top" Width="120" Name="textbox4" Grid.Column="3"/>
+                    <TextBox HorizontalAlignment="Left" Height="23" Margin="265,24,0,0" TextWrapping="Wrap" ToolTip="20000" Text="" VerticalAlignment="Top" Width="120" Name="textbox5" Grid.Column="3"/>
+                    <TextBox HorizontalAlignment="Left" Height="23" Margin="435,24,0,0" TextWrapping="Wrap" ToolTip="beat@n.ch" Text="" VerticalAlignment="Top" Width="120" Name="textbox6" Grid.Column="3"/>
+                    <Label Content="Name:" HorizontalAlignment="Left" Margin="46,22,0,0" VerticalAlignment="Top" Name="label3" Grid.Column="3"/>
+                    <Label Content="Salary:" HorizontalAlignment="Left" Margin="214,22,0,0" VerticalAlignment="Top" Name="label4" Grid.Column="3"/>
+                    <Label Content="Email:" HorizontalAlignment="Left" Margin="392,22,0,0" VerticalAlignment="Top" Name="label5" Grid.Column="3"/>
+                    <Button Content="Delete Selected" HorizontalAlignment="Left" Margin="580,55,0,0" VerticalAlignment="Top" Width="95" Name ="button14" Grid.Column="3"/>
                 </Grid>
             </TabItem>
         </TabControl>
