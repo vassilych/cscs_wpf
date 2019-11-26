@@ -131,7 +131,7 @@ function button12_Clicked(sender, load) {
 	return;
   }
   try {
-    result = SQLInsert("Users", "name,salary,email", data);
+    result = SQLInsert("Users", "Name,Salary,Email", data);
 	MessageBox("Inserted " + result + " row(s).", title, "OK", "info");
     button13_Clicked(sender, "");
   } catch (exc) {
@@ -143,9 +143,10 @@ function button13_Clicked(sender, load) {
   if (!refresh) {
     return;
   }
-  query = "SELECT TOP 15 * FROM Users where id <= 100";
-  results = SQLQuery(query);
-  populateListView(results);
+  BindSQL("listview1", "Users");
+  //query = "SELECT TOP 15 * FROM Users where id <= 100";
+  //results = SQLQuery(query);
+  //populateListView(results);
 }
 
 function button14_Clicked(sender, load) {
@@ -239,8 +240,6 @@ function button15_Clicked(sender, load) {
 }
 
 function populateListView(data) {
-  //RemoveWidget("tabPage3.listView1");
-  //AddWidget("tabPage3.listView1", "listview", data[0], x, y + 25, 600, 300);
   SetWidgetOptions("listView1", "clear");
 
   for (i = 1; i < data.Size; i++) {
@@ -268,16 +267,16 @@ comboItems = {"zero", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", 
 AddWidgetData(comboBox1, comboItems);
 //SetText("comboBox1", "cinco");
 
-SetText "comboBox1"  "uno" ;
-SetText "button13"  "Refresh" ;
-SetText "button1"  "Open file" ;
-SetText "button2"  "Save file" ;
-SetText "button3"  "Message Box" ;
-
-SetWidgetOptions("listView1", "columns", {"Id", "Name", "Salary", "Email", "Created"});
-SetWidgetOptions("listView1", "colors", "green", "white");
+SetText("comboBox1",  "uno") ;
+SetText("button13",  "Refresh") ;
+SetText("button1",  "Open File") ;
+SetText("button2",  "Save File") ;
+SetText("button3",  "Message Box") ;
 
 SQLConnectionString("Server=DESKTOP-RKQQ93A\\SQLEXPRESS;Database=CSCS;User Id=sa;Password=sqlpassword;");
-cols = SQLTableColumns("Users");
+//cols = SQLTableColumns("Users");
+SetWidgetOptions("listView1", "colors", "green", "white");
 
 globalVar = "cuatro";
+
+BindSQL("listview1", "Users");

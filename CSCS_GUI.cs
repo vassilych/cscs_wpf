@@ -50,6 +50,7 @@ namespace WpfCSCS
             ParserFunction.RegisterFunction("SetWidgetOptions", new SetWidgetOptionsFunction());
             ParserFunction.RegisterFunction("GetSelected", new GetSelectedFunction());
 
+            ParserFunction.RegisterFunction("BindSQL", new BindSQLFunction());
             ParserFunction.RegisterFunction("MessageBox", new MessageBoxFunction());
 
             Constants.FUNCT_WITH_SPACE.Add("SetText");
@@ -383,6 +384,58 @@ namespace WpfCSCS
         }
     }
 
+    class BindSQLFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 2, m_name);
+
+            var widgetName = Utils.GetSafeString(args, 0);
+            var widget = CSCS_GUI.GetWidget(widgetName);
+            if (widget == null)
+            {
+                return Variable.EmptyInstance;
+            }
+            var tableName = Utils.GetSafeString(args, 1);
+
+            if (widget is DataGrid)
+            {
+                var dg = widget as DataGrid;
+                dg.Items.Clear();
+                dg.Columns.Clear();
+                Variable columns = SQLColumnsFunction.GetColsData(tableName);
+                for (int i = 0; i < columns.Tuple.Count; i += 2)
+                {
+                    string label = columns.Tuple[i].AsString();
+                    DataGridTextColumn column = new DataGridTextColumn();
+                    column.Header = label;
+                    column.Binding = new Binding(label.Replace(' ', '_'));
+
+                    dg.Columns.Add(column);
+                }
+
+                var query = "select * from " + tableName;
+                var sqlResult = SQLQueryFunction.GetData(query, tableName);
+
+                for (int i = 1; i < sqlResult.Tuple.Count; i++)
+                {
+                    var data = sqlResult.Tuple[i];
+                    dynamic row = new ExpandoObject();
+                    for (int j = 0; j < dg.Columns.Count; j++)
+                    {
+                        var column = dg.Columns[j].Header.ToString();
+                        var val = data.Tuple.Count > j ? data.Tuple[j].AsString() : "";
+                        ((IDictionary<String, Object>)row)[column.Replace(' ', '_')] = val;
+                    }
+                    dg.Items.Add(row);
+                }
+                return new Variable(sqlResult.Tuple.Count);
+            }
+
+            return Variable.EmptyInstance;
+        }
+    }
 
     class GetTextWidgetFunction : ParserFunction
     {
@@ -428,6 +481,7 @@ namespace WpfCSCS
     {
         protected override Variable Evaluate(ParsingScript script)
         {
+            var rest = script.Rest;
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 2, m_name);
 
@@ -591,15 +645,6 @@ namespace WpfCSCS
                         viewItem.Append(data.Tuple[i].AsString());
                         source.Add(data.Tuple[i].AsString());
                     }
-                    //listView.Items.Add(viewItem);
-                    //itemsAdded = data.Tuple.Count;
-                    //listView.ItemsSource = source;
-                    //var row1 = new List<string> { "AAA", "BBB" };
-                    //var row2 = new List<string> { "CCC", "DDD" };
-                    //listView.Items.Add(row1);
-                    //listView.Items.Add(row2);
-                    listView.ItemsSource = new List<string> { "Alpha", "Beta", "Gamma" };
-
                 }
                 else
                 {
