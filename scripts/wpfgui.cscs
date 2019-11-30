@@ -1,4 +1,7 @@
-﻿function button1_Clicked(sender, load) {
+﻿par1="someValue";
+//Chain "printPlugin.cscs" with par1 "bla1"+"bla2" "bla3"    "bla4";
+
+function button1_Clicked(sender, load) {
   if (!refresh) {
     return;
   }
@@ -72,8 +75,12 @@ function button8_Clicked(sender, load) {
   if (!refresh) {
     return;
   }
-  msg = "Button name [" + sender + "] with text: [" + GetText(sender) + "]";
-  MessageBox(msg, title, "OkCancel", "info");
+  text = GetText("textBox1");
+  if (text == "") {
+    MessageBox("No text to print", title, "Ok", "error");
+	return;
+  }
+  SendToPrinter(text);
 }
 
 function button8_PreClicked(sender, load) {
@@ -147,6 +154,13 @@ function button13_Clicked(sender, load) {
   //query = "SELECT TOP 15 * FROM Users where id <= 100";
   //results = SQLQuery(query);
   //populateListView(results);
+}
+
+function button15_Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  CHAIN "printPlugin.cscs" NEWRUNTIME WITH "listview1" "bla1"+"bla2" "bla3"    "bla4";
 }
 
 function button14_Clicked(sender, load) {
@@ -230,13 +244,6 @@ function checkBox1_Clicked(sender, load) {
 	} else {
 	  SetText(answerLabel, sender + " Is False!");
 	}
-}
-
-function button15_Clicked(sender, load) {
-  if (!refresh) {
-    return;
-  }
-  RemoveWidget(sender);
 }
 
 function populateListView(data) {

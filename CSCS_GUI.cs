@@ -15,6 +15,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Data;
 using System.Dynamic;
+using System.Windows.Documents;
 
 namespace WpfCSCS
 {
@@ -38,6 +39,15 @@ namespace WpfCSCS
 
         public static void Init()
         {
+            ParserFunction.RegisterFunction(Constants.MSG, new VariableArgsFunction(true));
+            ParserFunction.RegisterFunction(Constants.DEFINE, new VariableArgsFunction(true));
+            ParserFunction.RegisterFunction(Constants.SET_OBJECT, new VariableArgsFunction(true));
+            ParserFunction.RegisterFunction(Constants.CHAIN, new ChainFunction(false));
+            ParserFunction.RegisterFunction(Constants.PARAM, new ChainFunction(true));
+
+            ParserFunction.RegisterFunction(Constants.WITH, new ConstantsFunction());
+            ParserFunction.RegisterFunction(Constants.NEWRUNTIME, new ConstantsFunction());
+
             ParserFunction.RegisterFunction("OpenFile", new OpenFileFunction());
             ParserFunction.RegisterFunction("SaveFile", new SaveFileFunction());
 
@@ -52,11 +62,20 @@ namespace WpfCSCS
 
             ParserFunction.RegisterFunction("BindSQL", new BindSQLFunction());
             ParserFunction.RegisterFunction("MessageBox", new MessageBoxFunction());
+            ParserFunction.RegisterFunction("SendToPrinter", new PrintFunction());
+
+            ParserFunction.RegisterFunction("RunOnMain", new RunOnMainFunction());
 
             Constants.FUNCT_WITH_SPACE.Add("SetText");
             //ParserFunction.RegisterFunction("funcName", new MyFunction());
 
+            Interpreter.Instance.OnOutput += Print;
             AddActions();
+        }
+
+        static void Print(object sender, OutputAvailableEventArgs e)
+        {
+            System.Diagnostics.Trace.WriteLine(e.Output);
         }
 
         public static void AddActions()
@@ -434,6 +453,82 @@ namespace WpfCSCS
             }
 
             return Variable.EmptyInstance;
+        }
+    }
+
+    public class RunOnMainFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            string funcName = Utils.GetToken(script, Constants.NEXT_OR_END_ARRAY);
+
+            ParserFunction func = ParserFunction.GetFunction(funcName, script);
+            Utils.CheckNotNull(funcName, func, script);
+
+            Variable result = Variable.EmptyInstance;
+            if (func is CustomFunction)
+            {
+                List<Variable> args = script.GetFunctionArgs();
+                result = RunOnMainThread(func as CustomFunction, args);
+            }
+            else
+            {
+                var argsStr = Utils.GetBodyBetween(script, '\0', ')', Constants.END_STATEMENT);
+                result = RunOnMainThread(func, argsStr);
+            }
+            return result;
+        }
+
+        public static Variable RunOnMainThread(CustomFunction callbackFunction, List<Variable> args)
+        {
+            Variable result = Variable.EmptyInstance;
+            Application.Current.Dispatcher.Invoke (new Action(() =>
+            {
+                result = callbackFunction.Run(args);
+            }));
+            return result;
+        }
+        public static Variable RunOnMainThread(ParserFunction func, string argsStr)
+        {
+            Variable result = Variable.EmptyInstance;
+            ParsingScript tempScript = new ParsingScript(argsStr);
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                result = func.GetValue(tempScript);
+            }));
+            return result;
+        }
+    }
+
+    class PrintFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            var text = Utils.GetSafeString(args, 0);
+            var widget = CSCS_GUI.GetWidget(text);
+
+            PrintDialog printDlg = new PrintDialog();
+            if (printDlg.ShowDialog() != true)
+            { // user cancelled printing.
+                return new Variable("");
+            }
+
+            if (widget == null)
+            {
+                FlowDocument doc = new FlowDocument(new Paragraph(new Run(text)));
+                IDocumentPaginatorSource idpSource = doc;
+                printDlg.PrintDocument(idpSource.DocumentPaginator, "CSCS Printing.");
+                
+            }
+            else
+            {
+                printDlg.PrintVisual(widget as Control, "Window Printing.");
+            }
+
+            return new Variable(printDlg.PrintQueue.FullName);
         }
     }
 
@@ -864,6 +959,90 @@ namespace WpfCSCS
             widget.Visibility = m_showWidget ? Visibility.Visible : Visibility.Hidden;
 
             return new Variable(true);
+        }
+    }
+    class ChainFunction : ParserFunction
+    {
+        bool m_paramMode;
+        static Dictionary<string, List<Variable>> s_parameters = new Dictionary<string, List<Variable>>();
+
+        public ChainFunction(bool paramMode = false)
+        {
+            m_paramMode = paramMode;
+        }
+
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> parameters;
+            if (m_paramMode)
+            {
+                if (s_parameters.TryGetValue(script.Filename, out parameters))
+                {
+                    var argsStr = Utils.GetBodyBetween(script, '\0', '\0', Constants.END_STATEMENT);
+                    var argsArray = argsStr.Split(new char[] { ',' });
+                    for (int i = 0; i < argsArray.Length && i < parameters.Count; i++)
+                    {
+                        var func = new GetVarFunction(parameters[i]);
+                        func.Name = argsArray[i];
+                        ParserFunction.AddLocalVariable(func);
+                    }
+                }
+                return Variable.EmptyInstance;
+            }
+            string argsExpr = Utils.ReplaceSpaces(script);
+            var tempScript = script.GetTempScript(argsExpr);
+            List<Variable> args = tempScript.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            string chainName = args[0].AsString();
+            parameters = new List<Variable>();
+            bool canAdd = false;
+            bool newRuntime = false;
+            for (int i = 1; i < args.Count; i++)
+            {
+                if (canAdd)
+                {
+                    parameters.Add(args[i]);
+                    continue;
+                }
+                if (string.Equals(args[i].AsString(), Constants.NEWRUNTIME, StringComparison.OrdinalIgnoreCase))
+                {
+                    newRuntime = true;
+                    continue;
+                }
+                canAdd = args[i].AsString().ToLower() == Constants.WITH;
+            }
+
+            ParsingScript chainScript = IncludeFile.GetIncludeFileScript(tempScript, chainName);
+            chainScript.StackLevel = ParserFunction.AddStackLevel(chainScript.Filename);
+
+            s_parameters[chainScript.Filename] = parameters;
+
+            if (newRuntime)
+            {
+                var t = Task.Run(() => RunTask(chainScript));
+                //t.Wait();
+                //var result = t.Result;
+                //return result;
+                return Variable.EmptyInstance;
+            }
+
+            return RunTask(chainScript);
+        }
+
+        static Variable RunTask(ParsingScript chainScript)
+        {
+            Variable result = Variable.EmptyInstance;
+            //Application.Current.Dispatcher.Invoke(new Action(() => {
+                while (chainScript.StillValid())
+                {
+                    result = chainScript.Execute();
+                    chainScript.GoToNextStatement();
+                }
+            //}));
+
+            ParserFunction.PopLocalVariables(chainScript.StackLevel.Id);
+            return result;
         }
     }
 }

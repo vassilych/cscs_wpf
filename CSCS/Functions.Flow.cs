@@ -1070,7 +1070,7 @@ namespace SplitAndMerge
             if (!currentValue.ParsingToken.Contains(Constants.START_ARRAY.ToString()))
             {
                 ParserFunction.AddGlobalOrLocalVariable(currentValue.ParsingToken,
-                                                        new GetVarFunction(currentValue));
+                                                        new GetVarFunction(currentValue), script);
             }
 
             return currentValue;
@@ -1088,7 +1088,7 @@ namespace SplitAndMerge
             if (!currentValue.ParsingToken.Contains(Constants.START_ARRAY.ToString()))
             {
                 ParserFunction.AddGlobalOrLocalVariable(currentValue.ParsingToken,
-                                                        new GetVarFunction(currentValue));
+                                                        new GetVarFunction(currentValue), script);
             }
 
             return currentValue;
@@ -1115,7 +1115,7 @@ namespace SplitAndMerge
             bool removed = currentValue.Tuple.Remove(item);
 
             ParserFunction.AddGlobalOrLocalVariable(varName,
-                                                    new GetVarFunction(currentValue));
+                                                    new GetVarFunction(currentValue), script);
             return new Variable(removed);
         }
     }
@@ -1140,7 +1140,7 @@ namespace SplitAndMerge
             currentValue.Tuple.RemoveAt(item.AsInt());
 
             ParserFunction.AddGlobalOrLocalVariable(varName,
-                                                    new GetVarFunction(currentValue));
+                                                    new GetVarFunction(currentValue), script);
             return Variable.EmptyInstance;
         }
     }
@@ -1276,6 +1276,14 @@ namespace SplitAndMerge
         protected override async Task<Variable> EvaluateAsync(ParsingScript script)
         {
             return await script.ExecuteAsync(Constants.END_ARG_ARRAY);
+        }
+    }
+
+    class ConstantsFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            return new Variable(m_name);
         }
     }
 
@@ -1581,7 +1589,7 @@ namespace SplitAndMerge
             }
 
             ParserFunction.AddGlobalOrLocalVariable(m_name,
-                                                    new GetVarFunction(currentValue));
+                                                    new GetVarFunction(currentValue), script);
             return new Variable(newValue);
         }
 
@@ -1626,12 +1634,12 @@ namespace SplitAndMerge
             {// array element
                 AssignFunction.ExtendArray(currentValue, arrayIndices, 0, left);
                 ParserFunction.AddGlobalOrLocalVariable(m_name,
-                                                         new GetVarFunction(currentValue));
+                                                         new GetVarFunction(currentValue), script);
             }
             else
             {
                 ParserFunction.AddGlobalOrLocalVariable(m_name,
-                                                         new GetVarFunction(left));
+                                                         new GetVarFunction(left), script);
             }
             return left;
         }
@@ -1712,7 +1720,7 @@ namespace SplitAndMerge
             Variable result = ProcessObject(script, varValue);
             if (result != null)
             {
-                ParserFunction.AddGlobalOrLocalVariable(m_name, new GetVarFunction(result));
+                ParserFunction.AddGlobalOrLocalVariable(m_name, new GetVarFunction(result), script);
                 return result;
             }
 
@@ -1722,7 +1730,7 @@ namespace SplitAndMerge
 
             if (arrayIndices.Count == 0)
             {
-                ParserFunction.AddGlobalOrLocalVariable(m_name, new GetVarFunction(varValue));
+                ParserFunction.AddGlobalOrLocalVariable(m_name, new GetVarFunction(varValue), script);
                 Variable retVar = varValue.DeepClone();
                 retVar.CurrentAssign = m_name;
                 return retVar;
@@ -1735,7 +1743,7 @@ namespace SplitAndMerge
 
             ExtendArray(array, arrayIndices, 0, varValue);
 
-            ParserFunction.AddGlobalOrLocalVariable(m_name, new GetVarFunction(array));
+            ParserFunction.AddGlobalOrLocalVariable(m_name, new GetVarFunction(array), script);
             return array;
         }
         protected override async Task<Variable> EvaluateAsync(ParsingScript script)
@@ -1757,7 +1765,7 @@ namespace SplitAndMerge
             Variable result = await ProcessObjectAsync(script, varValue);
             if (result != null)
             {
-                ParserFunction.AddGlobalOrLocalVariable(m_name, new GetVarFunction(result)); 
+                ParserFunction.AddGlobalOrLocalVariable(m_name, new GetVarFunction(result), script); 
                 return result;
             }
 
@@ -1767,7 +1775,7 @@ namespace SplitAndMerge
 
             if (arrayIndices.Count == 0)
             {
-                ParserFunction.AddGlobalOrLocalVariable(m_name, new GetVarFunction(varValue));
+                ParserFunction.AddGlobalOrLocalVariable(m_name, new GetVarFunction(varValue), script);
                 Variable retVar = varValue.DeepClone();
                 retVar.CurrentAssign = m_name;
                 return retVar;
@@ -1780,7 +1788,7 @@ namespace SplitAndMerge
 
             ExtendArray(array, arrayIndices, 0, varValue);
 
-            ParserFunction.AddGlobalOrLocalVariable(m_name, new GetVarFunction(array));
+            ParserFunction.AddGlobalOrLocalVariable(m_name, new GetVarFunction(array), script);
             return array;
         }
 
@@ -1819,8 +1827,7 @@ namespace SplitAndMerge
             Variable baseValue = existing != null ? existing.GetValue(script) : new Variable(Variable.VarType.ARRAY);
             baseValue.SetProperty(prop, varValue, script, name);
 
-            ParserFunction.AddGlobalOrLocalVariable(name, new GetVarFunction(baseValue));
-            //ParserFunction.AddGlobal(name, new GetVarFunction(baseValue), false);
+            ParserFunction.AddGlobalOrLocalVariable(name, new GetVarFunction(baseValue), script);
 
             return varValue.DeepClone();
         }
@@ -1859,8 +1866,7 @@ namespace SplitAndMerge
             Variable baseValue = existing != null ? await existing.GetValueAsync(script) : new Variable(Variable.VarType.ARRAY);
             await baseValue.SetPropertyAsync(prop, varValue, script, name);
 
-            ParserFunction.AddGlobalOrLocalVariable(name, new GetVarFunction(baseValue));
-            //ParserFunction.AddGlobal(name, new GetVarFunction(baseValue), false);
+            ParserFunction.AddGlobalOrLocalVariable(name, new GetVarFunction(baseValue), script);
 
             return varValue.DeepClone();
         }
@@ -1974,7 +1980,7 @@ namespace SplitAndMerge
             }
 
             ParserFunction.AddGlobalOrLocalVariable(varName,
-                                                    new GetVarFunction(allTokensVar));
+                                                    new GetVarFunction(allTokensVar), script);
 
             return Variable.EmptyInstance;
         }
@@ -2018,7 +2024,7 @@ namespace SplitAndMerge
             }
 
             ParserFunction.AddGlobalOrLocalVariable(varName,
-                                              new GetVarFunction(mapVar));
+                                              new GetVarFunction(mapVar), script);
             return Variable.EmptyInstance;
         }
     }
@@ -2049,7 +2055,7 @@ namespace SplitAndMerge
             }
 
             ParserFunction.AddGlobalOrLocalVariable(varName,
-                                                new GetVarFunction(mapVar));
+                                                new GetVarFunction(mapVar), script);
 
             return Variable.EmptyInstance;
         }
@@ -2097,7 +2103,7 @@ namespace SplitAndMerge
             }
 
             ParserFunction.AddGlobalOrLocalVariable(varName,
-                                                new GetVarFunction(mapVar));
+                                                new GetVarFunction(mapVar), script);
             // Script - Need to enable the warnings
 #pragma warning restore 219
             return mapVar;
@@ -2269,7 +2275,7 @@ namespace SplitAndMerge
             Variable result = baseValue.SetProperty(propName, propValue, script);
 
             ParserFunction.AddGlobalOrLocalVariable(baseValue.ParsingToken,
-                                                    new GetVarFunction(baseValue));
+                                                    new GetVarFunction(baseValue), script);
             return result;
         }
         protected override async Task<Variable> EvaluateAsync(ParsingScript script)
@@ -2284,7 +2290,7 @@ namespace SplitAndMerge
             Variable result = await baseValue.SetPropertyAsync(propName, propValue, script);
 
             ParserFunction.AddGlobalOrLocalVariable(baseValue.ParsingToken,
-                                                    new GetVarFunction(baseValue));
+                                                    new GetVarFunction(baseValue), script);
             return result;
         }
 
@@ -2299,7 +2305,7 @@ namespace SplitAndMerge
             Variable result = baseValue.SetProperty(sPropertyName, propValue, script);
 
             ParserFunction.AddGlobalOrLocalVariable(baseValue.ParsingToken,
-                                                    new GetVarFunction(baseValue));
+                                                    new GetVarFunction(baseValue), script);
             return result;
         }
         public static async Task<Variable> SetPropertyAsync(ParsingScript script, string sPropertyName)
@@ -2313,7 +2319,7 @@ namespace SplitAndMerge
             Variable result = await baseValue.SetPropertyAsync(sPropertyName, propValue, script);
 
             ParserFunction.AddGlobalOrLocalVariable(baseValue.ParsingToken,
-                                                    new GetVarFunction(baseValue));
+                                                    new GetVarFunction(baseValue), script);
             return result;
         }
     }

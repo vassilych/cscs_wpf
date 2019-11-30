@@ -343,7 +343,7 @@ namespace SplitAndMerge
             return LocalNameExists(item) || GlobalNameExists(item);
         }
 
-        public static void AddGlobalOrLocalVariable(string name, GetVarFunction function)
+        public static void AddGlobalOrLocalVariable(string name, GetVarFunction function, ParsingScript script = null)
         {
             name          = Constants.ConvertName(name);
 
@@ -355,7 +355,11 @@ namespace SplitAndMerge
 
             function.Name = Constants.GetRealName(name);
             function.Value.ParamName = function.Name;
-            if (s_locals.Count > StackLevelDelta && (LocalNameExists(name) || !GlobalNameExists(name)))
+            if (script != null && script.StackLevel != null)
+            {
+                script.StackLevel.Variables[name] = function;
+            }
+            else if (s_locals.Count > StackLevelDelta && (LocalNameExists(name) || !GlobalNameExists(name)))
             {
                 AddLocalVariable(function);
             }
@@ -642,12 +646,13 @@ namespace SplitAndMerge
             return s_namespacePrefix + name;
         }
 
-        public static void AddStackLevel(string scopeName)
+        public static StackLevel AddStackLevel(string scopeName)
         {
             lock (s_variables)
             {
                 s_locals.Push(new StackLevel(scopeName));
                 s_lastExecutionLevel = s_locals.Peek();
+                return s_lastExecutionLevel;
             }
         }
 
