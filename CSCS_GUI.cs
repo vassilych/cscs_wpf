@@ -16,6 +16,7 @@ using System.Windows.Input;
 using System.Windows.Data;
 using System.Dynamic;
 using System.Windows.Documents;
+using System.Reflection;
 
 namespace WpfCSCS
 {
@@ -34,8 +35,11 @@ namespace WpfCSCS
         static Dictionary<string, string> s_textChangedHandlers = new Dictionary<string, string>();
         static Dictionary<string, string> s_mouseHoverHandlers = new Dictionary<string, string>();
 
+        static Dictionary<string, Variable> s_boundVariables = new Dictionary<string, Variable>();
         //static Dictionary<string, TabPage> s_tabPages           = new Dictionary<string, TabPage>();
         //static TabControl s_tabControl;
+
+        static bool s_changingBoundVariable;
 
         public static void Init()
         {
@@ -65,12 +69,48 @@ namespace WpfCSCS
             ParserFunction.RegisterFunction("SendToPrinter", new PrintFunction());
 
             ParserFunction.RegisterFunction("RunOnMain", new RunOnMainFunction());
+            ParserFunction.RegisterFunction("RunExec", new RunExecFunction());
 
             Constants.FUNCT_WITH_SPACE.Add("SetText");
             //ParserFunction.RegisterFunction("funcName", new MyFunction());
 
             Interpreter.Instance.OnOutput += Print;
+            ParserFunction.OnVariableChange += OnVariableChange;
             AddActions();
+        }
+
+        static void OnVariableChange(string name, Variable newValue, bool isGlobal)
+        {
+            if (s_changingBoundVariable)
+            {
+                return;
+            }
+            var widgetName = name.ToLower();
+            if (!s_boundVariables.TryGetValue(widgetName, out _))
+            {
+                return;
+            }
+            var widget = GetWidget(widgetName);
+            var textbox = widget as TextBox;
+            if (widget == null)
+            {
+                return;
+            }
+            s_boundVariables[widgetName] = newValue;
+            textbox.Text = newValue.AsString();
+        }
+
+        static void UpdateVariable(Control widget)
+        {
+            TextBox textbox = widget as TextBox;
+            if (textbox == null)
+            {
+                return;
+            }
+            s_changingBoundVariable = true;
+            ParserFunction.AddGlobalOrLocalVariable(textbox.Name,
+                                        new GetVarFunction(new Variable(textbox.Text)));
+            s_changingBoundVariable = false;
         }
 
         static void Print(object sender, OutputAvailableEventArgs e)
@@ -87,6 +127,18 @@ namespace WpfCSCS
             }
         }
 
+        public static bool AddBinding(string name, Control widget)
+        {
+            var textbox = widget as TextBoxBase;
+            if (textbox == null)
+            {
+                return false;
+            }
+            Variable baseValue = new Variable("");
+            ParserFunction.AddGlobal(name, new GetVarFunction(baseValue), false /* not native */);
+
+            return true;
+        }
         public static bool AddActionHandler(string name, string action, Control widget)
         {
             var clickable = widget as ButtonBase;
@@ -131,6 +183,11 @@ namespace WpfCSCS
             }
             s_textChangedHandlers[name] = action;
             textable.TextChanged += new TextChangedEventHandler(Widget_TextChanged);
+
+            if (widget is TextBox)
+            {
+                s_boundVariables[name.ToLower()] = Variable.EmptyInstance;
+            }
             return true;
         }
         public static bool AddMouseHoverHandler(string name, string action, Control widget)
@@ -222,6 +279,8 @@ namespace WpfCSCS
             {
                 return;
             }
+
+            UpdateVariable(widget);
 
             string funcName;
             if (s_textChangedHandlers.TryGetValue(widget.Name, out funcName))
@@ -335,6 +394,7 @@ namespace WpfCSCS
             AddKeyUpHandler(control.Name, keyUpAction, control);
             AddTextChangedHandler(control.Name, textChangeAction, control);
             AddMouseHoverHandler(control.Name, mouseHoverAction, control);
+            AddBinding(control.Name, control);
         }
 
         public static string Encode(string plainText)
@@ -453,6 +513,24 @@ namespace WpfCSCS
             }
 
             return Variable.EmptyInstance;
+        }
+    }
+
+    public class RunExecFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            string execName = Utils.GetItem(script).AsString();
+            var argsStr = Utils.GetBodyBetween(script, '\0', ')', Constants.END_STATEMENT);
+            var args = argsStr.Replace(',', ' ');
+            var result = RunExec(execName, args);
+            return result;
+        }
+
+        public static Variable RunExec(string filename, string args)
+        {
+            var proc = System.Diagnostics.Process.Start(filename, args);
+            return new Variable(proc.Id);
         }
     }
 
@@ -976,33 +1054,57 @@ namespace WpfCSCS
             List<Variable> parameters;
             if (m_paramMode)
             {
-                if (s_parameters.TryGetValue(script.Filename, out parameters))
+                var argsStr = Utils.GetBodyBetween(script, '\0', '\0', Constants.END_STATEMENT);
+                string[] argsArray = argsStr.Split(new char[] { ',' });
+                string msg = "CmdArgs:";
+                if (!s_parameters.TryGetValue(script.Filename, out parameters))
                 {
-                    var argsStr = Utils.GetBodyBetween(script, '\0', '\0', Constants.END_STATEMENT);
-                    var argsArray = argsStr.Split(new char[] { ',' });
-                    for (int i = 0; i < argsArray.Length && i < parameters.Count; i++)
+                    parameters = new List<Variable>();
+                    string[] cmdArgs = Environment.GetCommandLineArgs();
+                    var cmdArgsArr = cmdArgs[1].Split(new char[] { ',' });
+                    for (int i = 1; i < cmdArgsArr.Length; i++)
                     {
-                        var func = new GetVarFunction(parameters[i]);
-                        func.Name = argsArray[i];
-                        ParserFunction.AddLocalVariable(func);
+                        parameters.Add(new Variable(cmdArgsArr[i]));
+                        msg += "[" + cmdArgsArr[i] + "]";
                     }
                 }
+
+                for (int i = 0; i < argsArray.Length && i < parameters.Count; i++)
+                {
+                    var func = new GetVarFunction(parameters[i]);
+                    func.Name = argsArray[i];
+                    ParserFunction.AddLocalVariable(func);
+                    msg += func.Name +"=[" + parameters[i].AsString() + "] ";
+                }
+                //MessageBox.Show(msg, parameters.Count + " args", MessageBoxButton.OK, MessageBoxImage.Hand);
                 return Variable.EmptyInstance;
             }
+
+            int currentScriptPos = script.Pointer;
             string argsExpr = Utils.ReplaceSpaces(script);
             var tempScript = script.GetTempScript(argsExpr);
+            tempScript.ScriptOffset = script.ScriptOffset + currentScriptPos;
             List<Variable> args = tempScript.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 1, m_name);
 
             string chainName = args[0].AsString();
+            string binName = chainName;
             parameters = new List<Variable>();
+            string paramsStr = "\"";
             bool canAdd = false;
             bool newRuntime = false;
             for (int i = 1; i < args.Count; i++)
             {
                 if (canAdd)
                 {
-                    parameters.Add(args[i]);
+                    if (newRuntime)
+                    {
+                        paramsStr += args[i].AsString() + ",";
+                    }
+                    else
+                    {
+                        parameters.Add(args[i]);
+                    }
                     continue;
                 }
                 if (string.Equals(args[i].AsString(), Constants.NEWRUNTIME, StringComparison.OrdinalIgnoreCase))
@@ -1011,6 +1113,11 @@ namespace WpfCSCS
                     continue;
                 }
                 canAdd = args[i].AsString().ToLower() == Constants.WITH;
+                if (!canAdd)
+                {
+                    chainName = args[i].AsString();
+                    paramsStr += chainName + ",";
+                }
             }
 
             ParsingScript chainScript = IncludeFile.GetIncludeFileScript(tempScript, chainName);
@@ -1020,7 +1127,11 @@ namespace WpfCSCS
 
             if (newRuntime)
             {
-                var t = Task.Run(() => RunTask(chainScript));
+                paramsStr = paramsStr.Substring(0, paramsStr.Length - 1) + '"';
+                var execDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                var exec = Path.Combine(execDir, binName);
+                RunExecFunction.RunExec(exec, paramsStr);
+                //var t = Task.Run(() => RunTask(chainScript));
                 //t.Wait();
                 //var result = t.Result;
                 //return result;

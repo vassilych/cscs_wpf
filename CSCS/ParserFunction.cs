@@ -12,6 +12,8 @@ namespace SplitAndMerge
 {
     public class ParserFunction
     {
+        public static Action<string, Variable, bool> OnVariableChange;
+
         public ParserFunction()
         {
             m_impl = this;
@@ -355,9 +357,14 @@ namespace SplitAndMerge
 
             function.Name = Constants.GetRealName(name);
             function.Value.ParamName = function.Name;
-            if (script != null && script.StackLevel != null)
+            if (script != null && script.StackLevel != null && !GlobalNameExists(name))
             {
                 script.StackLevel.Variables[name] = function;
+                var handle = OnVariableChange;
+                if (handle != null && function is GetVarFunction)
+                {
+                    handle.Invoke(function.Name, ((GetVarFunction)function).Value, false);
+                }
             }
             else if (s_locals.Count > StackLevelDelta && (LocalNameExists(name) || !GlobalNameExists(name)))
             {
@@ -542,6 +549,11 @@ namespace SplitAndMerge
                 Translation.AddTempKeyword(name);
             }
 #endif
+            var handle = OnVariableChange;
+            if (handle != null && function is GetVarFunction)
+            {
+                handle.Invoke(function.Name, ((GetVarFunction)function).Value, true);
+            }
         }
 
         public static void AddLocalScopeVariable(string name, string scopeName, ParserFunction variable)
@@ -660,7 +672,6 @@ namespace SplitAndMerge
         {
             NormalizeValue(local);
             local.m_isGlobal = false;
-            StackLevel locals = null;
 
             lock (s_variables)
             {
@@ -670,10 +681,6 @@ namespace SplitAndMerge
                     s_lastExecutionLevel = new StackLevel();
                     s_locals.Push(s_lastExecutionLevel);
                 }
-                else
-                {
-                    locals = s_lastExecutionLevel;
-                }
             }
 
             var name = Constants.ConvertName(local.Name);
@@ -682,10 +689,15 @@ namespace SplitAndMerge
             {
                 ((GetVarFunction)local).Value.ParamName = local.Name;
             }
-            locals.Variables[name] = local;
+            s_lastExecutionLevel.Variables[name] = local;
 #if UNITY_EDITOR == false && UNITY_STANDALONE == false && __ANDROID__ == false && __IOS__ == false
             Translation.AddTempKeyword(name);
 #endif
+            var handle = OnVariableChange;
+            if (handle != null && local is GetVarFunction)
+            {
+                handle.Invoke(local.Name, ((GetVarFunction)local).Value, false);
+            }
         }
 
         public static void PopLocalVariables(int id)

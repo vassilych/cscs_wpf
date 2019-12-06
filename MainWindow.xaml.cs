@@ -37,44 +37,25 @@ namespace WpfCSCS
 
             CSCS_SQL.Init();
             CSCS_GUI.MainWindow = this;
-            CSCS_GUI.RunScript("../../scripts/wpfgui.cscs");
-//            CSCS_GUI.RunScript("../../scripts/start.cscs");
-        }
 
-        public List<Visual> GetVisualTreeInfo(Visual element)
-        {
-            if (element == null)
+            string[] cmdArgs = Environment.GetCommandLineArgs();
+            if (cmdArgs.Length <= 1)
             {
-                throw new ArgumentNullException(String.Format("Element {0} is null !", element.ToString()));
+                CSCS_GUI.RunScript("../../scripts/start.cscs");
+                return;
             }
 
-            List<Visual> controls = new List<Visual>();
-
-            GetControlsList(element, 0, controls);
-
-            return controls;
-        }
-
-        void GetControlsList(Visual control, int level, List<Visual> controls)
-        {
-            int ChildNumber = VisualTreeHelper.GetChildrenCount(control);
-
-            for (int i = 0; i <= ChildNumber - 1; i++)
+            var cmdLineParams = cmdArgs[1].Split(new char[] { ',' });
+            var scriptName = cmdLineParams[0];
+            /*string msg = "StartArgs:";
+            for (int i = 0; i < cmdArgs.Length; i++)
             {
-                Visual v = (Visual)VisualTreeHelper.GetChild(control, i);
-
-                controls.Add(v);
-
-                if (VisualTreeHelper.GetChildrenCount(v) > 0)
-                {
-                    GetControlsList(v, level + 1, controls);
-                }
+                msg += " [" + cmdArgs[i] + "]";
             }
-        }
+            msg += " Script: [" + scriptName + "]";
+            MessageBox.Show(msg, cmdArgs.Length + " args", MessageBoxButton.OK, MessageBoxImage.Asterisk);*/
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-
+            CSCS_GUI.RunScript("../../scripts/" + scriptName);
         }
     }
 }

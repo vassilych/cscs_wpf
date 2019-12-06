@@ -1,0 +1,260 @@
+﻿
+
+function button1_Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  data = OpenFile();
+  SetText(answerLabel, "Open: " + data);
+  //SetText("textBox1", data);
+}
+
+function button2_Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  text = GetText("textBox1");
+  data = SaveFile(text);
+  SetText(answerLabel, "Save: " + data);
+}
+
+function button3_Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  result = MessageBox("Are you happy?", title, "YesNoCancel", "question");
+  SetText(answerLabel, "MessageBox result: " + result);
+  SetText("button8", result);
+}
+
+function button4_Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  argb = PickColor();
+  setColor(sender, argb);
+}
+
+function button5_Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  newWidgets++;
+  name = "tabPage2.newbutton" + newWidgets;
+  text = "New Button" + newWidgets;
+  AddWidget(name, "button", text, x, y, width, height, "newButton");
+  x += 100;
+}
+
+function button6_Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  if (newWidgets <= 0) {
+    return;
+  }
+  RemoveWidget("tabPage2.newbutton" + newWidgets);
+  x -= 100;
+  newWidgets--;
+}
+
+function button7_Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  if (showCounter % 2 == 1) {
+	ShowWidget("button6");
+  } else {
+	HideWidget("button6");
+  }
+  showCounter++;
+}
+
+function button8_Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  CHAIN "WpfCSCS.exe" "wpfgui.cscs" NEWRUNTIME WITH "listview1" "bla1"+"bla2" "bla3"    "bla4";
+}
+
+function button8_PreClicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  SetText(answerLabel, sender + " pre clicked");
+}
+
+function button9_Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  text = GetText("textBox2");
+  if (text == "") {
+    return;
+  }
+  comboItems.Add(text);
+  AddWidgetData(comboBox1, text);
+  SetText("comboBox1", text);
+}
+
+function button10_Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  text = GetText("textBox3");
+  if (text == "") {
+    return;
+  }
+  AddTab(text);
+}
+
+function button11_Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  text = GetText("textBox3");
+  if (text == "") {
+    return;
+  }
+  RemoveTab(text);
+}
+
+function button12_Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  data  = {GetText("textBox4").Trim(), GetText("textBox5").Trim(), GetText("textBox6").Trim()};
+  //data2 = {GetText("textBox4")+"X", GetText("textBox5")+"9", GetText("textBox6")+"A"};
+  //data3 = {GetText("textBox4")+"YY", GetText("textBox5")+"99", GetText("textBox6")+"BB"};
+  //data = { data, data2, data3 }
+  if (data[0] == "" || data[1] == "" || data[2] == "") {
+    MessageBox("Please fill out all fields", title, "OK", "warning");
+	return;
+  }
+  try {
+    result = SQLInsert("Users", "Name,Salary,Email", data);
+	MessageBox("Inserted " + result + " row(s).", title, "OK", "info");
+    button13_Clicked(sender, "");
+  } catch (exc) {
+    MessageBox(exc, title, "Cancel", "error");
+  }
+}
+
+function button13_Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  BindSQL("listview1", "Users");
+  //query = "SELECT TOP 15 * FROM Users where id <= 100";
+  //results = SQLQuery(query);
+  //populateListView(results);
+}
+
+function button15_Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  CHAIN "printPlugin.cscs" WITH "listview1" "bla1"+"bla2" "bla3"    "bla4";
+}
+
+function button14_Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  selected = GetSelected("listView1");
+  if (selected.Size == 0) {
+    MessageBox("Nothing has been selected.", title, "OK", "warning");
+	return;
+  }
+  i = 0;
+  for (row : selected) {
+    row = selected[i++];
+    SQLNonQuery("Delete from Users where id=" + row);
+  }
+  MessageBox("Deleted " + i + " row(s).", title, "OK", "info");
+  button13_Clicked(sender, "");
+}
+
+clicks = 0;
+function button18_Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  MessageBox("Current value: [" + textbox1 + "]", title, "OK", "Info");
+  ++clicks;
+  textbox1 = "Clicks: " + clicks;
+}
+
+function label1_DoubleClicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  SetText(answerLabel, sender + ": I am double clicked");
+}
+
+function button9_MouseHover(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  SetText(answerLabel, sender + ": MouseHover Here!!!");
+}
+
+function textbox2_KeyPress(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  SetText(answerLabel, sender + " pressed: " + load);
+}
+function textbox1_TextChange(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  //ChangeCursor("busy");
+  text = GetText(sender);
+  for (item : comboItems) {
+    if (item.StartsWith(text)) {
+	  SetText("comboBox1", item);
+	  break;
+	}
+  }
+  //ChangeCursor("ok");
+}
+
+function newButton_Clicked(sender, load) {
+  text = sender + " clicked";
+  SetText("label2", text);
+}
+
+function combobox1_Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  if (!makeSense) {
+    return;
+  }
+}
+
+function combobox1_PreClicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+   SetText(answerLabel, sender + " pre-clicked: " + load);
+}
+
+function checkBox1_Clicked(sender, load) {
+	refresh = load;
+	if (refresh) {
+	  SetText(answerLabel, sender + " Is True!");
+	} else {
+	  SetText(answerLabel, sender + " Is False!");
+	}
+}
+
+function populateListView(data) {
+  SetWidgetOptions("listView1", "clear");
+
+  for (i = 1; i < data.Size; i++) {
+    AddWidgetData(listView1, data[i]);
+	//SetText(answerLabel, data[i][2]);
+  }
+}

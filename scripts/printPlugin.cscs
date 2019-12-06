@@ -4,9 +4,9 @@ PARAM arg1,arg2,arg3,arg4;
 
 print("Got params:",arg1,arg2,arg3,arg4);
 
-//result = SendToPrinter(arg1);
-result = RunOnMain(SendToPrinter, arg1);
+result = SendToPrinter(arg1);
+//result = RunOnMain(SendToPrinter, arg1);
 if (result != "") {
-   //MessageBox("Sent print job to '" + result + "'.", title, "OK", "info");
-   RunOnMain(MessageBox, "Sent print job to '" + result + "'.", title, "OK", "info");
+   MessageBox("Sent print job to '" + result + "'.", title, "OK", "info");
+   //RunOnMain(MessageBox, "Sent print job to '" + result + "'.", title, "OK", "info");
 }
