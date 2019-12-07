@@ -572,6 +572,5 @@ namespace SplitAndMerge
             return Calculate(functionName, argsString);
         }
 #endif
-
     }
 }

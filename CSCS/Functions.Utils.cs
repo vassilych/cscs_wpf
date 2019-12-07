@@ -988,4 +988,64 @@ namespace SplitAndMerge
             return new Variable(objectName);
         }
     }
+
+
+    class EncodeFileFunction : ParserFunction
+    {
+        bool m_encode = true;
+        Dictionary<string, Variable> m_parameters;
+
+        public EncodeFileFunction(bool encode = true)
+        {
+            m_encode = encode;
+        }
+
+        public static string EncodeText(string plainText)
+        {
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+            var intermidiate = System.Convert.ToBase64String(plainTextBytes);
+
+
+            return intermidiate;
+        }
+
+        public static string DecodeText(string base64EncodedData)
+        {
+            var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
+            var intermidiate = System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
+
+
+            return intermidiate;
+        }
+
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name, true);
+            string filename = args[0].AsString();
+            string pathname = script.GetFilePath(filename);
+
+            return EncodeDecode(pathname, m_encode);
+        }
+
+        public static Variable EncodeDecode(string pathname, bool encode)
+        {
+            string text = Utils.GetFileText(pathname);
+            string newText = "";
+
+            try
+            {
+                newText = encode ? EncodeText(text) : DecodeText(text);
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine(exc.Message);
+                return Variable.EmptyInstance;
+            }
+
+            Utils.WriteFileText(pathname, newText);
+            return new Variable(pathname);
+        }
+    }
+
 }

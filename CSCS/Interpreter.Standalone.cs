@@ -58,6 +58,8 @@ namespace SplitAndMerge
 
             ParserFunction.RegisterFunction(Constants.GOTO, new GotoGosubFunction(true));
             ParserFunction.RegisterFunction(Constants.GOSUB, new GotoGosubFunction(false));
+            ParserFunction.RegisterFunction(Constants.ENCODE_FILE, new EncodeFileFunction(true));
+            ParserFunction.RegisterFunction(Constants.DECODE_FILE, new EncodeFileFunction(false));
 
             ParserFunction.AddAction(Constants.LABEL_OPERATOR, new LabelFunction());
 

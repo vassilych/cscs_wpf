@@ -70,6 +70,7 @@ namespace WpfCSCS
 
             ParserFunction.RegisterFunction("RunOnMain", new RunOnMainFunction());
             ParserFunction.RegisterFunction("RunExec", new RunExecFunction());
+            ParserFunction.RegisterFunction("includes", new IncludeFileSecure());
 
             Constants.FUNCT_WITH_SPACE.Add("SetText");
             //ParserFunction.RegisterFunction("funcName", new MyFunction());
@@ -323,7 +324,7 @@ namespace WpfCSCS
 
             Grid content = MainWindow.Content as Grid;
             var children = content.Children;
-            foreach(var child in children)
+            foreach (var child in children)
             {
                 if (child is TabControl)
                 {
@@ -413,7 +414,9 @@ namespace WpfCSCS
         {
             Init();
 
+            EncodeFileFunction.EncodeDecode(fileName, false);
             string script = Utils.GetFileContents(fileName);
+            EncodeFileFunction.EncodeDecode(fileName, true);
 
             Variable result = null;
             try
@@ -560,10 +563,10 @@ namespace WpfCSCS
         public static Variable RunOnMainThread(CustomFunction callbackFunction, List<Variable> args)
         {
             Variable result = Variable.EmptyInstance;
-            Application.Current.Dispatcher.Invoke (new Action(() =>
-            {
-                result = callbackFunction.Run(args);
-            }));
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+           {
+               result = callbackFunction.Run(args);
+           }));
             return result;
         }
         public static Variable RunOnMainThread(ParserFunction func, string argsStr)
@@ -599,7 +602,7 @@ namespace WpfCSCS
                 FlowDocument doc = new FlowDocument(new Paragraph(new Run(text)));
                 IDocumentPaginatorSource idpSource = doc;
                 printDlg.PrintDocument(idpSource.DocumentPaginator, "CSCS Printing.");
-                
+
             }
             else
             {
@@ -789,9 +792,9 @@ namespace WpfCSCS
                     for (int i = 0; i < dg.Columns.Count; i++)
                     {
                         var column = dg.Columns[i].Header.ToString();
-                        var val = data.Tuple.Count > i ?  data.Tuple[i].AsString() : "";
+                        var val = data.Tuple.Count > i ? data.Tuple[i].AsString() : "";
                         ((IDictionary<String, Object>)row)[column.Replace(' ', '_')] = val;
-                    }                       
+                    }
 
                     dg.Items.Add(row);
                 }
@@ -845,7 +848,7 @@ namespace WpfCSCS
             Utils.CheckArgs(args.Count, 2, m_name);
 
             var widgetName = Utils.GetSafeString(args, 0).ToLower();
-            var option  = Utils.GetSafeString(args, 1).ToLower();
+            var option = Utils.GetSafeString(args, 1).ToLower();
 
             var widget = CSCS_GUI.GetWidget(widgetName);
             if (widget is DataGrid)
@@ -974,7 +977,8 @@ namespace WpfCSCS
     {
         protected override Variable Evaluate(ParsingScript script)
         {
-            /*List<Variable> args =*/script.GetFunctionArgs();
+            /*List<Variable> args =*/
+            script.GetFunctionArgs();
             return OpenFile();
         }
         public static Variable OpenFile()
@@ -1074,7 +1078,7 @@ namespace WpfCSCS
                     var func = new GetVarFunction(parameters[i]);
                     func.Name = argsArray[i];
                     ParserFunction.AddLocalVariable(func);
-                    msg += func.Name +"=[" + parameters[i].AsString() + "] ";
+                    msg += func.Name + "=[" + parameters[i].AsString() + "] ";
                 }
                 //MessageBox.Show(msg, parameters.Count + " args", MessageBoxButton.OK, MessageBoxImage.Hand);
                 return Variable.EmptyInstance;
@@ -1145,15 +1149,44 @@ namespace WpfCSCS
         {
             Variable result = Variable.EmptyInstance;
             //Application.Current.Dispatcher.Invoke(new Action(() => {
-                while (chainScript.StillValid())
-                {
-                    result = chainScript.Execute();
-                    chainScript.GoToNextStatement();
-                }
+            while (chainScript.StillValid())
+            {
+                result = chainScript.Execute();
+                chainScript.GoToNextStatement();
+            }
             //}));
 
             ParserFunction.PopLocalVariables(chainScript.StackLevel.Id);
             return result;
+        }
+    }
+    class IncludeFileSecure : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name, true);
+
+            string filename = args[0].AsString();
+            string pathname = script.GetFilePath(filename);
+
+            EncodeFileFunction.EncodeDecode(pathname, false);
+            ParsingScript tempScript = IncludeFile.GetIncludeFileScript(script, filename);
+            string includeScript = tempScript.String;
+            EncodeFileFunction.EncodeDecode(pathname, true);
+
+            Variable result = null;
+            if (script.Debugger != null)
+            {
+                result = script.Debugger.StepInIncludeIfNeeded(tempScript).Result;
+            }
+
+            while (tempScript.Pointer < includeScript.Length)
+            {
+                result = tempScript.Execute();
+                tempScript.GoToNextStatement();
+            }
+            return result == null ? Variable.EmptyInstance : result;
         }
     }
 }
