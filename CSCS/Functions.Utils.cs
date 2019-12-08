@@ -993,7 +993,6 @@ namespace SplitAndMerge
     class EncodeFileFunction : ParserFunction
     {
         bool m_encode = true;
-        Dictionary<string, Variable> m_parameters;
 
         public EncodeFileFunction(bool encode = true)
         {

@@ -25,7 +25,9 @@
                     <Button Content="Button" Grid.Column="4" HorizontalAlignment="Left" Margin="233,25,0,0" VerticalAlignment="Top" Width="75" Name="button3"/>
                     <TextBox Grid.Column="4" HorizontalAlignment="Left" Height="23" Margin="499,99,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Name="textbox1"/>
                     <Button Content="New Instance" Grid.Column="4" HorizontalAlignment="Left" Margin="523,156,0,0" VerticalAlignment="Top" Width="95" Name ="button8"/>
-                    <Button Content="TextBox Updater" Grid.Column="4" HorizontalAlignment="Left" Margin="376,99,0,0" VerticalAlignment="Top" Width="95"  Name ="button18"/>
+                    <Button Content="Updater" Grid.Column="4" HorizontalAlignment="Left" Margin="376,99,0,0" VerticalAlignment="Top" Width="95"  Name ="button18"/>
+                    <Button Content="Button" Grid.Column="4" HorizontalAlignment="Left" Margin="254,284,0,0" VerticalAlignment="Top" Width="125" Name="myNewButton"/>
+                    <Label Content="My Value" Grid.Column="4" HorizontalAlignment="Left" Margin="499,342,0,0" VerticalAlignment="Top" Name="myLabel"/>
                 </Grid>
             </TabItem>
             <TabItem Header="SQL Tests">
@@ -46,7 +48,7 @@
                     <Label Content="Salary:" HorizontalAlignment="Left" Margin="214,22,0,0" VerticalAlignment="Top" Name="label4" Grid.Column="3"/>
                     <Label Content="Email:" HorizontalAlignment="Left" Margin="392,22,0,0" VerticalAlignment="Top" Name="label5" Grid.Column="3"/>
                     <Button Content="Delete Selected" HorizontalAlignment="Left" Margin="580,55,0,0" VerticalAlignment="Top" Width="95" Name ="button14" Grid.Column="3"/>
-                    <Button Content="Print" Grid.Column="3" HorizontalAlignment="Left" Margin="580,114,0,0" VerticalAlignment="Top" Width="95" Name ="button15"/>
+                    <Button Content="Print" Grid.Column="3" HorizontalAlignment="Left" Margin="580,114,0,0" VerticalAlignment="Top" Width="95" Name ="button15" />
                 </Grid>
             </TabItem>
         </TabControl>

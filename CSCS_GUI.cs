@@ -91,14 +91,28 @@ namespace WpfCSCS
             {
                 return;
             }
+
             var widget = GetWidget(widgetName);
-            var textbox = widget as TextBox;
-            if (widget == null)
+            var text = newValue.AsString();
+
+            if (widget is TextBox)
             {
-                return;
+                ((TextBox)widget).Text = text;
             }
-            s_boundVariables[widgetName] = newValue;
-            textbox.Text = newValue.AsString();
+            else if (widget is ContentControl)
+            {
+                ((ContentControl)widget).Content = text;
+            }
+            else if (widget is CheckBox)
+            {
+                ((CheckBox)widget).IsChecked = text == "1" || text.ToLower() == "true";
+            }
+            else if (widget is ComboBox)
+            {
+                ((ComboBox)widget).Text = text;
+            }
+
+            s_boundVariables[widgetName] = newValue;            
         }
 
         static void UpdateVariable(Control widget)
@@ -130,16 +144,14 @@ namespace WpfCSCS
 
         public static bool AddBinding(string name, Control widget)
         {
-            var textbox = widget as TextBoxBase;
-            if (textbox == null)
-            {
-                return false;
-            }
-            Variable baseValue = new Variable("");
+            var text = GetTextWidgetFunction.GetText(widget);
+            Variable baseValue = new Variable(text);
             ParserFunction.AddGlobal(name, new GetVarFunction(baseValue), false /* not native */);
 
+            s_boundVariables[name.ToLower()] = Variable.EmptyInstance;
             return true;
         }
+
         public static bool AddActionHandler(string name, string action, Control widget)
         {
             var clickable = widget as ButtonBase;
@@ -185,10 +197,6 @@ namespace WpfCSCS
             s_textChangedHandlers[name] = action;
             textable.TextChanged += new TextChangedEventHandler(Widget_TextChanged);
 
-            if (widget is TextBox)
-            {
-                s_boundVariables[name.ToLower()] = Variable.EmptyInstance;
-            }
             return true;
         }
         public static bool AddMouseHoverHandler(string name, string action, Control widget)
