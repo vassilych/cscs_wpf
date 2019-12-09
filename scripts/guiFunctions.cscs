@@ -1,4 +1,4 @@
-﻿
+
 
 function button1_Clicked(sender, load) {
   if (!refresh) {
@@ -180,9 +180,18 @@ function button18_Clicked(sender, load) {
   if (!refresh) {
     return;
   }
-  MessageBox("Current value: [" + textbox1 + "]", title, "OK", "Info");
+  MessageBox("Current value: [" + label1 + "]", title, "OK", "Info");
   ++clicks;
-  textbox1 = "Clicks: " + clicks;
+  textbox1 = "My Clicks: " + clicks;
+  button18 = "Clicks: " + clicks;
+  label1 = "Clicks: " + clicks;
+  myLabel = "Whatever label...";
+  combobox1 = "seis";
+  checkbox1 = False;
+}
+
+function myNewButton_clicked(sender, load) {
+   SetText(sender, "I've been clicked");
 }
 
 function label1_DoubleClicked(sender, load) {

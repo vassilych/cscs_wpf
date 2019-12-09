@@ -1005,7 +1005,8 @@ namespace SplitAndMerge
             var intermidiate = System.Convert.ToBase64String(plainTextBytes);
 
 
-            return intermidiate;
+            //return intermidiate;
+            return plainText;
         }
 
         public static string DecodeText(string base64EncodedData)

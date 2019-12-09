@@ -1,5 +1,5 @@
-﻿
-include("guiFunctions.cscs");
+includes("guiFunctions.cscs");
+
 title = "My Great Nevio App";
 
 answerLabel = "label1";
