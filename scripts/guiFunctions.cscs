@@ -1,6 +1,6 @@
 
 
-function button1_Clicked(sender, load) {
+function button1@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
@@ -9,7 +9,7 @@ function button1_Clicked(sender, load) {
   //SetText("textBox1", data);
 }
 
-function button2_Clicked(sender, load) {
+function button2@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
@@ -18,7 +18,7 @@ function button2_Clicked(sender, load) {
   SetText(answerLabel, "Save: " + data);
 }
 
-function button3_Clicked(sender, load) {
+function button3@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
@@ -27,7 +27,7 @@ function button3_Clicked(sender, load) {
   SetText("button8", result);
 }
 
-function button4_Clicked(sender, load) {
+function button4@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
@@ -35,7 +35,7 @@ function button4_Clicked(sender, load) {
   setColor(sender, argb);
 }
 
-function button5_Clicked(sender, load) {
+function button5@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
@@ -46,7 +46,7 @@ function button5_Clicked(sender, load) {
   x += 100;
 }
 
-function button6_Clicked(sender, load) {
+function button6@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
@@ -58,7 +58,7 @@ function button6_Clicked(sender, load) {
   newWidgets--;
 }
 
-function button7_Clicked(sender, load) {
+function button7@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
@@ -70,21 +70,21 @@ function button7_Clicked(sender, load) {
   showCounter++;
 }
 
-function button8_Clicked(sender, load) {
+function button8@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
-  CHAIN "WpfCSCS.exe" "wpfgui.cscs" NEWRUNTIME WITH "listview1" "bla1"+"bla2" "bla3"    "bla4";
+  CHAIN "WpfCSCS.exe" "wpfgui.cscs" NEWRUNTIME WITH "myGrid" "bla1"+"bla2" "bla3"    "bla4";
 }
 
-function button8_PreClicked(sender, load) {
+function button8@PreClicked(sender, load) {
   if (!refresh) {
     return;
   }
   SetText(answerLabel, sender + " pre clicked");
 }
 
-function button9_Clicked(sender, load) {
+function button9@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
@@ -97,7 +97,7 @@ function button9_Clicked(sender, load) {
   SetText("comboBox1", text);
 }
 
-function button10_Clicked(sender, load) {
+function button10@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
@@ -108,7 +108,7 @@ function button10_Clicked(sender, load) {
   AddTab(text);
 }
 
-function button11_Clicked(sender, load) {
+function button11@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
@@ -119,7 +119,7 @@ function button11_Clicked(sender, load) {
   RemoveTab(text);
 }
 
-function button12_Clicked(sender, load) {
+function button12@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
@@ -134,34 +134,34 @@ function button12_Clicked(sender, load) {
   try {
     result = SQLInsert("Users", "Name,Salary,Email", data);
 	MessageBox("Inserted " + result + " row(s).", title, "OK", "info");
-    button13_Clicked(sender, "");
+    button13@Clicked(sender, "");
   } catch (exc) {
     MessageBox(exc, title, "Cancel", "error");
   }
 }
 
-function button13_Clicked(sender, load) {
+function button13@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
-  BindSQL("listview1", "Users");
+  BindSQL("myGrid", "Users");
   //query = "SELECT TOP 15 * FROM Users where id <= 100";
   //results = SQLQuery(query);
   //populateListView(results);
 }
 
-function button15_Clicked(sender, load) {
+function button15@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
-  CHAIN "printPlugin.cscs" WITH "listview1" "bla1"+"bla2" "bla3"    "bla4";
+  CHAIN "printPlugin.cscs" WITH "myGrid" "bla1"+"bla2" "bla3"    "bla4";
 }
 
-function button14_Clicked(sender, load) {
+function button14@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
-  selected = GetSelected("listView1");
+  selected = GetSelected("myGrid");
   if (selected.Size == 0) {
     MessageBox("Nothing has been selected.", title, "OK", "warning");
 	return;
@@ -172,15 +172,15 @@ function button14_Clicked(sender, load) {
     SQLNonQuery("Delete from Users where id=" + row);
   }
   MessageBox("Deleted " + i + " row(s).", title, "OK", "info");
-  button13_Clicked(sender, "");
+  button13@Clicked(sender, "");
 }
 
 clicks = 0;
-function button18_Clicked(sender, load) {
+function button18@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
-  MessageBox("Current value: [" + label1 + "]", title, "OK", "Info");
+  MessageBox("Current label value: [" + label1 + "]", title, "OK", "Info");
   ++clicks;
   textbox1 = "My Clicks: " + clicks;
   button18 = "Clicks: " + clicks;
@@ -190,31 +190,44 @@ function button18_Clicked(sender, load) {
   checkbox1 = False;
 }
 
-function myNewButton_clicked(sender, load) {
+function label1@PreClicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  label1 = "I am pre-clicked!";
+}
+function label1@PostClicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  label1 = "I am post-clicked!";
+}
+
+function myNewButton@Clicked(sender, load) {
    SetText(sender, "I've been clicked");
 }
 
-function label1_DoubleClicked(sender, load) {
+function label1@DoubleClicked(sender, load) {
   if (!refresh) {
     return;
   }
   SetText(answerLabel, sender + ": I am double clicked");
 }
 
-function button9_MouseHover(sender, load) {
+function button9@MouseHover(sender, load) {
   if (!refresh) {
     return;
   }
   SetText(answerLabel, sender + ": MouseHover Here!!!");
 }
 
-function textbox2_KeyPress(sender, load) {
+function textbox2@KeyPress(sender, load) {
   if (!refresh) {
     return;
   }
   SetText(answerLabel, sender + " pressed: " + load);
 }
-function textbox1_TextChange(sender, load) {
+function textbox1@TextChange(sender, load) {
   if (!refresh) {
     return;
   }
@@ -229,12 +242,12 @@ function textbox1_TextChange(sender, load) {
   //ChangeCursor("ok");
 }
 
-function newButton_Clicked(sender, load) {
+function newButton@Clicked(sender, load) {
   text = sender + " clicked";
   SetText("label2", text);
 }
 
-function combobox1_Clicked(sender, load) {
+function combobox1@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
@@ -243,14 +256,14 @@ function combobox1_Clicked(sender, load) {
   }
 }
 
-function combobox1_PreClicked(sender, load) {
+function combobox1@PreClicked(sender, load) {
   if (!refresh) {
     return;
   }
    SetText(answerLabel, sender + " pre-clicked: " + load);
 }
 
-function checkBox1_Clicked(sender, load) {
+function checkBox1@Clicked(sender, load) {
 	refresh = load;
 	if (refresh) {
 	  SetText(answerLabel, sender + " Is True!");
@@ -260,10 +273,10 @@ function checkBox1_Clicked(sender, load) {
 }
 
 function populateListView(data) {
-  SetWidgetOptions("listView1", "clear");
+  SetWidgetOptions("myGrid", "clear");
 
   for (i = 1; i < data.Size; i++) {
-    AddWidgetData(listView1, data[i]);
+    AddWidgetData(myGrid, data[i]);
 	//SetText(answerLabel, data[i][2]);
   }
 }

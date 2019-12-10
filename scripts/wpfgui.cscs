@@ -27,8 +27,8 @@ SetText("button3",  "Message Box") ;
 
 SQLConnectionString("Server=DESKTOP-RKQQ93A\\SQLEXPRESS;Database=CSCS;User Id=sa;Password=sqlpassword;");
 //cols = SQLTableColumns("Users");
-SetWidgetOptions("listView1", "colors", "green", "white");
+SetWidgetOptions("myGrid", "colors", "green", "white");
 
 globalVar = "cuatro";
 
-BindSQL("listview1", "Users");
+BindSQL("myGrid", "Users");

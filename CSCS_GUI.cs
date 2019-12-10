@@ -30,6 +30,7 @@ namespace WpfCSCS
 
         static Dictionary<string, string> s_actionHandlers = new Dictionary<string, string>();
         static Dictionary<string, string> s_preActionHandlers = new Dictionary<string, string>();
+        static Dictionary<string, string> s_postActionHandlers = new Dictionary<string, string>();
         static Dictionary<string, string> s_keyDownHandlers = new Dictionary<string, string>();
         static Dictionary<string, string> s_keyUpHandlers = new Dictionary<string, string>();
         static Dictionary<string, string> s_textChangedHandlers = new Dictionary<string, string>();
@@ -80,6 +81,20 @@ namespace WpfCSCS
             AddActions();
         }
 
+        public static string GetWidgetBindingName(Control widget)
+        {
+            var widgetName = widget == null || widget.DataContext == null ? "" : widget.DataContext.ToString();
+            return widgetName;
+        }
+
+        static void CacheControl(Control widget)
+        {
+            if (widget != null && widget.DataContext != null)
+            {
+                Controls[widget.DataContext.ToString().ToLower()] = widget;
+            }
+        }
+
         static void OnVariableChange(string name, Variable newValue, bool isGlobal)
         {
             if (s_changingBoundVariable)
@@ -95,36 +110,20 @@ namespace WpfCSCS
             var widget = GetWidget(widgetName);
             var text = newValue.AsString();
 
-            if (widget is TextBox)
-            {
-                ((TextBox)widget).Text = text;
-            }
-            else if (widget is ContentControl)
-            {
-                ((ContentControl)widget).Content = text;
-            }
-            else if (widget is CheckBox)
-            {
-                ((CheckBox)widget).IsChecked = text == "1" || text.ToLower() == "true";
-            }
-            else if (widget is ComboBox)
-            {
-                ((ComboBox)widget).Text = text;
-            }
-
+            SetTextWidgetFunction.SetText(widget, text);
             s_boundVariables[widgetName] = newValue;            
         }
 
-        static void UpdateVariable(Control widget)
+        static void UpdateVariable(Control widget, string text)
         {
-            TextBox textbox = widget as TextBox;
-            if (textbox == null)
+            var widgetName = GetWidgetBindingName(widget);
+            if (string.IsNullOrEmpty(widgetName))
             {
                 return;
             }
             s_changingBoundVariable = true;
-            ParserFunction.AddGlobalOrLocalVariable(textbox.Name,
-                                        new GetVarFunction(new Variable(textbox.Text)));
+            ParserFunction.AddGlobalOrLocalVariable(widgetName,
+                                        new GetVarFunction(new Variable(text)));
             s_changingBoundVariable = false;
         }
 
@@ -175,6 +174,19 @@ namespace WpfCSCS
             widget.MouseDown += new MouseButtonEventHandler(Widget_PreClick);
             return true;
         }
+        public static bool AddPostActionHandler(string name, string action, Control widget)
+        {
+            s_postActionHandlers[name] = action;
+            if (widget is ComboBox)
+            {
+                var combo = widget as ComboBox;
+                combo.PreviewMouseLeftButtonUp += new MouseButtonEventHandler(Widget_PostClick);
+                return true;
+            }
+            widget.MouseUp += new MouseButtonEventHandler(Widget_PostClick);
+            return true;
+        }
+
         public static bool AddKeyDownHandler(string name, string action, Control widget)
         {
             s_keyDownHandlers[name] = action;
@@ -208,13 +220,15 @@ namespace WpfCSCS
 
         private static void Widget_Click(object sender, RoutedEventArgs e)
         {
-            ButtonBase widget = sender as ButtonBase;
-            if (widget == null)
+            Control widget = sender as Control;
+            var widgetName = GetWidgetBindingName(widget);
+            if (string.IsNullOrEmpty(widgetName))
             {
                 return;
             }
+
             string funcName;
-            if (!s_actionHandlers.TryGetValue(widget.Name, out funcName))
+            if (!s_actionHandlers.TryGetValue(widgetName, out funcName))
             {
                 return;
             }
@@ -228,87 +242,110 @@ namespace WpfCSCS
             }
             else
             {
-                result = new Variable(widget.Content.ToString());
+                result = new Variable(widgetName);
             }
-            CustomFunction.Run(funcName, new Variable(widget.Name), result);
+            CustomFunction.Run(funcName, new Variable(widgetName), result);
         }
+
         private static void Widget_PreClick(object sender, MouseButtonEventArgs e)
         {
             Control widget = sender as Control;
-            if (widget == null || e.ChangedButton != MouseButton.Left)
+            var widgetName = GetWidgetBindingName(widget);
+            if (string.IsNullOrWhiteSpace(widgetName) || e.ChangedButton != MouseButton.Left)
             {
                 return;
             }
 
-            var arg = e.ToString();
-            if (widget is ComboBox)
+            string funcName;
+            if (s_preActionHandlers.TryGetValue(widgetName, out funcName))
             {
-                var comboBox = widget as ComboBox;
-                arg = comboBox.Text;
+                var arg = GetTextWidgetFunction.GetText(widget);
+                CustomFunction.Run(funcName, new Variable(widgetName), new Variable(arg));
+            }
+        }
+
+        private static void Widget_PostClick(object sender, MouseButtonEventArgs e)
+        {
+            Control widget = sender as Control;
+            var widgetName = GetWidgetBindingName(widget);
+            if (string.IsNullOrWhiteSpace(widgetName) || e.ChangedButton != MouseButton.Left)
+            {
+                return;
             }
 
             string funcName;
-            if (s_preActionHandlers.TryGetValue(widget.Name, out funcName))
+            if (s_postActionHandlers.TryGetValue(widgetName, out funcName))
             {
-                CustomFunction.Run(funcName, new Variable(widget.Name), new Variable(arg));
+                var arg = GetTextWidgetFunction.GetText(widget);
+                CustomFunction.Run(funcName, new Variable(widgetName), new Variable(arg));
             }
         }
+
         private static void Widget_KeyDown(object sender, KeyEventArgs e)
         {
             Control widget = sender as Control;
-            if (widget == null)
+            var widgetName = GetWidgetBindingName(widget);
+            if (string.IsNullOrWhiteSpace(widgetName))
             {
                 return;
             }
 
             string funcName;
-            if (s_keyDownHandlers.TryGetValue(widget.Name, out funcName))
+            if (s_keyDownHandlers.TryGetValue(widgetName, out funcName))
             {
-                CustomFunction.Run(funcName, new Variable(widget.Name), new Variable(((char)e.Key).ToString()));
+                CustomFunction.Run(funcName, new Variable(widgetName),
+                    new Variable(((char)e.Key).ToString()));
             }
         }
         private static void Widget_KeyUp(object sender, KeyEventArgs e)
         {
             Control widget = sender as Control;
-            if (widget == null)
+            var widgetName = GetWidgetBindingName(widget);
+            if (string.IsNullOrWhiteSpace(widgetName))
             {
                 return;
             }
 
             string funcName;
-            if (s_keyUpHandlers.TryGetValue(widget.Name, out funcName))
+            if (s_keyUpHandlers.TryGetValue(widgetName, out funcName))
             {
-                CustomFunction.Run(funcName, new Variable(widget.Name), new Variable(((char)e.Key).ToString()));
+                CustomFunction.Run(funcName, new Variable(widgetName),
+                    new Variable(((char)e.Key).ToString()));
             }
         }
+
         private static void Widget_TextChanged(object sender, TextChangedEventArgs e)
         {
             TextBoxBase widget = sender as TextBoxBase;
-            if (widget == null)
+            var widgetName = GetWidgetBindingName(widget);
+            if (string.IsNullOrWhiteSpace(widgetName))
             {
                 return;
             }
 
-            UpdateVariable(widget);
+            var text = GetTextWidgetFunction.GetText(widget);
+            UpdateVariable(widget, text.AsString());
 
             string funcName;
-            if (s_textChangedHandlers.TryGetValue(widget.Name, out funcName))
+            if (s_textChangedHandlers.TryGetValue(widgetName, out funcName))
             {
-                CustomFunction.Run(funcName, new Variable(widget.Name), new Variable(e.ToString()));
+                CustomFunction.Run(funcName, new Variable(widgetName), text);
             }
         }
+
         private static void Widget_Hover(object sender, MouseEventArgs e)
         {
             Control widget = sender as Control;
-            if (widget == null)
+            var widgetName = GetWidgetBindingName(widget);
+            if (string.IsNullOrWhiteSpace(widgetName))
             {
                 return;
             }
 
             string funcName;
-            if (s_mouseHoverHandlers.TryGetValue(widget.Name, out funcName))
+            if (s_mouseHoverHandlers.TryGetValue(widgetName, out funcName))
             {
-                CustomFunction.Run(funcName, new Variable(widget.Name), new Variable(e.ToString()));
+                CustomFunction.Run(funcName, new Variable(widgetName), new Variable(e.ToString()));
             }
         }
 
@@ -361,8 +398,7 @@ namespace WpfCSCS
                                             var content2 = tabItem.Content as Grid;
                                             foreach (var child2 in content2.Children)
                                             {
-                                                var controli = child2 as Control;
-                                                Controls[controli.Name.ToLower()] = controli;
+                                                CacheControl(child2 as Control);
                                             }
                                         }
                                     }
@@ -373,37 +409,35 @@ namespace WpfCSCS
                 }
                 else
                 {
-                    var control = child as Control;
-                    if (control != null)
-                    {
-                        Controls[control.Name.ToLower()] = control;
-                    }
+                    CacheControl(child as Control);
                 }
             }
         }
 
-        public static void AddActions(Control control, string name = "")
+        public static void AddActions(Control widget)
         {
-            if (control == null)
+            var widgetName = GetWidgetBindingName(widget);
+            if (string.IsNullOrWhiteSpace(widgetName))
             {
                 return;
             }
-            name = string.IsNullOrWhiteSpace(name) ? control.Name : name;
 
-            string clickAction = name + "_Clicked";
-            string preClickAction = name + "_PreClicked";
-            string keyDownAction = name + "_KeyDown";
-            string keyUpAction = name + "_KeyUp";
-            string textChangeAction = name + "_TextChange";
-            string mouseHoverAction = name + "_MouseHover";
+            string clickAction      = widgetName + "@Clicked";
+            string preClickAction   = widgetName + "@PreClicked";
+            string postClickAction  = widgetName + "@PostClicked";
+            string keyDownAction    = widgetName + "@KeyDown";
+            string keyUpAction      = widgetName + "@KeyUp";
+            string textChangeAction = widgetName + "@TextChange";
+            string mouseHoverAction = widgetName + "@MouseHover";
 
-            AddActionHandler(control.Name, clickAction, control);
-            AddPreActionHandler(control.Name, preClickAction, control);
-            AddKeyDownHandler(control.Name, keyDownAction, control);
-            AddKeyUpHandler(control.Name, keyUpAction, control);
-            AddTextChangedHandler(control.Name, textChangeAction, control);
-            AddMouseHoverHandler(control.Name, mouseHoverAction, control);
-            AddBinding(control.Name, control);
+            AddActionHandler(widgetName, clickAction, widget);
+            AddPreActionHandler(widgetName, preClickAction, widget);
+            AddPostActionHandler(widgetName, postClickAction, widget);
+            AddKeyDownHandler(widgetName, keyDownAction, widget);
+            AddKeyUpHandler(widgetName, keyUpAction, widget);
+            AddTextChangedHandler(widgetName, textChangeAction, widget);
+            AddMouseHoverHandler(widgetName, mouseHoverAction, widget);
+            AddBinding(widgetName, widget);
         }
 
         public static string Encode(string plainText)
@@ -651,6 +685,11 @@ namespace WpfCSCS
                 var textBox = widget as TextBox;
                 result = textBox.Text;
             }
+            else if (widget is RichTextBox)
+            {
+                var richTextBox = widget as RichTextBox;
+                result = new TextRange(richTextBox.Document.ContentStart, richTextBox.Document.ContentEnd).Text;
+            }
             else if (widget is ComboBox)
             {
                 var comboBox = widget as ComboBox;
@@ -678,16 +717,20 @@ namespace WpfCSCS
                 return Variable.EmptyInstance;
             }
 
+            int index = widget is ComboBox && args[0].Type == Variable.VarType.NUMBER ? (int)args[0].Value : -1;
+            var set = SetText(widget, text, index);
+
+            return new Variable(set);
+        }
+
+        public static bool SetText(Control widget, string text, int index = -1)
+        {
             if (widget is ComboBox)
             {
                 var combo = widget as ComboBox;
-                var index = 0;
-                if (args[0].Type == Variable.VarType.NUMBER)
+                if (index < 0)
                 {
-                    index = (int)args[0].Value;
-                }
-                else
-                {
+                    index = 0;
                     foreach (var item in combo.Items)
                     {
                         if (item.ToString() == text)
@@ -717,8 +760,18 @@ namespace WpfCSCS
                 var textBox = widget as TextBox;
                 textBox.Text = text;
             }
+            else if (widget is RichTextBox)
+            {
+                var richTextBox = widget as RichTextBox;
+                richTextBox.Document.Blocks.Clear();
+                richTextBox.Document.Blocks.Add(new Paragraph(new Run(text)));
+            }
+            else
+            {
+                return false;
+            }
 
-            return new Variable(true);
+            return true;
         }
     }
 
@@ -908,7 +961,7 @@ namespace WpfCSCS
         void DataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
         {
             DataGrid dg = sender as DataGrid;
-            string widgetName = dg.Name.ToLower();
+            string widgetName = CSCS_GUI.GetWidgetBindingName(dg);
             Color bgcolor, fgcolor;
             if (m_bgcolors.TryGetValue(widgetName, out bgcolor))
             {
@@ -1068,7 +1121,7 @@ namespace WpfCSCS
             {
                 var argsStr = Utils.GetBodyBetween(script, '\0', '\0', Constants.END_STATEMENT);
                 string[] argsArray = argsStr.Split(new char[] { ',' });
-                string msg = "CmdArgs:";
+                //string msg = "CmdArgs:";
                 if (!s_parameters.TryGetValue(script.Filename, out parameters))
                 {
                     parameters = new List<Variable>();
@@ -1077,7 +1130,7 @@ namespace WpfCSCS
                     for (int i = 1; i < cmdArgsArr.Length; i++)
                     {
                         parameters.Add(new Variable(cmdArgsArr[i]));
-                        msg += "[" + cmdArgsArr[i] + "]";
+                        //msg += "[" + cmdArgsArr[i] + "]";
                     }
                 }
 
@@ -1086,7 +1139,7 @@ namespace WpfCSCS
                     var func = new GetVarFunction(parameters[i]);
                     func.Name = argsArray[i];
                     ParserFunction.AddLocalVariable(func);
-                    msg += func.Name + "=[" + parameters[i].AsString() + "] ";
+                    //msg += func.Name + "=[" + parameters[i].AsString() + "] ";
                 }
                 //MessageBox.Show(msg, parameters.Count + " args", MessageBoxButton.OK, MessageBoxImage.Hand);
                 return Variable.EmptyInstance;
