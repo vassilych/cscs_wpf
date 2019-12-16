@@ -18,6 +18,21 @@ using System.Dynamic;
 using System.Windows.Documents;
 using System.Reflection;
 
+namespace SplitAndMerge
+{
+    public partial class Constants
+    {
+        public const string DEFINE = "define";
+        public const string MSG = "msg";
+        public const string SET_OBJECT = "set_object";
+
+        public const string CHAIN = "chain";
+        public const string PARAM = "param";
+        public const string WITH = "with";
+        public const string NEWRUNTIME = "newruntime";
+    }
+}
+
 namespace WpfCSCS
 {
     public class CSCS_GUI
@@ -71,9 +86,14 @@ namespace WpfCSCS
 
             ParserFunction.RegisterFunction("RunOnMain", new RunOnMainFunction());
             ParserFunction.RegisterFunction("RunExec", new RunExecFunction());
-            ParserFunction.RegisterFunction("includes", new IncludeFileSecure());
 
             Constants.FUNCT_WITH_SPACE.Add("SetText");
+            Constants.FUNCT_WITH_SPACE.Add(Constants.DEFINE);
+            Constants.FUNCT_WITH_SPACE.Add(Constants.MSG);
+            Constants.FUNCT_WITH_SPACE.Add(Constants.SET_OBJECT);
+            Constants.FUNCT_WITH_SPACE.Add(Constants.CHAIN);
+            Constants.FUNCT_WITH_SPACE.Add(Constants.PARAM);
+
             //ParserFunction.RegisterFunction("funcName", new MyFunction());
 
             Interpreter.Instance.OnOutput += Print;
@@ -1221,33 +1241,103 @@ namespace WpfCSCS
             return result;
         }
     }
-    class IncludeFileSecure : ParserFunction
+    class VariableArgsFunction : ParserFunction
     {
+        bool m_processFirstToken = true;
+        Dictionary<string, Variable> m_parameters;
+
+        public VariableArgsFunction(bool processFirst = true)
+        {
+            m_processFirstToken = processFirst;
+        }
+
+        void GetParameters(ParsingScript script)
+        {
+            m_parameters = new Dictionary<string, Variable>();
+            while (script.Current != Constants.END_STATEMENT)
+            {
+                var labelName = Utils.GetToken(script, Constants.TOKEN_SEPARATION);
+                var value = script.Current == Constants.END_STATEMENT ? Variable.EmptyInstance :
+                                                                        Utils.GetItem(script, false);
+                m_parameters[labelName.ToLower()] = value;
+            }
+        }
+
+        string GetParameter(string key, string defValue = "")
+        {
+            Variable res;
+            if (!m_parameters.TryGetValue(key.ToLower(), out res))
+            {
+                return defValue;
+            }
+            return res.AsString();
+        }
+        double GetDoubleParameter(string key, double defValue = 0.0)
+        {
+            Variable res;
+            if (!m_parameters.TryGetValue(key.ToLower(), out res))
+            {
+                return defValue;
+            }
+            return res.AsDouble();
+        }
+        int GetIntParameter(string key, int defValue = 0)
+        {
+            Variable res;
+            if (!m_parameters.TryGetValue(key.ToLower(), out res))
+            {
+                return defValue;
+            }
+            return res.AsInt();
+        }
+        bool GetBoolParameter(string key, bool defValue = false)
+        {
+            Variable res;
+            if (!m_parameters.TryGetValue(key.ToLower(), out res))
+            {
+                return defValue;
+            }
+            return res.AsBool();
+        }
+        Variable GetVariableParameter(string key, Variable defValue = null)
+        {
+            Variable res;
+            if (!m_parameters.TryGetValue(key.ToLower(), out res))
+            {
+                return defValue;
+            }
+            return res;
+        }
+
         protected override Variable Evaluate(ParsingScript script)
         {
-            List<Variable> args = script.GetFunctionArgs();
-            Utils.CheckArgs(args.Count, 1, m_name, true);
+            var objectName = m_processFirstToken ? Utils.GetItem(script).AsString() : "";
+            GetParameters(script);
 
-            string filename = args[0].AsString();
-            string pathname = script.GetFilePath(filename);
-
-            EncodeFileFunction.EncodeDecode(pathname, false);
-            ParsingScript tempScript = IncludeFile.GetIncludeFileScript(script, filename);
-            string includeScript = tempScript.String;
-            EncodeFileFunction.EncodeDecode(pathname, true);
-
-            Variable result = null;
-            if (script.Debugger != null)
+            if (Name.ToUpper() == "MSG")
             {
-                result = script.Debugger.StepInIncludeIfNeeded(tempScript).Result;
+                string caption = GetParameter("caption");
+                int duration = GetIntParameter("duration");
+                return new Variable(objectName);
+            }
+            if (Name.ToUpper() == "DEFINE")
+            {
+                string name = GetParameter("name");
+                double size = GetIntParameter("size");
+                string type = GetParameter("type");
+                double value = GetIntParameter("value");
+                string init = GetParameter("init");
+                Variable dup = GetVariableParameter("dup");
+                return new Variable(objectName);
+            }
+            if (Name.ToUpper() == "SET_OBJECT")
+            {
+                string prop = GetParameter("property");
+                bool val = GetBoolParameter("value");
+                return new Variable(objectName);
             }
 
-            while (tempScript.Pointer < includeScript.Length)
-            {
-                result = tempScript.Execute();
-                tempScript.GoToNextStatement();
-            }
-            return result == null ? Variable.EmptyInstance : result;
+            return new Variable(objectName);
         }
     }
 }

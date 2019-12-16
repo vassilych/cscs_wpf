@@ -889,107 +889,6 @@ namespace SplitAndMerge
         }
     }
 
-    class VariableArgsFunction : ParserFunction
-    {
-        bool m_processFirstToken = true;
-        Dictionary<string, Variable> m_parameters;
-
-        public VariableArgsFunction(bool processFirst = true)
-        {
-            m_processFirstToken = processFirst;
-        }
-
-        void GetParameters(ParsingScript script)
-        {
-            m_parameters = new Dictionary<string, Variable>();
-            while (script.Current != Constants.END_STATEMENT)
-            {
-                var labelName = Utils.GetToken(script, Constants.TOKEN_SEPARATION);
-                var value = script.Current == Constants.END_STATEMENT ? Variable.EmptyInstance :
-                                                                        Utils.GetItem(script, false);
-                m_parameters[labelName.ToLower()] = value;
-            }
-        }
-
-        string GetParameter(string key, string defValue = "")
-        {
-            Variable res;
-            if (!m_parameters.TryGetValue(key.ToLower(), out res))
-            {
-                return defValue;
-            }
-            return res.AsString();
-        }
-        double GetDoubleParameter(string key, double defValue = 0.0)
-        {
-            Variable res;
-            if (!m_parameters.TryGetValue(key.ToLower(), out res))
-            {
-                return defValue;
-            }
-            return res.AsDouble();
-        }
-        int GetIntParameter(string key, int defValue = 0)
-        {
-            Variable res;
-            if (!m_parameters.TryGetValue(key.ToLower(), out res))
-            {
-                return defValue;
-            }
-            return res.AsInt();
-        }
-        bool GetBoolParameter(string key, bool defValue = false)
-        {
-            Variable res;
-            if (!m_parameters.TryGetValue(key.ToLower(), out res))
-            {
-                return defValue;
-            }
-            return res.AsBool();
-        }
-        Variable GetVariableParameter(string key, Variable defValue = null)
-        {
-            Variable res;
-            if (!m_parameters.TryGetValue(key.ToLower(), out res))
-            {
-                return defValue;
-            }
-            return res;
-        }
-
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            var objectName = m_processFirstToken ? Utils.GetItem(script).AsString() : "";
-            GetParameters(script);
-
-            if (Name.ToUpper() == "MSG")
-            {
-                string caption = GetParameter("caption");
-                int duration   = GetIntParameter("duration");
-                return new Variable(objectName);
-            }
-            if (Name.ToUpper() == "DEFINE")
-            {
-                string name  = GetParameter("name");
-                double size  = GetIntParameter("size");
-                string type  = GetParameter("type");
-                double value = GetIntParameter("value");
-                string init  = GetParameter("init");
-                Variable dup = GetVariableParameter("dup");
-                return new Variable(objectName);
-            }
-            if (Name.ToUpper() == "SET_OBJECT")
-            {
-                string prop = GetParameter("property");
-                bool val    = GetBoolParameter("value");
-                return new Variable(objectName);
-            }
-
-            return new Variable(objectName);
-        }
-    }
-
-
     class EncodeFileFunction : ParserFunction
     {
         bool m_encode = true;
@@ -1047,5 +946,33 @@ namespace SplitAndMerge
             return new Variable(pathname);
         }
     }
+    class IncludeFileSecure : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name, true);
 
+            string filename = args[0].AsString();
+            string pathname = script.GetFilePath(filename);
+
+            EncodeFileFunction.EncodeDecode(pathname, false);
+            ParsingScript tempScript = IncludeFile.GetIncludeFileScript(script, filename);
+            string includeScript = tempScript.String;
+            EncodeFileFunction.EncodeDecode(pathname, true);
+
+            Variable result = null;
+            if (script.Debugger != null)
+            {
+                result = script.Debugger.StepInIncludeIfNeeded(tempScript).Result;
+            }
+
+            while (tempScript.Pointer < includeScript.Length)
+            {
+                result = tempScript.Execute();
+                tempScript.GoToNextStatement();
+            }
+            return result == null ? Variable.EmptyInstance : result;
+        }
+    }
 }

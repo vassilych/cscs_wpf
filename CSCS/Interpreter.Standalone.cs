@@ -58,16 +58,12 @@ namespace SplitAndMerge
 
             ParserFunction.RegisterFunction(Constants.GOTO, new GotoGosubFunction(true));
             ParserFunction.RegisterFunction(Constants.GOSUB, new GotoGosubFunction(false));
+            ParserFunction.RegisterFunction(Constants.INCLUDE_SECURE, new IncludeFileSecure());
+
             ParserFunction.RegisterFunction(Constants.ENCODE_FILE, new EncodeFileFunction(true));
             ParserFunction.RegisterFunction(Constants.DECODE_FILE, new EncodeFileFunction(false));
 
             ParserFunction.AddAction(Constants.LABEL_OPERATOR, new LabelFunction());
-
-            Constants.FUNCT_WITH_SPACE.Add(Constants.DEFINE);
-            Constants.FUNCT_WITH_SPACE.Add(Constants.MSG);
-            Constants.FUNCT_WITH_SPACE.Add(Constants.SET_OBJECT);
-            Constants.FUNCT_WITH_SPACE.Add(Constants.CHAIN);
-            Constants.FUNCT_WITH_SPACE.Add(Constants.PARAM);
 
             CSCS_SQL.Init();
 #endif

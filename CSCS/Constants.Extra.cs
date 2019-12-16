@@ -61,14 +61,7 @@ namespace SplitAndMerge
         public const string GOTO = "goto";
         public const string GOSUB = "gosub";
 
-        public const string DEFINE = "define";
-        public const string MSG = "msg";
-        public const string SET_OBJECT = "set_object";
-        
-        public const string CHAIN = "chain";
-        public const string PARAM = "param";
-        public const string WITH = "with";
-        public const string NEWRUNTIME = "newruntime";
+        public const string INCLUDE_SECURE = "includes";
 
         public const string ENCODE_FILE = "encodeFile";
         public const string DECODE_FILE = "decodeFile";
