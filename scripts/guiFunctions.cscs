@@ -280,3 +280,29 @@ function populateListView(data) {
 	//SetText(answerLabel, data[i][2]);
   }
 }
+
+cfunction cscsCode(sender, load) {
+    string widgetName = sender;
+    string text = "lala";
+
+    var widget = CSCS_GUI.GetWidget(widgetName);
+    SetTextWidgetFunction.SetText(widget, text);
+}
+
+cfunction csharpCode(sender, load) {
+    int a = 10;
+    int b = 20;
+    int c = a + b;
+    Console.WriteLine(c);
+
+    string widgetName = "precompiled";
+    string text = "lala";
+
+    var widget = CSCS_GUI.GetWidget(widgetName);
+    SetTextWidgetFunction.SetText(widget, text);
+}
+
+function precompiled@Clicked(sender, load) {
+  cscsCode(sender, load);
+  //csharpCode(sender, load);
+}

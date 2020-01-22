@@ -6,17 +6,18 @@ using System.Text;
 using System.Threading.Tasks;
 
 using System.Drawing;
+using System.Dynamic;
+using System.Reflection;
 using SplitAndMerge;
-using System.Windows.Media;
 using System.Security.Cryptography;
+
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows;
-using System.Windows.Input;
 using System.Windows.Data;
-using System.Dynamic;
 using System.Windows.Documents;
-using System.Reflection;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace SplitAndMerge
 {
@@ -99,6 +100,15 @@ namespace WpfCSCS
             Interpreter.Instance.OnOutput += Print;
             ParserFunction.OnVariableChange += OnVariableChange;
             AddActions();
+
+            Precompiler.AddNamespace("using WpfCSCS;");
+            Precompiler.AddNamespace("using System.Windows;");
+            Precompiler.AddNamespace("using System.Windows.Controls;");
+            Precompiler.AddNamespace("using System.Windows.Controls.Primitives;");
+            Precompiler.AddNamespace("using System.Windows.Data;");
+            Precompiler.AddNamespace("using System.Windows.Documents;");
+            Precompiler.AddNamespace("using System.Windows.Input;");
+            Precompiler.AddNamespace("using System.Windows.Media;");
         }
 
         public static string GetWidgetBindingName(Control widget)
@@ -720,7 +730,7 @@ namespace WpfCSCS
         }
     }
 
-    class SetTextWidgetFunction : ParserFunction
+    public class SetTextWidgetFunction : ParserFunction
     {
         protected override Variable Evaluate(ParsingScript script)
         {

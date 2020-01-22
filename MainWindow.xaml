@@ -28,6 +28,7 @@
                     <Button Content="Updater" Grid.Column="4" HorizontalAlignment="Left" Margin="376,99,0,0" VerticalAlignment="Top" Width="95"  Name ="button18" DataContext="button18"/>
                     <Button Content="Button" Grid.Column="4" HorizontalAlignment="Left" Margin="254,284,0,0" VerticalAlignment="Top" Width="125" Name="myNewButton" DataContext="myNewButton"/>
                     <Label Content="My Value" Grid.Column="4" HorizontalAlignment="Left" Margin="499,342,0,0" VerticalAlignment="Top" Name="myLabel"/>
+                    <Button Grid.ColumnSpan="4" Content="Precompiled" Grid.Column="1" HorizontalAlignment="Left" Margin="84.6,342,0,0" VerticalAlignment="Top" Width="75" Name="precompiled" DataContext="precompiled"/>
                 </Grid>
             </TabItem>
             <TabItem Header="SQL Tests">
