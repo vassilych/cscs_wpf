@@ -65,6 +65,7 @@ namespace SplitAndMerge
 
             int arrayIndexDepth = 0;
             bool inQuotes = false;
+            bool canFinish = false;
             int negated = 0;
             char ch;
             string action;
@@ -79,6 +80,7 @@ namespace SplitAndMerge
                     return listToMerge;
                 }
 
+                canFinish = !inQuotes && script.Current == ' ' && to.Contains(' ');
                 bool negSign = CheckConsistencyAndSign(script, listToMerge, action, ref token);
 
                 // We are done getting the next token. The GetValue() call below may
@@ -91,7 +93,7 @@ namespace SplitAndMerge
                 {
                     return listToMerge;
                 }
-            } while (script.StillValid() &&
+            } while (script.StillValid() && !canFinish &&
                     (inQuotes || arrayIndexDepth > 0 || !to.Contains(script.Current)));
 
             // This happens when called recursively inside of the math expression:
@@ -113,6 +115,7 @@ namespace SplitAndMerge
 
             int arrayIndexDepth = 0;
             bool inQuotes = false;
+            bool canFinish = false;
             int negated = 0;
             char ch;
             string action;
@@ -127,6 +130,7 @@ namespace SplitAndMerge
                     return listToMerge;
                 }
 
+                canFinish = !inQuotes && script.Current == ' ' && to.Contains(' ');
                 bool negSign = CheckConsistencyAndSign(script, listToMerge, action, ref token);
 
                 ParserFunction func = new ParserFunction(script, token, ch, ref action);
@@ -136,7 +140,7 @@ namespace SplitAndMerge
                 {
                     return listToMerge;
                 }
-            } while (script.StillValid() &&
+            } while (script.StillValid() && !canFinish &&
                     (inQuotes || arrayIndexDepth > 0 || !to.Contains(script.Current)));
 
             // This happens when called recursively inside of the math expression:

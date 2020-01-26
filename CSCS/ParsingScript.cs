@@ -85,6 +85,8 @@ namespace SplitAndMerge
             set;
         }
 
+        public string CurrentModule { get; set; }
+
         public Dictionary<string, Dictionary<string, int>> AllLabels
         {
             get;

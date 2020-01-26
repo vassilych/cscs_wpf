@@ -12,7 +12,9 @@ namespace SplitAndMerge
 {
     public class ParserFunction
     {
-        public static Action<string, Variable, bool> OnVariableChange;
+        //public static Action<string, Variable, bool> OnVariableChange;
+        public delegate bool VariableChange(string name, Variable newValue, bool isGlobal);
+        public static VariableChange OnVariableChange;
 
         public ParserFunction()
         {
@@ -361,9 +363,9 @@ namespace SplitAndMerge
             {
                 script.StackLevel.Variables[name] = function;
                 var handle = OnVariableChange;
-                if (handle != null && function is GetVarFunction)
+                if (handle != null )
                 {
-                    handle.Invoke(function.Name, ((GetVarFunction)function).Value, false);
+                    handle.Invoke(function.Name, function.Value, false);
                 }
             }
             else if (s_locals.Count > StackLevelDelta && (LocalNameExists(name) || !GlobalNameExists(name)))

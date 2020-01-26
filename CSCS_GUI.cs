@@ -26,6 +26,7 @@ namespace SplitAndMerge
         public const string DEFINE = "define";
         public const string MSG = "msg";
         public const string SET_OBJECT = "set_object";
+        public const string QUIT = "quit";
 
         public const string CHAIN = "chain";
         public const string PARAM = "param";
@@ -58,6 +59,94 @@ namespace WpfCSCS
 
         static bool s_changingBoundVariable;
 
+        public static Dictionary<string, List<Variable>> DEFINES { get; set; } =
+                  new Dictionary<string, List<Variable>>();
+        public static Dictionary<string, Dictionary<string, bool>> s_varExists =
+            new Dictionary<string, Dictionary<string, bool>>();
+
+        public class SpecialObject : ScriptObject
+        {
+            static List<string> s_properties = new List<string> {
+            "Name", "Size", "Type", "Value", "Dec", "Array", "Up", "Dup"
+        };
+
+            public SpecialObject(string name, Variable value, string type = "", int size = 0, int dec = 3, bool up = false, Variable dup = null)
+            {
+                Name = name;
+                Value = value;
+                Type = type;
+                Size = size;
+                Dec = dec;
+                Up = up;
+                Dup = dup;
+            }
+
+            public string Name { get; set; }
+            public string Type { get; set; }
+            public int Size { get; set; }
+            public int Dec { get; set; }
+            public int Array { get; set; }
+            public bool Up { get; set; }
+            public Variable Value { get; set; }
+            public Variable Dup { get; set; }
+
+            public virtual List<string> GetProperties()
+            {
+                return s_properties;
+            }
+
+            public virtual Task<Variable> GetProperty(string sPropertyName, List<Variable> args = null, ParsingScript script = null)
+            {
+                sPropertyName = Variable.GetActualPropertyName(sPropertyName, GetProperties());
+                switch (sPropertyName)
+                {
+                    case "Name": return Task.FromResult(new Variable(Name));
+                    case "Size": return Task.FromResult(new Variable(Size));
+                    case "Type": return Task.FromResult(new Variable(Type));
+                    case "Dup": return Task.FromResult(Dup);
+                    case "Value": return Task.FromResult(Value);
+                    case "Array": return Task.FromResult(new Variable(Array));
+                    case "Dec": return Task.FromResult(new Variable(Dec));
+                    case "Up": return Task.FromResult(new Variable(Up));
+                    default:
+                        return Task.FromResult(Variable.EmptyInstance);
+                }
+            }
+
+            public virtual Task<Variable> SetProperty(string sPropertyName, Variable argValue)
+            {
+                sPropertyName = Variable.GetActualPropertyName(sPropertyName, GetProperties());
+                switch (sPropertyName)
+                {
+                    case "Name":
+                        Name = argValue.AsString();
+                        return Task.FromResult(argValue);
+                    case "Size":
+                        Size = argValue.AsInt();
+                        return Task.FromResult(argValue);
+                    case "Type":
+                        Type = argValue.AsString();
+                        return Task.FromResult(argValue);
+                    case "Array":
+                        Array = argValue.AsInt();
+                        return Task.FromResult(argValue);
+                    case "Dec":
+                        Dec = argValue.AsInt();
+                        return Task.FromResult(argValue);
+                    case "Up":
+                        Up = argValue.AsBool();
+                        return Task.FromResult(argValue);
+                    case "Dup":
+                        Dup = argValue;
+                        return Task.FromResult(argValue);
+                    case "Value":
+                        Value = argValue;
+                        return Task.FromResult(argValue);
+                    default: return Task.FromResult(Variable.EmptyInstance);
+                }
+            }
+        }
+
         public static void Init()
         {
             ParserFunction.RegisterFunction(Constants.MSG, new VariableArgsFunction(true));
@@ -65,6 +154,7 @@ namespace WpfCSCS
             ParserFunction.RegisterFunction(Constants.SET_OBJECT, new VariableArgsFunction(true));
             ParserFunction.RegisterFunction(Constants.CHAIN, new ChainFunction(false));
             ParserFunction.RegisterFunction(Constants.PARAM, new ChainFunction(true));
+            ParserFunction.RegisterFunction(Constants.QUIT, new QuitStatement());
 
             ParserFunction.RegisterFunction(Constants.WITH, new ConstantsFunction());
             ParserFunction.RegisterFunction(Constants.NEWRUNTIME, new ConstantsFunction());
@@ -125,23 +215,24 @@ namespace WpfCSCS
             }
         }
 
-        static void OnVariableChange(string name, Variable newValue, bool isGlobal)
+        static bool OnVariableChange(string name, Variable newValue, bool isGlobal)
         {
             if (s_changingBoundVariable)
             {
-                return;
+                return true;
             }
             var widgetName = name.ToLower();
             if (!s_boundVariables.TryGetValue(widgetName, out _))
             {
-                return;
+                return false;
             }
 
             var widget = GetWidget(widgetName);
             var text = newValue.AsString();
 
             SetTextWidgetFunction.SetText(widget, text);
-            s_boundVariables[widgetName] = newValue;            
+            s_boundVariables[widgetName] = newValue;
+            return true;
         }
 
         static void UpdateVariable(Control widget, string text)
@@ -452,11 +543,11 @@ namespace WpfCSCS
                 return;
             }
 
-            string clickAction      = widgetName + "@Clicked";
-            string preClickAction   = widgetName + "@PreClicked";
-            string postClickAction  = widgetName + "@PostClicked";
-            string keyDownAction    = widgetName + "@KeyDown";
-            string keyUpAction      = widgetName + "@KeyUp";
+            string clickAction = widgetName + "@Clicked";
+            string preClickAction = widgetName + "@PreClicked";
+            string postClickAction = widgetName + "@PostClicked";
+            string keyDownAction = widgetName + "@KeyDown";
+            string keyUpAction = widgetName + "@KeyUp";
             string textChangeAction = widgetName + "@TextChange";
             string mouseHoverAction = widgetName + "@MouseHover";
 
@@ -1210,15 +1301,10 @@ namespace WpfCSCS
                 canAdd = args[i].AsString().ToLower() == Constants.WITH;
                 if (!canAdd)
                 {
-                    chainName = args[i].AsString();
-                    paramsStr += chainName + ",";
+                    var parami = chainName = args[i].AsString();
+                    paramsStr += parami + ",";
                 }
             }
-
-            ParsingScript chainScript = IncludeFile.GetIncludeFileScript(tempScript, chainName);
-            chainScript.StackLevel = ParserFunction.AddStackLevel(chainScript.Filename);
-
-            s_parameters[chainScript.Filename] = parameters;
 
             if (newRuntime)
             {
@@ -1232,6 +1318,12 @@ namespace WpfCSCS
                 //return result;
                 return Variable.EmptyInstance;
             }
+
+            ParsingScript chainScript = IncludeFile.GetIncludeFileScript(tempScript, chainName);
+            chainScript.StackLevel = ParserFunction.AddStackLevel(chainScript.Filename);
+            chainScript.CurrentModule = chainName;
+
+            s_parameters[chainScript.Filename] = parameters;
 
             return RunTask(chainScript);
         }
@@ -1247,7 +1339,11 @@ namespace WpfCSCS
             }
             //}));
 
-            ParserFunction.PopLocalVariables(chainScript.StackLevel.Id);
+            if (!string.IsNullOrWhiteSpace(chainScript.CurrentModule))
+            {
+                throw new ArgumentException("Chained script finished without Quit statement.");
+            }
+
             return result;
         }
     }
@@ -1321,7 +1417,7 @@ namespace WpfCSCS
 
         protected override Variable Evaluate(ParsingScript script)
         {
-            var objectName = m_processFirstToken ? Utils.GetItem(script).AsString() : "";
+            var objectName = m_processFirstToken ? Utils.GetToken(script, Constants.NEXT_OR_END_ARRAY) : "";
             GetParameters(script);
 
             if (Name.ToUpper() == "MSG")
@@ -1333,12 +1429,21 @@ namespace WpfCSCS
             if (Name.ToUpper() == "DEFINE")
             {
                 string name = GetParameter("name");
-                double size = GetIntParameter("size");
-                string type = GetParameter("type");
-                double value = GetIntParameter("value");
-                string init = GetParameter("init");
-                Variable dup = GetVariableParameter("dup");
-                return new Variable(objectName);
+                CSCS_GUI.SpecialObject sp = new CSCS_GUI.SpecialObject(objectName, GetVariableParameter("value"), GetParameter("type"),
+                                                                       GetIntParameter("size"), GetIntParameter("dec"),
+                                                                       GetBoolParameter("up"), GetVariableParameter("dup"));
+                Variable newVar = new Variable(sp);
+                //RegisterFunction(objectName, new GetVarFunction(newVar), true);
+                AddGlobalOrLocalVariable(objectName, new GetVarFunction(newVar), script);
+                List<Variable> moduleVars;
+                if (!CSCS_GUI.DEFINES.TryGetValue(script.Filename, out moduleVars))
+                {
+                    moduleVars = new List<Variable>();
+                }
+                moduleVars.Add(newVar);
+                CSCS_GUI.DEFINES[script.Filename] = moduleVars;
+
+                return newVar;
             }
             if (Name.ToUpper() == "SET_OBJECT")
             {
@@ -1348,6 +1453,46 @@ namespace WpfCSCS
             }
 
             return new Variable(objectName);
+        }
+    }
+
+    class ReturnStatement : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            if (script.ProcessReturn())
+            {
+                return Variable.EmptyInstance;
+            }
+
+            script.MoveForwardIf(Constants.SPACE);
+            if (!script.FromPrev(Constants.RETURN.Length).Contains(Constants.RETURN))
+            {
+                script.Backward();
+            }
+            Variable result = Utils.GetItem(script);
+
+            if (string.IsNullOrWhiteSpace(script.CurrentModule))
+            {
+                script.SetDone();
+                result.IsReturn = true;
+            }
+
+            return result;
+        }
+    }
+    class QuitStatement : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            script.CurrentModule = "";
+            if (script.StackLevel != null)
+            {
+                ParserFunction.PopLocalVariables(script.StackLevel.Id);
+                script.StackLevel = null;
+            }
+
+            return Variable.EmptyInstance;
         }
     }
 }
