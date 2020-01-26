@@ -303,9 +303,14 @@ csfunction csharpCode(sender, load) {
     SetTextWidgetFunction.SetText(widget, text);
 
     ParserFunction.AddGlobal("counter", new GetVarFunction(new Variable(m_counter)));
+
+    Variable cscsVariable = Utils.GetVariable("cscsVariable");
+    Console.WriteLine("cscsVariable=" + cscsVariable.AsString());
 }
 
-function precompiled@Clicked(sender, load) {
+cscsVariable = "someValue";
+
+function precompiled@Clicked(sender, load) {  
   csharpCode(sender, load);
   print("counter=" + counter);
 }

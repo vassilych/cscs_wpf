@@ -473,8 +473,13 @@ namespace SplitAndMerge
             return token;
         }
 
-        public static Variable GetVariable(string varName, ParsingScript script, bool testNull = true)
+        public static Variable GetVariable(string varName, ParsingScript script = null, bool testNull = true)
         {
+            varName = varName.ToLower();
+            if (script == null)
+            {
+                script = new ParsingScript("");
+            }
             ParserFunction func = ParserFunction.GetVariable(varName, script);
             if (!testNull && func == null)
             {
