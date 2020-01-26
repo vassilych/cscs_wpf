@@ -25,11 +25,6 @@ namespace SplitAndMerge
     {
         protected override Variable Evaluate(ParsingScript script)
         {
-            if (script.ProcessReturn())
-            {
-                return Variable.EmptyInstance;
-            }
-
             script.MoveForwardIf(Constants.SPACE);
             if (!script.FromPrev(Constants.RETURN.Length).Contains(Constants.RETURN))
             {

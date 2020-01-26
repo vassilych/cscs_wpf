@@ -155,7 +155,9 @@ function button15@Clicked(sender, load) {
     return;
   }
   print("0. CHAIN, TOTAL_A exists: " + NameExists(TOTAL_A));
-  CHAIN "printPlugin.cscs" WITH "myGrid" "bla1"+"bla2" "bla3"    "bla4";
+
+  CHAIN "printPlugin.cscs" WITH "myGrid" "bla1"+"bla2" "bla3" "bla4";
+
   print("1. CHAIN, TOTAL_A exists: " + NameExists(TOTAL_A));
 }
 
@@ -283,19 +285,27 @@ function populateListView(data) {
   }
 }
 
+add_comp_namespace("using System.Diagnostics");
+add_comp_definition("int m_counter = 10");
 csfunction csharpCode(sender, load) {
     int a = 10;
     int b = 20;
     int c = a + b;
-    Console.WriteLine(c);
+    Console.WriteLine("c=" + c);
 
-    string widgetName = "precompiled";
-    string text = "lala";
+    Stopwatch x = new Stopwatch();
+
+    m_counter++;
+    string widgetName = "textbox1";
+    string text = "lala" + m_counter;
 
     var widget = CSCS_GUI.GetWidget(widgetName);
     SetTextWidgetFunction.SetText(widget, text);
+
+    ParserFunction.AddGlobal("counter", new GetVarFunction(new Variable(m_counter)));
 }
 
 function precompiled@Clicked(sender, load) {
   csharpCode(sender, load);
+  print("counter=" + counter);
 }
