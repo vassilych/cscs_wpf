@@ -4,8 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfCSCS"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="WPF App" Height="450" Width="800">
+        Title="WPF App" Height="450" Width="800"
+        >
+    <Window.Resources>
+        <sys:String x:Key="CSCS">../../scripts/start.cscs</sys:String>
+    </Window.Resources>
     <Grid>
         <TabControl HorizontalAlignment="Left" Height="450" VerticalAlignment="Top" Width="800">
             <TabItem Header="Settings">
