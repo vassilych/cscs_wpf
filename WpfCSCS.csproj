@@ -120,6 +120,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="scripts\guiFunctions.cscs" />
+    <None Include="scripts\helloWorld.cscs" />
     <None Include="scripts\printPlugin.cscs" />
     <None Include="scripts\start.cscs" />
     <None Include="scripts\wpfgui.cscs" />

@@ -1,0 +1,18 @@
+﻿comboItems = {"white", "green", "red", "yellow", "black", "pink", "violet", "brown", "blue", "cyan"};
+AddWidgetData(comboBGColors, comboItems);
+AddWidgetData(comboFGColors, comboItems);
+count = 0;
+
+function comboBGColors@SelectionChanged(sender, arg) {
+  SetBackgroundColor("buttonUpdater", arg);
+}
+function comboFGColors@SelectionChanged(sender, arg) {
+  SetForeGroundColor("buttonUpdater", arg);
+}
+function buttonUpdater@Clicked(sender, load) {
+   SetText("textArea", "Hello, World " + (++count));
+}
+function buttonQuestion@Clicked(sender, load) {
+  result = MessageBox("Do you like my app?", "My Great App", "YesNoCancel", "question");
+  SetText("labelAnswer", result);
+}

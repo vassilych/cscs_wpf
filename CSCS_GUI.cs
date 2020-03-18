@@ -51,6 +51,7 @@ namespace WpfCSCS
         static Dictionary<string, string> s_keyDownHandlers = new Dictionary<string, string>();
         static Dictionary<string, string> s_keyUpHandlers = new Dictionary<string, string>();
         static Dictionary<string, string> s_textChangedHandlers = new Dictionary<string, string>();
+        static Dictionary<string, string> s_selChangedHandlers = new Dictionary<string, string>();
         static Dictionary<string, string> s_mouseHoverHandlers = new Dictionary<string, string>();
 
         static Dictionary<string, Variable> s_boundVariables = new Dictionary<string, Variable>();
@@ -170,6 +171,8 @@ namespace WpfCSCS
             ParserFunction.RegisterFunction("AddWidgetData", new AddWidgetDataFunction());
             ParserFunction.RegisterFunction("SetWidgetOptions", new SetWidgetOptionsFunction());
             ParserFunction.RegisterFunction("GetSelected", new GetSelectedFunction());
+            ParserFunction.RegisterFunction("SetBackgroundColor", new SetColorFunction(true));
+            ParserFunction.RegisterFunction("SetForegroundColor", new SetColorFunction(false));
 
             ParserFunction.RegisterFunction("BindSQL", new BindSQLFunction());
             ParserFunction.RegisterFunction("MessageBox", new MessageBoxFunction());
@@ -332,6 +335,17 @@ namespace WpfCSCS
 
             return true;
         }
+        public static bool AddSelectionChangedHandler(string name, string action, Control widget)
+        {
+            var sel = widget as Selector;
+            if (sel == null)
+            {
+                return false;
+            }
+            s_selChangedHandlers[name] = action;
+            sel.SelectionChanged += new SelectionChangedEventHandler(Widget_SelectionChanged);
+            return true;
+        }
         public static bool AddMouseHoverHandler(string name, string action, Control widget)
         {
             s_mouseHoverHandlers[name] = action;
@@ -454,6 +468,17 @@ namespace WpfCSCS
             }
         }
 
+        private static void Widget_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Control widget = sender as Selector;
+            var widgetName = GetWidgetBindingName(widget);
+            if (s_selChangedHandlers.TryGetValue(widgetName, out string funcName))
+            {
+                var item = e.AddedItems.Count > 0 ? e.AddedItems[0].ToString() : e.RemovedItems.Count > 0 ? e.RemovedItems[0].ToString() : "";
+                CustomFunction.Run(funcName, new Variable(widgetName), new Variable(item));
+            }
+        }
+
         private static void Widget_Hover(object sender, MouseEventArgs e)
         {
             Control widget = sender as Control;
@@ -463,8 +488,7 @@ namespace WpfCSCS
                 return;
             }
 
-            string funcName;
-            if (s_mouseHoverHandlers.TryGetValue(widgetName, out funcName))
+            if (s_mouseHoverHandlers.TryGetValue(widgetName, out string funcName))
             {
                 CustomFunction.Run(funcName, new Variable(widgetName), new Variable(e.ToString()));
             }
@@ -550,6 +574,7 @@ namespace WpfCSCS
             string keyUpAction = widgetName + "@KeyUp";
             string textChangeAction = widgetName + "@TextChange";
             string mouseHoverAction = widgetName + "@MouseHover";
+            string selectionChangedAction = widgetName + "@SelectionChanged";
 
             AddActionHandler(widgetName, clickAction, widget);
             AddPreActionHandler(widgetName, preClickAction, widget);
@@ -557,6 +582,7 @@ namespace WpfCSCS
             AddKeyDownHandler(widgetName, keyDownAction, widget);
             AddKeyUpHandler(widgetName, keyUpAction, widget);
             AddTextChangedHandler(widgetName, textChangeAction, widget);
+            AddSelectionChangedHandler(widgetName, selectionChangedAction, widget);
             AddMouseHoverHandler(widgetName, mouseHoverAction, widget);
             AddBinding(widgetName, widget);
         }
@@ -1150,7 +1176,9 @@ namespace WpfCSCS
                 case "snow": return Colors.Snow;
                 case "violet": return Colors.Violet;
             }
-            return Colors.Black;
+
+            var color = (Color)ColorConverter.ConvertFromString(strColor);
+            return color;
         }
     }
 
@@ -1197,6 +1225,43 @@ namespace WpfCSCS
             var fileName = saveFile.FileName;
             File.WriteAllText(fileName, text);
             return new Variable(fileName);
+        }
+    }
+
+    class SetColorFunction : ParserFunction
+    {
+        bool m_bgColor;
+
+        public SetColorFunction(bool bgcolor)
+        {
+            m_bgColor = bgcolor;
+        }
+
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            var widgetName = Utils.GetSafeString(args, 0);
+            var colorName = Utils.GetSafeString(args, 1);
+            var widget = CSCS_GUI.GetWidget(widgetName);
+            if (widget == null)
+            {
+                return Variable.EmptyInstance;
+            }
+
+            var color = SetWidgetOptionsFunction.StringToColor(colorName);
+            SolidColorBrush brush = new SolidColorBrush(color);
+
+            if (m_bgColor)
+            {
+                widget.Background = brush;
+            }
+            else
+            {
+                widget.Foreground = brush;
+            }
+            return new Variable(true);
         }
     }
     class ShowHideWidgetFunction : ParserFunction
@@ -1302,7 +1367,7 @@ namespace WpfCSCS
                 if (!canAdd)
                 {
                     var parami = chainName = args[i].AsString();
-                    paramsStr += parami + ",";
+                    paramsStr += parami + " ";
                 }
             }
 
