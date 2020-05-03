@@ -1,6 +1,6 @@
 includes("guiFunctions.cscs");
 
-title = "My Great Nevio App";
+title = "My Great App";
 
 answerLabel = "label1";
 width = 90;
@@ -15,12 +15,11 @@ refresh = true;
 SetText("checkBox1", refresh);
 c = 0;
 
-comboItems = {"zero", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez"};
+comboItems = {"AT", "BE", "BG", "CH", "CZ", "DE", "ES", "GR", "HR", "HU", "FR", "IT", "LU", "NL", "PL", "PT", "SK", "UK"};
 AddWidgetData(comboBox1, comboItems);
-//SetText("comboBox1", "cinco");
+SetText("comboBox1", "HR");
 
-SetText("comboBox1",  "uno") ;
-SetText("button13",  "Refresh") ;
+SetText("buttonRefresh",  "Refresh") ;
 SetText("button1",  "Open File") ;
 SetText("button2",  "Save File") ;
 SetText("button3",  "Message Box") ;
@@ -32,3 +31,5 @@ SetWidgetOptions("myGrid", "colors", "green", "white");
 globalVar = "cuatro";
 
 BindSQL("myGrid", "Users");
+
+CheckVATNumber("26389058739");

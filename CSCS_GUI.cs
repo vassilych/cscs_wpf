@@ -18,6 +18,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Net;
 
 namespace SplitAndMerge
 {
@@ -180,6 +181,10 @@ namespace WpfCSCS
 
             ParserFunction.RegisterFunction("RunOnMain", new RunOnMainFunction());
             ParserFunction.RegisterFunction("RunExec", new RunExecFunction());
+
+            ParserFunction.RegisterFunction("CheckVATNumber", new CheckVATFunction());
+            ParserFunction.RegisterFunction("GetVATName", new CheckVATFunction(CheckVATFunction.MODE.NAME));
+            ParserFunction.RegisterFunction("GetVATAddress", new CheckVATFunction(CheckVATFunction.MODE.ADDRESS));
 
             Constants.FUNCT_WITH_SPACE.Add("SetText");
             Constants.FUNCT_WITH_SPACE.Add(Constants.DEFINE);
@@ -1558,6 +1563,105 @@ namespace WpfCSCS
             }
 
             return Variable.EmptyInstance;
+        }
+    }
+    internal class CheckVATFunction : ParserFunction
+    {
+        internal enum MODE { CHECK, NAME, ADDRESS};
+
+        static string s_request = @"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:urn=""urn:ec.europa.eu:taxud:vies:services:checkVat:types"">
+                          <soapenv:Header/><soapenv:Body><urn:checkVat>
+                            <urn:countryCode>COUNTRY</urn:countryCode>
+                            <urn:vatNumber>VATNUMBER</urn:vatNumber>
+                          </urn:checkVat></soapenv:Body></soapenv:Envelope>";
+        static Dictionary<string, string> s_cache = new Dictionary<string, string>();
+        MODE m_mode;
+
+        internal CheckVATFunction(MODE mode = MODE.CHECK)
+        {
+            m_mode = mode;
+        }
+
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            string vat = args[0].AsString();
+            string country = Utils.GetSafeString(args, 1, "HR");
+            /*string callBack = Utils.GetSafeString(args, 2);
+
+            CustomFunction callbackFunction = ParserFunction.GetFunction(callBack, null) as CustomFunction;
+            if (callbackFunction == null)
+            {
+                throw new ArgumentException("Error: Couldn't find function [" + callBack + "]");
+            }*/
+
+            CacheVAT(vat, country);
+            switch (m_mode)
+            {
+                case MODE.CHECK:
+                    return new Variable(s_cache[vat + "valid"] == "true");
+                case MODE.ADDRESS:
+                    return new Variable(s_cache[vat + "address"]);
+                case MODE.NAME:
+                    return new Variable(s_cache[vat + "name"]);
+            }
+
+            return Variable.EmptyInstance; ;
+        }
+
+        static string ExtractTag(string xml, string tag)
+        {
+            var start = xml.IndexOf("<" + tag + ">");
+            if (start < 0)
+            {
+                return "";
+            }
+            var wordStart = start + tag.Length + 2;
+            var end = xml.IndexOf("</" + tag + ">", wordStart);
+            if (end < 0)
+            {
+                return "";
+            }
+            var result = xml.Substring(wordStart, end - wordStart);
+            return result;
+        }
+
+        internal static void CacheVAT(string vat, string country)
+        {
+            if (s_cache.TryGetValue(vat + "name", out string name) && !string.IsNullOrEmpty(name))
+            {
+                return;
+            }
+
+            s_cache[vat + "valid"]   = "false";
+            s_cache[vat + "name"]    = "";
+            s_cache[vat + "address"] = "";
+
+            var wc = new WebClient();
+            var request = s_request.Replace("COUNTRY", country).Replace("VATNUMBER", vat);
+
+            string response = "";
+            try
+            {
+                response = wc.UploadString("http://ec.europa.eu/taxation_customs/vies/services/checkVatService", request);
+            }
+            catch(Exception exc)
+            {
+                s_cache[vat + "name"] = exc.Message;
+                return;
+            }
+
+            //<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><checkVatResponse xmlns="urn:ec.europa.eu:taxud:vies:services:checkVat:types"><countryCode>HR</countryCode><vatNumber>26389058739</vatNumber><requestDate>2020-05-01+02:00</requestDate><valid>true</valid>
+            //<name>AURA SOFT D.O.O.</name><address>KAPETANA LAZARIÄ†A 1 D, PAZIN, 52000 PAZIN</address></checkVatResponse></soap:Body></soap:Envelope>
+            var validTag = ExtractTag(response, "valid");
+            if (validTag == "true")
+            {
+                s_cache[vat + "valid"]   = validTag;
+                s_cache[vat + "name"]    = ExtractTag(response, "name");
+                s_cache[vat + "address"] = ExtractTag(response, "address");
+            }            
         }
     }
 }

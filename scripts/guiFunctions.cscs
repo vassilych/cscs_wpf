@@ -32,7 +32,7 @@ function button4@Clicked(sender, load) {
     return;
   }
   argb = PickColor();
-  setColor(sender, argb);
+  SetForegroundColor(sender, argb);
 }
 
 function button5@Clicked(sender, load) {
@@ -74,7 +74,7 @@ function button8@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
-  CHAIN "WpfCSCS.exe" "wpfgui.cscs" NEWRUNTIME WITH "myGrid" "bla1"+"bla2" "bla3"    "bla4";
+  CHAIN "WpfCSCS.exe" "../MainWindow.xaml" NEWRUNTIME WITH "myGrid" "bla1"+"bla2" "bla3"    "bla4";
 }
 
 function button8@PreClicked(sender, load) {
@@ -119,14 +119,11 @@ function button11@Clicked(sender, load) {
   RemoveTab(text);
 }
 
-function button12@Clicked(sender, load) {
+function buttonAddData@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
-  data  = {GetText("textBox4").Trim(), GetText("textBox5").Trim(), GetText("textBox6").Trim()};
-  //data2 = {GetText("textBox4")+"X", GetText("textBox5")+"9", GetText("textBox6")+"A"};
-  //data3 = {GetText("textBox4")+"YY", GetText("textBox5")+"99", GetText("textBox6")+"BB"};
-  //data = { data, data2, data3 }
+  data  = {GetText("textName").Trim(), GetText("textSalary").Trim(), GetText("textEmail").Trim()};
   if (data[0] == "" || data[1] == "" || data[2] == "") {
     MessageBox("Please fill out all fields", title, "OK", "warning");
 	return;
@@ -134,20 +131,47 @@ function button12@Clicked(sender, load) {
   try {
     result = SQLInsert("Users", "Name,Salary,Email", data);
 	MessageBox("Inserted " + result + " row(s).", title, "OK", "info");
-    button13@Clicked(sender, "");
+    buttonRefresh@Clicked(sender, "");
   } catch (exc) {
     MessageBox(exc, title, "Cancel", "error");
   }
 }
 
-function button13@Clicked(sender, load) {
+function buttonRefresh@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
   BindSQL("myGrid", "Users");
-  //query = "SELECT TOP 15 * FROM Users where id <= 100";
-  //results = SQLQuery(query);
-  //populateListView(results);
+
+  query = "SELECT TOP 15 * FROM Users " +
+           "where id <= 100";
+  print(SQLQuery(query));
+
+}
+
+function checkVat@Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  country = GetText("combobox1");
+  code = GetText("textbox1");
+
+  valid   = CheckVATNumber(code, country);
+  name    = GetVATName(code, country);
+  address = GetVATAddress(code, country);
+  print("checkVat: " + code + " " + country + ": " + valid + " (" + name + ", " + address + ")");
+
+  if (valid) {
+    SetText("vatStatus", name);
+    SetText("vatAddress", address);
+    SetForegroundColor("vatStatus", "green");
+    SetForegroundColor("vatAddress", "green");
+  } else {
+    SetText("vatStatus", "Not validated");
+    SetText("vatAddress", name);
+    SetForegroundColor("vatStatus", "red");
+    SetForegroundColor("vatAddress", "red");
+  }  
 }
 
 function button15@Clicked(sender, load) {
@@ -161,7 +185,7 @@ function button15@Clicked(sender, load) {
   print("1. CHAIN, TOTAL_A exists: " + NameExists(TOTAL_A));
 }
 
-function button14@Clicked(sender, load) {
+function buttonDeleteData@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
@@ -170,13 +194,12 @@ function button14@Clicked(sender, load) {
     MessageBox("Nothing has been selected.", title, "OK", "warning");
 	return;
   }
-  i = 0;
+  deleted = 0;
   for (row : selected) {
-    row = selected[i++];
-    SQLNonQuery("Delete from Users where id=" + row);
+    deleted += SQLNonQuery("Delete from Users where id=" + row);
   }
-  MessageBox("Deleted " + i + " row(s).", title, "OK", "info");
-  button13@Clicked(sender, "");
+  MessageBox("Deleted " + deleted + " row(s).", title, "OK", "info");
+  buttonRefresh@Clicked(sender, "");
 }
 
 clicks = 0;

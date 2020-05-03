@@ -21,8 +21,6 @@ namespace WpfCSCS
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static Window TheWindow { get; private set; }
-
         public MainWindow()
         {
             InitializeComponent();
@@ -31,21 +29,23 @@ namespace WpfCSCS
 
         void MainView_Loaded(object sender, RoutedEventArgs e)
         {           
-            TheWindow = Window.GetWindow(this);
-            var parent = VisualTreeHelper.GetParent(this);
-            Window parentWindow = Window.GetWindow(this);
-
             CSCS_SQL.Init();
             CSCS_GUI.MainWindow = this;
 
-            string[] cmdArgs = Environment.GetCommandLineArgs();
-            if (cmdArgs.Length <= 1)
+            var res = this.Resources;
+            var cscsScript = (string)res["CSCS"];
+
+            Console.WriteLine("Running CSCS script: " + cscsScript);
+            CSCS_GUI.RunScript(cscsScript);
+
+            /*string[] cmdArgs = Environment.GetCommandLineArgs();
+            if (cmdArgs.Length <= 2)
             {
-                CSCS_GUI.RunScript("../../scripts/start.cscs");
+                CSCS_GUI.RunScript(cscsScript);
                 return;
             }
 
-            var cmdLineParams = cmdArgs[1].Split(new char[] { ',' });
+            var cmdLineParams = cmdArgs[2].Split(new char[] { ',' });
             var scriptName = cmdLineParams[0];
             /*string msg = "StartArgs:";
             for (int i = 0; i < cmdArgs.Length; i++)
@@ -55,7 +55,7 @@ namespace WpfCSCS
             msg += " Script: [" + scriptName + "]";
             MessageBox.Show(msg, cmdArgs.Length + " args", MessageBoxButton.OK, MessageBoxImage.Asterisk);*/
 
-            CSCS_GUI.RunScript("../../scripts/" + scriptName);
+            //CSCS_GUI.RunScript("../../scripts/" + scriptName);
         }
     }
 }

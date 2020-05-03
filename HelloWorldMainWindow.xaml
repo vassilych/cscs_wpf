@@ -1,0 +1,38 @@
+﻿<Window x:Class="WpfCSCS.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfCSCS"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        Title="WPF App" Height="268.4" Width="591.2"
+        >
+    <Window.Resources>
+        <sys:String x:Key="CSCS">../../scripts/start.cscs</sys:String>
+    </Window.Resources>
+    <Grid>
+        <TabControl HorizontalAlignment="Left" Height="450" VerticalAlignment="Top" Width="800">
+            <TabItem Header="Hello, World!">
+                <Grid Background="#FFE5E5E5" Margin="-281,-9,-115.6,-195.4" HorizontalAlignment="Right" Width="1191" RenderTransformOrigin="0.5,0.471">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="85*"/>
+                        <ColumnDefinition Width="13*"/>
+                        <ColumnDefinition Width="24*"/>
+                        <ColumnDefinition Width="1059*"/>
+                    </Grid.ColumnDefinitions>
+                    <ComboBox Grid.Column="4" HorizontalAlignment="Left" Margin="303,25,0,0" VerticalAlignment="Top" Width="120" Name="combobox1" DataContext="comboBGColors"/>
+                    <Label Content="" Grid.Column="4" HorizontalAlignment="Left" Margin="227,99,0,0" VerticalAlignment="Top" Name="label1" RenderTransformOrigin="-1.01,0.906" Width="82" Height="25" DataContext="labelAnswer"/>
+                    <Button Content="Question" Grid.Column="4" HorizontalAlignment="Left" Margin="227,169,0,0" VerticalAlignment="Top" Width="82" Name="button3" DataContext="buttonQuestion"/>
+                    <TextBox Grid.Column="4" HorizontalAlignment="Left" Height="23" Margin="440,99,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="179" Name="textbox1" DataContext="textArea"/>
+                    <Button Content="Updater" Grid.Column="4" HorizontalAlignment="Left" Margin="328,99,0,0" VerticalAlignment="Top" Width="95"  Name ="button18" DataContext="buttonUpdater"/>
+                    <ComboBox Grid.Column="4" HorizontalAlignment="Left" Margin="512,25,0,0" VerticalAlignment="Top" Width="120" x:Name="combobox2" DataContext="comboFGColors"/>
+                    <Label Content="Background:" Grid.Column="4" HorizontalAlignment="Left" Margin="227,22,0,0" VerticalAlignment="Top" x:Name="label1_Copy" RenderTransformOrigin="-1.01,0.906" Width="82" Height="25" DataContext="label1"/>
+                    <Label Content="Foreground:" Grid.Column="4" HorizontalAlignment="Left" Margin="440,22,0,0" VerticalAlignment="Top" x:Name="label1_Copy1" RenderTransformOrigin="-1.01,0.906" Width="82" Height="25" DataContext="label1"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+    </Grid>
+</Window>
