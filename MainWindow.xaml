@@ -26,7 +26,7 @@
                     <Button Content="New File" HorizontalAlignment="Left" Margin="84.6,81,0,0" VerticalAlignment="Top" Width="75" Name="button2" Grid.ColumnSpan="4" Grid.Column="1" DataContext="button2"/>
                     <CheckBox Content="Refresh" Grid.Column="4" HorizontalAlignment="Left" Margin="342,25,0,0" VerticalAlignment="Top" Name="checkbox1" DataContext="checkbox1"/>
                     <ComboBox Grid.Column="4" HorizontalAlignment="Left" Margin="499,25,0,0" VerticalAlignment="Top" Width="120" Name="combobox1" DataContext="combobox1"/>
-                    <Label Content="Label" Grid.Column="4" HorizontalAlignment="Left" Margin="91,104,0,0" VerticalAlignment="Top" Name="label1" RenderTransformOrigin="-1.01,0.906" Width="360" Height="180" DataContext="label1"/>
+                    <Label Content="Label" Grid.Column="4" HorizontalAlignment="Left" Margin="91,121,0,0" VerticalAlignment="Top" Name="label1" RenderTransformOrigin="-1.01,0.906" Width="360" Height="163" DataContext="label1"/>
                     <Button Content="Button" Grid.Column="4" HorizontalAlignment="Left" Margin="233,25,0,0" VerticalAlignment="Top" Width="75" Name="button3" DataContext="button3"/>
                     <TextBox Grid.Column="4" HorizontalAlignment="Left" Height="23" Margin="330,100,0,0" TextWrapping="Wrap" Text="26389058739" VerticalAlignment="Top" Width="126" Name="textbox1" DataContext="textbox1"/>
                     <Button Content="New Instance" Grid.Column="4" HorizontalAlignment="Left" Margin="524,284,0,0" VerticalAlignment="Top" Width="95" Name ="button8" DataContext="button8"/>
@@ -37,6 +37,11 @@
                     <Button Content="Check VAT" Grid.Column="4" HorizontalAlignment="Left" Margin="464,102,0,0" VerticalAlignment="Top" Width="79"  DataContext="checkVat"/>
                     <Label Content="" Grid.Column="4" HorizontalAlignment="Left" Margin="334,129,0,0" VerticalAlignment="Top" Width="315" DataContext="vatStatus"/>
                     <Label Content="" Grid.Column="4" HorizontalAlignment="Left" Margin="334,156,0,0" VerticalAlignment="Top" Width="315" DataContext="vatAddress"/>
+                    <Button Content="New" Grid.Column="4" HorizontalAlignment="Left" Margin="564,102,0,0" VerticalAlignment="Top" Width="75" DataContext="newWindow"/>
+                    <Button Content="Delete" Grid.Column="4" HorizontalAlignment="Left" Margin="564,126,0,0" VerticalAlignment="Top" Width="75" DataContext="deleteWindow"/>
+                    <Button Content="Show" Grid.Column="4" HorizontalAlignment="Left" Margin="564,150,0,0" VerticalAlignment="Top" Width="75" DataContext="showWindow"/>
+                    <Button Content="Hide" Grid.Column="4" HorizontalAlignment="Left" Margin="564,174,0,0" VerticalAlignment="Top" Width="75" DataContext="hideWindow" RenderTransformOrigin="0.635,2.656"/>
+                    <Button Content="Next" Grid.Column="4" HorizontalAlignment="Left" Margin="564,198,0,0" VerticalAlignment="Top" Width="75" DataContext="nextWindow"/>
                 </Grid>
             </TabItem>
             <TabItem Header="SQL Tests">

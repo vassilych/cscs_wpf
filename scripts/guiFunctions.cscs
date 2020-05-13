@@ -171,9 +171,63 @@ function checkVat@Clicked(sender, load) {
     SetText("vatAddress", name);
     SetForegroundColor("vatStatus", "red");
     SetForegroundColor("vatAddress", "red");
-  }  
+  }
 }
 
+function newWindow@Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  windowName = GetText("textbox1");
+  try {
+    win = CreateWindow(windowName);
+    label1 = "Created window: " + win;
+  } catch (exc) {
+    MessageBox(exc, title, "OK", "error");
+  }
+}
+function deleteWindow@Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  windowName = GetText("textbox1");
+  try {
+    win = DeleteWindow(windowName);
+    label1 = "Deleted window: " + win;
+  } catch (exc) {
+    MessageBox(exc, title, "OK", "error");
+  }
+}
+function showWindow@Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  windowName = GetText("textbox1");
+  try {
+    win = ShowWindow(windowName);
+    label1 = "Showed window: " + win;
+  } catch (exc) {
+    MessageBox(exc, title, "OK", "error");
+  }
+}
+function hideWindow@Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  windowName = GetText("textbox1");
+  try {
+    win = HideWindow(windowName);
+    label1 = "Hided window: " + win;
+  } catch (exc) {
+    MessageBox(exc, title, "OK", "error");
+  }
+}
+function nextWindow@Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  NextWindow();
+}
 function button15@Clicked(sender, load) {
   if (!refresh) {
     return;

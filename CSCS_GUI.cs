@@ -186,6 +186,12 @@ namespace WpfCSCS
             ParserFunction.RegisterFunction("GetVATName", new CheckVATFunction(CheckVATFunction.MODE.NAME));
             ParserFunction.RegisterFunction("GetVATAddress", new CheckVATFunction(CheckVATFunction.MODE.ADDRESS));
 
+            ParserFunction.RegisterFunction("CreateWindow", new NewWindowFunction(NewWindowFunction.MODE.NEW));
+            ParserFunction.RegisterFunction("DeleteWindow", new NewWindowFunction(NewWindowFunction.MODE.DELETE));
+            ParserFunction.RegisterFunction("ShowWindow", new NewWindowFunction(NewWindowFunction.MODE.SHOW));
+            ParserFunction.RegisterFunction("HideWindow", new NewWindowFunction(NewWindowFunction.MODE.HIDE));
+            ParserFunction.RegisterFunction("NextWindow", new NewWindowFunction(NewWindowFunction.MODE.NEXT));
+
             Constants.FUNCT_WITH_SPACE.Add("SetText");
             Constants.FUNCT_WITH_SPACE.Add(Constants.DEFINE);
             Constants.FUNCT_WITH_SPACE.Add(Constants.MSG);
@@ -1565,6 +1571,121 @@ namespace WpfCSCS
             return Variable.EmptyInstance;
         }
     }
+
+    class NewWindowFunction : ParserFunction
+    {
+        static string ns = "WpfCSCS.";
+
+        static Dictionary<string, Window> s_windows = new Dictionary<string, Window>();
+        static Dictionary<string, string> s_windowType = new Dictionary<string, string>();
+
+        static int s_currentWindow = -1;
+
+        internal enum MODE { NEW, SHOW, HIDE, DELETE, NEXT };
+        MODE m_mode;
+
+        internal NewWindowFunction(MODE mode = MODE.NEW)
+        {
+            m_mode = mode;
+        }
+
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+
+            if (m_mode == MODE.NEXT)
+            {
+                HideAll();
+                var windows = s_windows.Values.ToArray();
+                if (windows.Length > 0)
+                {
+                    if (++s_currentWindow > windows.Length - 1)
+                    {
+                        s_currentWindow = 0;
+                    }
+                    windows[s_currentWindow].Show();
+                }
+                return new Variable(s_currentWindow);
+            }
+
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            string instanceName = args[0].AsString();
+            if(!instanceName.StartsWith(ns))
+            {
+                instanceName = ns + instanceName;
+            }
+
+            if (m_mode == MODE.NEW)
+            {
+                var newInstance = GetInstance(instanceName) as Window;
+                if (newInstance == null)
+                {
+                    throw new ArgumentException("Couldn't create window [" + instanceName + "]");
+                }
+
+                Random rnd = new Random();
+                var inst = instanceName + rnd.Next(1000);
+                s_windows[inst] = newInstance;
+                s_windowType[instanceName] = inst;
+                newInstance.Show();
+                s_currentWindow = 0;
+                return new Variable(inst);
+            }
+
+            Window wind = null;
+            if (!s_windows.TryGetValue(instanceName, out wind))
+            {
+                if (!s_windowType.TryGetValue(instanceName, out string windName) ||
+                    !s_windows.TryGetValue(windName, out wind))
+                {
+                    throw new ArgumentException("Couldn't find window [" + instanceName + "]");
+                }
+            }
+
+            if (m_mode == MODE.HIDE)
+            {
+                wind.Hide();
+            }
+            else if (m_mode == MODE.SHOW)
+            {
+                wind.Show();
+            }
+            else if (m_mode == MODE.DELETE)
+            {
+                wind.Close();
+                s_windows.Remove(instanceName);
+            }
+
+            return new Variable(instanceName);
+        }
+
+        static void HideAll()
+        {
+            foreach (var item in s_windows)
+            {
+                item.Value.Hide();
+            }
+        }
+        static void ShowAll()
+        {
+            foreach (var item in s_windows)
+            {
+                item.Value.Show();
+            }
+        }
+
+        static object GetInstance(string strFullyQualifiedName)
+        {
+            Type t = Type.GetType(strFullyQualifiedName);
+            if (t == null)
+            {
+                return null;
+            }
+            return Activator.CreateInstance(t);
+        }
+    }
+
     internal class CheckVATFunction : ParserFunction
     {
         internal enum MODE { CHECK, NAME, ADDRESS};
@@ -1663,5 +1784,7 @@ namespace WpfCSCS
                 s_cache[vat + "address"] = ExtractTag(response, "address");
             }            
         }
+
+
     }
 }
