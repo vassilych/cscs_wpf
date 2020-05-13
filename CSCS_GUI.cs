@@ -1646,6 +1646,7 @@ namespace WpfCSCS
                 {
                     throw new ArgumentException("Couldn't find window [" + instanceName + "]");
                 }
+                instanceName = windName;
             }
 
             if (m_mode == MODE.HIDE)
@@ -1695,7 +1696,8 @@ namespace WpfCSCS
     {
         internal enum MODE { CHECK, NAME, ADDRESS};
 
-        static string s_request = @"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:urn=""urn:ec.europa.eu:taxud:vies:services:checkVat:types"">
+        static string s_request = @"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" 
+                                                      xmlns:urn=""urn:ec.europa.eu:taxud:vies:services:checkVat:types"">
                           <soapenv:Header/><soapenv:Body><urn:checkVat>
                             <urn:countryCode>COUNTRY</urn:countryCode>
                             <urn:vatNumber>VATNUMBER</urn:vatNumber>
