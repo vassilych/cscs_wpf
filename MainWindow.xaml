@@ -28,9 +28,9 @@
                     <ComboBox Grid.Column="4" HorizontalAlignment="Left" Margin="499,25,0,0" VerticalAlignment="Top" Width="120" Name="combobox1" DataContext="combobox1"/>
                     <Label Content="Label" Grid.Column="4" HorizontalAlignment="Left" Margin="91,121,0,0" VerticalAlignment="Top" Name="label1" RenderTransformOrigin="-1.01,0.906" Width="360" Height="163" DataContext="label1"/>
                     <Button Content="Button" Grid.Column="4" HorizontalAlignment="Left" Margin="233,25,0,0" VerticalAlignment="Top" Width="75" Name="button3" DataContext="button3"/>
-                    <TextBox Grid.Column="4" HorizontalAlignment="Left" Height="23" Margin="330,100,0,0" TextWrapping="Wrap" Text="26389058739" VerticalAlignment="Top" Width="126" Name="textbox1" DataContext="textbox1"/>
+                    <TextBox Grid.Column="4" HorizontalAlignment="Left" Height="23" Margin="234,100,0,0" TextWrapping="Wrap" Text="../../scripts/Window4.xaml" VerticalAlignment="Top" Width="222" Name="textbox1" DataContext="textbox1"/>
                     <Button Content="New Instance" Grid.Column="4" HorizontalAlignment="Left" Margin="524,284,0,0" VerticalAlignment="Top" Width="95" Name ="button8" DataContext="button8"/>
-                    <Button Content="Updater" Grid.Column="4" HorizontalAlignment="Left" Margin="213,102,0,0" VerticalAlignment="Top" Width="95"  Name ="button18" DataContext="button18"/>
+                    <Button Content="Updater" Grid.Column="4" HorizontalAlignment="Left" Margin="105,102,0,0" VerticalAlignment="Top" Width="95"  Name ="button18" DataContext="button18"/>
                     <Button Content="Button" Grid.Column="4" HorizontalAlignment="Left" Margin="254,284,0,0" VerticalAlignment="Top" Width="125" Name="myNewButton" DataContext="myNewButton"/>
                     <Label Content="My Value" Grid.Column="4" HorizontalAlignment="Left" Margin="499,342,0,0" VerticalAlignment="Top" Name="myLabel"/>
                     <Button Grid.ColumnSpan="4" Content="Precompiled" Grid.Column="1" HorizontalAlignment="Left" Margin="84.6,342,0,0" VerticalAlignment="Top" Width="75" Name="precompiled" DataContext="precompiled"/>

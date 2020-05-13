@@ -1,1 +1,3 @@
+StartDebugger();
 includes("wpfgui.cscs");
+//include("helloWorld.cscs");

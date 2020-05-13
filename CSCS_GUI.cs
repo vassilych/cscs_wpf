@@ -19,6 +19,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Net;
+using System.Xml;
 
 namespace SplitAndMerge
 {
@@ -203,7 +204,7 @@ namespace WpfCSCS
 
             Interpreter.Instance.OnOutput += Print;
             ParserFunction.OnVariableChange += OnVariableChange;
-            AddActions();
+            AddActions(MainWindow);
 
             Precompiler.AddNamespace("using WpfCSCS;");
             Precompiler.AddNamespace("using System.Windows;");
@@ -219,14 +220,6 @@ namespace WpfCSCS
         {
             var widgetName = widget == null || widget.DataContext == null ? "" : widget.DataContext.ToString();
             return widgetName;
-        }
-
-        static void CacheControl(Control widget)
-        {
-            if (widget != null && widget.DataContext != null)
-            {
-                Controls[widget.DataContext.ToString().ToLower()] = widget;
-            }
         }
 
         static bool OnVariableChange(string name, Variable newValue, bool isGlobal)
@@ -267,12 +260,12 @@ namespace WpfCSCS
             System.Diagnostics.Trace.WriteLine(e.Output);
         }
 
-        public static void AddActions()
+        public static void AddActions(Window win, bool force = false)
         {
-            CacheControls();
-            foreach (KeyValuePair<string, Control> entry in Controls)
+            var controls = CacheControls(win, force);
+            foreach (var entry in controls)
             {
-                AddActions(entry.Value);
+                AddActions(entry);
             }
         }
 
@@ -507,7 +500,7 @@ namespace WpfCSCS
 
         public static Control GetWidget(string name)
         {
-            CacheControls();
+            CacheControls(MainWindow);
             Control control;
             if (Controls.TryGetValue(name.ToLower(), out control))
             {
@@ -516,14 +509,16 @@ namespace WpfCSCS
             return null;
         }
 
-        public static void CacheControls(bool force = false)
+        public static List<Control> CacheControls(Window win, bool force = false)
         {
-            if ((!force && Controls.Count > 0) || MainWindow == null)
+            List<Control> controls = new List<Control>();
+
+            if ((!force && Controls.Count > 0) || win == null)
             {
-                return;
+                return controls;
             }
 
-            Grid content = MainWindow.Content as Grid;
+            Grid content = win.Content as Grid;
             var children = content.Children;
             foreach (var child in children)
             {
@@ -554,7 +549,7 @@ namespace WpfCSCS
                                             var content2 = tabItem.Content as Grid;
                                             foreach (var child2 in content2.Children)
                                             {
-                                                CacheControl(child2 as Control);
+                                                CacheControl(child2 as Control, controls);
                                             }
                                         }
                                     }
@@ -565,8 +560,18 @@ namespace WpfCSCS
                 }
                 else
                 {
-                    CacheControl(child as Control);
+                    CacheControl(child as Control, controls);
                 }
+            }
+            return controls;
+        }
+
+        static void CacheControl(Control widget, List<Control> controls)
+        {
+            if (widget != null && widget.DataContext != null)
+            {
+                Controls[widget.DataContext.ToString().ToLower()] = widget;
+                controls.Add(widget);
             }
         }
 
@@ -1609,23 +1614,23 @@ namespace WpfCSCS
             }
 
             Utils.CheckArgs(args.Count, 1, m_name);
-
             string instanceName = args[0].AsString();
-            if(!instanceName.StartsWith(ns))
-            {
-                instanceName = ns + instanceName;
-            }
+            // ../../scripts/Window4.xaml
 
             if (m_mode == MODE.NEW)
             {
-                var newInstance = GetInstance(instanceName) as Window;
+                var text = File.ReadAllText(instanceName);
+                XmlReader xmlReader = XmlReader.Create(new StringReader(text));
+                var newInstance = System.Windows.Markup.XamlReader.Load(xmlReader) as Window;
                 if (newInstance == null)
                 {
                     throw new ArgumentException("Couldn't create window [" + instanceName + "]");
                 }
 
+                CSCS_GUI.AddActions(newInstance, true);
+
                 Random rnd = new Random();
-                var inst = instanceName + rnd.Next(1000);
+                var inst = instanceName + "_" + rnd.Next(1000);
                 s_windows[inst] = newInstance;
                 s_windowType[instanceName] = inst;
                 newInstance.Show();
@@ -1708,7 +1713,7 @@ namespace WpfCSCS
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 1, m_name);
 
-            string vat = args[0].AsString();
+            string vat = args[0].AsString(); // 26389058739
             string country = Utils.GetSafeString(args, 1, "HR");
             /*string callBack = Utils.GetSafeString(args, 2);
 

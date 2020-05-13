@@ -18,6 +18,19 @@ function button2@Clicked(sender, load) {
   SetText(answerLabel, "Save: " + data);
 }
 
+function Window1Button@Clicked(sender, load) {
+  Window4Button@Clicked(sender, load);
+}
+function Window2Button@Clicked(sender, load) {
+  Window4Button@Clicked(sender, load);
+}
+function Window3Button@Clicked(sender, load) {
+  Window4Button@Clicked(sender, load);
+}
+function Window4Button@Clicked(sender, load) {
+  result = MessageBox("Hello from " + sender, title, "OK", "info");
+}
+
 function button3@Clicked(sender, load) {
   if (!refresh) {
     return;
