@@ -267,6 +267,31 @@ namespace WpfCSCS
             {
                 AddActions(entry);
             }
+
+            win.Loaded += Win_Loaded;
+            win.Closed += Win_Closed;
+            win.ContentRendered += Win_ContentRendered;
+        }
+
+        private static void Win_Loaded(object sender, RoutedEventArgs e)
+        {
+            Window win = sender as Window;
+            var funcName = win.Tag + "_OnStart";
+            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance);
+        }
+
+        private static void Win_ContentRendered(object sender, EventArgs e)
+        {
+            Window win = sender as Window;
+            var funcName = win.Tag + "_OnDisplay";
+            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance);
+        }
+
+        private static void Win_Closed(object sender, EventArgs e)
+        {
+            Window win = sender as Window;
+            var funcName = win.Tag + "_OnClose";
+            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance);
         }
 
         public static bool AddBinding(string name, Control widget)
@@ -1627,6 +1652,7 @@ namespace WpfCSCS
                     throw new ArgumentException("Couldn't create window [" + instanceName + "]");
                 }
 
+                newInstance.Tag = Path.GetFileNameWithoutExtension(instanceName);
                 CSCS_GUI.AddActions(newInstance, true);
 
                 Random rnd = new Random();
