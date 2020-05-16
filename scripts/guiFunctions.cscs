@@ -32,7 +32,7 @@ function Window4Button@Clicked(sender, load) {
 }
 
 function Window4_OnOpen(sender, load) {
-  result = MessageBox("Window " + sender + " is starting", title, "OK", "info");
+  result = MessageBox("Window " + sender + " is opening", title, "OK", "info");
 }
 function Window4_OnStart(sender, load) {
   //result = MessageBox("Window " + sender + " is starting", title, "OK", "info");
