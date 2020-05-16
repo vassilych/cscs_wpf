@@ -268,11 +268,30 @@ namespace WpfCSCS
                 AddActions(entry);
             }
 
+            win.SourceInitialized += Win_SourceInitialized;
+            win.Activated += Win_Activated;
             win.Loaded += Win_Loaded;
-            win.Closed += Win_Closed;
             win.ContentRendered += Win_ContentRendered;
 
+            win.Closing += Win_Closing;
+            win.Deactivated += Win_Deactivated;
+            win.Closed += Win_Closed;
+
             Win_Opened(win, EventArgs.Empty);
+        }
+
+        private static void Win_SourceInitialized(object sender, EventArgs e)
+        {
+            Window win = sender as Window;
+            var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnInit";
+            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance);
+        }
+
+        private static void Win_Activated(object sender, EventArgs e)
+        {
+            Window win = sender as Window;
+            var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnActivated";
+            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance);
         }
 
         public static void Win_Opened(object sender, EventArgs e)
@@ -296,13 +315,26 @@ namespace WpfCSCS
             CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance);
         }
 
+        private static void Win_Closing(object sender, EventArgs e)
+        {
+            Window win = sender as Window;
+            var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnClosing";
+            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance);
+
+            NewWindowFunction.RemoveWindow(win);
+        }
+        private static void Win_Deactivated(object sender, EventArgs e)
+        {
+            Window win = sender as Window;
+            var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnDeactivated";
+            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance);
+        }
+
         private static void Win_Closed(object sender, EventArgs e)
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnClose";
             CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance);
-
-            NewWindowFunction.RemoveWindow(win);
         }
 
         public static bool AddBinding(string name, Control widget)
