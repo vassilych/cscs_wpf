@@ -35,6 +35,8 @@ namespace WpfCSCS
             var res = this.Resources;
             var cscsScript = (string)res["CSCS"];
 
+            CSCS_GUI.MainWindow.Tag = "MainWindow";
+
             Console.WriteLine("Running CSCS script: " + cscsScript);
             CSCS_GUI.RunScript(cscsScript);
 

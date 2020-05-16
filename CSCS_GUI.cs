@@ -271,27 +271,38 @@ namespace WpfCSCS
             win.Loaded += Win_Loaded;
             win.Closed += Win_Closed;
             win.ContentRendered += Win_ContentRendered;
+
+            Win_Opened(win, EventArgs.Empty);
+        }
+
+        public static void Win_Opened(object sender, EventArgs e)
+        {
+            Window win = sender as Window;
+            var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnOpen";
+            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance);
         }
 
         private static void Win_Loaded(object sender, RoutedEventArgs e)
         {
             Window win = sender as Window;
-            var funcName = win.Tag + "_OnStart";
+            var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnStart";
             CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance);
         }
 
         private static void Win_ContentRendered(object sender, EventArgs e)
         {
             Window win = sender as Window;
-            var funcName = win.Tag + "_OnDisplay";
+            var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnDisplay";
             CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance);
         }
 
         private static void Win_Closed(object sender, EventArgs e)
         {
             Window win = sender as Window;
-            var funcName = win.Tag + "_OnClose";
+            var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnClose";
             CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance);
+
+            NewWindowFunction.RemoveWindow(win);
         }
 
         public static bool AddBinding(string name, Control widget)
@@ -1652,13 +1663,14 @@ namespace WpfCSCS
                     throw new ArgumentException("Couldn't create window [" + instanceName + "]");
                 }
 
-                newInstance.Tag = Path.GetFileNameWithoutExtension(instanceName);
-                CSCS_GUI.AddActions(newInstance, true);
-
                 Random rnd = new Random();
                 var inst = instanceName + "_" + rnd.Next(1000);
                 s_windows[inst] = newInstance;
                 s_windowType[instanceName] = inst;
+                newInstance.Tag = inst;
+
+                CSCS_GUI.AddActions(newInstance, true);
+
                 newInstance.Show();
                 s_currentWindow = 0;
                 return new Variable(inst);
@@ -1686,10 +1698,15 @@ namespace WpfCSCS
             else if (m_mode == MODE.DELETE)
             {
                 wind.Close();
-                s_windows.Remove(instanceName);
+                RemoveWindow(wind);
             }
 
             return new Variable(instanceName);
+        }
+
+        public static void RemoveWindow(Window wind)
+        {
+            s_windows.Remove(wind.Tag.ToString());
         }
 
         static void HideAll()

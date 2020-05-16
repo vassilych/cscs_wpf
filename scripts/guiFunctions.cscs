@@ -31,11 +31,14 @@ function Window4Button@Clicked(sender, load) {
   result = MessageBox("Hello from " + sender, title, "OK", "info");
 }
 
-function Window4_OnStart(sender, load) {
+function Window4_OnOpen(sender, load) {
   result = MessageBox("Window " + sender + " is starting", title, "OK", "info");
 }
+function Window4_OnStart(sender, load) {
+  //result = MessageBox("Window " + sender + " is starting", title, "OK", "info");
+}
 function Window4_OnDisplay(sender, load) {
-  result = MessageBox("Window " + sender + " is displaying", title, "OK", "info");
+  //result = MessageBox("Window " + sender + " is displaying", title, "OK", "info");
 }
 function Window4_OnClose(sender, load) {
   result = MessageBox("Window " + sender + " is closing", title, "OK", "info");
