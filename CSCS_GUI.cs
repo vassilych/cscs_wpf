@@ -192,6 +192,7 @@ namespace WpfCSCS
             ParserFunction.RegisterFunction("ShowWindow", new NewWindowFunction(NewWindowFunction.MODE.SHOW));
             ParserFunction.RegisterFunction("HideWindow", new NewWindowFunction(NewWindowFunction.MODE.HIDE));
             ParserFunction.RegisterFunction("NextWindow", new NewWindowFunction(NewWindowFunction.MODE.NEXT));
+            ParserFunction.RegisterFunction("ModalWindow", new NewWindowFunction(NewWindowFunction.MODE.MODAL));
 
             Constants.FUNCT_WITH_SPACE.Add("SetText");
             Constants.FUNCT_WITH_SPACE.Add(Constants.DEFINE);
@@ -315,13 +316,16 @@ namespace WpfCSCS
             CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance);
         }
 
-        private static void Win_Closing(object sender, EventArgs e)
+        private static void Win_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnClosing";
-            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance);
-
-            NewWindowFunction.RemoveWindow(win);
+            var result = CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance);
+            e.Cancel = result != null && result.Result.AsBool();
+            if (e.Cancel)
+            {
+                NewWindowFunction.RemoveWindow(win);
+            }
         }
         private static void Win_Deactivated(object sender, EventArgs e)
         {
@@ -1654,7 +1658,7 @@ namespace WpfCSCS
 
         static int s_currentWindow = -1;
 
-        internal enum MODE { NEW, SHOW, HIDE, DELETE, NEXT };
+        internal enum MODE { NEW, SHOW, HIDE, DELETE, NEXT, MODAL };
         MODE m_mode;
 
         internal NewWindowFunction(MODE mode = MODE.NEW)
@@ -1685,30 +1689,37 @@ namespace WpfCSCS
             string instanceName = args[0].AsString();
             // ../../scripts/Window4.xaml
 
+            Window wind = null;
             if (m_mode == MODE.NEW)
             {
-                var text = File.ReadAllText(instanceName);
-                XmlReader xmlReader = XmlReader.Create(new StringReader(text));
-                var newInstance = System.Windows.Markup.XamlReader.Load(xmlReader) as Window;
-                if (newInstance == null)
-                {
-                    throw new ArgumentException("Couldn't create window [" + instanceName + "]");
-                }
-
+                wind = CreateWindow(instanceName);
                 Random rnd = new Random();
                 var inst = instanceName + "_" + rnd.Next(1000);
-                s_windows[inst] = newInstance;
+                s_windows[inst] = wind;
                 s_windowType[instanceName] = inst;
-                newInstance.Tag = inst;
+                wind.Tag = inst;
 
-                CSCS_GUI.AddActions(newInstance, true);
+                CSCS_GUI.AddActions(wind, true);
 
-                newInstance.Show();
+                wind.Show();
                 s_currentWindow = 0;
                 return new Variable(inst);
             }
+            if (m_mode == MODE.MODAL)
+            {
+                wind = CreateWindow(instanceName);
+                Random rnd = new Random();
+                var inst = instanceName + "_" + rnd.Next(1000);
+                s_windows[inst] = wind;
+                s_windowType[instanceName] = inst;
+                wind.Tag = inst;
 
-            Window wind = null;
+                CSCS_GUI.AddActions(wind, true);
+
+                wind.ShowDialog();
+                return new Variable(inst);
+            }
+
             if (!s_windows.TryGetValue(instanceName, out wind))
             {
                 if (!s_windowType.TryGetValue(instanceName, out string windName) ||
@@ -1739,6 +1750,18 @@ namespace WpfCSCS
         public static void RemoveWindow(Window wind)
         {
             s_windows.Remove(wind.Tag.ToString());
+        }
+
+        public static Window CreateWindow(string filename)
+        {
+            var text = File.ReadAllText(filename);
+            XmlReader xmlReader = XmlReader.Create(new StringReader(text));
+            var newInstance = System.Windows.Markup.XamlReader.Load(xmlReader) as Window;
+            if (newInstance == null)
+            {
+                throw new ArgumentException("Couldn't create window [" + filename + "]");
+            }
+            return newInstance;
         }
 
         static void HideAll()

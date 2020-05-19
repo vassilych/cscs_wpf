@@ -37,11 +37,12 @@
                     <Button Content="Check VAT" Grid.Column="4" HorizontalAlignment="Left" Margin="464,102,0,0" VerticalAlignment="Top" Width="79"  DataContext="checkVat"/>
                     <Label Content="" Grid.Column="4" HorizontalAlignment="Left" Margin="334,129,0,0" VerticalAlignment="Top" Width="315" DataContext="vatStatus"/>
                     <Label Content="" Grid.Column="4" HorizontalAlignment="Left" Margin="334,156,0,0" VerticalAlignment="Top" Width="315" DataContext="vatAddress"/>
-                    <Button Content="New" Grid.Column="4" HorizontalAlignment="Left" Margin="564,102,0,0" VerticalAlignment="Top" Width="75" DataContext="newWindow"/>
+                    <Button Content="Modal"  Grid.Column="4" HorizontalAlignment="Left" Margin="564,78,0,0" VerticalAlignment="Top" Width="75" DataContext="newModalWindow"/>
+                    <Button Content="New"    Grid.Column="4" HorizontalAlignment="Left" Margin="564,102,0,0" VerticalAlignment="Top" Width="75" DataContext="newWindow"/>
                     <Button Content="Delete" Grid.Column="4" HorizontalAlignment="Left" Margin="564,126,0,0" VerticalAlignment="Top" Width="75" DataContext="deleteWindow"/>
-                    <Button Content="Show" Grid.Column="4" HorizontalAlignment="Left" Margin="564,150,0,0" VerticalAlignment="Top" Width="75" DataContext="showWindow"/>
-                    <Button Content="Hide" Grid.Column="4" HorizontalAlignment="Left" Margin="564,174,0,0" VerticalAlignment="Top" Width="75" DataContext="hideWindow" RenderTransformOrigin="0.635,2.656"/>
-                    <Button Content="Next" Grid.Column="4" HorizontalAlignment="Left" Margin="564,198,0,0" VerticalAlignment="Top" Width="75" DataContext="nextWindow"/>
+                    <Button Content="Show"   Grid.Column="4" HorizontalAlignment="Left" Margin="564,150,0,0" VerticalAlignment="Top" Width="75" DataContext="showWindow"/>
+                    <Button Content="Hide"   Grid.Column="4" HorizontalAlignment="Left" Margin="564,174,0,0" VerticalAlignment="Top" Width="75" DataContext="hideWindow" RenderTransformOrigin="0.635,2.656"/>
+                    <Button Content="Next"   Grid.Column="4" HorizontalAlignment="Left" Margin="564,198,0,0" VerticalAlignment="Top" Width="75" DataContext="nextWindow"/>
                 </Grid>
             </TabItem>
             <TabItem Header="SQL Tests">

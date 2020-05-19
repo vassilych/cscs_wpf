@@ -32,7 +32,7 @@ function Window4Button@Clicked(sender, load) {
 }
 
 function Window4_OnOpen(sender, load) {
-  result = MessageBox("Window " + sender + " is opening", title, "OK", "info");
+  //result = MessageBox("Window " + sender + " is opening", title, "OK", "info");
 }
 function Window4_OnStart(sender, load) {
   //result = MessageBox("Window " + sender + " is starting", title, "OK", "info");
@@ -40,8 +40,12 @@ function Window4_OnStart(sender, load) {
 function Window4_OnDisplay(sender, load) {
   //result = MessageBox("Window " + sender + " is displaying", title, "OK", "info");
 }
+function Window4_OnClosing(sender, load) {
+  result = MessageBox("Do you want to close this window?", title, "YesNo", "info");
+  return result != "Yes";
+}
 function Window4_OnClose(sender, load) {
-  result = MessageBox("Window " + sender + " is closing", title, "OK", "info");
+  //result = MessageBox("Window " + sender + " is closing", title, "OK", "info");
 }
 
 function button3@Clicked(sender, load) {
@@ -207,6 +211,18 @@ function newWindow@Clicked(sender, load) {
   windowName = GetText("textbox1");
   try {
     win = CreateWindow(windowName);
+    label1 = "Created window: " + win;
+  } catch (exc) {
+    MessageBox(exc, title, "OK", "error");
+  }
+}
+function newModalWindow@Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  windowName = GetText("textbox1");
+  try {
+    win = ModalWindow(windowName);
     label1 = "Created window: " + win;
   } catch (exc) {
     MessageBox(exc, title, "OK", "error");
