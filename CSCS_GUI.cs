@@ -1690,7 +1690,7 @@ namespace WpfCSCS
             // ../../scripts/Window4.xaml
 
             Window wind = null;
-            if (m_mode == MODE.NEW)
+            if (m_mode == MODE.NEW || m_mode == MODE.MODAL)
             {
                 wind = CreateWindow(instanceName);
                 Random rnd = new Random();
@@ -1701,22 +1701,17 @@ namespace WpfCSCS
 
                 CSCS_GUI.AddActions(wind, true);
 
-                wind.Show();
-                s_currentWindow = 0;
-                return new Variable(inst);
-            }
-            if (m_mode == MODE.MODAL)
-            {
-                wind = CreateWindow(instanceName);
-                Random rnd = new Random();
-                var inst = instanceName + "_" + rnd.Next(1000);
-                s_windows[inst] = wind;
-                s_windowType[instanceName] = inst;
-                wind.Tag = inst;
+                if (m_mode == MODE.MODAL)
+                {
+                    wind.Owner = CSCS_GUI.MainWindow;
+                    wind.ShowDialog();
+                }
+                else
+                {
+                    wind.Show();
+                    s_currentWindow = 0;
+                }
 
-                CSCS_GUI.AddActions(wind, true);
-
-                wind.ShowDialog();
                 return new Variable(inst);
             }
 
