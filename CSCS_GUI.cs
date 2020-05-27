@@ -55,6 +55,7 @@ namespace WpfCSCS
         static Dictionary<string, string> s_textChangedHandlers = new Dictionary<string, string>();
         static Dictionary<string, string> s_selChangedHandlers = new Dictionary<string, string>();
         static Dictionary<string, string> s_mouseHoverHandlers = new Dictionary<string, string>();
+        static Dictionary<string, string> s_dateSelectedHandlers = new Dictionary<string, string>();
 
         static Dictionary<string, Variable> s_boundVariables = new Dictionary<string, Variable>();
         //static Dictionary<string, TabPage> s_tabPages           = new Dictionary<string, TabPage>();
@@ -422,6 +423,35 @@ namespace WpfCSCS
             sel.SelectionChanged += new SelectionChangedEventHandler(Widget_SelectionChanged);
             return true;
         }
+        public static bool AddDateChangedHandler(string name, string action, Control widget)
+        {
+            var datePicker = widget as DatePicker;
+            if (datePicker == null)
+            {
+                return false;
+            }
+            s_dateSelectedHandlers[name] = action;
+            datePicker.SelectedDateChanged += DatePicker_SelectedDateChanged;
+
+            return true;
+        }
+
+        private static void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Control widget = sender as Control;
+            var widgetName = GetWidgetBindingName(widget);
+            var picker = sender as DatePicker;
+            DateTime? date = picker?.SelectedDate;
+            if (string.IsNullOrWhiteSpace(widgetName) || date == null ||
+               !s_dateSelectedHandlers.TryGetValue(widgetName, out string funcName))
+            {
+                return;
+            }
+
+            CustomFunction.Run(funcName, new Variable(widgetName),
+                new Variable(date.Value.ToString("yyyy/MM/dd")));
+        }
+
         public static bool AddMouseHoverHandler(string name, string action, Control widget)
         {
             s_mouseHoverHandlers[name] = action;
@@ -663,6 +693,7 @@ namespace WpfCSCS
             string textChangeAction = widgetName + "@TextChange";
             string mouseHoverAction = widgetName + "@MouseHover";
             string selectionChangedAction = widgetName + "@SelectionChanged";
+            string dateChangedAction = widgetName + "@DateChanged";
 
             AddActionHandler(widgetName, clickAction, widget);
             AddPreActionHandler(widgetName, preClickAction, widget);
@@ -672,6 +703,7 @@ namespace WpfCSCS
             AddTextChangedHandler(widgetName, textChangeAction, widget);
             AddSelectionChangedHandler(widgetName, selectionChangedAction, widget);
             AddMouseHoverHandler(widgetName, mouseHoverAction, widget);
+            AddDateChangedHandler(widgetName, dateChangedAction, widget);
             AddBinding(widgetName, widget);
         }
 
@@ -930,6 +962,11 @@ namespace WpfCSCS
                 var comboBox = widget as ComboBox;
                 result = comboBox.Text;
             }
+            else if (widget is DatePicker)
+            {
+                var datePicker = widget as DatePicker;
+                result = datePicker.Text;
+            }
 
             return new Variable(result);
         }
@@ -1000,6 +1037,11 @@ namespace WpfCSCS
                 var richTextBox = widget as RichTextBox;
                 richTextBox.Document.Blocks.Clear();
                 richTextBox.Document.Blocks.Add(new Paragraph(new Run(text)));
+            }
+            else if (widget is DatePicker)
+            {
+                var datePicker = widget as DatePicker;
+                datePicker.SelectedDate = DateTime.Parse(text);
             }
             else
             {

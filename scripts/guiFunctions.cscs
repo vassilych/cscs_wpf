@@ -127,6 +127,27 @@ function button9@Clicked(sender, load) {
   SetText("comboBox1", text);
 }
 
+function datePicker@DateChanged(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  MessageBox("Date changed: " + load, title, "OK", "info");
+}
+function getDate@Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  date = GetText("datePicker");
+  setText("textbox1", date);
+}
+function setDate@Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  date = GetText("textbox1");
+  setText("datePicker", date);
+}
+
 function button10@Clicked(sender, load) {
   if (!refresh) {
     return;

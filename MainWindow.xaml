@@ -43,6 +43,9 @@
                     <Button Content="Show"   Grid.Column="4" HorizontalAlignment="Left" Margin="564,150,0,0" VerticalAlignment="Top" Width="75" DataContext="showWindow"/>
                     <Button Content="Hide"   Grid.Column="4" HorizontalAlignment="Left" Margin="564,174,0,0" VerticalAlignment="Top" Width="75" DataContext="hideWindow" RenderTransformOrigin="0.635,2.656"/>
                     <Button Content="Next"   Grid.Column="4" HorizontalAlignment="Left" Margin="564,198,0,0" VerticalAlignment="Top" Width="75" DataContext="nextWindow"/>
+                    <DatePicker Grid.Column="4" HorizontalAlignment="Left" Margin="105,59,0,0" VerticalAlignment="Top" Width="125" Height="25"  DataContext="datePicker"/>
+                    <Button Content="Get Date" Grid.Column="4" HorizontalAlignment="Left" Margin="254,59,0,0" VerticalAlignment="Top" Width="75" DataContext="getDate"/>
+                    <Button Content="Set Date" Grid.Column="4" HorizontalAlignment="Left" Margin="342,59,0,0" VerticalAlignment="Top" Width="75"  DataContext="setDate" RenderTransformOrigin="0.475,0.25"/>
                 </Grid>
             </TabItem>
             <TabItem Header="SQL Tests">
