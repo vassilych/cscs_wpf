@@ -140,6 +140,48 @@ function getDate@Clicked(sender, load) {
   date = GetText("datePicker");
   setText("textbox1", date);
 }
+
+function editEntry(sender, load) {
+  MessageBox("Edit Entry", title, "OK", "Info");
+}
+function aboutEntry(sender, load) {
+  MessageBox("This is my great App.", title, "OK", "Info");
+}
+function exitEntry(sender, load) {
+  result = MessageBox("Are you sure you want to exit?", title, "YesNo", "question");
+  if (result == "Yes")
+  {
+    exit();
+  }
+}
+function fillMenus@Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  RemoveMenu("fileMenu");
+  RemoveMenu("helpMenu");
+  RemoveMenu("openWindowsMenu");
+  RemoveMenu("windowsMenu");
+  RemoveMenu("mainMenu");
+
+  AddMenuItem("mainMenu", "fileMenu", "File");
+  AddMenuItem("mainMenu", "windowsMenu", "Windows");
+  AddMenuItem("mainMenu", "helpMenu", "Help");
+
+  AddMenuItem("fileMenu", "edit", "Edit", "editEntry");
+  AddMenuItem("fileMenu", "close", "Close");
+  AddMenuSeparator("fileMenu");
+  AddMenuItem("fileMenu", "exit", "Exit", "exitEntry");
+
+  AddMenuItem("windowsMenu", "openWindowsMenu", "Open Windows");
+  AddMenuItem("openWindowsMenu", "Window1");
+  AddMenuItem("openWindowsMenu", "Window2");
+  AddMenuItem("openWindowsMenu", "Window3");
+
+  AddMenuItem("helpMenu", "topics", "Topics");
+  AddMenuSeparator("helpMenu");
+  AddMenuItem("helpMenu", "about", "About", "aboutEntry");
+}
 function setDate@Clicked(sender, load) {
   if (!refresh) {
     return;

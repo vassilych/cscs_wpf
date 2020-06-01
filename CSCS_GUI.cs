@@ -181,6 +181,10 @@ namespace WpfCSCS
             ParserFunction.RegisterFunction("MessageBox", new MessageBoxFunction());
             ParserFunction.RegisterFunction("SendToPrinter", new PrintFunction());
 
+            ParserFunction.RegisterFunction("AddMenuItem", new AddMenuEntryFunction(false));
+            ParserFunction.RegisterFunction("AddMenuSeparator", new AddMenuEntryFunction(true));
+            ParserFunction.RegisterFunction("RemoveMenu", new RemoveMenuFunction());
+
             ParserFunction.RegisterFunction("RunOnMain", new RunOnMainFunction());
             ParserFunction.RegisterFunction("RunExec", new RunExecFunction());
 
@@ -620,11 +624,21 @@ namespace WpfCSCS
                 return controls;
             }
 
-            Grid content = win.Content as Grid;
-            var children = content.Children;
+            var content = win.Content as Panel;
+            CacheChildren(content.Children.Cast<UIElement>().ToList(), controls);
+            return controls;
+        }
+
+        static void CacheChildren(List<UIElement> children, List<Control> controls)
+        {
             foreach (var child in children)
             {
-                if (child is TabControl)
+                if (child is Grid)
+                {
+                    var gridControl = child as Grid;
+                    CacheChildren(gridControl.Children.Cast<UIElement>().ToList(), controls);
+                }
+                else if (child is TabControl)
                 {
                     var tabControl = child as TabControl;
                     var count = VisualTreeHelper.GetChildrenCount(tabControl);
@@ -663,18 +677,31 @@ namespace WpfCSCS
                 else
                 {
                     CacheControl(child as Control, controls);
+                    if (child is ItemsControl)
+                    {
+                        var parent = child as ItemsControl;
+                        var items = parent.Items;
+                        if (items != null && items.Count > 0)
+                        {
+                            CacheChildren(items.Cast<UIElement>().ToList(), controls);
+                        }
+                    }
                 }
             }
-            return controls;
         }
 
-        static void CacheControl(Control widget, List<Control> controls)
+        public static void CacheControl(Control widget, List<Control> controls = null)
         {
             if (widget != null && widget.DataContext != null)
             {
                 Controls[widget.DataContext.ToString().ToLower()] = widget;
-                controls.Add(widget);
+                controls?.Add(widget);
             }
+        }
+        public static void RemoveControl(Control widget)
+        {
+            widget.Visibility = Visibility.Hidden;
+            Controls.Remove(widget.DataContext.ToString().ToLower());
         }
 
         public static void AddActions(Control widget)
@@ -1394,6 +1421,82 @@ namespace WpfCSCS
             return new Variable(true);
         }
     }
+
+    class AddMenuEntryFunction : ParserFunction
+    {
+        bool m_separator;
+
+        public AddMenuEntryFunction(bool separator = false)
+        {
+            m_separator = separator;
+        }
+
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            var parentName = Utils.GetSafeString(args, 0);
+            ItemsControl parent = CSCS_GUI.GetWidget(parentName) as ItemsControl;
+            if (parent == null)
+            {
+                return Variable.EmptyInstance;
+            }
+
+            if (m_separator)
+            {
+                parent.Items.Add(new Separator());
+                return new Variable(parentName);
+            }
+
+            Utils.CheckArgs(args.Count, 2, m_name);
+            var menuName = Utils.GetSafeString(args, 1);
+            var menuLabel = Utils.GetSafeString(args, 2, menuName);
+            var menuAction = Utils.GetSafeString(args, 3);
+
+            MenuItem newMenuItem = new MenuItem();
+            newMenuItem.Header = menuLabel;
+            newMenuItem.DataContext = menuName;
+
+            if (!string.IsNullOrWhiteSpace(menuAction))
+            {
+                newMenuItem.Click += (sender, eventArgs) =>
+                {
+                    CustomFunction.Run(menuAction, new Variable(menuName), new Variable(eventArgs.Source.ToString()));
+                };
+            }
+
+            parent.Items.Add(newMenuItem);
+            CSCS_GUI.CacheControl(newMenuItem);
+
+            return new Variable(menuName);
+        }
+    }
+
+    class RemoveMenuFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            var parentName = Utils.GetSafeString(args, 0);
+            ItemsControl parent = CSCS_GUI.GetWidget(parentName) as ItemsControl;
+            if (parent == null || parent.Items == null)
+            {
+                return Variable.EmptyInstance;
+            }
+
+            foreach (var item in parent.Items)
+            {
+                CSCS_GUI.RemoveControl((Control)item);
+            }
+            parent.Items.Clear();
+
+            return new Variable(true);
+        }
+    }
+
     class ShowHideWidgetFunction : ParserFunction
     {
         bool m_showWidget;
