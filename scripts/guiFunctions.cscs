@@ -157,11 +157,6 @@ function exitEntry(sender, load) {
 function fillMenus@Clicked(sender, load) {
   mainMenu = sender == "fillMenus" ? "mainMenu" : "mainMenu1";
 
-  print("fillMenus@Clicked: " + sender + load);
-  RemoveMenu("fileMenu");
-  RemoveMenu("helpMenu");
-  RemoveMenu("openWindowsMenu");
-  RemoveMenu("windowsMenu");
   RemoveMenu(mainMenu);
 
   AddMenuItem(mainMenu, "fileMenu", "File");

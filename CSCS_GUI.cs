@@ -1492,13 +1492,23 @@ namespace WpfCSCS
                 return Variable.EmptyInstance;
             }
 
+            RemoveMenu(parent);
+            return new Variable(true);
+        }
+
+        static void RemoveMenu(ItemsControl parent)
+        {
+            if (parent == null || parent.Items == null)
+            {
+                return;
+            }
+
             foreach (var item in parent.Items)
             {
-                CSCS_GUI.RemoveControl((Control)item);
+                CSCS_GUI.RemoveControl(item as Control);
+                RemoveMenu(item as ItemsControl);
             }
             parent.Items.Clear();
-
-            return new Variable(true);
         }
     }
 
