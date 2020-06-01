@@ -108,6 +108,7 @@ namespace SplitAndMerge
         }
 
         public ParserFunction.StackLevel StackLevel { get; set; }
+        public bool ProcessingList { get; set; }
 
         public bool DisableBreakpoints;
         public bool InTryBlock;
@@ -160,6 +161,27 @@ namespace SplitAndMerge
                 }
             }
             return path;
+        }
+
+        public bool StartsWith(string str, bool caseSensitive = true)
+        {
+            if (String.IsNullOrEmpty(str) || str.Length > m_data.Length - m_from)
+            {
+                return false;
+            }
+            for (int i = m_from; i < m_data.Length && i < str.Length + m_from; i++)
+            {
+                var ch1 = str[i - m_from];
+                var ch2 = m_data[i];
+
+                if ((caseSensitive && ch1 != ch2) ||
+                   (!caseSensitive && char.ToUpperInvariant(ch1) != char.ToUpperInvariant(ch2)))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public bool ProcessReturn()
@@ -438,6 +460,13 @@ namespace SplitAndMerge
             return endGroupRead;
         }
 
+        public static Variable RunString(string str)
+        {
+            ParsingScript tempScript = new ParsingScript(str);
+            Variable result = tempScript.Execute();
+            return result;
+        }
+
         public Variable Execute(char[] toArray = null, int from = -1)
         {
             toArray = toArray == null ? Constants.END_PARSE_ARRAY : toArray;
@@ -568,6 +597,23 @@ namespace SplitAndMerge
             tempScript.FunctionName   = this.FunctionName;            
 
             //tempScript.Debugger       = this.Debugger;
+
+            return tempScript;
+        }
+
+        public ParsingScript GetIncludeFileScript(string filename)
+        {
+            string pathname = GetFilePath(filename);
+            string[] lines = Utils.GetFileLines(pathname);
+
+            string includeFile = string.Join(Environment.NewLine, lines);
+            Dictionary<int, int> char2Line;
+            var includeScript = Utils.ConvertToScript(includeFile, out char2Line, pathname);
+            ParsingScript tempScript = new ParsingScript(includeScript, 0, char2Line);
+            tempScript.Filename = pathname;
+            tempScript.OriginalScript = string.Join(Constants.END_LINE.ToString(), lines);
+            tempScript.ParentScript = this;
+            tempScript.InTryBlock = InTryBlock;
 
             return tempScript;
         }

@@ -13,8 +13,7 @@
     </Window.Resources>
 
     <DockPanel>
-        <Menu DockPanel.Dock="Top" DataContext="mainMenu">
-        </Menu>
+        <Menu DockPanel.Dock="Top" DataContext="mainMenu"/>
         <Grid>
             <TabControl HorizontalAlignment="Left" Height="450" VerticalAlignment="Top" Width="800">
                 <TabItem Header="Settings">

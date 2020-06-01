@@ -153,6 +153,11 @@ namespace WpfCSCS
 
         public static void Init()
         {
+            ParserFunction.RegisterFunction(Constants.GOTO, new GotoGosubFunction(true));
+            ParserFunction.RegisterFunction(Constants.GOSUB, new GotoGosubFunction(false));
+            ParserFunction.RegisterFunction(Constants.INCLUDE_SECURE, new IncludeFileSecure());
+            ParserFunction.AddAction(Constants.LABEL_OPERATOR, new LabelFunction());
+
             ParserFunction.RegisterFunction(Constants.MSG, new VariableArgsFunction(true));
             ParserFunction.RegisterFunction(Constants.DEFINE, new VariableArgsFunction(true));
             ParserFunction.RegisterFunction(Constants.SET_OBJECT, new VariableArgsFunction(true));
@@ -209,6 +214,7 @@ namespace WpfCSCS
             //ParserFunction.RegisterFunction("funcName", new MyFunction());
 
             Interpreter.Instance.OnOutput += Print;
+            //ParserFunction.OnVariableChange += 
             ParserFunction.OnVariableChange += OnVariableChange;
             AddActions(MainWindow);
 
@@ -228,16 +234,16 @@ namespace WpfCSCS
             return widgetName;
         }
 
-        static bool OnVariableChange(string name, Variable newValue, bool isGlobal)
+        static void OnVariableChange(string name, Variable newValue, bool isGlobal)
         {
             if (s_changingBoundVariable)
             {
-                return true;
+                return;
             }
             var widgetName = name.ToLower();
             if (!s_boundVariables.TryGetValue(widgetName, out _))
             {
-                return false;
+                return;
             }
 
             var widget = GetWidget(widgetName);
@@ -245,7 +251,6 @@ namespace WpfCSCS
 
             SetTextWidgetFunction.SetText(widget, text);
             s_boundVariables[widgetName] = newValue;
-            return true;
         }
 
         static void UpdateVariable(Control widget, string text)
@@ -1617,7 +1622,7 @@ namespace WpfCSCS
                 return Variable.EmptyInstance;
             }
 
-            ParsingScript chainScript = IncludeFile.GetIncludeFileScript(tempScript, chainName);
+            ParsingScript chainScript = tempScript.GetIncludeFileScript(chainName);
             chainScript.StackLevel = ParserFunction.AddStackLevel(chainScript.Filename);
             chainScript.CurrentModule = chainName;
 

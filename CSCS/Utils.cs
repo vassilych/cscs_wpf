@@ -120,7 +120,7 @@ namespace SplitAndMerge
             if (string.IsNullOrEmpty(varName))
             {
                 string realName = Constants.GetRealName(name);
-                throw new ArgumentException("Incomplete arguments for [" + realName + "]");
+                ThrowErrorMsg("Incomplete arguments for [" + realName + "]", null, name);
             }
         }
 
@@ -166,6 +166,7 @@ namespace SplitAndMerge
         {
             string [] lines = script.Split('\n');
             lineNumber = lines.Length <= lineNumber ? -1 : lineNumber;
+            System.Diagnostics.Debug.WriteLine(msg);
             if (lineNumber < 0)
             {
                 throw new ParsingException(msg);
@@ -202,6 +203,26 @@ namespace SplitAndMerge
         {
             var lineNumber = level > 0 ? lineStart : lineEnd;
             ThrowErrorMsg(msg, code, lineNumber, filename);
+        }
+
+        public static ParsingScript GetTempScript(string str, ParserFunction.StackLevel stackLevel, string name = "",
+            ParsingScript script = null, ParsingScript parentScript = null,
+            int parentOffset = 0, CSCSClass.ClassInstance instance = null)
+        {
+            ParsingScript tempScript = new ParsingScript(str);
+            tempScript.ScriptOffset = parentOffset;
+            if (parentScript != null)
+            {
+                tempScript.Char2Line = parentScript.Char2Line;
+                tempScript.Filename = parentScript.Filename;
+                tempScript.OriginalScript = parentScript.OriginalScript;
+            }
+            tempScript.ParentScript = script;
+            tempScript.InTryBlock = script == null ? false : script.InTryBlock;
+            tempScript.ClassInstance = instance;
+            tempScript.StackLevel = stackLevel;
+
+            return tempScript;
         }
 
         public static bool ExtractParameterNames(List<Variable> args, string functionName, ParsingScript script)
@@ -321,6 +342,18 @@ namespace SplitAndMerge
             {
                 throw new ArgumentException("Couldn't write file to disk: " + ex.Message);
             }
+        }
+
+        public static GetVarFunction ExtractArrayElement(string token)
+        {
+            if (!token.Contains(Constants.START_ARRAY))
+            {
+                return null;
+            }
+
+            ParsingScript tempScript = new ParsingScript(token);
+            Variable result = tempScript.Execute();
+            return new GetVarFunction(result);
         }
 
         public static void AppendFileText(string filename, string text)
@@ -480,6 +513,7 @@ namespace SplitAndMerge
             {
                 script = new ParsingScript("");
             }
+
             ParserFunction func = ParserFunction.GetVariable(varName, script);
             if (!testNull && func == null)
             {
@@ -506,7 +540,7 @@ namespace SplitAndMerge
 
         public static double ConvertToDouble(object obj, ParsingScript script = null)
         {
-            string str = obj.ToString();
+            string str = obj.ToString().ToLower();
             double num = 0;
 
             if (!CanConvertToDouble(str, out num) &&
@@ -519,6 +553,16 @@ namespace SplitAndMerge
 
         public static bool CanConvertToDouble(string str, out double num)
         {
+            if (str == "true")
+            {
+                num = 1.0;
+                return true;
+            }
+            if (str == "false")
+            {
+                num = 0.0;
+                return true;
+            }
             return Double.TryParse(str, NumberStyles.Number |
                                         NumberStyles.AllowExponent |
                                         NumberStyles.Float,

@@ -19,7 +19,7 @@ function button2@Clicked(sender, load) {
 }
 
 function Window1Button@Clicked(sender, load) {
-  Window4Button@Clicked(sender, load);
+  fillMenus@Clicked(sender, load);
 }
 function Window2Button@Clicked(sender, load) {
   Window4Button@Clicked(sender, load);
@@ -155,18 +155,18 @@ function exitEntry(sender, load) {
   }
 }
 function fillMenus@Clicked(sender, load) {
-  if (!refresh) {
-    return;
-  }
+  mainMenu = sender == "fillMenus" ? "mainMenu" : "mainMenu1";
+
+  print("fillMenus@Clicked: " + sender + load);
   RemoveMenu("fileMenu");
   RemoveMenu("helpMenu");
   RemoveMenu("openWindowsMenu");
   RemoveMenu("windowsMenu");
-  RemoveMenu("mainMenu");
+  RemoveMenu(mainMenu);
 
-  AddMenuItem("mainMenu", "fileMenu", "File");
-  AddMenuItem("mainMenu", "windowsMenu", "Windows");
-  AddMenuItem("mainMenu", "helpMenu", "Help");
+  AddMenuItem(mainMenu, "fileMenu", "File");
+  AddMenuItem(mainMenu, "windowsMenu", "Windows");
+  AddMenuItem(mainMenu, "helpMenu", "Help");
 
   AddMenuItem("fileMenu", "edit", "Edit", "editEntry");
   AddMenuItem("fileMenu", "close", "Close");

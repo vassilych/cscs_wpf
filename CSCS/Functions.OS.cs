@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SplitAndMerge
 {
-    // Prints passed list of arguments
+    // Prints passed list of argumentsand
     class PrintFunction : ParserFunction
     {
         internal PrintFunction(bool newLine = true)
@@ -319,7 +319,7 @@ namespace SplitAndMerge
             newValue.Reset();
             newValue.String = arg1 + arg2;
 
-            ParserFunction.AddGlobalOrLocalVariable(varName, new GetVarFunction(newValue));
+            ParserFunction.AddGlobalOrLocalVariable(varName, new GetVarFunction(newValue), script);
 
             return newValue;
         }
@@ -562,266 +562,6 @@ namespace SplitAndMerge
         }
     }
 
-    public class WebRequestFunction : ParserFunction
-    {
-        static string[] s_allowedMethods = { "GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "TRACE" };
-
-        protected override async Task<Variable> EvaluateAsync(ParsingScript script)
-        {
-            List<Variable> args = script.GetFunctionArgs();
-            Utils.CheckArgs(args.Count, 2, m_name);
-            string method = args[0].AsString().ToUpper();
-            string uri = args[1].AsString();
-            string load = Utils.GetSafeString(args, 2);
-            string tracking = Utils.GetSafeString(args, 3);
-            string onSuccess = Utils.GetSafeString(args, 4);
-            string onFailure = Utils.GetSafeString(args, 5, onSuccess);
-            string contentType = Utils.GetSafeString(args, 6, "application/x-www-form-urlencoded");
-            Variable headers = Utils.GetSafeVariable(args, 7);
-            int timeoutMs = Utils.GetSafeInt(args, 8, 10 * 1000);
-            bool justFire = Utils.GetSafeInt(args, 9) > 0;
-
-            if (!s_allowedMethods.Contains(method))
-            {
-                throw new ArgumentException("Unknown web request method: " + method);
-            }
-
-            await ProcessWebRequestAsync(uri, method, load, onSuccess, onFailure, tracking, contentType, headers, timeoutMs, justFire);
-
-            return Variable.EmptyInstance;
-        }
-
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            List<Variable> args = script.GetFunctionArgs();
-            Utils.CheckArgs(args.Count, 2, m_name);
-            string method = args[0].AsString().ToUpper();
-            string uri = args[1].AsString();
-            string load = Utils.GetSafeString(args, 2);
-            string tracking = Utils.GetSafeString(args, 3);
-            string onSuccess = Utils.GetSafeString(args, 4);
-            string onFailure = Utils.GetSafeString(args, 5, onSuccess);
-            string contentType = Utils.GetSafeString(args, 6, "application/x-www-form-urlencoded");
-            Variable headers = Utils.GetSafeVariable(args, 7);
-            int timeoutMs = Utils.GetSafeInt(args, 8, 10 * 1000);
-            bool justFire = Utils.GetSafeInt(args, 9) > 0;
-
-            if (!s_allowedMethods.Contains(method))
-            {
-                throw new ArgumentException("Unknown web request method: " + method);
-            }
-
-            Task.Run(() => ProcessWebRequest(uri, method, load, onSuccess, onFailure, tracking,
-                                             contentType, headers));
-
-            return Variable.EmptyInstance;
-        }
-
-        static void ProcessWebRequest(string uri, string method, string load,
-                                            string onSuccess, string onFailure,
-                                            string tracking, string contentType,
-                                            Variable headers)
-        {
-            try
-            {
-                WebRequest request = WebRequest.CreateHttp(uri);
-                request.Method = method;
-                request.ContentType = contentType;
-
-                if (!string.IsNullOrWhiteSpace(load))
-                {
-                    var bytes = Encoding.UTF8.GetBytes(load);
-                    request.ContentLength = bytes.Length;
-
-                    using (var requestStream = request.GetRequestStream())
-                    {
-                        requestStream.Write(bytes, 0, bytes.Length);
-                    }
-                }
-
-                if (headers != null && headers.Tuple != null)
-                {
-                    var keys = headers.GetKeys();
-                    foreach (var header in keys)
-                    {
-                        var headerValue = headers.GetVariable(header).AsString();
-                        request.Headers.Add(header, headerValue);
-                    }
-                }
-                HttpWebResponse resp = request.GetResponse() as HttpWebResponse;
-                string result;
-                using (StreamReader sr = new StreamReader(resp.GetResponseStream()))
-                {
-                    result = sr.ReadToEnd();
-                }
-                string responseCode = resp == null ? "" : resp.StatusCode.ToString();
-                CustomFunction.Run(onSuccess, new Variable(tracking),
-                                   new Variable(responseCode), new Variable(result));
-            }
-            catch (Exception exc)
-            {
-                CustomFunction.Run(onFailure, new Variable(tracking),
-                                   new Variable(""),  new Variable(exc.Message));
-            }
-        }
-
-        static async Task ProcessWebRequestAsync(string uri, string method, string load,
-                                            string onSuccess, string onFailure,
-                                            string tracking, string contentType,
-                                            Variable headers, int timeout,
-                                            bool justFire = false)
-        {
-            try
-            {
-                WebRequest request = WebRequest.CreateHttp(uri);
-                request.Method = method;
-                request.ContentType = contentType;
-
-                if (!string.IsNullOrWhiteSpace(load))
-                {
-                    var bytes = Encoding.UTF8.GetBytes(load);
-                    request.ContentLength = bytes.Length;
-
-                    using (var requestStream = request.GetRequestStream())
-                    {
-                        requestStream.Write(bytes, 0, bytes.Length);
-                    }
-                }
-
-                if (headers != null && headers.Tuple != null)
-                {
-                    var keys = headers.GetKeys();
-                    foreach (var header in keys)
-                    {
-                        var headerValue = headers.GetVariable(header).AsString();
-                        request.Headers.Add(header, headerValue);
-                    }
-                }
-
-                Task<WebResponse> task = request.GetResponseAsync();
-                Task finishTask = FinishRequest(onSuccess, onFailure,
-                                                tracking, task, timeout);
-                if (justFire)
-                {
-                    return;
-                }
-                await finishTask;
-            }
-            catch (Exception exc)
-            {
-                await CustomFunction.RunAsync(onFailure, new Variable(tracking),
-                                              new Variable(""),  new Variable(exc.Message));
-            }
-        }
-
-        static async Task FinishRequest(string onSuccess, string onFailure,
-                                        string tracking, Task<WebResponse> responseTask,
-                                        int timeoutMs)
-        {
-            string result = "";
-            string method = onSuccess;
-            HttpWebResponse response = null;
-            Task timeoutTask = Task.Delay(timeoutMs);
-
-            try
-            {
-                Task first = await Task.WhenAny(timeoutTask, responseTask);
-                if (first == timeoutTask)
-                {
-                    await timeoutTask;
-                    throw new Exception("Timeout waiting for response.");
-                }
-
-                response = await responseTask as HttpWebResponse;
-                if ((int)response.StatusCode >= 400)
-                {
-                    throw new Exception(response.StatusDescription);
-                }
-
-                using (StreamReader sr = new StreamReader(response.GetResponseStream()))
-                {
-                    result = sr.ReadToEnd();
-                }
-            }
-            catch (Exception exc)
-            {
-                result = exc.Message;
-                method = onFailure;
-            }
-
-            string responseCode = response == null ? "" : response.StatusCode.ToString();
-            await CustomFunction.RunAsync(method, new Variable(tracking),
-                                          new Variable(responseCode), new Variable(result));
-        }
-    }
-
-    class GetVariableFromJSONFunction : ParserFunction
-    {
-        static char[] SEP = "\",:]}".ToCharArray();
-
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            List<Variable> args = script.GetFunctionArgs();
-            Utils.CheckArgs(args.Count, 1, m_name);
-
-            string json = args[0].AsString();
-
-            Dictionary<int, int> d;
-            json = Utils.ConvertToScript(json, out d);
-
-            var tempScript = script.GetTempScript(json);
-            Variable result = ExtractValue(tempScript);
-            return result;
-        }
-
-        static Variable ExtractObject(ParsingScript script)
-        {
-            Variable newValue = new Variable(Variable.VarType.ARRAY);
-
-            while (script.StillValid() && (newValue.Count == 0 || script.Current == ','))
-            {
-                script.Forward();
-                string key = Utils.GetToken(script, SEP);
-                script.MoveForwardIf(':');
-
-                Variable valueVar = ExtractValue(script);
-                newValue.SetHashVariable(key, valueVar);
-            }
-            script.MoveForwardIf('}');
-
-            return newValue;
-        }
-
-        static Variable ExtractArray(ParsingScript script)
-        {
-            Variable newValue = new Variable(Variable.VarType.ARRAY);
-
-            while (script.StillValid() && (newValue.Count == 0 || script.Current == ','))
-            {
-                script.Forward();
-                Variable addVariable = ExtractValue(script);
-                newValue.AddVariable(addVariable);
-            }
-            script.MoveForwardIf(']');
-
-            return newValue;
-        }
-
-        static Variable ExtractValue(ParsingScript script)
-        {
-            if (script.TryCurrent() == '{')
-            {
-                return ExtractObject(script);
-            }
-            if (script.TryCurrent() == '[')
-            {
-                return ExtractArray(script);
-            }
-            var token = Utils.GetToken(script, SEP);
-            return new Variable(token);
-        }
-    }
-
     class RegexFunction : ParserFunction
     {
         protected override Variable Evaluate(ParsingScript script)
@@ -868,7 +608,9 @@ namespace SplitAndMerge
             List<Variable> args = script.GetFunctionArgs();
             string item = Utils.GetSafeString(args, 0);
 
-            switch(m_mode)
+#if __ANDROID__ == false && __IOS__ == false
+
+            switch (m_mode)
             {
                 case EditMode.ADD_DEFINITION:
                     Precompiler.AddDefinition(item);
@@ -883,6 +625,7 @@ namespace SplitAndMerge
                     Precompiler.ClearNamespaces();
                     break;
             }
+#endif
 
             return Variable.EmptyInstance;
         }
@@ -890,11 +633,13 @@ namespace SplitAndMerge
 
     class CompiledFunctionCreator : ParserFunction
     {
-        bool m_scriptInCSharp;
+        bool m_scriptInCSharp = false;
 
         public CompiledFunctionCreator(bool scriptInCSharp)
         {
+#if UNITY_EDITOR == false && UNITY_STANDALONE == false && _ANDROID__ == false && __IOS__ == false
             m_scriptInCSharp = scriptInCSharp;
+#endif
         }
 
         protected override Variable Evaluate(ParsingScript script)

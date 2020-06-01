@@ -10,6 +10,22 @@ namespace SplitAndMerge
         public void InitStandalone()
         {
 #if UNITY_EDITOR == false && UNITY_STANDALONE == false
+            // Math Top level functions
+            ParserFunction.RegisterFunction(Constants.ABS, new AbsFunction());
+            ParserFunction.RegisterFunction(Constants.ACOS, new AcosFunction());
+            ParserFunction.RegisterFunction(Constants.ASIN, new AsinFunction());
+            ParserFunction.RegisterFunction(Constants.CEIL, new CeilFunction());
+            ParserFunction.RegisterFunction(Constants.COS, new CosFunction());
+            ParserFunction.RegisterFunction(Constants.EXP, new ExpFunction());
+            ParserFunction.RegisterFunction(Constants.FLOOR, new FloorFunction());
+            ParserFunction.RegisterFunction(Constants.LOG, new LogFunction());
+            ParserFunction.RegisterFunction(Constants.PI, new PiFunction());
+            ParserFunction.RegisterFunction(Constants.POW, new PowFunction());
+            ParserFunction.RegisterFunction(Constants.ROUND, new RoundFunction());
+            ParserFunction.RegisterFunction(Constants.RANDOM, new GetRandomFunction());
+            ParserFunction.RegisterFunction(Constants.SIN, new SinFunction());
+            ParserFunction.RegisterFunction(Constants.SQRT, new SqrtFunction());
+
             //ParserFunction.CleanUp();
             ParserFunction.RegisterFunction(Constants.APPEND, new AppendFunction());
             ParserFunction.RegisterFunction(Constants.APPENDLINE, new AppendLineFunction());
@@ -26,6 +42,7 @@ namespace SplitAndMerge
             ParserFunction.RegisterFunction(Constants.FINDFILES, new FindfilesFunction());
             ParserFunction.RegisterFunction(Constants.FINDSTR, new FindstrFunction());
             ParserFunction.RegisterFunction(Constants.GET_NATIVE, new GetNativeFunction());
+            ParserFunction.RegisterFunction(Constants.JSON, new GetVariableFromJSONFunction());
             ParserFunction.RegisterFunction(Constants.KILL, new KillFunction());
             ParserFunction.RegisterFunction(Constants.MKDIR, new MkdirFunction());
             ParserFunction.RegisterFunction(Constants.MORE, new MoreFunction());
@@ -41,12 +58,19 @@ namespace SplitAndMerge
             ParserFunction.RegisterFunction(Constants.STOPWATCH_STOP, new StopWatchFunction(StopWatchFunction.Mode.STOP));
             ParserFunction.RegisterFunction(Constants.TAIL, new TailFunction());
             ParserFunction.RegisterFunction(Constants.TIMESTAMP, new TimestampFunction());
+            ParserFunction.RegisterFunction(Constants.WEB_REQUEST, new WebRequestFunction());
             ParserFunction.RegisterFunction(Constants.WRITE, new PrintFunction(false));
             ParserFunction.RegisterFunction(Constants.WRITELINE, new WriteLineFunction());
             ParserFunction.RegisterFunction(Constants.WRITELINES, new WriteLinesFunction());
             ParserFunction.RegisterFunction(Constants.WRITE_CONSOLE, new WriteToConsole());
 
 #if __ANDROID__ == false && __IOS__ == false
+            ParserFunction.RegisterFunction(Constants.ADD_COMP_DEFINITION, new EditCompiledEntry(EditCompiledEntry.EditMode.ADD_DEFINITION));
+            ParserFunction.RegisterFunction(Constants.ADD_COMP_NAMESPACE, new EditCompiledEntry(EditCompiledEntry.EditMode.ADD_NAMESPACE));
+            ParserFunction.RegisterFunction(Constants.CLEAR_COMP_DEFINITIONS, new EditCompiledEntry(EditCompiledEntry.EditMode.CLEAR_DEFINITIONS));
+            ParserFunction.RegisterFunction(Constants.CLEAR_COMP_NAMESPACES, new EditCompiledEntry(EditCompiledEntry.EditMode.CLEAR_NAMESPACES));
+            ParserFunction.RegisterFunction(Constants.CSHARP_FUNCTION, new CompiledFunctionCreator(true));
+
             ParserFunction.RegisterFunction(Constants.CONSOLE_CLR, new ClearConsole());
             ParserFunction.RegisterFunction(Constants.PRINT_BLACK, new PrintColorFunction(ConsoleColor.Black));
             ParserFunction.RegisterFunction(Constants.PRINT_GRAY, new PrintColorFunction(ConsoleColor.DarkGray));
@@ -56,60 +80,14 @@ namespace SplitAndMerge
             ParserFunction.RegisterFunction(Constants.READNUMBER, new ReadConsole(true));
             ParserFunction.RegisterFunction(Constants.TRANSLATE, new TranslateFunction());
 
-            ParserFunction.RegisterFunction(Constants.GOTO, new GotoGosubFunction(true));
-            ParserFunction.RegisterFunction(Constants.GOSUB, new GotoGosubFunction(false));
-            ParserFunction.RegisterFunction(Constants.INCLUDE_SECURE, new IncludeFileSecure());
-
             ParserFunction.RegisterFunction(Constants.ENCODE_FILE, new EncodeFileFunction(true));
             ParserFunction.RegisterFunction(Constants.DECODE_FILE, new EncodeFileFunction(false));
-
-            ParserFunction.AddAction(Constants.LABEL_OPERATOR, new LabelFunction());
 
             CSCS_SQL.Init();
 #endif
 #endif
             //ReadConfig();
         }
-
-
-#if UNITY_EDITOR == false && UNITY_STANDALONE == false && __ANDROID__ == false && __IOS__ == false
-        public Variable ProcessFileExtended(string filename, bool mainFile = false)
-        {
-            string script = Utils.GetFileContents(filename);
-            return ProcessExtended(script, filename, mainFile);
-        }
-
-        public Variable ProcessExtended(string script, string filename = "", bool mainFile = false)
-        {
-            Dictionary<int, int> char2Line;
-            string data = Utils.ConvertToScript(script, out char2Line, filename);
-            if (string.IsNullOrWhiteSpace(data))
-            {
-                return null;
-            }
-
-            ParsingScript toParse = new ParsingScript(data, 0, char2Line);
-            toParse.OriginalScript = script;
-            toParse.Filename = filename;
-
-            if (mainFile)
-            {
-                toParse.MainFilename = toParse.Filename;
-            }
-
-            Utils.PreprocessScript(toParse);
-
-            Variable result = null;
-
-            while (toParse.Pointer < data.Length)
-            {
-                result = toParse.Execute();
-                toParse.GoToNextStatement();
-            }
-
-            return result;
-        }
-#endif
 
         void ReadConfig()
         {

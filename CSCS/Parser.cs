@@ -65,7 +65,6 @@ namespace SplitAndMerge
 
             int arrayIndexDepth = 0;
             bool inQuotes = false;
-            bool canFinish = false;
             int negated = 0;
             char ch;
             string action;
@@ -80,7 +79,6 @@ namespace SplitAndMerge
                     return listToMerge;
                 }
 
-                canFinish = !inQuotes && script.Current == ' ' && to.Contains(' ');
                 bool negSign = CheckConsistencyAndSign(script, listToMerge, action, ref token);
 
                 // We are done getting the next token. The GetValue() call below may
@@ -93,7 +91,7 @@ namespace SplitAndMerge
                 {
                     return listToMerge;
                 }
-            } while (script.StillValid() && !canFinish &&
+            } while (script.StillValid() &&
                     (inQuotes || arrayIndexDepth > 0 || !to.Contains(script.Current)));
 
             // This happens when called recursively inside of the math expression:
@@ -115,7 +113,6 @@ namespace SplitAndMerge
 
             int arrayIndexDepth = 0;
             bool inQuotes = false;
-            bool canFinish = false;
             int negated = 0;
             char ch;
             string action;
@@ -124,13 +121,12 @@ namespace SplitAndMerge
             { // Main processing cycle of the first part.
                 string token = ExtractNextToken(script, to, ref inQuotes, ref arrayIndexDepth, ref negated, out ch, out action);
 
-                bool ternary = await UpdateIfTernaryAsync(script, token, ch, listToMerge, (List<Variable> newList) => { listToMerge = newList; });
+                bool ternary = UpdateIfTernary(script, token, ch, listToMerge, (List<Variable> newList) => { listToMerge = newList; });
                 if (ternary)
                 {
                     return listToMerge;
                 }
 
-                canFinish = !inQuotes && script.Current == ' ' && to.Contains(' ');
                 bool negSign = CheckConsistencyAndSign(script, listToMerge, action, ref token);
 
                 ParserFunction func = new ParserFunction(script, token, ch, ref action);
@@ -140,7 +136,7 @@ namespace SplitAndMerge
                 {
                     return listToMerge;
                 }
-            } while (script.StillValid() && !canFinish &&
+            } while (script.StillValid() &&
                     (inQuotes || arrayIndexDepth > 0 || !to.Contains(script.Current)));
 
             // This happens when called recursively inside of the math expression:
@@ -190,6 +186,13 @@ namespace SplitAndMerge
                 break;
             }
             while (true);
+
+            if (to.Contains(Constants.END_ARRAY) && ch == Constants.END_ARRAY &&
+                item[item.Length-1] != Constants.END_ARRAY &&
+                item.ToString().Contains(Constants.START_ARRAY))
+            {
+                item.Append(ch);
+            }
 
             string result = item.ToString();
             result = result.Replace("\\\\", "\\");
@@ -258,7 +261,7 @@ namespace SplitAndMerge
                          current.IsReturn);
             if (done)
             {
-                if (action != null && action != Constants.END_ARG_STR)
+                if (action != null && action != Constants.END_ARG_STR && token != Constants.DEFAULT)
                 {
                     throw new ArgumentException("Action [" +
                               action + "] without an argument.");
@@ -443,38 +446,22 @@ namespace SplitAndMerge
                 return false;
             }
 
+            Variable result;
             Variable arg1 = MergeList(listInput, script);
             script.MoveForwardIf(Constants.TERNARY_OPERATOR);
-            Variable arg2 = script.Execute(Constants.TERNARY_SEPARATOR);
-            script.MoveForwardIf(Constants.TERNARY_SEPARATOR);
-            Variable arg3 = script.Execute(Constants.NEXT_OR_END_ARRAY);
-            script.MoveForwardIf(Constants.NEXT_OR_END_ARRAY);
-
             double condition = arg1.AsDouble();
-            Variable result = condition != 0 ? arg2 : arg3;
-
-            listInput.Clear();
-            listInput.Add(result);
-            listToMerge(listInput);
-
-            return true;
-        }
-        static async Task<bool> UpdateIfTernaryAsync(ParsingScript script, string token, char ch, List<Variable> listInput, Action<List<Variable>> listToMerge)
-        {
-            if (listInput.Count < 1 || ch != Constants.TERNARY_OPERATOR || token.Length > 0)
+            if (condition != 0)
             {
-                return false;
+                result = script.Execute(Constants.TERNARY_SEPARATOR);
+                script.MoveForwardIf(Constants.TERNARY_SEPARATOR);
+                Utils.SkipRestExpr(script, Constants.END_STATEMENT);
             }
-
-            Variable arg1 = MergeList(listInput, script);
-            script.MoveForwardIf(Constants.TERNARY_OPERATOR);
-            Variable arg2 = await script.ExecuteAsync(Constants.TERNARY_SEPARATOR);
-            script.MoveForwardIf(Constants.TERNARY_SEPARATOR);
-            Variable arg3 = await script.ExecuteAsync(Constants.NEXT_OR_END_ARRAY);
-            script.MoveForwardIf(Constants.NEXT_OR_END_ARRAY);
-
-            double condition = arg1.AsDouble();
-            Variable result = condition != 0 ? arg2 : arg3;
+            else
+            {
+                Utils.SkipRestExpr(script, Constants.TERNARY_SEPARATOR[0]);
+                script.MoveForwardIf(Constants.TERNARY_SEPARATOR);
+                result = script.Execute(Constants.NEXT_OR_END_ARRAY);
+            }
 
             listInput.Clear();
             listInput.Add(result);
@@ -626,10 +613,6 @@ namespace SplitAndMerge
                     leftCell.Value *= rightCell.Value;
                     break;
                 case "/":
-                    if (rightCell.Value == 0.0)
-                    {
-                        throw new ArgumentException("Division by zero");
-                    }
                     leftCell.Value /= rightCell.Value;
                     break;
                 case "+":
@@ -658,9 +641,11 @@ namespace SplitAndMerge
                     leftCell.Value = Convert.ToDouble(leftCell.Value >= rightCell.Value);
                     break;
                 case "==":
+                case "===":
                     leftCell.Value = Convert.ToDouble(leftCell.Value == rightCell.Value);
                     break;
                 case "!=":
+                case "!==":
                     leftCell.Value = Convert.ToDouble(leftCell.Value != rightCell.Value);
                     break;
                 case "&":
@@ -717,6 +702,16 @@ namespace SplitAndMerge
                 case ">=":
                     leftCell.Value = Convert.ToDouble(
                       string.Compare(leftCell.AsString(), rightCell.AsString()) >= 0);
+                    break;
+                case "===":
+                    leftCell.Value = Convert.ToDouble(
+                        leftCell.Type == rightCell.Type &&
+                        leftCell.AsString() == rightCell.AsString());
+                    break;
+                case "!==":
+                    leftCell.Value = Convert.ToDouble(
+                        leftCell.Type != rightCell.Type ||
+                        leftCell.AsString() != rightCell.AsString());
                     break;
                 case "==":
                     leftCell.Value = Convert.ToDouble(

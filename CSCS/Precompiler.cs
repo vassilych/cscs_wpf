@@ -1406,7 +1406,13 @@ namespace SplitAndMerge
         public static bool IsMathFunction(string name, out string corrected)
         {
             corrected = name;
+            if (name.StartsWith("Math."))
+            {
+                return true;
+            }
+
             string candidate = name[0].ToString().ToUpperInvariant() + name.Substring(1).ToLower();
+
             if (candidate == "Pi")
             {
                 corrected = "Math.PI";
