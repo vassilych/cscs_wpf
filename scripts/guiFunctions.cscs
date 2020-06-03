@@ -1,5 +1,3 @@
-
-
 function button1@Clicked(sender, load) {
   if (!refresh) {
     return;
@@ -154,6 +152,11 @@ function exitEntry(sender, load) {
     exit();
   }
 }
+
+function startWindow2(sender, load) {
+    CHAIN "drugiProgram.cscs" WITH "argument1" "argument2" "argument3" "argument4";
+}
+
 function fillMenus@Clicked(sender, load) {
   mainMenu = sender == "fillMenus" ? "mainMenu" : "mainMenu1";
 
@@ -170,7 +173,7 @@ function fillMenus@Clicked(sender, load) {
 
   AddMenuItem("windowsMenu", "openWindowsMenu", "Open Windows");
   AddMenuItem("openWindowsMenu", "Window1");
-  AddMenuItem("openWindowsMenu", "Window2");
+  AddMenuItem("openWindowsMenu", "Window2", "Window2", "startWindow2");
   AddMenuItem("openWindowsMenu", "Window3");
 
   AddMenuItem("helpMenu", "topics", "Topics");

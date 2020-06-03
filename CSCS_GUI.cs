@@ -20,6 +20,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Net;
 using System.Xml;
+using System.Globalization;
 
 namespace SplitAndMerge
 {
@@ -901,13 +902,18 @@ namespace WpfCSCS
             return result;
         }
 
+        public static object  RunOnMainThread(Action action)
+        {
+            return Application.Current.Dispatcher.Invoke(action, null);
+        }
+
         public static Variable RunOnMainThread(CustomFunction callbackFunction, List<Variable> args)
         {
             Variable result = Variable.EmptyInstance;
             Application.Current.Dispatcher.Invoke(new Action(() =>
-           {
+            {
                result = callbackFunction.Run(args);
-           }));
+            }));
             return result;
         }
         public static Variable RunOnMainThread(ParserFunction func, string argsStr)
@@ -1029,6 +1035,7 @@ namespace WpfCSCS
 
         public static bool SetText(Control widget, string text, int index = -1)
         {
+            var dispatcher = Application.Current.Dispatcher;
             if (widget is ComboBox)
             {
                 var combo = widget as ComboBox;
@@ -1046,40 +1053,53 @@ namespace WpfCSCS
                 }
                 if (index >= 0 && index < combo.Items.Count)
                 {
-                    combo.SelectedIndex = index;
+                    dispatcher.Invoke(new Action(() => {
+                        combo.SelectedIndex = index;
+                    }));
                 }
             }
             else if (widget is CheckBox)
             {
                 var checkBox = widget as CheckBox;
-                checkBox.IsChecked = text == "1" || text.ToLower() == "true";
+                dispatcher.Invoke(new Action(() => {
+                    checkBox.IsChecked = text == "1" || text.ToLower() == "true";
+                }));
             }
             else if (widget is ContentControl)
             {
                 var contentable = widget as ContentControl;
-                contentable.Content = text;
+                dispatcher.Invoke(new Action(() => {
+                    contentable.Content = text;
+                }));
             }
             else if (widget is TextBox)
             {
                 var textBox = widget as TextBox;
-                textBox.Text = text;
+                dispatcher.Invoke(new Action(() => {
+                    textBox.Text = text;
+                }));
             }
             else if (widget is RichTextBox)
             {
                 var richTextBox = widget as RichTextBox;
-                richTextBox.Document.Blocks.Clear();
-                richTextBox.Document.Blocks.Add(new Paragraph(new Run(text)));
+                dispatcher.Invoke(new Action(() => {
+                    richTextBox.Document.Blocks.Clear();
+                    richTextBox.Document.Blocks.Add(new Paragraph(new Run(text)));
+                }));
             }
             else if (widget is DatePicker)
             {
                 var datePicker = widget as DatePicker;
-                datePicker.SelectedDate = DateTime.Parse(text);
+                var format = text.Length == 10 ? "yyyy/MM/dd" : text.Length == 8 ? "hh:mm:ss" :
+                             text.Length == 12 ? "hh:mm:ss.fff" : "yyyy/MM/dd hh:mm:ss";
+                dispatcher.Invoke(new Action(() => {
+                    datePicker.SelectedDate = DateTime.ParseExact(text, format, CultureInfo.InvariantCulture);
+                }));
             }
             else
             {
                 return false;
             }
-
             return true;
         }
     }
@@ -1092,9 +1112,9 @@ namespace WpfCSCS
             Utils.CheckArgs(args.Count, 1, m_name);
 
             var message = Utils.GetSafeString(args, 0);
-            var caption = Utils.GetSafeString(args, 1, "Question");
+            var caption = Utils.GetSafeString(args, 1, "Info");
             var answerType = Utils.GetSafeString(args, 2, "ok").ToLower();
-            var messageType = Utils.GetSafeString(args, 3, "ok").ToLower();
+            var messageType = Utils.GetSafeString(args, 3, "info").ToLower();
 
             MessageBoxButton buttons =
                 answerType == "ok" ? MessageBoxButton.OK :
@@ -1572,7 +1592,9 @@ namespace WpfCSCS
                 {
                     var func = new GetVarFunction(parameters[i]);
                     func.Name = argsArray[i];
-                    ParserFunction.AddLocalVariable(func);
+                    //ParserFunction.AddLocalVariable(func);
+                    ParserFunction.AddGlobalOrLocalVariable(argsArray[i], func, script);
+
                     //msg += func.Name + "=[" + parameters[i].AsString() + "] ";
                 }
                 //MessageBox.Show(msg, parameters.Count + " args", MessageBoxButton.OK, MessageBoxImage.Hand);
@@ -1654,7 +1676,7 @@ namespace WpfCSCS
 
             if (!string.IsNullOrWhiteSpace(chainScript.CurrentModule))
             {
-                throw new ArgumentException("Chained script finished without Quit statement.");
+                //throw new ArgumentException("Chained script finished without Quit statement.");
             }
 
             return result;

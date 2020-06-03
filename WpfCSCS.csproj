@@ -131,6 +131,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="scripts\drugiProgram.cscs" />
     <None Include="scripts\guiFunctions.cscs" />
     <None Include="scripts\helloWorld.cscs" />
     <None Include="scripts\printPlugin.cscs" />
