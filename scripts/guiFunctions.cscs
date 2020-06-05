@@ -50,9 +50,10 @@ function button3@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
-  result = MessageBox("Are you happy?", title, "YesNoCancel", "question");
-  SetText(answerLabel, "MessageBox result: " + result);
-  SetText("button8", result);
+  MessageBox(datePicker);
+  //result = MessageBox("Are you happy?", title, "YesNoCancel", "question");
+  //SetText(answerLabel, "MessageBox result: " + result);
+  //SetText("button8", result);
 }
 
 function button4@Clicked(sender, load) {
