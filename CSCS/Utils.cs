@@ -205,6 +205,19 @@ namespace SplitAndMerge
             ThrowErrorMsg(msg, code, lineNumber, filename);
         }
 
+        static ParserFunction.StackLevel CombineStacks(ParserFunction.StackLevel stackLevel, ParsingScript script)
+        {
+            if (script == null || script.StackLevel == null)
+            {
+                return stackLevel;
+            }
+            foreach(var item in script.StackLevel.Variables)
+            {
+                stackLevel.Variables[item.Key] = item.Value;
+            }
+            return stackLevel;
+        }
+
         public static ParsingScript GetTempScript(string str, ParserFunction.StackLevel stackLevel, string name = "",
             ParsingScript script = null, ParsingScript parentScript = null,
             int parentOffset = 0, CSCSClass.ClassInstance instance = null)
@@ -220,7 +233,7 @@ namespace SplitAndMerge
             tempScript.ParentScript = script;
             tempScript.InTryBlock = script == null ? false : script.InTryBlock;
             tempScript.ClassInstance = instance;
-            tempScript.StackLevel = stackLevel;
+            tempScript.StackLevel = CombineStacks(stackLevel, script);
 
             return tempScript;
         }

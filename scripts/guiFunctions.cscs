@@ -179,6 +179,8 @@ function fillMenus@Clicked(sender, load) {
   AddMenuItem("helpMenu", "topics", "Topics");
   AddMenuSeparator("helpMenu");
   AddMenuItem("helpMenu", "about", "About", "aboutEntry");
+
+  datePicker="2020/05/09";
 }
 function setDate@Clicked(sender, load) {
   if (!refresh) {

@@ -46,6 +46,7 @@ namespace WpfCSCS
         public static MainWindow MainWindow { get; set; }
 
         public static Dictionary<string, Control> Controls { get; set; } = new Dictionary<string, Control>();
+        public static Dictionary<Control, Window> Control2Window { get; set; } = new Dictionary<Control, Window>();
         //public static Action<string, string> OnWidgetClick;
 
         static Dictionary<string, string> s_actionHandlers = new Dictionary<string, string>();
@@ -272,7 +273,7 @@ namespace WpfCSCS
             System.Diagnostics.Trace.WriteLine(e.Output);
         }
 
-        public static void AddActions(Window win, bool force = false)
+        public static void AddActions(Window win, bool force = false, ParsingScript script = null)
         {
             var controls = CacheControls(win, force);
             foreach (var entry in controls)
@@ -296,42 +297,43 @@ namespace WpfCSCS
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnInit";
-            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance);
+            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
         }
 
         private static void Win_Activated(object sender, EventArgs e)
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnActivated";
-            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance);
+            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
         }
 
         public static void Win_Opened(object sender, EventArgs e)
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnOpen";
-            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance);
+            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
         }
 
         private static void Win_Loaded(object sender, RoutedEventArgs e)
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnStart";
-            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance);
+            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
         }
 
         private static void Win_ContentRendered(object sender, EventArgs e)
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnDisplay";
-            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance);
+            var script = ChainFunction.GetScript(win);
+            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
         }
 
         private static void Win_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnClosing";
-            var result = CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance);
+            var result = CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
             e.Cancel = result != null && result.Result.AsBool();
             if (e.Cancel)
             {
@@ -342,14 +344,14 @@ namespace WpfCSCS
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnDeactivated";
-            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance);
+            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
         }
 
         private static void Win_Closed(object sender, EventArgs e)
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnClose";
-            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance);
+            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
         }
 
         public static bool AddBinding(string name, Control widget)
@@ -495,7 +497,10 @@ namespace WpfCSCS
             {
                 result = new Variable(widgetName);
             }
-            CustomFunction.Run(funcName, new Variable(widgetName), result);
+
+            Control2Window.TryGetValue(widget, out Window win);
+            var script = ChainFunction.GetScript(win);
+            CustomFunction.Run(funcName, new Variable(widgetName), result, Variable.EmptyInstance, script);
         }
 
         private static void Widget_PreClick(object sender, MouseButtonEventArgs e)
@@ -631,18 +636,18 @@ namespace WpfCSCS
             }
 
             var content = win.Content as Panel;
-            CacheChildren(content.Children.Cast<UIElement>().ToList(), controls);
+            CacheChildren(content.Children.Cast<UIElement>().ToList(), controls, win);
             return controls;
         }
 
-        static void CacheChildren(List<UIElement> children, List<Control> controls)
+        static void CacheChildren(List<UIElement> children, List<Control> controls, Window win)
         {
             foreach (var child in children)
             {
                 if (child is Grid)
                 {
                     var gridControl = child as Grid;
-                    CacheChildren(gridControl.Children.Cast<UIElement>().ToList(), controls);
+                    CacheChildren(gridControl.Children.Cast<UIElement>().ToList(), controls, win);
                 }
                 else if (child is TabControl)
                 {
@@ -671,7 +676,7 @@ namespace WpfCSCS
                                             var content2 = tabItem.Content as Grid;
                                             foreach (var child2 in content2.Children)
                                             {
-                                                CacheControl(child2 as Control, controls);
+                                                CacheControl(child2 as Control, win,controls);
                                             }
                                         }
                                     }
@@ -682,26 +687,30 @@ namespace WpfCSCS
                 }
                 else
                 {
-                    CacheControl(child as Control, controls);
+                    CacheControl(child as Control, win, controls);
                     if (child is ItemsControl)
                     {
                         var parent = child as ItemsControl;
                         var items = parent.Items;
                         if (items != null && items.Count > 0)
                         {
-                            CacheChildren(items.Cast<UIElement>().ToList(), controls);
+                            CacheChildren(items.Cast<UIElement>().ToList(), controls, win);
                         }
                     }
                 }
             }
         }
 
-        public static void CacheControl(Control widget, List<Control> controls = null)
+        public static void CacheControl(Control widget, Window win = null, List<Control> controls = null)
         {
             if (widget != null && widget.DataContext != null)
             {
                 Controls[widget.DataContext.ToString().ToLower()] = widget;
                 controls?.Add(widget);
+                if (win != null)
+                {
+                    Control2Window[widget] = win;
+                }
             }
         }
         public static void RemoveControl(Control widget)
@@ -1468,6 +1477,8 @@ namespace WpfCSCS
                 return Variable.EmptyInstance;
             }
 
+            CSCS_GUI.Control2Window.TryGetValue(parent, out Window win);
+
             if (m_separator)
             {
                 parent.Items.Add(new Separator());
@@ -1492,7 +1503,7 @@ namespace WpfCSCS
             }
 
             parent.Items.Add(newMenuItem);
-            CSCS_GUI.CacheControl(newMenuItem);
+            CSCS_GUI.CacheControl(newMenuItem, win);
 
             return new Variable(menuName);
         }
@@ -1562,10 +1573,42 @@ namespace WpfCSCS
     {
         bool m_paramMode;
         static Dictionary<string, List<Variable>> s_parameters = new Dictionary<string, List<Variable>>();
+        static Dictionary<string, ParsingScript> s_chains      = new Dictionary<string, ParsingScript>();
+        static Dictionary<Window, string> s_window2File = new Dictionary<Window, string>();
 
         public ChainFunction(bool paramMode = false)
         {
             m_paramMode = paramMode;
+        }
+
+        public static ParsingScript GetScript(Control widget)
+        {
+            if (!CSCS_GUI.Control2Window.TryGetValue(widget, out Window win))
+            {
+                return null;
+            }
+            return GetScript(win);
+        }
+
+        public static ParsingScript GetScript(Window window)
+        {
+            if (window == null || !s_window2File.TryGetValue(window, out string filename))
+            {
+                return null;
+            }
+            if (!s_chains.TryGetValue(filename, out ParsingScript result))
+            {
+                return null;
+            }
+            return result;
+        }
+
+        public static void CacheWindow(Window window, string filename)
+        {
+            if (!string.IsNullOrWhiteSpace(filename))
+            {
+                s_window2File[window] = filename;
+            }
         }
 
         protected override Variable Evaluate(ParsingScript script)
@@ -1592,12 +1635,14 @@ namespace WpfCSCS
                 {
                     var func = new GetVarFunction(parameters[i]);
                     func.Name = argsArray[i];
-                    //ParserFunction.AddLocalVariable(func);
-                    ParserFunction.AddGlobalOrLocalVariable(argsArray[i], func, script);
+                    //ParserFunction.AddGlobalOrLocalVariable(argsArray[i], func, script, true);
+                    script.StackLevel.Variables[argsArray[i]] = func;
 
                     //msg += func.Name + "=[" + parameters[i].AsString() + "] ";
                 }
                 //MessageBox.Show(msg, parameters.Count + " args", MessageBoxButton.OK, MessageBoxImage.Hand);
+
+                s_chains[script.Filename] = script;
                 return Variable.EmptyInstance;
             }
 
@@ -1881,7 +1926,8 @@ namespace WpfCSCS
                 s_windowType[instanceName] = inst;
                 wind.Tag = inst;
 
-                CSCS_GUI.AddActions(wind, true);
+                CSCS_GUI.AddActions(wind, true, script);
+                ChainFunction.CacheWindow(wind, script.Filename);
 
                 if (m_mode == MODE.MODAL)
                 {
