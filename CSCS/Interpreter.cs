@@ -683,7 +683,8 @@ namespace SplitAndMerge
         {
             if (reason == Constants.CASE)
             {
-                /*var token = */Utils.GetToken(script, Constants.TOKEN_SEPARATION);
+                /*var token = */
+                Utils.GetToken(script, Constants.TOKEN_SEPARATION);
             }
             script.MoveForwardIf(':');
 
@@ -1086,7 +1087,7 @@ namespace SplitAndMerge
             int blockStart = script.Pointer;
             int startCount = 0;
             int endCount = 0;
-            bool inQuotes  = false;
+            bool inQuotes = false;
             bool inQuotes1 = false;
             bool inQuotes2 = false;
             char previous = Constants.EMPTY;
@@ -1144,7 +1145,7 @@ namespace SplitAndMerge
                 ParsingScript nextData = new ParsingScript(script);
                 string nextToken = Utils.GetNextToken(nextData);
                 if (Constants.ELSE_IF != nextToken &&
-                    Constants.ELSE    != nextToken)
+                    Constants.ELSE != nextToken)
                 {
                     return;
                 }
@@ -1152,5 +1153,25 @@ namespace SplitAndMerge
                 SkipBlock(script);
             }
         }
+
+        public static Variable Run(string functionName, Variable arg1 = null, Variable arg2 = null, Variable arg3 = null, ParsingScript script = null)
+        {
+            System.Threading.Tasks.Task<Variable> task = null;
+            try
+            {
+                task = CustomFunction.Run(functionName, arg1, arg2, arg3, script);
+            }
+            catch (Exception exc)
+            {
+                task = CustomFunction.Run("OnException", new Variable(functionName),
+                                          new Variable(exc.Message), arg2, script);
+                if (task == null)
+                {
+                    throw;
+                }
+            }
+            return task == null ? Variable.EmptyInstance : task.Result;
+        }
     }
 }
+

@@ -297,28 +297,28 @@ namespace WpfCSCS
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnInit";
-            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
+            Interpreter.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
         }
 
         private static void Win_Activated(object sender, EventArgs e)
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnActivated";
-            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
+            Interpreter.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
         }
 
         public static void Win_Opened(object sender, EventArgs e)
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnOpen";
-            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
+            Interpreter.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
         }
 
         private static void Win_Loaded(object sender, RoutedEventArgs e)
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnStart";
-            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
+            Interpreter.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
         }
 
         private static void Win_ContentRendered(object sender, EventArgs e)
@@ -326,15 +326,15 @@ namespace WpfCSCS
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnDisplay";
             var script = ChainFunction.GetScript(win);
-            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
+            Interpreter.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
         }
 
         private static void Win_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnClosing";
-            var result = CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
-            e.Cancel = result != null && result.Result.AsBool();
+            var result = Interpreter.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
+            e.Cancel = result != null && result.AsBool();
             if (e.Cancel)
             {
                 NewWindowFunction.RemoveWindow(win);
@@ -344,14 +344,14 @@ namespace WpfCSCS
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnDeactivated";
-            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
+            Interpreter.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
         }
 
         private static void Win_Closed(object sender, EventArgs e)
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnClose";
-            CustomFunction.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
+            Interpreter.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
         }
 
         public static bool AddBinding(string name, Control widget)
@@ -460,7 +460,7 @@ namespace WpfCSCS
                 return;
             }
 
-            CustomFunction.Run(funcName, new Variable(widgetName),
+            Interpreter.Run(funcName, new Variable(widgetName),
                 new Variable(date.Value.ToString("yyyy/MM/dd")));
         }
 
@@ -500,7 +500,7 @@ namespace WpfCSCS
 
             Control2Window.TryGetValue(widget, out Window win);
             var script = ChainFunction.GetScript(win);
-            CustomFunction.Run(funcName, new Variable(widgetName), result, Variable.EmptyInstance, script);
+            Interpreter.Run(funcName, new Variable(widgetName), result, Variable.EmptyInstance, script);
         }
 
         private static void Widget_PreClick(object sender, MouseButtonEventArgs e)
@@ -516,7 +516,7 @@ namespace WpfCSCS
             if (s_preActionHandlers.TryGetValue(widgetName, out funcName))
             {
                 var arg = GetTextWidgetFunction.GetText(widget);
-                CustomFunction.Run(funcName, new Variable(widgetName), new Variable(arg));
+                Interpreter.Run(funcName, new Variable(widgetName), new Variable(arg));
             }
         }
 
@@ -533,7 +533,7 @@ namespace WpfCSCS
             if (s_postActionHandlers.TryGetValue(widgetName, out funcName))
             {
                 var arg = GetTextWidgetFunction.GetText(widget);
-                CustomFunction.Run(funcName, new Variable(widgetName), new Variable(arg));
+                Interpreter.Run(funcName, new Variable(widgetName), new Variable(arg));
             }
         }
 
@@ -549,7 +549,7 @@ namespace WpfCSCS
             string funcName;
             if (s_keyDownHandlers.TryGetValue(widgetName, out funcName))
             {
-                CustomFunction.Run(funcName, new Variable(widgetName),
+                Interpreter.Run(funcName, new Variable(widgetName),
                     new Variable(((char)e.Key).ToString()));
             }
         }
@@ -565,7 +565,7 @@ namespace WpfCSCS
             string funcName;
             if (s_keyUpHandlers.TryGetValue(widgetName, out funcName))
             {
-                CustomFunction.Run(funcName, new Variable(widgetName),
+                Interpreter.Run(funcName, new Variable(widgetName),
                     new Variable(((char)e.Key).ToString()));
             }
         }
@@ -585,7 +585,7 @@ namespace WpfCSCS
             string funcName;
             if (s_textChangedHandlers.TryGetValue(widgetName, out funcName))
             {
-                CustomFunction.Run(funcName, new Variable(widgetName), text);
+                Interpreter.Run(funcName, new Variable(widgetName), text);
             }
         }
 
@@ -596,7 +596,7 @@ namespace WpfCSCS
             if (s_selChangedHandlers.TryGetValue(widgetName, out string funcName))
             {
                 var item = e.AddedItems.Count > 0 ? e.AddedItems[0].ToString() : e.RemovedItems.Count > 0 ? e.RemovedItems[0].ToString() : "";
-                CustomFunction.Run(funcName, new Variable(widgetName), new Variable(item));
+                Interpreter.Run(funcName, new Variable(widgetName), new Variable(item));
             }
         }
 
@@ -611,7 +611,7 @@ namespace WpfCSCS
 
             if (s_mouseHoverHandlers.TryGetValue(widgetName, out string funcName))
             {
-                CustomFunction.Run(funcName, new Variable(widgetName), new Variable(e.ToString()));
+                Interpreter.Run(funcName, new Variable(widgetName), new Variable(e.ToString()));
             }
         }
 
@@ -1498,7 +1498,7 @@ namespace WpfCSCS
             {
                 newMenuItem.Click += (sender, eventArgs) =>
                 {
-                    CustomFunction.Run(menuAction, new Variable(menuName), new Variable(eventArgs.Source.ToString()));
+                    Interpreter.Run(menuAction, new Variable(menuName), new Variable(eventArgs.Source.ToString()));
                 };
             }
 

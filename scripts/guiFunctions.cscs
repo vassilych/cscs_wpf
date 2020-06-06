@@ -2,7 +2,7 @@ function button1@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
-  data = OpenFile();
+  data = OpenFileXX();
   SetText(answerLabel, "Open: " + data);
   //SetText("textBox1", data);
 }
@@ -55,7 +55,9 @@ function button3@Clicked(sender, load) {
   //SetText(answerLabel, "MessageBox result: " + result);
   //SetText("button8", result);
 }
-
+function onException(sender, errorMsg, arg) {
+  MessageBox("Exception in " + sender + ": " + errorMsg, title, "OK", "error");
+}
 function button4@Clicked(sender, load) {
   if (!refresh) {
     return;
