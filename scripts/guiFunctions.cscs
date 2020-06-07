@@ -132,7 +132,7 @@ function datePicker@DateChanged(sender, load) {
   if (!refresh) {
     return;
   }
-  MessageBox("Date changed: " + load, title, "OK", "info");
+  //MessageBox("Date changed: " + load, title, "OK", "info");
 }
 function getDate@Clicked(sender, load) {
   if (!refresh) {

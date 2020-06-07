@@ -1172,6 +1172,26 @@ namespace SplitAndMerge
             }
             return task == null ? Variable.EmptyInstance : task.Result;
         }
+
+
+        public static Variable Run(CustomFunction function, List<Variable> args, ParsingScript script = null)
+        {
+            Variable result = null;
+            try
+            {
+                result = function.Run(args, script);
+            }
+            catch (Exception exc)
+            {
+                result = CustomFunction.Run(Constants.ON_EXCEPTION, new Variable(function.Name),
+                                          new Variable(exc.Message), args.Count > 0 ? args[0] : Variable.EmptyInstance, script).Result;
+                if (result == null)
+                {
+                    throw;
+                }
+            }
+            return result;
+        }
     }
 }
 

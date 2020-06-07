@@ -255,7 +255,7 @@ namespace WpfCSCS
             s_boundVariables[widgetName] = newValue;
         }
 
-        static void UpdateVariable(Control widget, string text)
+        static void UpdateVariable(Control widget, Variable newValue)
         {
             var widgetName = GetWidgetBindingName(widget);
             if (string.IsNullOrEmpty(widgetName))
@@ -264,7 +264,7 @@ namespace WpfCSCS
             }
             s_changingBoundVariable = true;
             ParserFunction.AddGlobalOrLocalVariable(widgetName,
-                                        new GetVarFunction(new Variable(text)));
+                                        new GetVarFunction(newValue));
             s_changingBoundVariable = false;
         }
 
@@ -318,22 +318,21 @@ namespace WpfCSCS
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnStart";
-            Interpreter.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
+            RunScript(funcName, win, new Variable(win.Tag));
         }
 
         private static void Win_ContentRendered(object sender, EventArgs e)
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnDisplay";
-            var script = ChainFunction.GetScript(win);
-            Interpreter.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
+            RunScript(funcName, win, new Variable(win.Tag));
         }
 
         private static void Win_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnClosing";
-            var result = Interpreter.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
+            var result = RunScript(funcName, win, new Variable(win.Tag));
             e.Cancel = result != null && result.AsBool();
             if (e.Cancel)
             {
@@ -344,14 +343,41 @@ namespace WpfCSCS
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnDeactivated";
-            Interpreter.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
+            RunScript(funcName, win, new Variable(win.Tag));
         }
 
         private static void Win_Closed(object sender, EventArgs e)
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnClose";
-            Interpreter.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
+            RunScript(funcName, win, new Variable(win.Tag));
+        }
+
+        private static Variable RunScript(string funcName, Window win, Variable arg1, Variable arg2 = null)
+        {
+            CustomFunction customFunction = ParserFunction.GetFunction(funcName, null) as CustomFunction;
+            if (customFunction != null)
+            {
+                List<Variable> args = new List<Variable>();
+                args.Add(arg1);
+                args.Add(arg2 != null ? arg2 : Variable.EmptyInstance);
+
+                var script = ChainFunction.GetScript(win);
+                if (script != null && script.StackLevel != null)
+                {
+                    foreach (var item in script.StackLevel.Variables)
+                    {
+                        if (!string.IsNullOrWhiteSpace(item.Key))
+                        {
+                            var func = item.Value as GetVarFunction;
+                            func.Value.ParamName = item.Key;
+                            args.Add(func.Value);
+                        }
+                    }
+                }
+                return Interpreter.Run(customFunction, args, script);
+            }
+            return Variable.EmptyInstance;
         }
 
         public static bool AddBinding(string name, Control widget)
@@ -448,10 +474,11 @@ namespace WpfCSCS
             return true;
         }
 
-        private static void ValueUpdated(string funcName, string widgetName, Variable newValue, ParsingScript script = null)
+        private static void ValueUpdated(string funcName, string widgetName, Control widget, Variable newValue)
         {
-            ParserFunction.AddGlobalOrLocalVariable(widgetName, new GetVarFunction(newValue));
-            Interpreter.Run(funcName, new Variable(widgetName), newValue, Variable.EmptyInstance, script);
+            UpdateVariable(widget, newValue);
+            Control2Window.TryGetValue(widget, out Window win);
+            RunScript(funcName, win, new Variable(widgetName), newValue);
         }
 
         private static void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
@@ -466,7 +493,7 @@ namespace WpfCSCS
                 return;
             }
 
-            ValueUpdated(funcName, widgetName, new Variable(date.Value.ToString("yyyy/MM/dd")));
+            ValueUpdated(funcName, widgetName, widget, new Variable(date.Value.ToString("yyyy/MM/dd")));
         }
 
         public static bool AddMouseHoverHandler(string name, string action, Control widget)
@@ -503,8 +530,7 @@ namespace WpfCSCS
                 result = new Variable(widgetName);
             }
 
-            Control2Window.TryGetValue(widget, out Window win);
-            ValueUpdated(funcName, widgetName, result, ChainFunction.GetScript(win));
+            ValueUpdated(funcName, widgetName, widget, result);
         }
 
         private static void Widget_PreClick(object sender, MouseButtonEventArgs e)
@@ -591,7 +617,7 @@ namespace WpfCSCS
             }
 
             var text = GetTextWidgetFunction.GetText(widget);
-            UpdateVariable(widget, text.AsString());
+            UpdateVariable(widget, text);
 
             string funcName;
             if (s_textChangedHandlers.TryGetValue(widgetName, out funcName))
