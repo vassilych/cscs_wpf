@@ -1163,7 +1163,7 @@ namespace SplitAndMerge
             }
             catch (Exception exc)
             {
-                task = CustomFunction.Run("OnException", new Variable(functionName),
+                task = CustomFunction.Run(Constants.ON_EXCEPTION, new Variable(functionName),
                                           new Variable(exc.Message), arg2, script);
                 if (task == null)
                 {

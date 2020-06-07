@@ -448,6 +448,12 @@ namespace WpfCSCS
             return true;
         }
 
+        private static void ValueUpdated(string funcName, string widgetName, Variable newValue, ParsingScript script = null)
+        {
+            ParserFunction.AddGlobalOrLocalVariable(widgetName, new GetVarFunction(newValue));
+            Interpreter.Run(funcName, new Variable(widgetName), newValue, Variable.EmptyInstance, script);
+        }
+
         private static void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             Control widget = sender as Control;
@@ -460,8 +466,7 @@ namespace WpfCSCS
                 return;
             }
 
-            Interpreter.Run(funcName, new Variable(widgetName),
-                new Variable(date.Value.ToString("yyyy/MM/dd")));
+            ValueUpdated(funcName, widgetName, new Variable(date.Value.ToString("yyyy/MM/dd")));
         }
 
         public static bool AddMouseHoverHandler(string name, string action, Control widget)
@@ -499,8 +504,7 @@ namespace WpfCSCS
             }
 
             Control2Window.TryGetValue(widget, out Window win);
-            var script = ChainFunction.GetScript(win);
-            Interpreter.Run(funcName, new Variable(widgetName), result, Variable.EmptyInstance, script);
+            ValueUpdated(funcName, widgetName, result, ChainFunction.GetScript(win));
         }
 
         private static void Widget_PreClick(object sender, MouseButtonEventArgs e)
@@ -516,7 +520,8 @@ namespace WpfCSCS
             if (s_preActionHandlers.TryGetValue(widgetName, out funcName))
             {
                 var arg = GetTextWidgetFunction.GetText(widget);
-                Interpreter.Run(funcName, new Variable(widgetName), new Variable(arg));
+                Control2Window.TryGetValue(widget, out Window win);
+                Interpreter.Run(funcName, new Variable(widgetName), new Variable(arg), Variable.EmptyInstance, ChainFunction.GetScript(win));
             }
         }
 
@@ -533,7 +538,9 @@ namespace WpfCSCS
             if (s_postActionHandlers.TryGetValue(widgetName, out funcName))
             {
                 var arg = GetTextWidgetFunction.GetText(widget);
-                Interpreter.Run(funcName, new Variable(widgetName), new Variable(arg));
+                Control2Window.TryGetValue(widget, out Window win);
+                Interpreter.Run(funcName, new Variable(widgetName), new Variable(arg),
+                    Variable.EmptyInstance, ChainFunction.GetScript(win));
             }
         }
 
@@ -549,8 +556,10 @@ namespace WpfCSCS
             string funcName;
             if (s_keyDownHandlers.TryGetValue(widgetName, out funcName))
             {
+                Control2Window.TryGetValue(widget, out Window win);
                 Interpreter.Run(funcName, new Variable(widgetName),
-                    new Variable(((char)e.Key).ToString()));
+                    new Variable(((char)e.Key).ToString()),
+                    Variable.EmptyInstance, ChainFunction.GetScript(win));
             }
         }
         private static void Widget_KeyUp(object sender, KeyEventArgs e)
@@ -565,8 +574,10 @@ namespace WpfCSCS
             string funcName;
             if (s_keyUpHandlers.TryGetValue(widgetName, out funcName))
             {
+                Control2Window.TryGetValue(widget, out Window win);
                 Interpreter.Run(funcName, new Variable(widgetName),
-                    new Variable(((char)e.Key).ToString()));
+                    new Variable(((char)e.Key).ToString()),
+                    Variable.EmptyInstance, ChainFunction.GetScript(win));
             }
         }
 
@@ -585,7 +596,9 @@ namespace WpfCSCS
             string funcName;
             if (s_textChangedHandlers.TryGetValue(widgetName, out funcName))
             {
-                Interpreter.Run(funcName, new Variable(widgetName), text);
+                Control2Window.TryGetValue(widget, out Window win);
+                Interpreter.Run(funcName, new Variable(widgetName), text,
+                    Variable.EmptyInstance, ChainFunction.GetScript(win));
             }
         }
 
@@ -596,7 +609,9 @@ namespace WpfCSCS
             if (s_selChangedHandlers.TryGetValue(widgetName, out string funcName))
             {
                 var item = e.AddedItems.Count > 0 ? e.AddedItems[0].ToString() : e.RemovedItems.Count > 0 ? e.RemovedItems[0].ToString() : "";
-                Interpreter.Run(funcName, new Variable(widgetName), new Variable(item));
+                Control2Window.TryGetValue(widget, out Window win);
+                Interpreter.Run(funcName, new Variable(widgetName), new Variable(item),
+                    Variable.EmptyInstance, ChainFunction.GetScript(win));
             }
         }
 
@@ -611,7 +626,9 @@ namespace WpfCSCS
 
             if (s_mouseHoverHandlers.TryGetValue(widgetName, out string funcName))
             {
-                Interpreter.Run(funcName, new Variable(widgetName), new Variable(e.ToString()));
+                Control2Window.TryGetValue(widget, out Window win);
+                Interpreter.Run(funcName, new Variable(widgetName), new Variable(e.ToString()),
+                    Variable.EmptyInstance, ChainFunction.GetScript(win));
             }
         }
 

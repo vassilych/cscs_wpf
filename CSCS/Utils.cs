@@ -735,7 +735,7 @@ namespace SplitAndMerge
 
         public static string GetFullPath(string path)
         {
-            if (string.IsNullOrWhiteSpace(path))
+            if (string.IsNullOrWhiteSpace(path) || Path.IsPathRooted(path))
             {
                 return path;
             }
