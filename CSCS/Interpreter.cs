@@ -1183,12 +1183,13 @@ namespace SplitAndMerge
             }
             catch (Exception exc)
             {
-                result = CustomFunction.Run(Constants.ON_EXCEPTION, new Variable(function.Name),
-                                          new Variable(exc.Message), args.Count > 0 ? args[0] : Variable.EmptyInstance, script).Result;
-                if (result == null)
+                var task = CustomFunction.Run(Constants.ON_EXCEPTION, new Variable(function.Name),
+                                          new Variable(exc.Message), args.Count > 0 ? args[0] : Variable.EmptyInstance, script);
+                if (task == null)
                 {
                     throw;
                 }
+                result = task.Result;
             }
             return result;
         }

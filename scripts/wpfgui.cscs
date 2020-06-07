@@ -1,6 +1,6 @@
-includes("guiFunctions.cscs");
-
 title = "My Great App";
+
+includes("guiFunctions.cscs");
 
 answerLabel = "label1";
 width = 90;

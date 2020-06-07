@@ -1,3 +1,7 @@
+function onException(sender, errorMsg, arg) {
+  MessageBox("Exception in " + sender + ": " + errorMsg, title, "OK", "error");
+}
+
 function button1@Clicked(sender, load) {
   if (!refresh) {
     return;
@@ -54,9 +58,6 @@ function button3@Clicked(sender, load) {
   //result = MessageBox("Are you happy?", title, "YesNoCancel", "question");
   //SetText(answerLabel, "MessageBox result: " + result);
   //SetText("button8", result);
-}
-function onException(sender, errorMsg, arg) {
-  MessageBox("Exception in " + sender + ": " + errorMsg, title, "OK", "error");
 }
 function button4@Clicked(sender, load) {
   if (!refresh) {

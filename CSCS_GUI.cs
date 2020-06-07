@@ -822,7 +822,12 @@ namespace WpfCSCS
                 Console.WriteLine("Exception: " + exc.Message);
                 Console.WriteLine(exc.StackTrace);
                 ParserFunction.InvalidateStacksAfterLevel(0);
-                throw;
+                var onException = CustomFunction.Run(Constants.ON_EXCEPTION, new Variable("Global Scope"),
+                              new Variable(exc.Message), Variable.EmptyInstance);
+                if (onException == null)
+                {
+                    throw;
+                }
             }
         }
     }
