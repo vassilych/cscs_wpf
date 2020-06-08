@@ -155,11 +155,6 @@ namespace WpfCSCS
 
         public static void Init()
         {
-            ParserFunction.RegisterFunction(Constants.GOTO, new GotoGosubFunction(true));
-            ParserFunction.RegisterFunction(Constants.GOSUB, new GotoGosubFunction(false));
-            ParserFunction.RegisterFunction(Constants.INCLUDE_SECURE, new IncludeFileSecure());
-            ParserFunction.AddAction(Constants.LABEL_OPERATOR, new LabelFunction());
-
             ParserFunction.RegisterFunction(Constants.MSG, new VariableArgsFunction(true));
             ParserFunction.RegisterFunction(Constants.DEFINE, new VariableArgsFunction(true));
             ParserFunction.RegisterFunction(Constants.SET_OBJECT, new VariableArgsFunction(true));

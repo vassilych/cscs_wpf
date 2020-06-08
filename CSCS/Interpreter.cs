@@ -147,6 +147,8 @@ namespace SplitAndMerge
             ParserFunction.RegisterFunction(Constants.GET_COLUMN, new GetColumnFunction());
             ParserFunction.RegisterFunction(Constants.GET_FILE_FROM_DEBUGGER, new GetFileFromDebugger());
             ParserFunction.RegisterFunction(Constants.GET_KEYS, new GetAllKeysFunction());
+            ParserFunction.RegisterFunction(Constants.INCLUDE_SECURE, new IncludeFileSecure());
+            ParserFunction.RegisterFunction(Constants.JSON, new GetVariableFromJSONFunction());
             ParserFunction.RegisterFunction(Constants.LOCK, new LockFunction());
             ParserFunction.RegisterFunction(Constants.NAMESPACE, new NamespaceFunction());
             ParserFunction.RegisterFunction(Constants.NAME_EXISTS, new NameExistsFunction());
@@ -192,6 +194,7 @@ namespace SplitAndMerge
             ParserFunction.RegisterFunction(Constants.TO_STRING, new ToStringFunction());
             ParserFunction.RegisterFunction(Constants.VAR, new VarFunction());
             ParserFunction.RegisterFunction(Constants.WAIT, new SignalWaitFunction(false));
+            ParserFunction.RegisterFunction(Constants.WEB_REQUEST, new WebRequestFunction());
 
             ParserFunction.RegisterFunction(Constants.ADD_DATA, new DataFunction(DataFunction.DataMode.ADD));
             ParserFunction.RegisterFunction(Constants.COLLECT_DATA, new DataFunction(DataFunction.DataMode.SUBSCRIBE));
