@@ -21,6 +21,8 @@ using System.Windows.Media;
 using System.Net;
 using System.Xml;
 using System.Globalization;
+using System.Runtime.InteropServices;
+using System.Windows.Interop;
 
 namespace SplitAndMerge
 {
@@ -284,7 +286,6 @@ namespace WpfCSCS
             win.Closing += Win_Closing;
             win.Deactivated += Win_Deactivated;
             win.Closed += Win_Closed;
-
             Win_Opened(win, EventArgs.Empty);
         }
 
@@ -348,7 +349,7 @@ namespace WpfCSCS
             RunScript(funcName, win, new Variable(win.Tag));
         }
 
-        private static Variable RunScript(string funcName, Window win, Variable arg1, Variable arg2 = null)
+        public static Variable RunScript(string funcName, Window win, Variable arg1, Variable arg2 = null)
         {
             CustomFunction customFunction = ParserFunction.GetFunction(funcName, null) as CustomFunction;
             if (customFunction != null)
@@ -674,7 +675,10 @@ namespace WpfCSCS
             }
 
             var content = win.Content as Panel;
-            CacheChildren(content.Children.Cast<UIElement>().ToList(), controls, win);
+            if (content != null)
+            {
+                CacheChildren(content.Children.Cast<UIElement>().ToList(), controls, win);
+            }
             return controls;
         }
 
@@ -1618,6 +1622,8 @@ namespace WpfCSCS
         static Dictionary<string, List<Variable>> s_parameters = new Dictionary<string, List<Variable>>();
         static Dictionary<string, ParsingScript> s_chains      = new Dictionary<string, ParsingScript>();
         static Dictionary<Window, string> s_window2File = new Dictionary<Window, string>();
+        static Dictionary<string, Window> s_file2Window = new Dictionary<string, Window>();
+        static Dictionary<string, Window> s_file2Parent = new Dictionary<string, Window>();
 
         public ChainFunction(bool paramMode = false)
         {
@@ -1651,7 +1657,26 @@ namespace WpfCSCS
             if (!string.IsNullOrWhiteSpace(filename))
             {
                 s_window2File[window] = filename;
+                s_file2Window[filename] = window;
             }
+        }
+
+        public static Window GetParentWindow(string filename)
+        {
+            if (!s_file2Parent.TryGetValue(filename, out Window win))
+            {
+                return null;
+            }
+            return win;
+        }
+        public static Window GetParentWindow(ParsingScript script)
+        {
+            if (script.ParentScript != null && 
+                s_file2Window.TryGetValue(script.ParentScript.Filename, out Window win))
+            {
+                return win;
+            }
+            return CSCS_GUI.MainWindow;
         }
 
         protected override Variable Evaluate(ParsingScript script)
@@ -1745,6 +1770,7 @@ namespace WpfCSCS
             ParsingScript chainScript = tempScript.GetIncludeFileScript(chainName);
             chainScript.StackLevel = ParserFunction.AddStackLevel(chainScript.Filename);
             chainScript.CurrentModule = chainName;
+            chainScript.ParentScript = script;
 
             s_parameters[chainScript.Filename] = parameters;
 
@@ -1921,6 +1947,11 @@ namespace WpfCSCS
 
     class NewWindowFunction : ParserFunction
     {
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern int GetWindowLong(IntPtr hwnd, int index);
+        [DllImport("user32.dll")]
+        static extern bool EnableWindow(IntPtr hWnd, bool bEnable);
+
         static string ns = "WpfCSCS.";
 
         static Dictionary<string, Window> s_windows = new Dictionary<string, Window>();
@@ -1962,28 +1993,20 @@ namespace WpfCSCS
             Window wind = null;
             if (m_mode == MODE.NEW || m_mode == MODE.MODAL)
             {
-                wind = CreateWindow(instanceName);
-                Random rnd = new Random();
-                var inst = instanceName + "_" + rnd.Next(1000);
-                s_windows[inst] = wind;
-                s_windowType[instanceName] = inst;
-                wind.Tag = inst;
+                var parentWin = ChainFunction.GetParentWindow(script);
+                var winMode = m_mode == MODE.NEW ? SpecialModalWindow.MODE.NORMAL :
+                    parentWin == CSCS_GUI.MainWindow ? SpecialModalWindow.MODE.MODAL : SpecialModalWindow.MODE.SPECIAL_MODAL;
+                SpecialModalWindow modalwin = new SpecialModalWindow(instanceName, winMode, m_mode != MODE.NEW ? parentWin : null);
+                wind = modalwin.Instance;
 
-                CSCS_GUI.AddActions(wind, true, script);
+                var tag = wind.Tag.ToString();
+                s_windows[tag] = wind;
+                s_windowType[instanceName] = tag;
+                s_currentWindow = 0;
+
                 ChainFunction.CacheWindow(wind, script.Filename);
-
-                if (m_mode == MODE.MODAL)
-                {
-                    wind.Owner = CSCS_GUI.MainWindow;
-                    wind.ShowDialog();
-                }
-                else
-                {
-                    wind.Show();
-                    s_currentWindow = 0;
-                }
-
-                return new Variable(inst);
+                wind.Show();
+                return new Variable(tag);
             }
 
             if (!s_windows.TryGetValue(instanceName, out wind))
@@ -2016,18 +2039,6 @@ namespace WpfCSCS
         public static void RemoveWindow(Window wind)
         {
             s_windows.Remove(wind.Tag.ToString());
-        }
-
-        public static Window CreateWindow(string filename)
-        {
-            var text = File.ReadAllText(filename);
-            XmlReader xmlReader = XmlReader.Create(new StringReader(text));
-            var newInstance = System.Windows.Markup.XamlReader.Load(xmlReader) as Window;
-            if (newInstance == null)
-            {
-                throw new ArgumentException("Couldn't create window [" + filename + "]");
-            }
-            return newInstance;
         }
 
         static void HideAll()

@@ -1,0 +1,24 @@
+﻿
+function Window3_OnOpen(sender, load) {
+    PARAM arg1,arg2,arg3,arg4;
+    print("Got params:",arg1,arg2,arg3,arg4);
+}
+
+function Window3_OnDisplay(sender, load) {
+    //MessageBox("Window3_OnDisplay:" + arg1 + " " + arg2  + " " + arg3 + " " + arg4);
+}
+
+function Window3Button@clicked(sender, load){
+    MessageBox(arg1 + " " + arg2  + " " + arg3 + " " + arg4 + " - unutar funkcije");
+    return;
+}
+
+function Window3_OnClose(sender, load) {
+  quit;
+  return;
+}
+function Window3_OnClosing(sender, load) {
+  result = MessageBox("Do you want to close this window?", title, "YesNo", "info");
+  return result != "Yes";
+}
+win3 = ModalWindow("../../scripts/Window3.xaml");

@@ -5,17 +5,17 @@ function Window2_OnOpen(sender, load) {
 }
 
 function Window2_OnDisplay(sender, load) {
-    MessageBox("Window2_OnDisplay:" + arg1 + " " + arg2  + " " + arg3 + " " + arg4);
+    //MessageBox("Window2_OnDisplay:" + arg1 + " " + arg2  + " " + arg3 + " " + arg4);
 }
 
-win2 = CreateWindow("../../scripts/Window2.xaml");
-
 function Window2Button@clicked(sender, load){
-    MessageBox(arg1 + " " + arg2  + " " + arg3 + " " + arg4 + " - " + "unutar funkcije");
-    return;
+    //MessageBox(arg1 + " " + arg2  + " " + arg3 + " " + arg4 + " - unutar funkcije");
+    CHAIN "extra.cscs" WITH "argum1" "argum2" "argum3" "argum4";
 }
 
 function Window2_OnClose(sender, load) {
   quit;
   return;
 }
+
+win2 = CreateWindow("../../scripts/Window2.xaml");

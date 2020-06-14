@@ -58,6 +58,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="SpecialModalWindow.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -132,6 +133,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="scripts\drugiProgram.cscs" />
+    <None Include="scripts\extra.cscs" />
     <None Include="scripts\guiFunctions.cscs" />
     <None Include="scripts\helloWorld.cscs" />
     <None Include="scripts\printPlugin.cscs" />
