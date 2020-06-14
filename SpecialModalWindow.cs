@@ -60,7 +60,7 @@ namespace WpfCSCS
             if (Mode == MODE.SPECIAL_MODAL && Owner != null)
             {
                 bool? ModalDialogResult = null;
-                IntPtr handleOwner = (new System.Windows.Interop.WindowInteropHelper(owner)).Handle;
+                IntPtr handleOwner = (new System.Windows.Interop.WindowInteropHelper(Owner)).Handle;
                 ClosedCallBack += new Action<bool?>(p => { ModalDialogResult = p; });
                 WindowInteropHelper helper = new WindowInteropHelper(Instance);
                 EnableWindow(handleOwner, false);
@@ -71,7 +71,6 @@ namespace WpfCSCS
             }
 
             Win_Opened(Instance, EventArgs.Empty);
-            Console.WriteLine("Initialized window " + filename + ": " + Instance.PersistId);
         }
 
         public void Show()
@@ -123,7 +122,7 @@ namespace WpfCSCS
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnDisplay";
             CSCS_GUI.RunScript(funcName, win, new Variable(win.Tag));
             Instance.ContentRendered -= Win_ContentRendered;
-            if (Owner != null)
+            if (Owner != null && Mode != MODE.NORMAL)
             {
                 win.Owner = Owner;
             }
