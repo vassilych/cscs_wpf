@@ -275,7 +275,7 @@ namespace WpfCSCS
             var controls = CacheControls(win, force);
             foreach (var entry in controls)
             {
-                AddActions(entry);
+                AddWidgetActions(entry);
             }
 
             win.SourceInitialized += Win_SourceInitialized;
@@ -347,6 +347,8 @@ namespace WpfCSCS
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnClose";
             RunScript(funcName, win, new Variable(win.Tag));
+
+            ChainFunction.CloseAllWindows();
         }
 
         public static Variable RunScript(string funcName, Window win, Variable arg1, Variable arg2 = null)
@@ -761,7 +763,7 @@ namespace WpfCSCS
             Controls.Remove(widget.DataContext.ToString().ToLower());
         }
 
-        public static void AddActions(Control widget)
+        public static void AddWidgetActions(Control widget)
         {
             var widgetName = GetWidgetBindingName(widget);
             if (string.IsNullOrWhiteSpace(widgetName))
@@ -1623,7 +1625,7 @@ namespace WpfCSCS
         static Dictionary<string, ParsingScript> s_chains      = new Dictionary<string, ParsingScript>();
         static Dictionary<Window, string> s_window2File = new Dictionary<Window, string>();
         static Dictionary<string, Window> s_file2Window = new Dictionary<string, Window>();
-        static Dictionary<string, Window> s_file2Parent = new Dictionary<string, Window>();
+        static Dictionary<string, Window> s_tag2Parent = new Dictionary<string, Window>();
 
         public ChainFunction(bool paramMode = false)
         {
@@ -1661,14 +1663,28 @@ namespace WpfCSCS
             }
         }
 
+        public static void CacheParentWindow(string tag, Window parent)
+        {
+            s_tag2Parent[tag] = parent;
+        }
+
+        public static void CloseAllWindows()
+        {
+            foreach (var win in s_window2File.Keys)
+            {
+                win.Close();
+            }
+        }
+
         public static Window GetParentWindow(string filename)
         {
-            if (!s_file2Parent.TryGetValue(filename, out Window win))
+            if (!s_tag2Parent.TryGetValue(filename, out Window win))
             {
                 return null;
             }
             return win;
         }
+
         public static Window GetParentWindow(ParsingScript script)
         {
             if (script.ParentScript != null && 
@@ -1947,11 +1963,6 @@ namespace WpfCSCS
 
     class NewWindowFunction : ParserFunction
     {
-        [DllImport("user32.dll", SetLastError = true)]
-        static extern int GetWindowLong(IntPtr hwnd, int index);
-        [DllImport("user32.dll")]
-        static extern bool EnableWindow(IntPtr hWnd, bool bEnable);
-
         static string ns = "WpfCSCS.";
 
         static Dictionary<string, Window> s_windows = new Dictionary<string, Window>();
@@ -2005,6 +2016,8 @@ namespace WpfCSCS
                 s_currentWindow = 0;
 
                 ChainFunction.CacheWindow(wind, script.Filename);
+                ChainFunction.CacheParentWindow(tag, parentWin);
+
                 wind.Show();
                 return new Variable(tag);
             }

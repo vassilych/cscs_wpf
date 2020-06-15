@@ -45,7 +45,7 @@ namespace WpfCSCS
             var controls = CSCS_GUI.CacheControls(Instance, true);
             foreach (var entry in controls)
             {
-                CSCS_GUI.AddActions(entry);
+                CSCS_GUI.AddWidgetActions(entry);
             }
 
             Instance.SourceInitialized += Win_SourceInitialized;
@@ -145,6 +145,11 @@ namespace WpfCSCS
             Instance.Closed -= Win_Closed;
             Instance.Close();
             Instance = null;
+
+            var parent = ChainFunction.GetParentWindow(win.Tag.ToString());
+            parent?.Focus();
+
+            NewWindowFunction.RemoveWindow(win);
         }
 
         private void Win_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -158,7 +163,6 @@ namespace WpfCSCS
                 return;
             }
 
-            NewWindowFunction.RemoveWindow(win);
             Instance.Closing -= Win_Closing;
             if (Mode == MODE.SPECIAL_MODAL && Instance.Owner != null)
             {
