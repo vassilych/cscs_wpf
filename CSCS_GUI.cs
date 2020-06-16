@@ -348,7 +348,7 @@ namespace WpfCSCS
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnClose";
             RunScript(funcName, win, new Variable(win.Tag));
 
-            ChainFunction.CloseAllWindows();
+            Environment.Exit(0);
         }
 
         public static Variable RunScript(string funcName, Window win, Variable arg1, Variable arg2 = null)
