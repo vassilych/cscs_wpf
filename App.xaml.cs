@@ -23,18 +23,21 @@ namespace WpfCSCS
             base.OnStartup(e);
 
             //System.Threading.Thread.Sleep(1 * 1000);
-            System.Diagnostics.Debugger.Launch();
+            //System.Diagnostics.Debugger.Launch();
             //System.Diagnostics.Debugger.Break();
 
             string filename = e.Args.Length == 0 ? "../MainWindow.xaml" : e.Args[0];
+            filename = "../../scripts/Sample.xaml";
             var items = filename.Split(' ');
             filename = items[0];
 
             string dir = Directory.GetCurrentDirectory();
             var pathname = Path.Combine(dir, filename);
             Console.WriteLine("{0}, {1} --> {2}", filename, pathname, File.Exists(pathname));
+
+            SpecialModalWindow modalwin = NewWindowFunction.CreateNew(filename);
             // C:\Users\vassi\Documents\GitHub\cscs_wpf\MainWindow.xaml, 
-            StartupUri = new Uri(filename, UriKind.Relative);
+            //StartupUri = new Uri(filename, UriKind.Relative);
         }
     }
 }

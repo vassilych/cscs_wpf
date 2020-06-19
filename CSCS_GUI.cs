@@ -2007,19 +2007,8 @@ namespace WpfCSCS
                 var parentWin = ChainFunction.GetParentWindow(script);
                 var winMode = m_mode == MODE.NEW ? SpecialModalWindow.MODE.NORMAL :
                     parentWin == CSCS_GUI.MainWindow ? SpecialModalWindow.MODE.MODAL : SpecialModalWindow.MODE.SPECIAL_MODAL;
-                SpecialModalWindow modalwin = new SpecialModalWindow(instanceName, winMode, m_mode != MODE.NEW ? parentWin : null);
-                wind = modalwin.Instance;
-
-                var tag = wind.Tag.ToString();
-                s_windows[tag] = wind;
-                s_windowType[instanceName] = tag;
-                s_currentWindow = 0;
-
-                ChainFunction.CacheWindow(wind, script.Filename);
-                ChainFunction.CacheParentWindow(tag, parentWin);
-
-                wind.Show();
-                return new Variable(tag);
+                SpecialModalWindow modalwin = CreateNew(instanceName, parentWin, winMode, script.Filename);
+                return new Variable(modalwin.Instance.Tag.ToString());
             }
 
             if (!s_windows.TryGetValue(instanceName, out wind))
@@ -2047,6 +2036,25 @@ namespace WpfCSCS
             }
 
             return new Variable(instanceName);
+        }
+
+        public static SpecialModalWindow CreateNew(string instanceName, Window parentWin = null,
+            SpecialModalWindow.MODE winMode = SpecialModalWindow.MODE.NORMAL, string cscsFilename = "")
+        {
+            SpecialModalWindow modalwin = new SpecialModalWindow(instanceName, winMode,
+                winMode != SpecialModalWindow.MODE.NORMAL ? parentWin : null);
+            var wind = modalwin.Instance;
+
+            var tag = wind.Tag.ToString();
+            s_windows[tag] = wind;
+            s_windowType[instanceName] = tag;
+            s_currentWindow = 0;
+
+            ChainFunction.CacheWindow(wind, cscsFilename);
+            ChainFunction.CacheParentWindow(tag, parentWin);
+
+            wind.Show();
+            return modalwin;
         }
 
         public static void RemoveWindow(Window wind)

@@ -1,9 +1,4 @@
 
-function Window2_OnOpen(sender, load) {
-    PARAM arg1,arg2,arg3,arg4;
-    print("Got params:",arg1,arg2,arg3,arg4);
-}
-
 function Window2_OnDisplay(sender, load) {
     //MessageBox("Window2_OnDisplay:" + arg1 + " " + arg2  + " " + arg3 + " " + arg4);
 }
@@ -18,4 +13,5 @@ function Window2_OnClose(sender, load) {
   return;
 }
 
+PARAM arg1,arg2,arg3,arg4;
 win2 = CreateWindow("../../scripts/Window2.xaml");
