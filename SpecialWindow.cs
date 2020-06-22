@@ -12,8 +12,10 @@ using System.Xml;
 
 namespace WpfCSCS
 {
-    public partial class SpecialModalWindow
+    public partial class SpecialWindow
     {
+        static Dictionary<Window, SpecialWindow> s_windowCache = new Dictionary<Window, SpecialWindow>();
+
         public enum MODE { NORMAL, MODAL, SPECIAL_MODAL };
 
         [DllImport("user32.dll")]
@@ -32,21 +34,36 @@ namespace WpfCSCS
 
         public MODE Mode { get; set; }
 
-        public SpecialModalWindow(string filename, MODE mode = MODE.NORMAL, Window owner = null)
+        public bool IsMain {
+            get
+            {
+                return CSCS_GUI.MainWindow == Instance;
+            }
+            set
+            {
+                if (value)
+                {
+                    CSCS_GUI.MainWindow = Instance;
+                }
+                else if (CSCS_GUI.MainWindow == Instance)
+                {
+                    CSCS_GUI.MainWindow = null;
+                }
+            }
+        }
+
+        public SpecialWindow(string filename, MODE mode = MODE.NORMAL, Window owner = null)
         {
             Mode = mode;
             Owner = owner;
             Instance = CreateWindow(filename);
 
+            IsMain = CSCS_GUI.MainWindow == null;
+            s_windowCache[Instance] = this;
+
             Random rnd = new Random();
             var inst = filename + "_" + rnd.Next(1000);
             Instance.Tag = inst;
-
-            var controls = CSCS_GUI.CacheControls(Instance, true);
-            foreach (var entry in controls)
-            {
-                CSCS_GUI.AddWidgetActions(entry);
-            }
 
             Instance.SourceInitialized += Win_SourceInitialized;
             Instance.Activated += Win_Activated;
@@ -71,6 +88,15 @@ namespace WpfCSCS
             }
 
             Win_Opened(Instance, EventArgs.Empty);
+        }
+
+        public static SpecialWindow GetInstance(Window win)
+        {
+            if (!s_windowCache.TryGetValue(win, out SpecialWindow spec))
+            {
+                return null;
+            }
+            return spec;
         }
 
         public void Show()
@@ -111,6 +137,8 @@ namespace WpfCSCS
         private void Win_Loaded(object sender, RoutedEventArgs e)
         {
             Window win = sender as Window;
+            CSCS_GUI.AddActions(win, true);
+
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnStart";
             CSCS_GUI.RunScript(funcName, win, new Variable(win.Tag));
             Instance.Loaded -= Win_Loaded;
@@ -141,6 +169,11 @@ namespace WpfCSCS
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnClose";
             CSCS_GUI.RunScript(funcName, win, new Variable(win.Tag));
+
+            if (IsMain)
+            {
+                Environment.Exit(0);
+            }
 
             Instance.Closed -= Win_Closed;
             Instance.Close();

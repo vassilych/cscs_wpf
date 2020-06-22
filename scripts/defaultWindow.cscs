@@ -1,0 +1,17 @@
+include("wpfgui.cscs");
+
+function browse@Clicked(sender, load) {
+  InitFile = OpenFile();
+}
+function start@Clicked(sender, load) {
+  //RunScript(InitFile);
+  CHAIN InitFile WITH "argument1" "argument2" "argument3" "argument4";
+  CloseWindow(win);
+}
+function exit@Clicked(sender, load) {
+  exit();
+}
+
+win = CreateWindow("../../scripts/DefaultWindow.xaml");
+UnsetMainWindow(win);
+InitFile = "C:\Users\vassi\Documents\GitHub\cscs_wpf\scripts\start.cscs";

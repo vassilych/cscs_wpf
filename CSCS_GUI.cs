@@ -45,7 +45,7 @@ namespace WpfCSCS
     public class CSCS_GUI
     {
         public static App TheApp { get; set; }
-        public static MainWindow MainWindow { get; set; }
+        public static Window MainWindow { get; set; }
 
         public static Dictionary<string, Control> Controls { get; set; } = new Dictionary<string, Control>();
         public static Dictionary<Control, Window> Control2Window { get; set; } = new Dictionary<Control, Window>();
@@ -167,7 +167,8 @@ namespace WpfCSCS
             ParserFunction.RegisterFunction(Constants.WITH, new ConstantsFunction());
             ParserFunction.RegisterFunction(Constants.NEWRUNTIME, new ConstantsFunction());
 
-            ParserFunction.RegisterFunction("OpenFile", new OpenFileFunction());
+            ParserFunction.RegisterFunction("OpenFile", new OpenFileFunction(false));
+            ParserFunction.RegisterFunction("OpenFileContents", new OpenFileFunction(true));
             ParserFunction.RegisterFunction("SaveFile", new SaveFileFunction());
 
             ParserFunction.RegisterFunction("ShowWidget", new ShowHideWidgetFunction(true));
@@ -191,17 +192,20 @@ namespace WpfCSCS
 
             ParserFunction.RegisterFunction("RunOnMain", new RunOnMainFunction());
             ParserFunction.RegisterFunction("RunExec", new RunExecFunction());
+            ParserFunction.RegisterFunction("RunScript", new RunScriptFunction());
 
             ParserFunction.RegisterFunction("CheckVATNumber", new CheckVATFunction());
             ParserFunction.RegisterFunction("GetVATName", new CheckVATFunction(CheckVATFunction.MODE.NAME));
             ParserFunction.RegisterFunction("GetVATAddress", new CheckVATFunction(CheckVATFunction.MODE.ADDRESS));
 
             ParserFunction.RegisterFunction("CreateWindow", new NewWindowFunction(NewWindowFunction.MODE.NEW));
-            ParserFunction.RegisterFunction("DeleteWindow", new NewWindowFunction(NewWindowFunction.MODE.DELETE));
+            ParserFunction.RegisterFunction("CloseWindow", new NewWindowFunction(NewWindowFunction.MODE.DELETE));
             ParserFunction.RegisterFunction("ShowWindow", new NewWindowFunction(NewWindowFunction.MODE.SHOW));
             ParserFunction.RegisterFunction("HideWindow", new NewWindowFunction(NewWindowFunction.MODE.HIDE));
             ParserFunction.RegisterFunction("NextWindow", new NewWindowFunction(NewWindowFunction.MODE.NEXT));
             ParserFunction.RegisterFunction("ModalWindow", new NewWindowFunction(NewWindowFunction.MODE.MODAL));
+            ParserFunction.RegisterFunction("SetMainWindow", new NewWindowFunction(NewWindowFunction.MODE.SET_MAIN));
+            ParserFunction.RegisterFunction("UnsetMainWindow", new NewWindowFunction(NewWindowFunction.MODE.UNSET_MAIN));
 
             Constants.FUNCT_WITH_SPACE.Add("SetText");
             Constants.FUNCT_WITH_SPACE.Add(Constants.DEFINE);
@@ -210,12 +214,8 @@ namespace WpfCSCS
             Constants.FUNCT_WITH_SPACE.Add(Constants.CHAIN);
             Constants.FUNCT_WITH_SPACE.Add(Constants.PARAM);
 
-            //ParserFunction.RegisterFunction("funcName", new MyFunction());
-
             Interpreter.Instance.OnOutput += Print;
-            //ParserFunction.OnVariableChange += 
             ParserFunction.OnVariableChange += OnVariableChange;
-            AddActions(MainWindow);
 
             Precompiler.AddNamespace("using WpfCSCS;");
             Precompiler.AddNamespace("using System.Windows;");
@@ -277,78 +277,6 @@ namespace WpfCSCS
             {
                 AddWidgetActions(entry);
             }
-
-            win.SourceInitialized += Win_SourceInitialized;
-            win.Activated += Win_Activated;
-            win.Loaded += Win_Loaded;
-            win.ContentRendered += Win_ContentRendered;
-
-            win.Closing += Win_Closing;
-            win.Deactivated += Win_Deactivated;
-            win.Closed += Win_Closed;
-            Win_Opened(win, EventArgs.Empty);
-        }
-
-        private static void Win_SourceInitialized(object sender, EventArgs e)
-        {
-            Window win = sender as Window;
-            var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnInit";
-            Interpreter.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
-        }
-
-        private static void Win_Activated(object sender, EventArgs e)
-        {
-            Window win = sender as Window;
-            var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnActivated";
-            Interpreter.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
-        }
-
-        public static void Win_Opened(object sender, EventArgs e)
-        {
-            Window win = sender as Window;
-            var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnOpen";
-            Interpreter.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
-        }
-
-        private static void Win_Loaded(object sender, RoutedEventArgs e)
-        {
-            Window win = sender as Window;
-            var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnStart";
-            RunScript(funcName, win, new Variable(win.Tag));
-        }
-
-        private static void Win_ContentRendered(object sender, EventArgs e)
-        {
-            Window win = sender as Window;
-            var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnDisplay";
-            RunScript(funcName, win, new Variable(win.Tag));
-        }
-
-        private static void Win_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            Window win = sender as Window;
-            var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnClosing";
-            var result = RunScript(funcName, win, new Variable(win.Tag));
-            e.Cancel = result != null && result.AsBool();
-            if (e.Cancel)
-            {
-                NewWindowFunction.RemoveWindow(win);
-            }
-        }
-        private static void Win_Deactivated(object sender, EventArgs e)
-        {
-            Window win = sender as Window;
-            var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnDeactivated";
-            RunScript(funcName, win, new Variable(win.Tag));
-        }
-
-        private static void Win_Closed(object sender, EventArgs e)
-        {
-            Window win = sender as Window;
-            var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnClose";
-            RunScript(funcName, win, new Variable(win.Tag));
-
-            Environment.Exit(0);
         }
 
         public static Variable RunScript(string funcName, Window win, Variable arg1, Variable arg2 = null)
@@ -805,13 +733,19 @@ namespace WpfCSCS
             return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
         }
 
-        public static void RunScript(string fileName)
+        public static Variable RunScript(string fileName, bool encode = false)
         {
             Init();
 
-            EncodeFileFunction.EncodeDecode(fileName, false);
+            if (encode)
+            {
+                EncodeFileFunction.EncodeDecode(fileName, false);
+            }
             string script = Utils.GetFileContents(fileName);
-            EncodeFileFunction.EncodeDecode(fileName, true);
+            if (encode)
+            {
+                EncodeFileFunction.EncodeDecode(fileName, true);
+            }
 
             Variable result = null;
             try
@@ -824,12 +758,14 @@ namespace WpfCSCS
                 Console.WriteLine(exc.StackTrace);
                 ParserFunction.InvalidateStacksAfterLevel(0);
                 var onException = CustomFunction.Run(Constants.ON_EXCEPTION, new Variable("Global Scope"),
-                              new Variable(exc.Message), Variable.EmptyInstance);
+                                  new Variable(exc.Message), Variable.EmptyInstance);
                 if (onException == null)
                 {
                     throw;
                 }
             }
+
+            return result;
         }
     }
 
@@ -1145,7 +1081,7 @@ namespace WpfCSCS
                     richTextBox.Document.Blocks.Add(new Paragraph(new Run(text)));
                 }));
             }
-            else if (widget is DatePicker)
+            else if (widget is DatePicker && !string.IsNullOrWhiteSpace(text))
             {
                 var datePicker = widget as DatePicker;
                 var format = text.Length == 10 ? "yyyy/MM/dd" : text.Length == 8 ? "hh:mm:ss" :
@@ -1425,13 +1361,20 @@ namespace WpfCSCS
 
     class OpenFileFunction : ParserFunction
     {
+        bool m_getFileContents;
+
+        public OpenFileFunction(bool getContents)
+        {
+            m_getFileContents = getContents;
+        }
+
         protected override Variable Evaluate(ParsingScript script)
         {
             /*List<Variable> args =*/
             script.GetFunctionArgs();
-            return OpenFile();
+            return OpenFile(m_getFileContents);
         }
-        public static Variable OpenFile()
+        public static Variable OpenFile(bool getContents = false)
         {
             Microsoft.Win32.OpenFileDialog openFile = new Microsoft.Win32.OpenFileDialog();
             if (openFile.ShowDialog() != true)
@@ -1440,6 +1383,10 @@ namespace WpfCSCS
             }
 
             var fileName = openFile.FileName;
+            if (!getContents)
+            {
+                return new Variable(fileName);
+            }
             string contents = Utils.GetFileContents(fileName);
             contents = contents.Replace("\n", Environment.NewLine);
             return new Variable(contents);
@@ -1707,7 +1654,7 @@ namespace WpfCSCS
                 {
                     parameters = new List<Variable>();
                     string[] cmdArgs = Environment.GetCommandLineArgs();
-                    var cmdArgsArr = cmdArgs[1].Split(new char[] { ',' });
+                    var cmdArgsArr = cmdArgs.Length > 1 ? cmdArgs[1].Split(new char[] { ',' }) : new string[0];
                     for (int i = 1; i < cmdArgsArr.Length; i++)
                     {
                         parameters.Add(new Variable(cmdArgsArr[i]));
@@ -1946,6 +1893,22 @@ namespace WpfCSCS
             return result;
         }
     }
+
+    class RunScriptFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            var fileName = args[0].AsString();
+            var encode = Utils.GetSafeInt(args, 1) > 0;
+            var result = CSCS_GUI.RunScript(fileName, encode);
+
+            return result;
+        }
+    }
+
     class QuitStatement : ParserFunction
     {
         protected override Variable Evaluate(ParsingScript script)
@@ -1970,7 +1933,7 @@ namespace WpfCSCS
 
         static int s_currentWindow = -1;
 
-        internal enum MODE { NEW, SHOW, HIDE, DELETE, NEXT, MODAL };
+        internal enum MODE { NEW, SHOW, HIDE, DELETE, NEXT, MODAL, SET_MAIN, UNSET_MAIN };
         MODE m_mode;
 
         internal NewWindowFunction(MODE mode = MODE.NEW)
@@ -2005,9 +1968,9 @@ namespace WpfCSCS
             if (m_mode == MODE.NEW || m_mode == MODE.MODAL)
             {
                 var parentWin = ChainFunction.GetParentWindow(script);
-                var winMode = m_mode == MODE.NEW ? SpecialModalWindow.MODE.NORMAL :
-                    parentWin == CSCS_GUI.MainWindow ? SpecialModalWindow.MODE.MODAL : SpecialModalWindow.MODE.SPECIAL_MODAL;
-                SpecialModalWindow modalwin = CreateNew(instanceName, parentWin, winMode, script.Filename);
+                var winMode = m_mode == MODE.NEW ? SpecialWindow.MODE.NORMAL : //SpecialWindow.MODE.SPECIAL_MODAL;
+                    parentWin == CSCS_GUI.MainWindow ? SpecialWindow.MODE.MODAL : SpecialWindow.MODE.SPECIAL_MODAL;
+                SpecialWindow modalwin = CreateNew(instanceName, parentWin, winMode, script.Filename);
                 return new Variable(modalwin.Instance.Tag.ToString());
             }
 
@@ -2029,6 +1992,14 @@ namespace WpfCSCS
             {
                 wind.Show();
             }
+            else if (m_mode == MODE.SET_MAIN || m_mode == MODE.UNSET_MAIN)
+            {
+                var special = SpecialWindow.GetInstance(wind);
+                if (special != null)
+                {
+                    special.IsMain = m_mode == MODE.SET_MAIN;
+                }
+            }
             else if (m_mode == MODE.DELETE)
             {
                 wind.Close();
@@ -2038,11 +2009,11 @@ namespace WpfCSCS
             return new Variable(instanceName);
         }
 
-        public static SpecialModalWindow CreateNew(string instanceName, Window parentWin = null,
-            SpecialModalWindow.MODE winMode = SpecialModalWindow.MODE.NORMAL, string cscsFilename = "")
+        public static SpecialWindow CreateNew(string instanceName, Window parentWin = null,
+            SpecialWindow.MODE winMode = SpecialWindow.MODE.NORMAL, string cscsFilename = "")
         {
-            SpecialModalWindow modalwin = new SpecialModalWindow(instanceName, winMode,
-                winMode != SpecialModalWindow.MODE.NORMAL ? parentWin : null);
+            SpecialWindow modalwin = new SpecialWindow(instanceName, winMode,
+                winMode != SpecialWindow.MODE.NORMAL ? parentWin : null);
             var wind = modalwin.Instance;
 
             var tag = wind.Tag.ToString();

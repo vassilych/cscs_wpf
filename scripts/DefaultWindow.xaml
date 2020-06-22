@@ -1,0 +1,21 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfCSCS"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        Title="Choose Startup Script" Height="140.443" Width="610.827">
+    <Window.Resources>
+        <sys:String x:Key="CSCS">../../scripts/start.cscs</sys:String>
+    </Window.Resources>
+
+    <Grid Margin="0,0,3.8,14.2">
+        <TextBox HorizontalAlignment="Left"  Height="23" Margin="106,20,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="388" DataContext="InitFile"/>
+        <Label Content="CSCS Start File:" HorizontalAlignment="Left" Margin="6,17,0,0" VerticalAlignment="Top" Width="95"/>
+        <Button Content="Browse" HorizontalAlignment="Left" Margin="503,22,0,0" VerticalAlignment="Top" Width="75" DataContext="Browse" />
+        <Button Content="Start" HorizontalAlignment="Left" Height="23" Margin="192,60,0,0" VerticalAlignment="Top" Width="102" DataContext="Start"/>
+        <Button Content="Exit" HorizontalAlignment="Left" Height="23" Margin="312,60,0,0" VerticalAlignment="Top" Width="102" DataContext="Exit"/>
+    </Grid>
+</Window>

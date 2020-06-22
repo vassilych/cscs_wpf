@@ -31,14 +31,20 @@ namespace WpfCSCS
         {           
             CSCS_SQL.Init();
             CSCS_GUI.MainWindow = this;
+            CSCS_GUI.AddActions(CSCS_GUI.MainWindow, true);
 
+            var win = NewWindowFunction.CreateNew("../../scripts/Sample.xaml");
+            CSCS_GUI.AddActions(win.Instance, true);
+            
             var res = this.Resources;
             var cscsScript = (string)res["CSCS"];
 
-            CSCS_GUI.MainWindow.Tag = "MainWindow";
+            //CSCS_GUI.MainWindow.Tag = "MainWindow";
 
             Console.WriteLine("Running CSCS script: " + cscsScript);
             CSCS_GUI.RunScript(cscsScript);
+
+            CSCS_GUI.MainWindow = this;
 
             /*string[] cmdArgs = Environment.GetCommandLineArgs();
             if (cmdArgs.Length <= 2)

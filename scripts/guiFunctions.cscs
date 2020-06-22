@@ -301,7 +301,7 @@ function deleteWindow@Clicked(sender, load) {
   }
   windowName = GetText("textbox1");
   try {
-    win = DeleteWindow(windowName);
+    win = CloseWindow(windowName);
     label1 = "Deleted window: " + win;
   } catch (exc) {
     MessageBox(exc, title, "OK", "error");

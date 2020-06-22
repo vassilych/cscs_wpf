@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Configuration;
 using System.Data;
 using System.IO;
@@ -26,19 +27,40 @@ namespace WpfCSCS
             //System.Diagnostics.Debugger.Launch();
             //System.Diagnostics.Debugger.Break();
 
-            string filename = e.Args.Length == 0 ? "../MainWindow.xaml" : e.Args[0];
-            filename = "../../scripts/Sample.xaml";
-            var items = filename.Split(' ');
-            filename = items[0];
+            string cscsScript = e.Args.Length == 0 ? GetConfiguration("CSCS_Init", "../../scripts/defaultWindow.cscs") : e.Args[0];
+            var pathName = Path.GetFullPath(cscsScript);
+            if (!File.Exists(pathName))
+            {
+                MessageBox.Show("File " + pathName + " doesn't exist.", "Invalid file path",
+                                         MessageBoxButton.OK, MessageBoxImage.Error);
+                Environment.Exit(1);
+            }
+            //cscsScript = "../../scripts/start.cscs";
+            Console.WriteLine("Running CSCS script: " + pathName);
+            CSCS_SQL.Init();
 
-            string dir = Directory.GetCurrentDirectory();
-            var pathname = Path.Combine(dir, filename);
-            Console.WriteLine("{0}, {1} --> {2}", filename, pathname, File.Exists(pathname));
+            try
+            {
+                CSCS_GUI.RunScript(pathName);
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show("Error running " + pathName + ": " + exc.Message, "Error running script",
+                                         MessageBoxButton.OK, MessageBoxImage.Error);
+                Environment.Exit(1);
+            }
 
-            SpecialModalWindow modalwin = NewWindowFunction.CreateNew(filename);
-            // C:\Users\vassi\Documents\GitHub\cscs_wpf\MainWindow.xaml, 
-            //StartupUri = new Uri(filename, UriKind.Relative);
+            //StartupUri = new Uri("../MainWindow.xaml", UriKind.Relative);
+        }
+
+        public static string GetConfiguration(string key, string defaultValue = null)
+        {
+            var settings = ConfigurationManager.AppSettings;
+            if (settings == null || settings.Count == 0 || !settings.AllKeys.Contains(key))
+            {
+                return defaultValue;
+            }
+            return settings.Get(key);
         }
     }
 }
-
