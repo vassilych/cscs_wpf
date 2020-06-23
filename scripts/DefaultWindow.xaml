@@ -9,10 +9,30 @@
         Title="Choose Startup Script" Height="140.443" Width="610.827">
     <Window.Resources>
         <sys:String x:Key="CSCS">../../scripts/start.cscs</sys:String>
+        <VisualBrush x:Key="SearchHint" TileMode="None" Stretch="None" AlignmentX="Left">
+            <VisualBrush.Transform>
+                <TranslateTransform X="5" Y="0" />
+            </VisualBrush.Transform>
+            <VisualBrush.Visual>
+                <Grid>
+                    <TextBlock FontStyle="Italic" Foreground="Black" Opacity="0.3" Text="Provide filename, like C:/me/start.cscs"/>
+                </Grid>
+            </VisualBrush.Visual>
+        </VisualBrush>
     </Window.Resources>
 
     <Grid Margin="0,0,3.8,14.2">
-        <TextBox HorizontalAlignment="Left"  Height="23" Margin="106,20,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="388" DataContext="InitFile"/>
+        <TextBox HorizontalAlignment="Left"  Height="23" Margin="106,20,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="388" DataContext="InitFile">
+            <TextBox.Style>
+                <Style TargetType="TextBox">
+                    <Style.Triggers>
+                        <Trigger Property="Text" Value="">
+                            <Setter Property="Background" Value="{StaticResource SearchHint}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
         <Label Content="CSCS Start File:" HorizontalAlignment="Left" Margin="6,17,0,0" VerticalAlignment="Top" Width="95"/>
         <Button Content="Browse" HorizontalAlignment="Left" Margin="503,22,0,0" VerticalAlignment="Top" Width="75" DataContext="Browse" />
         <Button Content="Start" HorizontalAlignment="Left" Height="23" Margin="192,60,0,0" VerticalAlignment="Top" Width="102" DataContext="Start"/>
