@@ -4,13 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using System.Drawing;
 using System.Dynamic;
 using System.Reflection;
 using SplitAndMerge;
-using System.Security.Cryptography;
-
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -19,10 +15,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Net;
-using System.Xml;
 using System.Globalization;
-using System.Runtime.InteropServices;
-using System.Windows.Interop;
 
 namespace SplitAndMerge
 {
@@ -42,6 +35,64 @@ namespace SplitAndMerge
 
 namespace WpfCSCS
 {
+    class WINFORMcommand : NewWindowFunction
+    {
+        bool m_paramMode;
+        
+        public WINFORMcommand(bool paramMode = false)
+        {
+            m_paramMode = paramMode;
+        }
+
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            if (m_paramMode)
+            {
+                var NazivIliPutanjaFormeIzgleda = Utils.GetBodyBetween(script, '\0', '\0', Constants.END_STATEMENT);
+                if (NazivIliPutanjaFormeIzgleda.EndsWith(".xaml") == false)
+                {
+                    NazivIliPutanjaFormeIzgleda = NazivIliPutanjaFormeIzgleda + ".xaml";
+                }
+                if (File.Exists(NazivIliPutanjaFormeIzgleda))
+                {
+                    var parentWin = ChainFunction.GetParentWindow(script);
+                    SpecialWindow modalwin;
+                    if (parentWin != null && !script.ParentScript.OriginalScript.Contains("#MAINMENU"))
+                    {
+                        //parentWin.IsEnabled = false;
+                        //parentWin.
+
+                        var winMode = SpecialWindow.MODE.SPECIAL_MODAL;
+                        modalwin = CreateNew(NazivIliPutanjaFormeIzgleda, parentWin, winMode, script.Filename);
+                    }
+                    else
+                    {
+                        var winMode = SpecialWindow.MODE.NORMAL;
+                        modalwin = CreateNew(NazivIliPutanjaFormeIzgleda, parentWin, winMode, script.Filename);
+                    }
+                        
+                    
+                    return new Variable(modalwin.Instance.Tag.ToString());
+                }
+                else
+                {
+                    MessageBox.Show($"Ne postoji datoteka {NazivIliPutanjaFormeIzgleda}! Gasim program.");
+                    Environment.Exit(0);
+                    return null;
+                }
+            }
+            else return null;
+        }      
+    }
+
+    class MAINMENUcommand : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            return null;
+        }
+    }
+
     public class CSCS_GUI
     {
         public static App TheApp { get; set; }
@@ -69,6 +120,7 @@ namespace WpfCSCS
 
         public static Dictionary<string, List<Variable>> DEFINES { get; set; } =
                   new Dictionary<string, List<Variable>>();
+
         public static Dictionary<string, Dictionary<string, bool>> s_varExists =
             new Dictionary<string, Dictionary<string, bool>>();
 
@@ -157,6 +209,9 @@ namespace WpfCSCS
 
         public static void Init()
         {
+            ParserFunction.RegisterFunction("#MAINMENU", new MAINMENUcommand());
+            ParserFunction.RegisterFunction("#WINFORM", new WINFORMcommand(true));
+
             ParserFunction.RegisterFunction(Constants.MSG, new VariableArgsFunction(true));
             ParserFunction.RegisterFunction(Constants.DEFINE, new VariableArgsFunction(true));
             ParserFunction.RegisterFunction(Constants.SET_OBJECT, new VariableArgsFunction(true));
