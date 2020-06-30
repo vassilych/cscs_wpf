@@ -8,9 +8,9 @@
         mc:Ignorable="d"
         Title="WPF App" Height="450" Width="800"
         >
-    <Window.Resources>
+    <!--<Window.Resources>
         <sys:String x:Key="CSCS">../../scripts/start.cscs</sys:String>
-    </Window.Resources>
+    </Window.Resources>-->
 
     <DockPanel>
         <Menu DockPanel.Dock="Top" DataContext="mainMenu"/>
@@ -49,7 +49,9 @@
                         <DatePicker Grid.Column="4" HorizontalAlignment="Left" Margin="105,59,0,0" VerticalAlignment="Top" Width="125" Height="25"  DataContext="datePicker"/>
                         <Button Content="Get Date" Grid.Column="4" HorizontalAlignment="Left" Margin="254,59,0,0" VerticalAlignment="Top" Width="75" DataContext="getDate"/>
                         <Button Content="Set Date" Grid.Column="4" HorizontalAlignment="Left" Margin="342,59,0,0" VerticalAlignment="Top" Width="75"  DataContext="setDate" RenderTransformOrigin="0.475,0.25"/>
-                        <Button Grid.ColumnSpan="4" Content="Fill Menus" Grid.Column="1" HorizontalAlignment="Left" Margin="84.6,21,0,0" VerticalAlignment="Top" Width="75"  DataContext="fillMenus"/>
+                        <Button Grid.ColumnSpan="4" Content="Fill Menus" Grid.Column="1" HorizontalAlignment="Left" Margin="84.6,21,0,0" VerticalAlignment="Top" Width="75"  DataContext="
+                                
+                                "/>
                     </Grid>
                 </TabItem>
                 <TabItem Header="SQL Tests">

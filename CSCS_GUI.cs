@@ -4,13 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using System.Drawing;
 using System.Dynamic;
 using System.Reflection;
 using SplitAndMerge;
-using System.Security.Cryptography;
-
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -19,10 +15,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Net;
-using System.Xml;
 using System.Globalization;
-using System.Runtime.InteropServices;
-using System.Windows.Interop;
 
 namespace SplitAndMerge
 {
@@ -69,6 +62,7 @@ namespace WpfCSCS
 
         public static Dictionary<string, List<Variable>> DEFINES { get; set; } =
                   new Dictionary<string, List<Variable>>();
+
         public static Dictionary<string, Dictionary<string, bool>> s_varExists =
             new Dictionary<string, Dictionary<string, bool>>();
 
@@ -157,6 +151,9 @@ namespace WpfCSCS
 
         public static void Init()
         {
+            ParserFunction.RegisterFunction("#MAINMENU", new MAINMENUcommand());
+            ParserFunction.RegisterFunction("#WINFORM", new WINFORMcommand(true));
+
             ParserFunction.RegisterFunction(Constants.MSG, new VariableArgsFunction(true));
             ParserFunction.RegisterFunction(Constants.DEFINE, new VariableArgsFunction(true));
             ParserFunction.RegisterFunction(Constants.SET_OBJECT, new VariableArgsFunction(true));
@@ -648,7 +645,7 @@ namespace WpfCSCS
                                             var content2 = tabItem.Content as Grid;
                                             foreach (var child2 in content2.Children)
                                             {
-                                                CacheControl(child2 as Control, win,controls);
+                                                CacheControl(child2 as Control, win, controls);
                                             }
                                         }
                                     }
@@ -896,7 +893,7 @@ namespace WpfCSCS
             return result;
         }
 
-        public static object  RunOnMainThread(Action action)
+        public static object RunOnMainThread(Action action)
         {
             return Application.Current.Dispatcher.Invoke(action, null);
         }
@@ -906,7 +903,7 @@ namespace WpfCSCS
             Variable result = Variable.EmptyInstance;
             Application.Current.Dispatcher.Invoke(new Action(() =>
             {
-               result = callbackFunction.Run(args);
+                result = callbackFunction.Run(args);
             }));
             return result;
         }
@@ -1569,7 +1566,7 @@ namespace WpfCSCS
     {
         bool m_paramMode;
         static Dictionary<string, List<Variable>> s_parameters = new Dictionary<string, List<Variable>>();
-        static Dictionary<string, ParsingScript> s_chains      = new Dictionary<string, ParsingScript>();
+        static Dictionary<string, ParsingScript> s_chains = new Dictionary<string, ParsingScript>();
         static Dictionary<Window, string> s_window2File = new Dictionary<Window, string>();
         static Dictionary<string, Window> s_file2Window = new Dictionary<string, Window>();
         static Dictionary<string, Window> s_tag2Parent = new Dictionary<string, Window>();
@@ -1634,7 +1631,7 @@ namespace WpfCSCS
 
         public static Window GetParentWindow(ParsingScript script)
         {
-            if (script.ParentScript != null && 
+            if (script.ParentScript != null &&
                 s_file2Window.TryGetValue(script.ParentScript.Filename, out Window win))
             {
                 return win;
@@ -1759,6 +1756,66 @@ namespace WpfCSCS
             return result;
         }
     }
+
+    class WINFORMcommand : NewWindowFunction
+    {
+        bool m_paramMode;
+
+        public WINFORMcommand(bool paramMode = false)
+        {
+            m_paramMode = paramMode;
+        }
+
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            if (m_paramMode)
+            {
+                var NazivIliPutanjaFormeIzgleda = Utils.GetBodyBetween(script, '\0', '\0', Constants.END_STATEMENT);
+                if (NazivIliPutanjaFormeIzgleda.EndsWith(".xaml") == false)
+                {
+                    NazivIliPutanjaFormeIzgleda = NazivIliPutanjaFormeIzgleda + ".xaml";
+                }
+                if (File.Exists(NazivIliPutanjaFormeIzgleda))
+                {
+                    var parentWin = ChainFunction.GetParentWindow(script);
+                    SpecialWindow modalwin;
+                    if (parentWin != null && !script.ParentScript.OriginalScript.Contains("#MAINMENU"))
+                    {
+                        //parentWin.IsEnabled = false;
+                        //parentWin.
+
+                        var winMode = SpecialWindow.MODE.SPECIAL_MODAL;
+                        modalwin = CreateNew(NazivIliPutanjaFormeIzgleda, parentWin, winMode, script.Filename);
+                    }
+                    else
+                    {
+                        var winMode = SpecialWindow.MODE.NORMAL;
+                        modalwin = CreateNew(NazivIliPutanjaFormeIzgleda, parentWin, winMode, script.Filename);
+                    }
+
+
+                    return new Variable(modalwin.Instance.Tag.ToString());
+                }
+                else
+                {
+                    MessageBox.Show($"Ne postoji datoteka {NazivIliPutanjaFormeIzgleda}! Gasim program.");
+                    Environment.Exit(0);
+                    return null;
+                }
+            }
+            else return null;
+        }
+    }
+
+    class MAINMENUcommand : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            return null;
+        }
+    }
+
+
     class VariableArgsFunction : ParserFunction
     {
         bool m_processFirstToken = true;
@@ -2061,7 +2118,7 @@ namespace WpfCSCS
 
     internal class CheckVATFunction : ParserFunction
     {
-        internal enum MODE { CHECK, NAME, ADDRESS};
+        internal enum MODE { CHECK, NAME, ADDRESS };
 
         static string s_request = @"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" 
                                                       xmlns:urn=""urn:ec.europa.eu:taxud:vies:services:checkVat:types"">
@@ -2130,8 +2187,8 @@ namespace WpfCSCS
                 return;
             }
 
-            s_cache[vat + "valid"]   = "false";
-            s_cache[vat + "name"]    = "";
+            s_cache[vat + "valid"] = "false";
+            s_cache[vat + "name"] = "";
             s_cache[vat + "address"] = "";
 
             var wc = new WebClient();
@@ -2142,7 +2199,7 @@ namespace WpfCSCS
             {
                 response = wc.UploadString("http://ec.europa.eu/taxation_customs/vies/services/checkVatService", request);
             }
-            catch(Exception exc)
+            catch (Exception exc)
             {
                 s_cache[vat + "name"] = exc.Message;
                 return;
@@ -2153,12 +2210,10 @@ namespace WpfCSCS
             var validTag = ExtractTag(response, "valid");
             if (validTag == "true")
             {
-                s_cache[vat + "valid"]   = validTag;
-                s_cache[vat + "name"]    = ExtractTag(response, "name");
+                s_cache[vat + "valid"] = validTag;
+                s_cache[vat + "name"] = ExtractTag(response, "name");
                 s_cache[vat + "address"] = ExtractTag(response, "address");
-            }            
+            }
         }
-
-
     }
 }
