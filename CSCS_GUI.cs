@@ -35,64 +35,6 @@ namespace SplitAndMerge
 
 namespace WpfCSCS
 {
-    class WINFORMcommand : NewWindowFunction
-    {
-        bool m_paramMode;
-        
-        public WINFORMcommand(bool paramMode = false)
-        {
-            m_paramMode = paramMode;
-        }
-
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            if (m_paramMode)
-            {
-                var NazivIliPutanjaFormeIzgleda = Utils.GetBodyBetween(script, '\0', '\0', Constants.END_STATEMENT);
-                if (NazivIliPutanjaFormeIzgleda.EndsWith(".xaml") == false)
-                {
-                    NazivIliPutanjaFormeIzgleda = NazivIliPutanjaFormeIzgleda + ".xaml";
-                }
-                if (File.Exists(NazivIliPutanjaFormeIzgleda))
-                {
-                    var parentWin = ChainFunction.GetParentWindow(script);
-                    SpecialWindow modalwin;
-                    if (parentWin != null && !script.ParentScript.OriginalScript.Contains("#MAINMENU"))
-                    {
-                        //parentWin.IsEnabled = false;
-                        //parentWin.
-
-                        var winMode = SpecialWindow.MODE.SPECIAL_MODAL;
-                        modalwin = CreateNew(NazivIliPutanjaFormeIzgleda, parentWin, winMode, script.Filename);
-                    }
-                    else
-                    {
-                        var winMode = SpecialWindow.MODE.NORMAL;
-                        modalwin = CreateNew(NazivIliPutanjaFormeIzgleda, parentWin, winMode, script.Filename);
-                    }
-                        
-                    
-                    return new Variable(modalwin.Instance.Tag.ToString());
-                }
-                else
-                {
-                    MessageBox.Show($"Ne postoji datoteka {NazivIliPutanjaFormeIzgleda}! Gasim program.");
-                    Environment.Exit(0);
-                    return null;
-                }
-            }
-            else return null;
-        }      
-    }
-
-    class MAINMENUcommand : ParserFunction
-    {
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            return null;
-        }
-    }
-
     public class CSCS_GUI
     {
         public static App TheApp { get; set; }
@@ -1814,6 +1756,66 @@ namespace WpfCSCS
             return result;
         }
     }
+
+    class WINFORMcommand : NewWindowFunction
+    {
+        bool m_paramMode;
+
+        public WINFORMcommand(bool paramMode = false)
+        {
+            m_paramMode = paramMode;
+        }
+
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            if (m_paramMode)
+            {
+                var NazivIliPutanjaFormeIzgleda = Utils.GetBodyBetween(script, '\0', '\0', Constants.END_STATEMENT);
+                if (NazivIliPutanjaFormeIzgleda.EndsWith(".xaml") == false)
+                {
+                    NazivIliPutanjaFormeIzgleda = NazivIliPutanjaFormeIzgleda + ".xaml";
+                }
+                if (File.Exists(NazivIliPutanjaFormeIzgleda))
+                {
+                    var parentWin = ChainFunction.GetParentWindow(script);
+                    SpecialWindow modalwin;
+                    if (parentWin != null && !script.ParentScript.OriginalScript.Contains("#MAINMENU"))
+                    {
+                        //parentWin.IsEnabled = false;
+                        //parentWin.
+
+                        var winMode = SpecialWindow.MODE.SPECIAL_MODAL;
+                        modalwin = CreateNew(NazivIliPutanjaFormeIzgleda, parentWin, winMode, script.Filename);
+                    }
+                    else
+                    {
+                        var winMode = SpecialWindow.MODE.NORMAL;
+                        modalwin = CreateNew(NazivIliPutanjaFormeIzgleda, parentWin, winMode, script.Filename);
+                    }
+
+
+                    return new Variable(modalwin.Instance.Tag.ToString());
+                }
+                else
+                {
+                    MessageBox.Show($"Ne postoji datoteka {NazivIliPutanjaFormeIzgleda}! Gasim program.");
+                    Environment.Exit(0);
+                    return null;
+                }
+            }
+            else return null;
+        }
+    }
+
+    class MAINMENUcommand : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            return null;
+        }
+    }
+
+
     class VariableArgsFunction : ParserFunction
     {
         bool m_processFirstToken = true;
