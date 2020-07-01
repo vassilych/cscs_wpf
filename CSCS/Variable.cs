@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WpfCSCS;
 
 namespace SplitAndMerge
 {
@@ -93,6 +94,14 @@ namespace SplitAndMerge
         public Variable(object o)
         {
             Object = o;
+        }
+
+
+        public Variable(CSCS_GUI.SpecialObject o)
+        {
+            Object = o;
+            Type = VarType.STRING;
+            
         }
 
         public virtual Variable Clone()

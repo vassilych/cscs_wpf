@@ -388,6 +388,12 @@ namespace SplitAndMerge
         public static void AddGlobalOrLocalVariable(string name, GetVarFunction function,
             ParsingScript script = null, bool localIfPossible = false)
         {
+
+            if (script == null || !script.OriginalLine.Contains("DEFINE"))
+            {
+                throw new Exception("use DEFINE to define a variable!");
+            }
+
             name          = Constants.ConvertName(name);
             if (Constants.CheckReserved(name))
             {
