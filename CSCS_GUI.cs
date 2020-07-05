@@ -238,7 +238,7 @@ namespace WpfCSCS
             {
                 return;
             }
-            if (!exists && (RequireDEFINE == "*" || name.StartsWith(RequireDEFINE)))
+            if (!exists && RequireDEFINE != "false" && (RequireDEFINE == "*" || name.StartsWith(RequireDEFINE)))
             {
                 throw new ArgumentException("Variable [" + name + "] must be defined with DEFINE function first.");
             }
