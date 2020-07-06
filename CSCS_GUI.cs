@@ -35,68 +35,12 @@ namespace SplitAndMerge
 
 namespace WpfCSCS
 {
-    class WINFORMcommand : NewWindowFunction
-    {
-        bool m_paramMode;
-        
-        public WINFORMcommand(bool paramMode = false)
-        {
-            m_paramMode = paramMode;
-        }
-
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            if (m_paramMode)
-            {
-                var NazivIliPutanjaFormeIzgleda = Utils.GetBodyBetween(script, '\0', '\0', Constants.END_STATEMENT);
-                if (NazivIliPutanjaFormeIzgleda.EndsWith(".xaml") == false)
-                {
-                    NazivIliPutanjaFormeIzgleda = NazivIliPutanjaFormeIzgleda + ".xaml";
-                }
-                if (File.Exists(NazivIliPutanjaFormeIzgleda))
-                {
-                    var parentWin = ChainFunction.GetParentWindow(script);
-                    SpecialWindow modalwin;
-                    if (parentWin != null && !script.ParentScript.OriginalScript.Contains("#MAINMENU"))
-                    {
-                        //parentWin.IsEnabled = false;
-                        //parentWin.
-
-                        var winMode = SpecialWindow.MODE.SPECIAL_MODAL;
-                        modalwin = CreateNew(NazivIliPutanjaFormeIzgleda, parentWin, winMode, script.Filename);
-                    }
-                    else
-                    {
-                        var winMode = SpecialWindow.MODE.NORMAL;
-                        modalwin = CreateNew(NazivIliPutanjaFormeIzgleda, parentWin, winMode, script.Filename);
-                    }
-                        
-                    
-                    return new Variable(modalwin.Instance.Tag.ToString());
-                }
-                else
-                {
-                    MessageBox.Show($"Ne postoji datoteka {NazivIliPutanjaFormeIzgleda}! Gasim program.");
-                    Environment.Exit(0);
-                    return null;
-                }
-            }
-            else return null;
-        }      
-    }
-
-    class MAINMENUcommand : ParserFunction
-    {
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            return null;
-        }
-    }
-
     public class CSCS_GUI
     {
         public static App TheApp { get; set; }
         public static Window MainWindow { get; set; }
+        public static bool ChangingBoundVariable { get; set; }
+        public static string RequireDEFINE { get; set; }
 
         public static Dictionary<string, Control> Controls { get; set; } = new Dictionary<string, Control>();
         public static Dictionary<Control, Window> Control2Window { get; set; } = new Dictionary<Control, Window>();
@@ -115,8 +59,6 @@ namespace WpfCSCS
         static Dictionary<string, Variable> s_boundVariables = new Dictionary<string, Variable>();
         //static Dictionary<string, TabPage> s_tabPages           = new Dictionary<string, TabPage>();
         //static TabControl s_tabControl;
-
-        static bool s_changingBoundVariable;
 
         public static Dictionary<string, List<Variable>> DEFINES { get; set; } =
                   new Dictionary<string, List<Variable>>();
@@ -280,6 +222,8 @@ namespace WpfCSCS
             Precompiler.AddNamespace("using System.Windows.Documents;");
             Precompiler.AddNamespace("using System.Windows.Input;");
             Precompiler.AddNamespace("using System.Windows.Media;");
+
+            RequireDEFINE = App.GetConfiguration("Require_Define", "*");
         }
 
         public static string GetWidgetBindingName(Control widget)
@@ -288,12 +232,17 @@ namespace WpfCSCS
             return widgetName;
         }
 
-        static void OnVariableChange(string name, Variable newValue, bool isGlobal)
+        static void OnVariableChange(string name, Variable newValue, bool exists)
         {
-            if (s_changingBoundVariable)
+            if (ChangingBoundVariable)
             {
                 return;
             }
+            if (!exists && RequireDEFINE != "false" && (RequireDEFINE == "*" || name.StartsWith(RequireDEFINE)))
+            {
+                throw new ArgumentException("Variable [" + name + "] must be defined with DEFINE function first.");
+            }
+
             var widgetName = name.ToLower();
             if (!s_boundVariables.TryGetValue(widgetName, out _))
             {
@@ -314,10 +263,10 @@ namespace WpfCSCS
             {
                 return;
             }
-            s_changingBoundVariable = true;
+            ChangingBoundVariable = true;
             ParserFunction.AddGlobalOrLocalVariable(widgetName,
                                         new GetVarFunction(newValue));
-            s_changingBoundVariable = false;
+            ChangingBoundVariable = false;
         }
 
         static void Print(object sender, OutputAvailableEventArgs e)
@@ -703,7 +652,7 @@ namespace WpfCSCS
                                             var content2 = tabItem.Content as Grid;
                                             foreach (var child2 in content2.Children)
                                             {
-                                                CacheControl(child2 as Control, win,controls);
+                                                CacheControl(child2 as Control, win, controls);
                                             }
                                         }
                                     }
@@ -951,7 +900,7 @@ namespace WpfCSCS
             return result;
         }
 
-        public static object  RunOnMainThread(Action action)
+        public static object RunOnMainThread(Action action)
         {
             return Application.Current.Dispatcher.Invoke(action, null);
         }
@@ -961,7 +910,7 @@ namespace WpfCSCS
             Variable result = Variable.EmptyInstance;
             Application.Current.Dispatcher.Invoke(new Action(() =>
             {
-               result = callbackFunction.Run(args);
+                result = callbackFunction.Run(args);
             }));
             return result;
         }
@@ -1624,7 +1573,7 @@ namespace WpfCSCS
     {
         bool m_paramMode;
         static Dictionary<string, List<Variable>> s_parameters = new Dictionary<string, List<Variable>>();
-        static Dictionary<string, ParsingScript> s_chains      = new Dictionary<string, ParsingScript>();
+        static Dictionary<string, ParsingScript> s_chains = new Dictionary<string, ParsingScript>();
         static Dictionary<Window, string> s_window2File = new Dictionary<Window, string>();
         static Dictionary<string, Window> s_file2Window = new Dictionary<string, Window>();
         static Dictionary<string, Window> s_tag2Parent = new Dictionary<string, Window>();
@@ -1689,7 +1638,7 @@ namespace WpfCSCS
 
         public static Window GetParentWindow(ParsingScript script)
         {
-            if (script.ParentScript != null && 
+            if (script.ParentScript != null &&
                 s_file2Window.TryGetValue(script.ParentScript.Filename, out Window win))
             {
                 return win;
@@ -1814,6 +1763,66 @@ namespace WpfCSCS
             return result;
         }
     }
+
+    class WINFORMcommand : NewWindowFunction
+    {
+        bool m_paramMode;
+
+        public WINFORMcommand(bool paramMode = false)
+        {
+            m_paramMode = paramMode;
+        }
+
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            if (m_paramMode)
+            {
+                var NazivIliPutanjaFormeIzgleda = Utils.GetBodyBetween(script, '\0', '\0', Constants.END_STATEMENT);
+                if (NazivIliPutanjaFormeIzgleda.EndsWith(".xaml") == false)
+                {
+                    NazivIliPutanjaFormeIzgleda = NazivIliPutanjaFormeIzgleda + ".xaml";
+                }
+                if (File.Exists(NazivIliPutanjaFormeIzgleda))
+                {
+                    var parentWin = ChainFunction.GetParentWindow(script);
+                    SpecialWindow modalwin;
+                    if (parentWin != null && !script.ParentScript.OriginalScript.Contains("#MAINMENU"))
+                    {
+                        //parentWin.IsEnabled = false;
+                        //parentWin.
+
+                        var winMode = SpecialWindow.MODE.SPECIAL_MODAL;
+                        modalwin = CreateNew(NazivIliPutanjaFormeIzgleda, parentWin, winMode, script.Filename);
+                    }
+                    else
+                    {
+                        var winMode = SpecialWindow.MODE.NORMAL;
+                        modalwin = CreateNew(NazivIliPutanjaFormeIzgleda, parentWin, winMode, script.Filename);
+                    }
+
+
+                    return new Variable(modalwin.Instance.Tag.ToString());
+                }
+                else
+                {
+                    MessageBox.Show($"Ne postoji datoteka {NazivIliPutanjaFormeIzgleda}! Gasim program.");
+                    Environment.Exit(0);
+                    return null;
+                }
+            }
+            else return null;
+        }
+    }
+
+    class MAINMENUcommand : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            return null;
+        }
+    }
+
+
     class VariableArgsFunction : ParserFunction
     {
         bool m_processFirstToken = true;
@@ -1831,7 +1840,7 @@ namespace WpfCSCS
             {
                 var labelName = Utils.GetToken(script, Constants.TOKEN_SEPARATION);
                 var value = script.Current == Constants.END_STATEMENT ? Variable.EmptyInstance :
-                                                                        Utils.GetItem(script, false);
+                                                                       new Variable(Utils.GetToken(script, Constants.TOKEN_SEPARATION));
                 m_parameters[labelName.ToLower()] = value;
             }
         }
@@ -1900,8 +1909,10 @@ namespace WpfCSCS
                                                                        GetIntParameter("size"), GetIntParameter("dec"),
                                                                        GetBoolParameter("up"), GetVariableParameter("dup"));
                 Variable newVar = new Variable(sp);
-                //RegisterFunction(objectName, new GetVarFunction(newVar), true);
+                CSCS_GUI.ChangingBoundVariable = true;
                 AddGlobalOrLocalVariable(objectName, new GetVarFunction(newVar), script);
+                CSCS_GUI.ChangingBoundVariable = false;
+
                 List<Variable> moduleVars;
                 if (!CSCS_GUI.DEFINES.TryGetValue(script.Filename, out moduleVars))
                 {
@@ -2116,7 +2127,7 @@ namespace WpfCSCS
 
     internal class CheckVATFunction : ParserFunction
     {
-        internal enum MODE { CHECK, NAME, ADDRESS};
+        internal enum MODE { CHECK, NAME, ADDRESS };
 
         static string s_request = @"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" 
                                                       xmlns:urn=""urn:ec.europa.eu:taxud:vies:services:checkVat:types"">
@@ -2185,8 +2196,8 @@ namespace WpfCSCS
                 return;
             }
 
-            s_cache[vat + "valid"]   = "false";
-            s_cache[vat + "name"]    = "";
+            s_cache[vat + "valid"] = "false";
+            s_cache[vat + "name"] = "";
             s_cache[vat + "address"] = "";
 
             var wc = new WebClient();
@@ -2197,7 +2208,7 @@ namespace WpfCSCS
             {
                 response = wc.UploadString("http://ec.europa.eu/taxation_customs/vies/services/checkVatService", request);
             }
-            catch(Exception exc)
+            catch (Exception exc)
             {
                 s_cache[vat + "name"] = exc.Message;
                 return;
@@ -2208,12 +2219,10 @@ namespace WpfCSCS
             var validTag = ExtractTag(response, "valid");
             if (validTag == "true")
             {
-                s_cache[vat + "valid"]   = validTag;
-                s_cache[vat + "name"]    = ExtractTag(response, "name");
+                s_cache[vat + "valid"] = validTag;
+                s_cache[vat + "name"] = ExtractTag(response, "name");
                 s_cache[vat + "address"] = ExtractTag(response, "address");
-            }            
+            }
         }
-
-
     }
 }

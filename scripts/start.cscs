@@ -1,3 +1,5 @@
 StartDebugger();
-include("wpfgui.cscs");
+//include("wpfgui.cscs");
 CreateWindow("../../scripts/Sample.xaml");
+
+x= 1;

@@ -6,7 +6,9 @@ function button1@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
-  data = OpenFileXX();
+  //name123 = "blah";
+  define name123 type a size 40 up;
+  data = OpenFile();
   SetText(answerLabel, "Open: " + data);
   //SetText("textBox1", data);
 }
