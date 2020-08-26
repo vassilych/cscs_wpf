@@ -23,7 +23,7 @@ namespace SplitAndMerge
     {
         public const string readXmlFile = "readXmlFile";
         public const string readTagContentFromXmlString = "readTagContentFromXmlString";
-     
+
         public const string DEFINE = "define";
         public const string MSG = "msg";
         public const string SET_OBJECT = "set_object";
@@ -61,7 +61,7 @@ namespace WpfCSCS
             Utils.CheckArgs(args.Count, 2, m_name);
             var xmlString = args[0];
             var xmlTag = args[1];
-            
+
             return new Variable(ExtractTag(xmlString.AsString(), xmlTag.AsString()));
         }
 
@@ -204,7 +204,7 @@ namespace WpfCSCS
         {
             ParserFunction.RegisterFunction(Constants.readXmlFile, new readXmlFileFunction());
             ParserFunction.RegisterFunction(Constants.readTagContentFromXmlString, new readTagContentFromXmlStringFunction());
-            
+
             ParserFunction.RegisterFunction("#MAINMENU", new MAINMENUcommand());
             ParserFunction.RegisterFunction("#WINFORM", new WINFORMcommand(true));
 
@@ -2183,7 +2183,7 @@ namespace WpfCSCS
     {
         internal enum MODE { CHECK, NAME, ADDRESS };
 
-        static string s_request = @"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" 
+        static string s_request = @"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/""
                                                       xmlns:urn=""urn:ec.europa.eu:taxud:vies:services:checkVat:types"">
                           <soapenv:Header/><soapenv:Body><urn:checkVat>
                             <urn:countryCode>COUNTRY</urn:countryCode>
