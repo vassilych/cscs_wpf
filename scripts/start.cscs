@@ -1,3 +1,25 @@
-StartDebugger();
-include("wpfgui.cscs");
-CreateWindow("../../scripts/Sample.xaml");
+define xmlString;
+define tagContent;
+
+MessageBox("start");
+
+//read from file
+xmlString = readXmlFile("E:\VS_PROJEKTI\caca_wpf_vassilijevo\cscs_wpf\scripts\test.xml");
+	   MessageBox("xmlString = " + xmlString);
+
+
+
+//read tags' contents
+tagContent = readTagContentFromXmlString(xmlString, "System");
+	   MessageBox("SystemTagContent = " + tagContent);
+
+tagContent = readTagContentFromXmlString(tagContent, "Setup");
+	   MessageBox("SetupTagContent = " + tagContent);
+
+tagContent = readTagContentFromXmlString(tagContent, "StartupCompany");
+	   MessageBox("StartupCompanyTagContent = " + tagContent);
+
+
+
+MessageBox("kraj");
+exit

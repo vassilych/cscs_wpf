@@ -21,6 +21,9 @@ namespace SplitAndMerge
 {
     public partial class Constants
     {
+        public const string readXmlFile = "readXmlFile";
+        public const string readTagContentFromXmlString = "readTagContentFromXmlString";
+     
         public const string DEFINE = "define";
         public const string MSG = "msg";
         public const string SET_OBJECT = "set_object";
@@ -35,6 +38,54 @@ namespace SplitAndMerge
 
 namespace WpfCSCS
 {
+    class readXmlFileFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var xmlPath = args[0];
+
+            string lala = xmlPath.AsString();
+
+            string xmlString =  File.ReadAllText(lala);
+
+            return new Variable(xmlString);
+        }
+    }
+    class readTagContentFromXmlStringFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 2, m_name);
+            var xmlString = args[0];
+            var xmlTag = args[1];
+            
+            return new Variable(ExtractTag(xmlString.AsString(), xmlTag.AsString()));
+        }
+
+        private string ExtractTag(string xml, string tag)
+        {
+            var start = xml.IndexOf("<" + tag + ">");
+            if (start < 0)
+            {
+                return "";
+            }
+            var wordStart = start + tag.Length + 2;
+            var end = xml.IndexOf("</" + tag + ">", wordStart);
+            if (end < 0)
+            {
+                return "";
+            }
+            var result = xml.Substring(wordStart, end - wordStart);
+            return result.Trim();
+        }
+
+    }
+
+
+
     public class CSCS_GUI
     {
         public static App TheApp { get; set; }
@@ -151,6 +202,9 @@ namespace WpfCSCS
 
         public static void Init()
         {
+            ParserFunction.RegisterFunction(Constants.readXmlFile, new readXmlFileFunction());
+            ParserFunction.RegisterFunction(Constants.readTagContentFromXmlString, new readTagContentFromXmlStringFunction());
+            
             ParserFunction.RegisterFunction("#MAINMENU", new MAINMENUcommand());
             ParserFunction.RegisterFunction("#WINFORM", new WINFORMcommand(true));
 
