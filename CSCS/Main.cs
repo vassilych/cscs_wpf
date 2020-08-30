@@ -37,15 +37,15 @@ namespace SplitAndMerge
             // execution. On error an exception will be thrown.
             Interpreter.Instance.OnOutput += Print;
 
-            string scriptFilename = "scripts/temp.cscs";
-            //scriptFilename = "";
+            string scriptFilename = "scripts/test.cscs";
+            scriptFilename = "";
             string script = Utils.GetFileContents(scriptFilename);
 
             Environment.SetEnvironmentVariable("MONO_REGISTRY_PATH",
                 "/Library/Frameworks/Mono.framework/Versions/Current/etc/mono/registry/");
 
             DebuggerServer.BaseDirectory = "";
-            if (string.IsNullOrWhiteSpace(script) && (args.Length < 1 || args[0] == "debugger"))
+            if (string.IsNullOrWhiteSpace(script) && (args.Length < 1 || args[1] == "debugger"))
             {
                 DebuggerServer.StartServer(13337, true);
             }
@@ -274,14 +274,14 @@ namespace SplitAndMerge
                 if (!string.IsNullOrWhiteSpace(filename))
                 {
                     result = System.Threading.Tasks.Task.Run(() =>
-                  Interpreter.Instance.ProcessFileExtended(filename, true)).Result;
-                  //Interpreter.Instance.ProcessFile(filename, true)).Result;
+                  //Interpreter.Instance.ProcessFileAsync(filename, true)).Result;
+                  Interpreter.Instance.ProcessFile(filename, true)).Result;
                 }
                 else
                 {
                     result = System.Threading.Tasks.Task.Run(() =>
                       //Interpreter.Instance.ProcessAsync(script, filename)).Result;
-                      Interpreter.Instance.ProcessExtended(script, filename, true)).Result;
+                      Interpreter.Instance.Process(script, filename, true)).Result;
                 }
             }
             catch (Exception exc)

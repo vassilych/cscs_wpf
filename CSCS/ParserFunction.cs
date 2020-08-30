@@ -193,7 +193,7 @@ namespace SplitAndMerge
 
         static bool ActionForUndefined(string action)
         {
-            return !string.IsNullOrWhiteSpace(action) && action.EndsWith("=");
+            return !string.IsNullOrWhiteSpace(action) && action.EndsWith("=") && action.Length > 1;
         }
 
         static ParserFunction GetRegisteredAction(string name, ParsingScript script, ref string action)
@@ -203,7 +203,7 @@ namespace SplitAndMerge
                 return null;
             }
 
-            if (ActionForUndefined(action) && script.Rest.StartsWith(Constants.UNDEFINED))
+            if (false && ActionForUndefined(action) && script.Rest.StartsWith(Constants.UNDEFINED))
             {
                 IsUndefinedFunction undef = new IsUndefinedFunction(name, action);
                 return undef;
@@ -298,7 +298,8 @@ namespace SplitAndMerge
             }
             name = Constants.ConvertName(name);
             ParserFunction impl;
-            StackLevel localStack = script.StackLevel != null ? script.StackLevel : s_locals.Count > StackLevelDelta ? s_lastExecutionLevel : null;
+            StackLevel localStack = script != null &&  script.StackLevel != null ?
+                 script.StackLevel : s_locals.Count > StackLevelDelta ? s_lastExecutionLevel : null;
             if (localStack != null)
             {
                 Dictionary<string, ParserFunction> local = localStack.Variables;

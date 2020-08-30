@@ -10,9 +10,9 @@ namespace SplitAndMerge
     {
         public enum VarType
         {
-            NONE, NUMBER, STRING, ARRAY,
+            NONE, UNDEFINED, NUMBER, STRING, ARRAY,
             ARRAY_NUM, ARRAY_STR, MAP_NUM, MAP_STR,
-            BREAK, CONTINUE, OBJECT, ENUM, VARIABLE, DATETIME, CUSTOM
+            BREAK, CONTINUE, OBJECT, ENUM, VARIABLE, DATETIME, CUSTOM, POINTER
         };
 
         public Variable()
@@ -307,9 +307,9 @@ namespace SplitAndMerge
                     continue;
                 }
 
-                var key            = current.m_dictionary.First().Key;
+                var key = current.m_dictionary.First().Key;
                 m_keyMappings[key] = current.m_keyMappings[key];
-                m_dictionary[key]  = i;
+                m_dictionary[key] = i;
 
                 current.m_dictionary.Clear();
                 m_tuple[i] = current.m_tuple[0];
@@ -578,6 +578,10 @@ namespace SplitAndMerge
                 return sb.ToString();
             }
 
+            if (Type == VarType.UNDEFINED)
+            {
+                return Constants.UNDEFINED;
+            }
             if (Type == VarType.NONE || m_tuple == null)
             {
                 return string.Empty;
@@ -656,7 +660,7 @@ namespace SplitAndMerge
                            Constants.START_ARRAY.ToString());
 
                 List<string> allProps = GetAllProperties();
-                for (int i = 0;  i < allProps.Count; i++)
+                for (int i = 0; i < allProps.Count; i++)
                 {
                     string prop = allProps[i];
                     if (prop.Equals(Constants.OBJECT_PROPERTIES, StringComparison.OrdinalIgnoreCase))
@@ -702,8 +706,11 @@ namespace SplitAndMerge
 
         public int Count
         {
-            get { return Type == VarType.ARRAY ? m_tuple.Count :
-                         Type == VarType.NONE  ? 0 : 1; }
+            get
+            {
+                return Type == VarType.ARRAY ? m_tuple.Count :
+                       Type == VarType.NONE ? 0 : 1;
+            }
         }
 
         public int TotalElements()
@@ -886,7 +893,7 @@ namespace SplitAndMerge
                         args = new List<Variable>();
                     }
                     var task = obj.GetProperty(match, args, script);
-                    result   = task != null ? task.Result : null;
+                    result = task != null ? task.Result : null;
                     if (result != null)
                     {
                         return result;
@@ -919,7 +926,7 @@ namespace SplitAndMerge
                 if (!string.IsNullOrWhiteSpace(match))
                 {
                     List<Variable> args = null;
-                    if (script != null && 
+                    if (script != null &&
                        (script.Pointer == 0 || script.Prev == Constants.START_ARG))
                     {
                         args = await script.GetFunctionArgsAsync();
@@ -1038,11 +1045,11 @@ namespace SplitAndMerge
 
                 string search = Utils.GetSafeString(args, 0);
                 int startFrom = Utils.GetSafeInt(args, 1, 0);
-                string param  = Utils.GetSafeString(args, 2, "no_case");
+                string param = Utils.GetSafeString(args, 2, "no_case");
                 StringComparison comp = param.Equals("case", StringComparison.OrdinalIgnoreCase) ?
                     StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase;
 
-                return new Variable(AsString().IndexOf(search, startFrom,comp));
+                return new Variable(AsString().IndexOf(search, startFrom, comp));
             }
             else if (script != null && propName.Equals(Constants.SUBSTRING, StringComparison.OrdinalIgnoreCase))
             {
@@ -1109,7 +1116,7 @@ namespace SplitAndMerge
                 Utils.CheckArgs(args.Count, 1, propName);
 
                 Variable var = Utils.GetSafeVariable(args, 0);
-                int index    = Utils.GetSafeInt(args, 1, -1);
+                int index = Utils.GetSafeInt(args, 1, -1);
 
                 if (Tuple != null)
                 {
@@ -1227,7 +1234,7 @@ namespace SplitAndMerge
                 {
                     string oldVal = Utils.GetSafeString(args, i);
                     string newVal = Utils.GetSafeString(args, i + 1);
-                    currentValue  = currentValue.Replace(oldVal, newVal);
+                    currentValue = currentValue.Replace(oldVal, newVal);
                 }
 
                 return new Variable(currentValue.Trim());
@@ -1241,7 +1248,7 @@ namespace SplitAndMerge
                 StringComparison comp = param.Equals("case", StringComparison.OrdinalIgnoreCase) ?
                     StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase;
 
-                bool contains = false; 
+                bool contains = false;
                 if (Type == Variable.VarType.ARRAY)
                 {
                     string lower = val.ToLower();
@@ -1482,6 +1489,12 @@ namespace SplitAndMerge
             set { m_datetime = value; Type = VarType.DATETIME; }
         }
 
+        public string Pointer
+        {
+            get;
+            set;
+        } = null;
+
         public CustomFunction CustomFunctionGet
         {
             get { return m_customFunctionGet; }
@@ -1521,6 +1534,7 @@ namespace SplitAndMerge
         public List<Variable> StackVariables { get; set;  }
 
         public static Variable EmptyInstance = new Variable();
+        public static Variable Undefined = new Variable(VarType.UNDEFINED);
 
         double m_value;
         string m_string;
