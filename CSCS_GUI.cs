@@ -21,6 +21,9 @@ namespace SplitAndMerge
 {
     public partial class Constants
     {
+        public const string READ_XML_FILE = "readXmlFile";
+        public const string READ_TAGCONTENT_FROM_XMLSTRING = "readTagContentFromXmlString";
+
         public const string DEFINE = "define";
         public const string MSG = "msg";
         public const string SET_OBJECT = "set_object";
@@ -35,6 +38,52 @@ namespace SplitAndMerge
 
 namespace WpfCSCS
 {
+    class ReadXmlFileFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var xmlPath = args[0];
+
+            string lala = xmlPath.AsString();
+
+            string xmlString = File.ReadAllText(lala);
+
+            return new Variable(xmlString);
+        }
+    }
+    class ReadTagContentFromXmlStringFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 2, m_name);
+            var xmlString = args[0];
+            var xmlTag = args[1];
+
+            return new Variable(ExtractTag(xmlString.AsString(), xmlTag.AsString()));
+        }
+
+        private string ExtractTag(string xml, string tag)
+        {
+            var start = xml.IndexOf("<" + tag + ">");
+            if (start < 0)
+            {
+                return "";
+            }
+            var wordStart = start + tag.Length + 2;
+            var end = xml.IndexOf("</" + tag + ">", wordStart);
+            if (end < 0)
+            {
+                return "";
+            }
+            var result = xml.Substring(wordStart, end - wordStart);
+            return result.Trim();
+        }
+
+    }
+
     public class CSCS_GUI
     {
         public static App TheApp { get; set; }
@@ -72,7 +121,8 @@ namespace WpfCSCS
             "Name", "Size", "Type", "Value", "Dec", "Array", "Up", "Dup"
         };
 
-            public SpecialObject(string name, Variable value, string type = "", int size = 0, int dec = 3, bool up = false, Variable dup = null)
+            public SpecialObject(string name, Variable value, string type = "", int size = 0, int dec = 3, bool up = false,
+                Variable dup = null)
             {
                 Name = name;
                 Value = value;
@@ -153,6 +203,10 @@ namespace WpfCSCS
         {
             ParserFunction.RegisterFunction("#MAINMENU", new MAINMENUcommand());
             ParserFunction.RegisterFunction("#WINFORM", new WINFORMcommand(true));
+
+            ParserFunction.RegisterFunction(Constants.READ_XML_FILE, new ReadXmlFileFunction());
+            ParserFunction.RegisterFunction(Constants.READ_TAGCONTENT_FROM_XMLSTRING,
+                new ReadTagContentFromXmlStringFunction());
 
             ParserFunction.RegisterFunction(Constants.MSG, new VariableArgsFunction(true));
             ParserFunction.RegisterFunction(Constants.DEFINE, new VariableArgsFunction(true));
@@ -1839,8 +1893,9 @@ namespace WpfCSCS
             while (script.Current != Constants.END_STATEMENT)
             {
                 var labelName = Utils.GetToken(script, Constants.TOKEN_SEPARATION);
-                var value = script.Current == Constants.END_STATEMENT ? Variable.EmptyInstance :
-                                                                       new Variable(Utils.GetToken(script, Constants.TOKEN_SEPARATION));
+                var value = labelName == "up" ? new Variable(true) :
+                            script.Current == Constants.END_STATEMENT ? Variable.EmptyInstance :
+                            new Variable(Utils.GetToken(script, Constants.TOKEN_SEPARATION));
                 m_parameters[labelName.ToLower()] = value;
             }
         }
@@ -1904,23 +1959,9 @@ namespace WpfCSCS
             }
             if (Name.ToUpper() == "DEFINE")
             {
-                string name = GetParameter("name");
-                CSCS_GUI.SpecialObject sp = new CSCS_GUI.SpecialObject(objectName, GetVariableParameter("value"), GetParameter("type"),
-                                                                       GetIntParameter("size"), GetIntParameter("dec"),
-                                                                       GetBoolParameter("up"), GetVariableParameter("dup"));
-                Variable newVar = new Variable(sp);
-                CSCS_GUI.ChangingBoundVariable = true;
-                AddGlobalOrLocalVariable(objectName, new GetVarFunction(newVar), script);
-                CSCS_GUI.ChangingBoundVariable = false;
-
-                List<Variable> moduleVars;
-                if (!CSCS_GUI.DEFINES.TryGetValue(script.Filename, out moduleVars))
-                {
-                    moduleVars = new List<Variable>();
-                }
-                moduleVars.Add(newVar);
-                CSCS_GUI.DEFINES[script.Filename] = moduleVars;
-
+                Variable newVar = CreateVariable(script, objectName, GetVariableParameter("value"), GetVariableParameter("init"),
+                    GetParameter("type"), GetIntParameter("size"), GetIntParameter("dec"),
+                    GetBoolParameter("up"), GetVariableParameter("dup"));
                 return newVar;
             }
             if (Name.ToUpper() == "SET_OBJECT")
@@ -1931,6 +1972,54 @@ namespace WpfCSCS
             }
 
             return new Variable(objectName);
+        }
+
+        static Variable CreateVariable(ParsingScript script, string name, Variable value, Variable init,
+            string type = "", int size = 0, int dec = 3, bool up = false, Variable dup = null)
+        {
+            Variable newVar = new Variable();
+            if (init == null || string.IsNullOrEmpty(init.String))
+            {
+                init = value;
+                if (init == null)
+                {
+                    init = Variable.EmptyInstance;
+                }
+            }
+            switch (type)
+            {
+                case "a":                    
+                    newVar.String = init.AsString();
+                    if (up)
+                    {
+                        newVar.String = newVar.String.ToUpper();
+                    }
+                    break;
+
+                case "p":
+                case "f":
+                    newVar.Type = Variable.VarType.POINTER;
+                    newVar.Pointer = init.AsString();
+                    break;
+                case "n":
+                default:
+                    newVar.Value = init.AsFloat();
+                    break;
+            }
+
+            CSCS_GUI.ChangingBoundVariable = true;
+            AddGlobalOrLocalVariable(name, new GetVarFunction(newVar), script);
+            CSCS_GUI.ChangingBoundVariable = false;
+
+            List<Variable> moduleVars;
+            if (!CSCS_GUI.DEFINES.TryGetValue(script.Filename, out moduleVars))
+            {
+                moduleVars = new List<Variable>();
+            }
+            moduleVars.Add(newVar);
+            CSCS_GUI.DEFINES[script.Filename] = moduleVars;
+
+            return newVar;
         }
     }
 
