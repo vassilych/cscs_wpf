@@ -662,16 +662,43 @@ namespace WpfCSCS
                 return controls;
             }
 
-            var content = win.Content as Panel;
-            if (content != null)
+            var content = win.Content;
+            List<UIElement> children = null;
+
+            if (content is Grid)
             {
-                CacheChildren(content.Children.Cast<UIElement>().ToList(), controls, win);
+                var grid = content as Grid;
+                if (grid.Children.Count > 0 && grid.Children[0] is StackPanel)
+                {
+                    var stack = grid.Children[0] as StackPanel;
+                    children = stack.Children.Cast<UIElement>().ToList();
+                }
+                else
+                {
+                    children = grid.Children.Cast<UIElement>().ToList();
+                }
             }
+            else if (content is Panel)
+            {
+                var panel = content as Panel;
+                children = (content as Panel).Children.Cast<UIElement>().ToList();
+            }
+            else if (content is StackPanel)
+            {
+                var stack = content as StackPanel;
+                children = stack.Children.Cast<UIElement>().ToList();
+            }
+
+            CacheChildren(children, controls, win);
             return controls;
         }
 
         static void CacheChildren(List<UIElement> children, List<Control> controls, Window win)
         {
+            if (children == null || children.Count == 0)
+            {
+                return;
+            }
             foreach (var child in children)
             {
                 if (child is Grid)
@@ -1977,6 +2004,16 @@ namespace WpfCSCS
         static Variable CreateVariable(ParsingScript script, string name, Variable value, Variable init,
             string type = "", int size = 0, int dec = 3, bool up = false, Variable dup = null)
         {
+            if (dup != null)
+            {
+                var original = ParserFunction.GetVariable(dup.AsString(), script);
+                if (original == null)
+                {
+                    throw new ArgumentException("Couldn't find variable [" + dup.AsString() + "]");
+                }
+                Variable copy = original.GetValue(script).DeepClone();
+                return copy;
+            }
             Variable newVar = new Variable();
             if (init == null || string.IsNullOrEmpty(init.String))
             {
@@ -1988,7 +2025,7 @@ namespace WpfCSCS
             }
             switch (type)
             {
-                case "a":                    
+                case "a":
                     newVar.String = init.AsString();
                     if (up)
                     {
