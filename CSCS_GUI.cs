@@ -16,6 +16,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Net;
 using System.Globalization;
+using System.Threading;
 
 namespace SplitAndMerge
 {
@@ -109,6 +110,9 @@ namespace WpfCSCS
         //static Dictionary<string, TabPage> s_tabPages           = new Dictionary<string, TabPage>();
         //static TabControl s_tabControl;
 
+        public static Dictionary<string, DefineVariable> s_defines { get; set; } =
+            new Dictionary<string, DefineVariable>();
+
         public static Dictionary<string, List<Variable>> DEFINES { get; set; } =
                   new Dictionary<string, List<Variable>>();
 
@@ -201,6 +205,9 @@ namespace WpfCSCS
 
         public static void Init()
         {
+            Interpreter.Instance.OnOutput += Print;
+            ParserFunction.OnVariableChange += OnVariableChange;
+
             ParserFunction.RegisterFunction("#MAINMENU", new MAINMENUcommand());
             ParserFunction.RegisterFunction("#WINFORM", new WINFORMcommand(true));
 
@@ -258,15 +265,16 @@ namespace WpfCSCS
             ParserFunction.RegisterFunction("SetMainWindow", new NewWindowFunction(NewWindowFunction.MODE.SET_MAIN));
             ParserFunction.RegisterFunction("UnsetMainWindow", new NewWindowFunction(NewWindowFunction.MODE.UNSET_MAIN));
 
+            ParserFunction.RegisterFunction("AsyncCall", new AsyncCallFunction());
+
+            ParserFunction.AddAction(Constants.ASSIGNMENT, new MyAssignFunction());
+
             Constants.FUNCT_WITH_SPACE.Add("SetText");
             Constants.FUNCT_WITH_SPACE.Add(Constants.DEFINE);
             Constants.FUNCT_WITH_SPACE.Add(Constants.MSG);
             Constants.FUNCT_WITH_SPACE.Add(Constants.SET_OBJECT);
             Constants.FUNCT_WITH_SPACE.Add(Constants.CHAIN);
             Constants.FUNCT_WITH_SPACE.Add(Constants.PARAM);
-
-            Interpreter.Instance.OnOutput += Print;
-            ParserFunction.OnVariableChange += OnVariableChange;
 
             Precompiler.AddNamespace("using WpfCSCS;");
             Precompiler.AddNamespace("using System.Windows;");
@@ -1132,7 +1140,8 @@ namespace WpfCSCS
                 }
                 if (index >= 0 && index < combo.Items.Count)
                 {
-                    dispatcher.Invoke(new Action(() => {
+                    dispatcher.Invoke(new Action(() =>
+                    {
                         combo.SelectedIndex = index;
                     }));
                 }
@@ -1140,28 +1149,32 @@ namespace WpfCSCS
             else if (widget is CheckBox)
             {
                 var checkBox = widget as CheckBox;
-                dispatcher.Invoke(new Action(() => {
+                dispatcher.Invoke(new Action(() =>
+                {
                     checkBox.IsChecked = text == "1" || text.ToLower() == "true";
                 }));
             }
             else if (widget is ContentControl)
             {
                 var contentable = widget as ContentControl;
-                dispatcher.Invoke(new Action(() => {
+                dispatcher.Invoke(new Action(() =>
+                {
                     contentable.Content = text;
                 }));
             }
             else if (widget is TextBox)
             {
                 var textBox = widget as TextBox;
-                dispatcher.Invoke(new Action(() => {
+                dispatcher.Invoke(new Action(() =>
+                {
                     textBox.Text = text;
                 }));
             }
             else if (widget is RichTextBox)
             {
                 var richTextBox = widget as RichTextBox;
-                dispatcher.Invoke(new Action(() => {
+                dispatcher.Invoke(new Action(() =>
+                {
                     richTextBox.Document.Blocks.Clear();
                     richTextBox.Document.Blocks.Add(new Paragraph(new Run(text)));
                 }));
@@ -1171,7 +1184,8 @@ namespace WpfCSCS
                 var datePicker = widget as DatePicker;
                 var format = text.Length == 10 ? "yyyy/MM/dd" : text.Length == 8 ? "hh:mm:ss" :
                              text.Length == 12 ? "hh:mm:ss.fff" : "yyyy/MM/dd hh:mm:ss";
-                dispatcher.Invoke(new Action(() => {
+                dispatcher.Invoke(new Action(() =>
+                {
                     datePicker.SelectedDate = DateTime.ParseExact(text, format, CultureInfo.InvariantCulture);
                 }));
             }
@@ -1987,7 +2001,7 @@ namespace WpfCSCS
             if (Name.ToUpper() == "DEFINE")
             {
                 Variable newVar = CreateVariable(script, objectName, GetVariableParameter("value"), GetVariableParameter("init"),
-                    GetParameter("type"), GetIntParameter("size"), GetIntParameter("dec"),
+                    GetParameter("type"), GetIntParameter("size"), GetIntParameter("dec"), GetIntParameter("array"),
                     GetBoolParameter("up"), GetVariableParameter("dup"));
                 return newVar;
             }
@@ -2002,7 +2016,7 @@ namespace WpfCSCS
         }
 
         static Variable CreateVariable(ParsingScript script, string name, Variable value, Variable init,
-            string type = "", int size = 0, int dec = 3, bool up = false, Variable dup = null)
+            string type = "", int size = 0, int dec = 3, int array = 0, bool up = false, Variable dup = null)
         {
             if (dup != null)
             {
@@ -2014,7 +2028,7 @@ namespace WpfCSCS
                 Variable copy = original.GetValue(script).DeepClone();
                 return copy;
             }
-            Variable newVar = new Variable();
+
             if (init == null || string.IsNullOrEmpty(init.String))
             {
                 init = value;
@@ -2023,6 +2037,8 @@ namespace WpfCSCS
                     init = Variable.EmptyInstance;
                 }
             }
+            var valueStr = value == null ? null : value.AsString();
+            DefineVariable newVar = new DefineVariable(name, valueStr, init.AsString(), type, size, dec, array, up);
             switch (type)
             {
                 case "a":
@@ -2055,6 +2071,8 @@ namespace WpfCSCS
             }
             moduleVars.Add(newVar);
             CSCS_GUI.DEFINES[script.Filename] = moduleVars;
+
+            CSCS_GUI.s_defines[name] = newVar;
 
             return newVar;
         }
@@ -2349,6 +2367,119 @@ namespace WpfCSCS
                 s_cache[vat + "name"] = ExtractTag(response, "name");
                 s_cache[vat + "address"] = ExtractTag(response, "address");
             }
+        }
+    }
+
+    public class DefineVariable : Variable
+    {
+        public string Name { get; set; }
+        public string DefValue { get; set; }
+        public string Init { get; set; }
+        public string DefType { get; set; } = "";
+
+        public int Size { get; set; } = 0;
+        public int Dec { get; set; } = 3;
+        public int Array { get; set; } = 0;
+        public bool Up { get; set; } = false;
+        public DefineVariable Dup { get; set; }
+
+        public DefineVariable(string name, string value, string init,
+            string type = "", int size = 0, int dec = 3, int array = 0, bool up = false)
+        {
+            Name = name;
+            DefValue = value;
+            Init = init;
+            DefType = type;
+            Size = size;
+            Dec = dec;
+            Up = up;
+            Array = array;
+        }
+
+        public override string AsString(bool isList = true,
+                               bool sameLine = true,
+                               int maxCount = -1)
+        {
+            return base.AsString(isList, sameLine, maxCount);
+        }
+
+        public override double AsDouble()
+        {
+            return base.AsDouble();
+        }
+    }
+
+    class MyAssignFunction : AssignFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            return DoAssign(script, m_name);
+        }
+
+        protected override async Task<Variable> EvaluateAsync(ParsingScript script)
+        {
+            return DoAssign(script, m_name);
+        }
+
+
+        public Variable DoAssign(ParsingScript script, string varName, bool localIfPossible = false)
+        {
+            var pointer = script.Pointer;
+            var token = Utils.GetToken(script, Constants.NEXT_OR_END_ARRAY);
+
+            DefineVariable defVar;
+            if (!CSCS_GUI.s_defines.TryGetValue(token, out defVar))
+            {
+                script.Pointer = pointer;
+                return Assign(script, varName, localIfPossible);
+            }
+
+
+            script.Pointer = pointer;
+            return Assign(script, varName, localIfPossible);
+        }
+
+        override public ParserFunction NewInstance()
+        {
+            return new MyAssignFunction();
+        }
+    }
+
+    class AsyncCallFunction : ParserFunction, INumericFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            string funcName = Utils.GetToken(script, Constants.TOKEN_SEPARATION);
+            script.MoveForwardIf(',');
+            string callback = Utils.GetToken(script, Constants.TOKEN_SEPARATION);
+            script.MoveForwardIf(',');
+
+            List<Variable> args = script.GetFunctionArgs();
+
+            CustomFunction newThreadFunction = ParserFunction.GetFunction(funcName, null) as CustomFunction;
+            if (newThreadFunction == null)
+            {
+                throw new ArgumentException("Error: Couldn't find function [" + funcName + "]");
+            }
+            CustomFunction callbackFunction = ParserFunction.GetFunction(callback, null) as CustomFunction;
+            if (callbackFunction == null)
+            {
+                throw new ArgumentException("Error: Couldn't find function [" + callback + "]");
+            }
+
+            ThreadPool.QueueUserWorkItem(unused => ThreadProc(newThreadFunction, callbackFunction, args));
+            return Variable.EmptyInstance;
+        }
+
+        static void ThreadProc(CustomFunction newThreadFunction, CustomFunction callbackFunction, List<Variable> args)
+        {
+            Variable result = Interpreter.Run(newThreadFunction, args);
+
+            var resultArgs = new List<Variable>() {
+                new Variable(newThreadFunction.Name), result
+            };
+
+            RunOnMainFunction.RunOnMainThread(callbackFunction, resultArgs);
         }
     }
 }

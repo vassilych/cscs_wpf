@@ -455,7 +455,7 @@ namespace SplitAndMerge
             return Exists(hash);
         }
 
-        public bool AsBool()
+        public virtual bool AsBool()
         {
             if (Type == VarType.NUMBER && m_value != 0.0)
             {
@@ -470,7 +470,7 @@ namespace SplitAndMerge
             return false;
         }
 
-        public int AsInt()
+        public virtual int AsInt()
         {
             int result = 0;
             if (Type == VarType.NUMBER || Value != 0.0)
@@ -484,7 +484,7 @@ namespace SplitAndMerge
 
             return result;
         }
-        public float AsFloat()
+        public virtual float AsFloat()
         {
             float result = 0;
             if (Type == VarType.NUMBER || Value != 0.0)
@@ -498,7 +498,7 @@ namespace SplitAndMerge
 
             return result;
         }
-        public long AsLong()
+        public virtual long AsLong()
         {
             long result = 0;
             if (Type == VarType.NUMBER || Value != 0.0)
@@ -511,7 +511,7 @@ namespace SplitAndMerge
             }
             return result;
         }
-        public double AsDouble()
+        public virtual double AsDouble()
         {
             double result = 0.0;
             if (Type == VarType.NUMBER)
@@ -525,7 +525,7 @@ namespace SplitAndMerge
 
             return result;
         }
-        public DateTime AsDateTime()
+        public virtual DateTime AsDateTime()
         {
             return m_datetime;
         }
