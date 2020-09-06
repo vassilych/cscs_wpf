@@ -2,9 +2,12 @@ function onException(sender, errorMsg, arg) {
   MessageBox("Exception in " + sender + ": " + errorMsg, title, "OK", "error");
 }
 
-function worker(count) {
+function worker(count, cycles) {
   for (i = 0; i < count; i++) {
     x = 2*2*4*5*6;
+    if (i % cycles  == 0) {
+      RunOnMain("SetText", myNewButton, "Loop: " + i);
+    }
   }
   return count;
 }
@@ -15,7 +18,7 @@ function workDone(sender, load) {
 
 function myNewButton@Clicked(sender, load) {
    SetText(sender, "Working...");
-   AsyncCall("worker", "workDone", 100 * 1000);
+   AsyncCall("worker", "workDone", 100000, 10000);
 }
 
 
