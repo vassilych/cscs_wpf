@@ -110,11 +110,11 @@ namespace WpfCSCS
         //static Dictionary<string, TabPage> s_tabPages           = new Dictionary<string, TabPage>();
         //static TabControl s_tabControl;
 
-        public static Dictionary<string, DefineVariable> s_defines { get; set; } =
+        public static Dictionary<string, DefineVariable> DEFINES { get; set; } =
             new Dictionary<string, DefineVariable>();
 
-        public static Dictionary<string, List<Variable>> DEFINES { get; set; } =
-                  new Dictionary<string, List<Variable>>();
+        //public static Dictionary<string, List<Variable>> DEFINES { get; set; } =
+        //          new Dictionary<string, List<Variable>>();
 
         public static Dictionary<string, Dictionary<string, bool>> s_varExists =
             new Dictionary<string, Dictionary<string, bool>>();
@@ -1743,17 +1743,18 @@ namespace WpfCSCS
 
         protected override Variable Evaluate(ParsingScript script)
         {
+            var separator = new char[] { ',' };
             List<Variable> parameters;
             if (m_paramMode)
             {
                 var argsStr = Utils.GetBodyBetween(script, '\0', '\0', Constants.END_STATEMENT);
-                string[] argsArray = argsStr.Split(new char[] { ',' });
+                string[] argsArray = argsStr.Split(separator);
                 //string msg = "CmdArgs:";
                 if (!s_parameters.TryGetValue(script.Filename, out parameters))
                 {
                     parameters = new List<Variable>();
                     string[] cmdArgs = Environment.GetCommandLineArgs();
-                    var cmdArgsArr = cmdArgs.Length > 1 ? cmdArgs[1].Split(new char[] { ',' }) : new string[0];
+                    var cmdArgsArr = cmdArgs.Length > 1 ? cmdArgs[1].Split(separator) : new string[0];
                     for (int i = 1; i < cmdArgsArr.Length; i++)
                     {
                         parameters.Add(new Variable(cmdArgsArr[i]));
@@ -1930,13 +1931,15 @@ namespace WpfCSCS
 
         void GetParameters(ParsingScript script)
         {
+            var separator = new char[] { ' ', ';' };
             m_parameters = new Dictionary<string, Variable>();
-            while (script.Current != Constants.END_STATEMENT)
+
+            while (script.Current != Constants.END_STATEMENT && script.StillValid())
             {
                 var labelName = Utils.GetToken(script, Constants.TOKEN_SEPARATION);
-                var value = labelName == "up" ? new Variable(true) :
+                var value = labelName == "up" || labelName == "local" ? new Variable(true) :
                             script.Current == Constants.END_STATEMENT ? Variable.EmptyInstance :
-                            new Variable(Utils.GetToken(script, Constants.TOKEN_SEPARATION));
+                            new Variable(Utils.GetToken(script, separator));
                 m_parameters[labelName.ToLower()] = value;
             }
         }
@@ -2002,7 +2005,7 @@ namespace WpfCSCS
             {
                 Variable newVar = CreateVariable(script, objectName, GetVariableParameter("value"), GetVariableParameter("init"),
                     GetParameter("type"), GetIntParameter("size"), GetIntParameter("dec"), GetIntParameter("array"),
-                    GetBoolParameter("up"), GetVariableParameter("dup"));
+                    GetBoolParameter("local"), GetBoolParameter("up"), GetParameter("dup"));
                 return newVar;
             }
             if (Name.ToUpper() == "SET_OBJECT")
@@ -2016,63 +2019,20 @@ namespace WpfCSCS
         }
 
         static Variable CreateVariable(ParsingScript script, string name, Variable value, Variable init,
-            string type = "", int size = 0, int dec = 3, int array = 0, bool up = false, Variable dup = null)
+            string type = "", int size = 0, int dec = 3, int array = 0, bool local = false, bool up = false, string dup = null)
         {
-            if (dup != null)
+            DefineVariable dupVar = null;
+            if (!string.IsNullOrWhiteSpace(dup) && !CSCS_GUI.DEFINES.TryGetValue(dup, out dupVar))
             {
-                var original = ParserFunction.GetVariable(dup.AsString(), script);
-                if (original == null)
-                {
-                    throw new ArgumentException("Couldn't find variable [" + dup.AsString() + "]");
-                }
-                Variable copy = original.GetValue(script).DeepClone();
-                return copy;
+                throw new ArgumentException("Couldn't find variable [" + dup + "]");
             }
 
-            if (init == null || string.IsNullOrEmpty(init.String))
-            {
-                init = value;
-                if (init == null)
-                {
-                    init = Variable.EmptyInstance;
-                }
-            }
-            var valueStr = value == null ? null : value.AsString();
-            DefineVariable newVar = new DefineVariable(name, valueStr, init.AsString(), type, size, dec, array, up);
-            switch (type)
-            {
-                case "a":
-                    newVar.String = init.AsString();
-                    if (up)
-                    {
-                        newVar.String = newVar.String.ToUpper();
-                    }
-                    break;
+            var valueStr = value == null ? "" : value.AsString();
+            init = init == null ? Variable.EmptyInstance : init;
 
-                case "p":
-                case "f":
-                    newVar.Type = Variable.VarType.POINTER;
-                    newVar.Pointer = init.AsString();
-                    break;
-                case "n":
-                default:
-                    newVar.Value = init.AsFloat();
-                    break;
-            }
-
-            CSCS_GUI.ChangingBoundVariable = true;
-            AddGlobalOrLocalVariable(name, new GetVarFunction(newVar), script);
-            CSCS_GUI.ChangingBoundVariable = false;
-
-            List<Variable> moduleVars;
-            if (!CSCS_GUI.DEFINES.TryGetValue(script.Filename, out moduleVars))
-            {
-                moduleVars = new List<Variable>();
-            }
-            moduleVars.Add(newVar);
-            CSCS_GUI.DEFINES[script.Filename] = moduleVars;
-
-            CSCS_GUI.s_defines[name] = newVar;
+            DefineVariable newVar = dupVar != null ? new DefineVariable(name, dupVar, local) :
+                                   new DefineVariable(name, valueStr, type, size, dec, array, local, up);
+            newVar.InitVariable(dupVar != null ? dupVar.Init : init, script);
 
             return newVar;
         }
@@ -2374,26 +2334,157 @@ namespace WpfCSCS
     {
         public string Name { get; set; }
         public string DefValue { get; set; }
-        public string Init { get; set; }
         public string DefType { get; set; } = "";
 
         public int Size { get; set; } = 0;
-        public int Dec { get; set; } = 3;
+        public int Dec { get; set; } = 0;
         public int Array { get; set; } = 0;
+        public bool Local { get; set; } = false;
         public bool Up { get; set; } = false;
         public DefineVariable Dup { get; set; }
+        public Variable Init { get; set; }
 
-        public DefineVariable(string name, string value, string init,
-            string type = "", int size = 0, int dec = 3, int array = 0, bool up = false)
+        public override double Value
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(DefValue))
+                {
+                    m_value = Interpreter.Instance.Process(DefValue).AsDouble();
+                }
+
+                m_value = Math.Round(m_value, Dec);
+                if (Size > 0)
+                {
+                    var strValue = m_value.ToString();
+                    if (strValue.Length > Size)
+                    {
+                        m_value = 0;
+                    }
+                }
+                return m_value; 
+            }
+            set
+            {
+                if (!string.IsNullOrEmpty(DefValue))
+                {
+                    return;
+                }
+                m_value = value;
+                Type = VarType.NUMBER;
+            }
+        }
+
+        public override string String
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(DefValue))
+                {
+                    m_string = Interpreter.Instance.Process(DefValue).AsString();
+                }
+                if (Size > 0 && m_string.Length > Size)
+                {
+                    if (m_string.Length > Size)
+                    {
+                        m_string = m_string.Substring(0, Size);
+                    }
+                }
+                return m_string;
+            }
+            set
+            {
+                if (!string.IsNullOrEmpty(DefValue))
+                {
+                    return;
+                }
+                m_string = value;
+                if (Size > 0 && m_string.Length > Size)
+                {
+                    m_string = m_string.Substring(0, Size);
+                }
+                if (Up)
+                {
+                    m_string = m_string.ToUpper();
+                }
+
+                Type = VarType.STRING;
+            }
+        }
+
+        public DefineVariable(string name, string value,
+            string type = "", int size = 0, int dec = 3, int array = 0, bool local = false, bool up = false)
         {
             Name = name;
             DefValue = value;
-            Init = init;
             DefType = type;
             Size = size;
             Dec = dec;
+            Local = local;
             Up = up;
             Array = array;
+        }
+
+        public DefineVariable(string name, DefineVariable dup, bool local = false)
+        {
+            Name = name;
+            Local = local;
+            DefValue = dup.DefValue;
+            DefType = dup.DefType;
+            Size = dup.Size;
+            Dec = dup.Dec;
+            Up = dup.Up;
+            Array = dup.Array;
+            Dup = dup;
+
+        }
+
+        public void InitVariable(Variable init, ParsingScript script)
+        {
+            Init = init;
+            switch (DefType)
+            {
+                case "a":
+                    String = init.AsString();
+                    Type = VarType.STRING;
+                    break;
+
+                case "p":
+                case "f":
+                    Pointer = init.AsString();
+                    Type = VarType.POINTER;
+                    break;
+                case "b": // byte
+                case "i": // integer
+                case "n": // number
+                case "r": // small int
+                default:
+                    Value = init.AsDouble();
+                    Type = VarType.NUMBER;
+                    break;
+            }
+
+            CSCS_GUI.ChangingBoundVariable = true;
+            if (Local)
+            {
+                ParserFunction.AddLocalVariable(new GetVarFunction(this), Name);
+            }
+            else
+            {
+                ParserFunction.AddGlobalOrLocalVariable(Name, new GetVarFunction(this), script);
+            }
+            CSCS_GUI.ChangingBoundVariable = false;
+
+            /*List<Variable> moduleVars;
+            if (!CSCS_GUI.DEFINES.TryGetValue(script.Filename, out moduleVars))
+            {
+                moduleVars = new List<Variable>();
+            }
+            moduleVars.Add(this);
+            CSCS_GUI.DEFINES[script.Filename] = moduleVars;*/
+
+            CSCS_GUI.DEFINES[Name] = this;
+
         }
 
         public override string AsString(bool isList = true,
@@ -2413,30 +2504,46 @@ namespace WpfCSCS
     {
         protected override Variable Evaluate(ParsingScript script)
         {
+            if (!CSCS_GUI.DEFINES.TryGetValue(m_name, out _))
+            {
+                return Assign(script, m_name);
+            }
             return DoAssign(script, m_name);
         }
 
         protected override async Task<Variable> EvaluateAsync(ParsingScript script)
         {
+            if (!CSCS_GUI.DEFINES.TryGetValue(m_name, out _))
+            {
+                return await AssignAsync(script, m_name);
+            }
             return DoAssign(script, m_name);
         }
 
-
         public Variable DoAssign(ParsingScript script, string varName, bool localIfPossible = false)
         {
-            var pointer = script.Pointer;
-            var token = Utils.GetToken(script, Constants.NEXT_OR_END_ARRAY);
-
             DefineVariable defVar;
-            if (!CSCS_GUI.s_defines.TryGetValue(token, out defVar))
+            if (!CSCS_GUI.DEFINES.TryGetValue(varName, out defVar))
             {
-                script.Pointer = pointer;
                 return Assign(script, varName, localIfPossible);
             }
 
+            m_name = Constants.GetRealName(varName);
+            script.CurrentAssign = m_name;
 
-            script.Pointer = pointer;
-            return Assign(script, varName, localIfPossible);
+            /*
+            var pointer = script.Pointer;
+            var token = Utils.GetToken(script, Constants.NEXT_OR_END_ARRAY);
+            if (CSCS_GUI.DEFINES.TryGetValue(token, out defVar))
+            {
+                script.Pointer = pointer;
+                return Assign(script, varName, localIfPossible);
+            }*/
+
+            Variable varValue = Utils.GetItem(script);
+            defVar.InitVariable(varValue, script);
+
+            return defVar;
         }
 
         override public ParserFunction NewInstance()

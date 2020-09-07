@@ -457,7 +457,7 @@ namespace SplitAndMerge
 
         public virtual bool AsBool()
         {
-            if (Type == VarType.NUMBER && m_value != 0.0)
+            if (Type == VarType.NUMBER && Value != 0.0)
             {
                 return true;
             }
@@ -475,11 +475,11 @@ namespace SplitAndMerge
             int result = 0;
             if (Type == VarType.NUMBER || Value != 0.0)
             {
-                return (int)m_value;
+                return (int)Value;
             }
             if (Type == VarType.STRING)
             {
-                Int32.TryParse(m_string, out result);
+                Int32.TryParse(String, out result);
             }
 
             return result;
@@ -489,11 +489,11 @@ namespace SplitAndMerge
             float result = 0;
             if (Type == VarType.NUMBER || Value != 0.0)
             {
-                return (float)m_value;
+                return (float)Value;
             }
             if (Type == VarType.STRING)
             {
-                float.TryParse(m_string, out result);
+                float.TryParse(String, out result);
             }
 
             return result;
@@ -503,11 +503,11 @@ namespace SplitAndMerge
             long result = 0;
             if (Type == VarType.NUMBER || Value != 0.0)
             {
-                return (long)m_value;
+                return (long)Value;
             }
             if (Type == VarType.STRING)
             {
-                long.TryParse(m_string, out result);
+                long.TryParse(String, out result);
             }
             return result;
         }
@@ -516,11 +516,11 @@ namespace SplitAndMerge
             double result = 0.0;
             if (Type == VarType.NUMBER)
             {// || (Value != 0.0 && Value != Double.NaN)) {
-                return m_value;
+                return Value;
             }
             if (Type == VarType.STRING)
             {
-                Double.TryParse(m_string, out result);
+                Double.TryParse(String, out result);
             }
 
             return result;
@@ -1465,13 +1465,13 @@ namespace SplitAndMerge
             Tuple = newTuple;
         }
 
-        public double Value
+        public virtual double Value
         {
             get { return m_value; }
             set { m_value = value; Type = VarType.NUMBER; }
         }
 
-        public string String
+        public virtual string String
         {
             get { return m_string; }
             set { m_string = value; Type = VarType.STRING; }
@@ -1536,13 +1536,13 @@ namespace SplitAndMerge
         public static Variable EmptyInstance = new Variable();
         public static Variable Undefined = new Variable(VarType.UNDEFINED);
 
-        double m_value;
-        string m_string;
-        object m_object;
-        DateTime m_datetime;
+        protected double m_value;
+        protected string m_string;
+        protected object m_object;
+        protected DateTime m_datetime;
         CustomFunction m_customFunctionGet;
         CustomFunction m_customFunctionSet;
-        List<Variable> m_tuple;
+        protected List<Variable> m_tuple;
         Dictionary<string, int> m_dictionary = new Dictionary<string, int>();
         Dictionary<string, string> m_keyMappings = new Dictionary<string, string>();
         Dictionary<string, string> m_propertyStringMap = new Dictionary<string, string>();
