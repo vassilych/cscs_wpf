@@ -268,6 +268,7 @@ namespace WpfCSCS
             ParserFunction.RegisterFunction("AsyncCall", new AsyncCallFunction());
 
             ParserFunction.AddAction(Constants.ASSIGNMENT, new MyAssignFunction());
+            ParserFunction.AddAction(Constants.POINTER, new MyPointerFunction());
 
             Constants.FUNCT_WITH_SPACE.Add("SetText");
             Constants.FUNCT_WITH_SPACE.Add(Constants.DEFINE);
@@ -1992,7 +1993,7 @@ namespace WpfCSCS
 
         protected override Variable Evaluate(ParsingScript script)
         {
-            var objectName = m_processFirstToken ? Utils.GetToken(script, Constants.NEXT_OR_END_ARRAY) : "";
+            var objectName = m_processFirstToken ? Utils.GetToken(script, new char[] { ' ', '}', ')', ';' } ) : "";
             GetParameters(script);
 
             if (Name.ToUpper() == "MSG")
@@ -2030,9 +2031,14 @@ namespace WpfCSCS
             var valueStr = value == null ? "" : value.AsString();
             init = init == null ? Variable.EmptyInstance : init;
 
-            DefineVariable newVar = dupVar != null ? new DefineVariable(name, dupVar, local) :
-                                   new DefineVariable(name, valueStr, type, size, dec, array, local, up);
-            newVar.InitVariable(dupVar != null ? dupVar.Init : init, script);
+            DefineVariable newVar = null;
+            var parts = name.Split(new char[] { ',' });
+            foreach(var objName in parts)
+            {
+                newVar = dupVar != null ? new DefineVariable(objName, dupVar, local) :
+                                          new DefineVariable(objName, valueStr, type, size, dec, array, local, up);
+                newVar.InitVariable(dupVar != null ? dupVar.Init : init, script);
+            }
 
             return newVar;
         }
@@ -2417,7 +2423,7 @@ namespace WpfCSCS
         {
             Name = name;
             DefValue = value;
-            DefType = type;
+            DefType = type.ToLower();
             Size = size;
             Dec = dec;
             Local = local;
@@ -2430,7 +2436,7 @@ namespace WpfCSCS
             Name = name;
             Local = local;
             DefValue = dup.DefValue;
-            DefType = dup.DefType;
+            DefType = dup.DefType.ToLower();
             Size = dup.Size;
             Dec = dup.Dec;
             Up = dup.Up;
@@ -2500,34 +2506,63 @@ namespace WpfCSCS
         }
     }
 
-    class MyAssignFunction : AssignFunction
+    class MyPointerFunction : PointerFunction
     {
         protected override Variable Evaluate(ParsingScript script)
         {
-            if (!CSCS_GUI.DEFINES.TryGetValue(m_name, out _))
+            List<string> args = Utils.GetTokens(script);
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            DefineVariable defVar;
+            if (!CSCS_GUI.DEFINES.TryGetValue(m_name, out defVar))
+            {
+                return base.Evaluate(script);
+            }
+
+            defVar.Pointer = args[0];
+            return defVar;
+        }
+    }
+
+    class MyAssignFunction : AssignFunction
+    {
+        bool m_pointerAssign;
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            DefineVariable defVar = IsDefinedVariable(script);
+            if (defVar == null)
             {
                 return Assign(script, m_name);
             }
-            return DoAssign(script, m_name);
+            return DoAssign(script, m_name, defVar);
         }
 
         protected override async Task<Variable> EvaluateAsync(ParsingScript script)
         {
-            if (!CSCS_GUI.DEFINES.TryGetValue(m_name, out _))
+            DefineVariable defVar = IsDefinedVariable(script);
+            if (defVar == null)
             {
                 return await AssignAsync(script, m_name);
             }
-            return DoAssign(script, m_name);
+            return DoAssign(script, m_name, defVar);
         }
 
-        public Variable DoAssign(ParsingScript script, string varName, bool localIfPossible = false)
+        protected DefineVariable IsDefinedVariable(ParsingScript script)
         {
-            DefineVariable defVar;
-            if (!CSCS_GUI.DEFINES.TryGetValue(varName, out defVar))
+            m_pointerAssign = m_name.StartsWith("&");
+            if (m_pointerAssign)
             {
-                return Assign(script, varName, localIfPossible);
+                m_name = m_name.Substring(1);
             }
+            if (!CSCS_GUI.DEFINES.TryGetValue(m_name, out DefineVariable defVar))
+            {
+                defVar = null;
+            }
+            return defVar;
+        }
 
+        public Variable DoAssign(ParsingScript script, string varName, DefineVariable defVar, bool localIfPossible = false)
+        {
             m_name = Constants.GetRealName(varName);
             script.CurrentAssign = m_name;
 
@@ -2541,7 +2576,17 @@ namespace WpfCSCS
             }*/
 
             Variable varValue = Utils.GetItem(script);
-            defVar.InitVariable(varValue, script);
+            if (m_pointerAssign)
+            {
+                if (CSCS_GUI.DEFINES.TryGetValue(defVar.Pointer, out DefineVariable refValue))
+                {
+                    refValue.InitVariable(varValue, script);
+                }
+            }
+            else
+            {
+                defVar.InitVariable(varValue, script);
+            }
 
             return defVar;
         }
