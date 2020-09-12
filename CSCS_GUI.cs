@@ -2338,6 +2338,13 @@ namespace WpfCSCS
 
     public class DefineVariable : Variable
     {
+        string DATE_FORMAT
+        {
+            get;
+            set;
+        } = " ";
+        string TIME_FORMAT { get; set; } = "";
+
         public string Name { get; set; }
         public string DefValue { get; set; }
         public string DefType { get; set; } = "";
@@ -2442,11 +2449,63 @@ namespace WpfCSCS
             Up = dup.Up;
             Array = dup.Array;
             Dup = dup;
+        }
 
+        static double CheckValue(string type, Variable varValue)
+        {
+            double val = varValue.AsDouble();
+            switch (type)
+            {
+                case "b":
+                    if (val < Byte.MinValue || val > Byte.MaxValue)
+                    {
+                        return 0;
+                    }
+                    break;
+                case "i":
+                    if (val < short.MinValue || val > short.MaxValue)
+                    {
+                        return 0;
+                    }
+                    break;
+                case "r":
+                    if (val < Int32.MinValue || val > Int32.MaxValue)
+                    {
+                        return 0;
+                    }
+                    break;
+            }
+            return val;
         }
 
         public void InitVariable(Variable init, ParsingScript script)
         {
+            string sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
+            string sysUIFormat = CultureInfo.CurrentUICulture.DateTimeFormat.ShortDatePattern;
+            var d1 = DateTime.Now.ToString(CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern);
+            var d2 = DateTime.Now.ToString(CultureInfo.CurrentUICulture.DateTimeFormat.ShortDatePattern);
+            string sysFormat2 = CultureInfo.CurrentCulture.DateTimeFormat.MonthDayPattern;
+            string sysUIFormat2 = CultureInfo.CurrentUICulture.DateTimeFormat.MonthDayPattern;
+            string sysFormat3 = CultureInfo.CurrentCulture.DateTimeFormat.YearMonthPattern;
+            string sysUIFormat3 = CultureInfo.CurrentUICulture.DateTimeFormat.FullDateTimePattern;
+            string sysFormat4 = CultureInfo.CurrentCulture.DateTimeFormat.LongDatePattern;
+            string sysUIFormat4 = CultureInfo.CurrentUICulture.DateTimeFormat.LongDatePattern;
+            var d11 = DateTime.Now.ToString(CultureInfo.CurrentCulture.DateTimeFormat.LongDatePattern);
+            var d21 = DateTime.Now.ToString(CultureInfo.CurrentUICulture.DateTimeFormat.LongDatePattern);
+            var d22 = DateTime.Now.ToString(CultureInfo.CurrentUICulture.DateTimeFormat.FullDateTimePattern);
+            /*
+I  - signed small int (2 bytes), from -32,768 to 32.767
+R  - signed int (4 bytes), from -2,147,483,648 to 2,147,483,647
+B – unsigned tinyInt (1 byte), from 0 to 255
+N – standard FLOAT type (8 bytes)
+Sign 	Max Value 	Minimum Value 
+Negative	– 1.79E+308	-2.23E-308
+Positive	1.79E+308	2.23E-308
+ 
+When using maths, internal precision is max possible for the type. SIZE parameter in DEFINE means – ‘display’ size, that can be returned to the GUI or report.
+ 
+L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as true  false  .true.  .false.  .t.  .f.  ‘Y’  ‘N’
+             * */
             Init = init;
             switch (DefType)
             {
@@ -2460,12 +2519,21 @@ namespace WpfCSCS
                     Pointer = init.AsString();
                     Type = VarType.POINTER;
                     break;
+                case "d":
+                case "t":
+                    DateTime = ToDateTime(init.AsString());
+                    Type = VarType.DATETIME;
+                    break;
+                case "l": // "logic" (boolean)
+                    Value = ToBool(init.AsString()) ? 1 : 0;
+                    Type = VarType.NUMBER;
+                    break;
                 case "b": // byte
                 case "i": // integer
                 case "n": // number
                 case "r": // small int
                 default:
-                    Value = init.AsDouble();
+                    Value = CheckValue(DefType, init);
                     Type = VarType.NUMBER;
                     break;
             }
@@ -2493,10 +2561,132 @@ namespace WpfCSCS
 
         }
 
+        public string GetDateFormat()
+        {
+            if (!string.IsNullOrWhiteSpace(DATE_FORMAT))
+            {
+                //return DATE_FORMAT;
+            }
+            string sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
+            var usDate = !sysFormat.StartsWith("dd");
+            DATE_FORMAT = "dd/MM/yyyy";
+            switch (Size)
+            {
+                case 5:
+                    DATE_FORMAT = usDate ? "MM/dd" : "dd/MM";
+                    break;
+                case 7:
+                    DATE_FORMAT = usDate ? "MM/yyyy" : "MM/yyyy";
+                    break;
+                case 8:
+                    DATE_FORMAT = usDate ? "MM/dd/yy" : "dd/MM/yy";
+                    break;
+                case 10:
+                    DATE_FORMAT = usDate ? "MM/dd/yyyy" : "dd/MM/yyyy";
+                    break;
+            }
+            return DATE_FORMAT;
+        }
+
+        public string GetTimeFormat()
+        {
+            if (!string.IsNullOrWhiteSpace(TIME_FORMAT))
+            {
+                return TIME_FORMAT;
+            }
+            TIME_FORMAT = "dd/MM/yyyy";
+            switch (Size)
+            {
+                case 3:
+                    TIME_FORMAT = "fff";
+                    break;
+                case 5:
+                    TIME_FORMAT = "HH:mm";
+                    break;
+                case 6:
+                    TIME_FORMAT = "ss.fff";
+                    break;
+                case 8:
+                    TIME_FORMAT = "HH:mm:ss";
+                    break;
+                case 11:
+                    TIME_FORMAT = "HH:mm:ss.ff";
+                    break;
+                case 12:
+                    TIME_FORMAT = "HH:mm:ss.fff";
+                    break;
+            }
+            return TIME_FORMAT;
+        }
+
+        public bool ToBool(string strValue)
+        {
+            char ch = string.IsNullOrWhiteSpace(strValue) ? '0' : strValue.ToLower()[0];
+            return ch == 't' || ch == 'y' || ch == '1';
+        }
+
+        public DateTime ToDateTime(string strValue)
+        {
+            DateTime dt = DateTime.MinValue;
+            if (DefType == "d")
+            {
+                if (!DateTime.TryParseExact(strValue, GetDateFormat(), CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+                {
+                    throw new ArgumentException("Error: Couldn't parse [" + strValue + "] with format [" + GetDateFormat() + "]");
+                }
+            }
+            if (DefType == "t")
+            {
+                if (!DateTime.TryParseExact(strValue, GetTimeFormat(), CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+                {
+                    throw new ArgumentException("Error: Couldn't parse [" + strValue + "] with format [" + GetTimeFormat() + "]");
+                }
+            }
+
+            return dt;
+        }
+
+        public override DateTime AsDateTime()
+        {
+            if (m_datetime == DateTime.MinValue)
+            { // not initialized
+                var strValue = AsString();
+                if (DefType == "d")
+                {
+                    if (!DateTime.TryParseExact(strValue, GetDateFormat(), CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
+                    {
+                        throw new ArgumentException("Error: Couldn't parse [" + strValue + "] with format [" + GetDateFormat() + "]");
+                    }
+                    m_datetime = dt;
+                }
+                if (DefType == "t")
+                {
+                    if (!DateTime.TryParseExact(strValue, GetTimeFormat(), CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
+                    {
+                        throw new ArgumentException("Error: Couldn't parse [" + strValue + "] with format [" + GetTimeFormat() + "]");
+                    }
+                    m_datetime = dt;
+                }
+            }
+            return m_datetime;
+        }
+
         public override string AsString(bool isList = true,
                                bool sameLine = true,
                                int maxCount = -1)
         {
+            if (DefType == "d")
+            {
+                return DateTime.ToString(GetDateFormat());
+            }
+            if (DefType == "t")
+            {
+                return DateTime.ToString(GetTimeFormat());
+            }
+            if (DefType == "l")
+            {
+                return AsDouble() == 0 ? "false" :"true";
+            }
             return base.AsString(isList, sameLine, maxCount);
         }
 
