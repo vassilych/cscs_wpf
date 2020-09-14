@@ -119,90 +119,6 @@ namespace WpfCSCS
         public static Dictionary<string, Dictionary<string, bool>> s_varExists =
             new Dictionary<string, Dictionary<string, bool>>();
 
-        public class SpecialObject : ScriptObject
-        {
-            static List<string> s_properties = new List<string> {
-            "Name", "Size", "Type", "Value", "Dec", "Array", "Up", "Dup"
-        };
-
-            public SpecialObject(string name, Variable value, string type = "", int size = 0, int dec = 3, bool up = false,
-                Variable dup = null)
-            {
-                Name = name;
-                Value = value;
-                Type = type;
-                Size = size;
-                Dec = dec;
-                Up = up;
-                Dup = dup;
-            }
-
-            public string Name { get; set; }
-            public string Type { get; set; }
-            public int Size { get; set; }
-            public int Dec { get; set; }
-            public int Array { get; set; }
-            public bool Up { get; set; }
-            public Variable Value { get; set; }
-            public Variable Dup { get; set; }
-
-            public virtual List<string> GetProperties()
-            {
-                return s_properties;
-            }
-
-            public virtual Task<Variable> GetProperty(string sPropertyName, List<Variable> args = null, ParsingScript script = null)
-            {
-                sPropertyName = Variable.GetActualPropertyName(sPropertyName, GetProperties());
-                switch (sPropertyName)
-                {
-                    case "Name": return Task.FromResult(new Variable(Name));
-                    case "Size": return Task.FromResult(new Variable(Size));
-                    case "Type": return Task.FromResult(new Variable(Type));
-                    case "Dup": return Task.FromResult(Dup);
-                    case "Value": return Task.FromResult(Value);
-                    case "Array": return Task.FromResult(new Variable(Array));
-                    case "Dec": return Task.FromResult(new Variable(Dec));
-                    case "Up": return Task.FromResult(new Variable(Up));
-                    default:
-                        return Task.FromResult(Variable.EmptyInstance);
-                }
-            }
-
-            public virtual Task<Variable> SetProperty(string sPropertyName, Variable argValue)
-            {
-                sPropertyName = Variable.GetActualPropertyName(sPropertyName, GetProperties());
-                switch (sPropertyName)
-                {
-                    case "Name":
-                        Name = argValue.AsString();
-                        return Task.FromResult(argValue);
-                    case "Size":
-                        Size = argValue.AsInt();
-                        return Task.FromResult(argValue);
-                    case "Type":
-                        Type = argValue.AsString();
-                        return Task.FromResult(argValue);
-                    case "Array":
-                        Array = argValue.AsInt();
-                        return Task.FromResult(argValue);
-                    case "Dec":
-                        Dec = argValue.AsInt();
-                        return Task.FromResult(argValue);
-                    case "Up":
-                        Up = argValue.AsBool();
-                        return Task.FromResult(argValue);
-                    case "Dup":
-                        Dup = argValue;
-                        return Task.FromResult(argValue);
-                    case "Value":
-                        Value = argValue;
-                        return Task.FromResult(argValue);
-                    default: return Task.FromResult(Variable.EmptyInstance);
-                }
-            }
-        }
-
         public static void Init()
         {
             Interpreter.Instance.OnOutput += Print;
@@ -2641,6 +2557,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 {
                     throw new ArgumentException("Error: Couldn't parse [" + strValue + "] with format [" + GetTimeFormat() + "]");
                 }
+                dt = dt.Subtract(new TimeSpan(dt.Date.Ticks));
             }
 
             return dt;

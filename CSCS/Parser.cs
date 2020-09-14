@@ -591,6 +591,10 @@ namespace SplitAndMerge
             {
                 MergeNumbers(leftCell, rightCell, script);
             }
+            else if (leftCell.Type == Variable.VarType.DATETIME)
+            {
+                OperatorAssignFunction.DateOperator(leftCell, rightCell, leftCell.Action, script);
+            }
             else
             {
                 MergeStrings(leftCell, rightCell, script);
