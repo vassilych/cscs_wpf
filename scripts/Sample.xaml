@@ -50,6 +50,7 @@
                         <Button Content="Get Date" Grid.Column="4" HorizontalAlignment="Left" Margin="254,59,0,0" VerticalAlignment="Top" Width="75" DataContext="getDate"/>
                         <Button Content="Set Date" Grid.Column="4" HorizontalAlignment="Left" Margin="342,59,0,0" VerticalAlignment="Top" Width="75"  DataContext="setDate" RenderTransformOrigin="0.475,0.25"/>
                         <Button Grid.ColumnSpan="4" Content="Fill Menus" Grid.Column="1" HorizontalAlignment="Left" Margin="84.6,21,0,0" VerticalAlignment="Top" Width="75"  DataContext="fillMenus"/>
+                        <Image Grid.ColumnSpan="4" Grid.Column="1" HorizontalAlignment="Left" Height="121" Margin="46.6,129,0,0" VerticalAlignment="Top" Width="128" Name="imageWidget"  DataContext="imageWidget"/>
                     </Grid>
                 </TabItem>
                 <TabItem Header="SQL Tests">

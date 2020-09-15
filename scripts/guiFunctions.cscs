@@ -30,6 +30,9 @@ function button1@Clicked(sender, load) {
   define name123 type a size 40 up;
   data = OpenFile();
   SetText(answerLabel, "Open: " + data);
+  SetImage("button1", data);
+  SetImage("label1", data);
+  SetImage("imageWidget", data);
   //SetText("textBox1", data);
 }
 

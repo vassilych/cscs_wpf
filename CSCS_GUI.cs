@@ -17,6 +17,7 @@ using System.Windows.Media;
 using System.Net;
 using System.Globalization;
 using System.Threading;
+using System.Windows.Media.Imaging;
 
 namespace SplitAndMerge
 {
@@ -92,8 +93,8 @@ namespace WpfCSCS
         public static bool ChangingBoundVariable { get; set; }
         public static string RequireDEFINE { get; set; }
 
-        public static Dictionary<string, Control> Controls { get; set; } = new Dictionary<string, Control>();
-        public static Dictionary<Control, Window> Control2Window { get; set; } = new Dictionary<Control, Window>();
+        public static Dictionary<string, FrameworkElement> Controls { get; set; } = new Dictionary<string, FrameworkElement>();
+        public static Dictionary<FrameworkElement, Window> Control2Window { get; set; } = new Dictionary<FrameworkElement, Window>();
         //public static Action<string, string> OnWidgetClick;
 
         static Dictionary<string, string> s_actionHandlers = new Dictionary<string, string>();
@@ -155,6 +156,7 @@ namespace WpfCSCS
             ParserFunction.RegisterFunction("GetSelected", new GetSelectedFunction());
             ParserFunction.RegisterFunction("SetBackgroundColor", new SetColorFunction(true));
             ParserFunction.RegisterFunction("SetForegroundColor", new SetColorFunction(false));
+            ParserFunction.RegisterFunction("SetImage", new SetImageFunction());
 
             ParserFunction.RegisterFunction("BindSQL", new BindSQLFunction());
             ParserFunction.RegisterFunction("MessageBox", new MessageBoxFunction());
@@ -202,10 +204,10 @@ namespace WpfCSCS
             Precompiler.AddNamespace("using System.Windows.Input;");
             Precompiler.AddNamespace("using System.Windows.Media;");
 
-            RequireDEFINE = App.GetConfiguration("Require_Define", "*");
+            RequireDEFINE = App.GetConfiguration("Require_Define", "false");
         }
 
-        public static string GetWidgetBindingName(Control widget)
+        public static string GetWidgetBindingName(FrameworkElement widget)
         {
             var widgetName = widget == null || widget.DataContext == null ? "" : widget.DataContext.ToString();
             return widgetName;
@@ -235,7 +237,7 @@ namespace WpfCSCS
             s_boundVariables[widgetName] = newValue;
         }
 
-        static void UpdateVariable(Control widget, Variable newValue)
+        static void UpdateVariable(FrameworkElement widget, Variable newValue)
         {
             var widgetName = GetWidgetBindingName(widget);
             if (string.IsNullOrEmpty(widgetName))
@@ -289,7 +291,7 @@ namespace WpfCSCS
             return Variable.EmptyInstance;
         }
 
-        public static bool AddBinding(string name, Control widget)
+        public static bool AddBinding(string name, FrameworkElement widget)
         {
             var text = GetTextWidgetFunction.GetText(widget);
             Variable baseValue = new Variable(text);
@@ -299,7 +301,7 @@ namespace WpfCSCS
             return true;
         }
 
-        public static bool AddActionHandler(string name, string action, Control widget)
+        public static bool AddActionHandler(string name, string action, FrameworkElement widget)
         {
             var clickable = widget as ButtonBase;
             if (clickable == null)
@@ -310,7 +312,7 @@ namespace WpfCSCS
             clickable.Click += new RoutedEventHandler(Widget_Click);
             return true;
         }
-        public static bool AddPreActionHandler(string name, string action, Control widget)
+        public static bool AddPreActionHandler(string name, string action, FrameworkElement widget)
         {
             s_preActionHandlers[name] = action;
             if (widget is ComboBox)
@@ -322,7 +324,7 @@ namespace WpfCSCS
             widget.MouseDown += new MouseButtonEventHandler(Widget_PreClick);
             return true;
         }
-        public static bool AddPostActionHandler(string name, string action, Control widget)
+        public static bool AddPostActionHandler(string name, string action, FrameworkElement widget)
         {
             s_postActionHandlers[name] = action;
             if (widget is ComboBox)
@@ -335,19 +337,19 @@ namespace WpfCSCS
             return true;
         }
 
-        public static bool AddKeyDownHandler(string name, string action, Control widget)
+        public static bool AddKeyDownHandler(string name, string action, FrameworkElement widget)
         {
             s_keyDownHandlers[name] = action;
             widget.KeyDown += new KeyEventHandler(Widget_KeyDown);
             return true;
         }
-        public static bool AddKeyUpHandler(string name, string action, Control widget)
+        public static bool AddKeyUpHandler(string name, string action, FrameworkElement widget)
         {
             s_keyUpHandlers[name] = action;
             widget.KeyUp += new KeyEventHandler(Widget_KeyUp);
             return true;
         }
-        public static bool AddTextChangedHandler(string name, string action, Control widget)
+        public static bool AddTextChangedHandler(string name, string action, FrameworkElement widget)
         {
             var textable = widget as TextBoxBase;
             if (textable == null)
@@ -359,7 +361,7 @@ namespace WpfCSCS
 
             return true;
         }
-        public static bool AddSelectionChangedHandler(string name, string action, Control widget)
+        public static bool AddSelectionChangedHandler(string name, string action, FrameworkElement widget)
         {
             var sel = widget as Selector;
             if (sel == null)
@@ -370,7 +372,7 @@ namespace WpfCSCS
             sel.SelectionChanged += new SelectionChangedEventHandler(Widget_SelectionChanged);
             return true;
         }
-        public static bool AddDateChangedHandler(string name, string action, Control widget)
+        public static bool AddDateChangedHandler(string name, string action, FrameworkElement widget)
         {
             var datePicker = widget as DatePicker;
             if (datePicker == null)
@@ -383,7 +385,7 @@ namespace WpfCSCS
             return true;
         }
 
-        private static void ValueUpdated(string funcName, string widgetName, Control widget, Variable newValue)
+        private static void ValueUpdated(string funcName, string widgetName, FrameworkElement widget, Variable newValue)
         {
             UpdateVariable(widget, newValue);
             Control2Window.TryGetValue(widget, out Window win);
@@ -392,7 +394,7 @@ namespace WpfCSCS
 
         private static void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            Control widget = sender as Control;
+            var widget = sender as FrameworkElement;
             var widgetName = GetWidgetBindingName(widget);
             var picker = sender as DatePicker;
             DateTime? date = picker?.SelectedDate;
@@ -405,7 +407,7 @@ namespace WpfCSCS
             ValueUpdated(funcName, widgetName, widget, new Variable(date.Value.ToString("yyyy/MM/dd")));
         }
 
-        public static bool AddMouseHoverHandler(string name, string action, Control widget)
+        public static bool AddMouseHoverHandler(string name, string action, FrameworkElement widget)
         {
             s_mouseHoverHandlers[name] = action;
             widget.MouseEnter += new MouseEventHandler(Widget_Hover);
@@ -414,7 +416,7 @@ namespace WpfCSCS
 
         private static void Widget_Click(object sender, RoutedEventArgs e)
         {
-            Control widget = sender as Control;
+            var widget = sender as FrameworkElement;
             var widgetName = GetWidgetBindingName(widget);
             if (string.IsNullOrEmpty(widgetName))
             {
@@ -444,7 +446,7 @@ namespace WpfCSCS
 
         private static void Widget_PreClick(object sender, MouseButtonEventArgs e)
         {
-            Control widget = sender as Control;
+            var widget = sender as FrameworkElement;
             var widgetName = GetWidgetBindingName(widget);
             if (string.IsNullOrWhiteSpace(widgetName) || e.ChangedButton != MouseButton.Left)
             {
@@ -462,7 +464,7 @@ namespace WpfCSCS
 
         private static void Widget_PostClick(object sender, MouseButtonEventArgs e)
         {
-            Control widget = sender as Control;
+            var widget = sender as FrameworkElement;
             var widgetName = GetWidgetBindingName(widget);
             if (string.IsNullOrWhiteSpace(widgetName) || e.ChangedButton != MouseButton.Left)
             {
@@ -481,7 +483,7 @@ namespace WpfCSCS
 
         private static void Widget_KeyDown(object sender, KeyEventArgs e)
         {
-            Control widget = sender as Control;
+            var widget = sender as FrameworkElement;
             var widgetName = GetWidgetBindingName(widget);
             if (string.IsNullOrWhiteSpace(widgetName))
             {
@@ -499,7 +501,7 @@ namespace WpfCSCS
         }
         private static void Widget_KeyUp(object sender, KeyEventArgs e)
         {
-            Control widget = sender as Control;
+            var widget = sender as FrameworkElement;
             var widgetName = GetWidgetBindingName(widget);
             if (string.IsNullOrWhiteSpace(widgetName))
             {
@@ -539,7 +541,7 @@ namespace WpfCSCS
 
         private static void Widget_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Control widget = sender as Selector;
+            var widget = sender as Selector;
             var widgetName = GetWidgetBindingName(widget);
             if (s_selChangedHandlers.TryGetValue(widgetName, out string funcName))
             {
@@ -552,7 +554,7 @@ namespace WpfCSCS
 
         private static void Widget_Hover(object sender, MouseEventArgs e)
         {
-            Control widget = sender as Control;
+            var widget = sender as FrameworkElement;
             var widgetName = GetWidgetBindingName(widget);
             if (string.IsNullOrWhiteSpace(widgetName))
             {
@@ -567,20 +569,19 @@ namespace WpfCSCS
             }
         }
 
-        public static Control GetWidget(string name)
+        public static FrameworkElement GetWidget(string name)
         {
             CacheControls(MainWindow);
-            Control control;
-            if (Controls.TryGetValue(name.ToLower(), out control))
+            if (Controls.TryGetValue(name.ToLower(), out FrameworkElement control))
             {
                 return control;
             }
             return null;
         }
 
-        public static List<Control> CacheControls(Window win, bool force = false)
+        public static List<FrameworkElement> CacheControls(Window win, bool force = false)
         {
-            List<Control> controls = new List<Control>();
+            List<FrameworkElement> controls = new List<FrameworkElement>();
 
             if ((!force && Controls.Count > 0) || win == null)
             {
@@ -618,7 +619,7 @@ namespace WpfCSCS
             return controls;
         }
 
-        static void CacheChildren(List<UIElement> children, List<Control> controls, Window win)
+        static void CacheChildren(List<UIElement> children, List<FrameworkElement> controls, Window win)
         {
             if (children == null || children.Count == 0)
             {
@@ -658,7 +659,7 @@ namespace WpfCSCS
                                             var content2 = tabItem.Content as Grid;
                                             foreach (var child2 in content2.Children)
                                             {
-                                                CacheControl(child2 as Control, win, controls);
+                                                CacheControl(child2 as FrameworkElement, win, controls);
                                             }
                                         }
                                     }
@@ -669,7 +670,7 @@ namespace WpfCSCS
                 }
                 else
                 {
-                    CacheControl(child as Control, win, controls);
+                    CacheControl(child as FrameworkElement, win, controls);
                     if (child is ItemsControl)
                     {
                         var parent = child as ItemsControl;
@@ -683,7 +684,7 @@ namespace WpfCSCS
             }
         }
 
-        public static void CacheControl(Control widget, Window win = null, List<Control> controls = null)
+        public static void CacheControl(FrameworkElement widget, Window win = null, List<FrameworkElement> controls = null)
         {
             if (widget != null && widget.DataContext != null)
             {
@@ -695,13 +696,13 @@ namespace WpfCSCS
                 }
             }
         }
-        public static void RemoveControl(Control widget)
+        public static void RemoveControl(FrameworkElement widget)
         {
             widget.Visibility = Visibility.Hidden;
             Controls.Remove(widget.DataContext.ToString().ToLower());
         }
 
-        public static void AddWidgetActions(Control widget)
+        public static void AddWidgetActions(FrameworkElement widget)
         {
             var widgetName = GetWidgetBindingName(widget);
             if (string.IsNullOrWhiteSpace(widgetName))
@@ -957,7 +958,7 @@ namespace WpfCSCS
             }
             else
             {
-                printDlg.PrintVisual(widget as Control, "Window Printing.");
+                printDlg.PrintVisual(widget as FrameworkElement, "Window Printing.");
             }
 
             return new Variable(printDlg.PrintQueue.FullName);
@@ -976,7 +977,7 @@ namespace WpfCSCS
             return GetText(widget);
         }
 
-        public static Variable GetText(Control widget)
+        public static Variable GetText(FrameworkElement widget)
         {
             string result = "";
             if (widget is ContentControl)
@@ -1037,7 +1038,7 @@ namespace WpfCSCS
             return new Variable(set);
         }
 
-        public static bool SetText(Control widget, string text, int index = -1)
+        public static bool SetText(FrameworkElement widget, string text, int index = -1)
         {
             var dispatcher = Application.Current.Dispatcher;
             if (widget is ComboBox)
@@ -1448,7 +1449,7 @@ namespace WpfCSCS
             var widgetName = Utils.GetSafeString(args, 0);
             var colorName = Utils.GetSafeString(args, 1);
             var widget = CSCS_GUI.GetWidget(widgetName);
-            if (widget == null)
+            if (widget == null || !(widget is Control))
             {
                 return Variable.EmptyInstance;
             }
@@ -1458,13 +1459,51 @@ namespace WpfCSCS
 
             if (m_bgColor)
             {
-                widget.Background = brush;
+                ((Control)widget).Background = brush;
             }
             else
             {
-                widget.Foreground = brush;
+                ((Control)widget).Foreground = brush;
             }
             return new Variable(true);
+        }
+    }
+
+    class SetImageFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            var widgetName = Utils.GetSafeString(args, 0);
+            var imageName  = Utils.GetSafeString(args, 1);
+            var widget = CSCS_GUI.GetWidget(widgetName);
+            if (widget == null)
+            {
+                return Variable.EmptyInstance;
+            }
+
+            bool found = false;
+            if (widget is ContentControl)
+            {
+                var control = widget as ContentControl;
+                control.Content = new Image
+                {
+                    Source = new BitmapImage(new Uri(imageName, UriKind.RelativeOrAbsolute)),
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Stretch = Stretch.None
+                };
+                found = true;
+            }
+            else if (widget is System.Windows.Controls.Image)
+            {
+                var img = widget as Image;
+                img.Source = new BitmapImage(new Uri(imageName, UriKind.RelativeOrAbsolute));
+                found = true;
+            }
+
+            return new Variable(found);
         }
     }
 
@@ -1548,7 +1587,7 @@ namespace WpfCSCS
 
             foreach (var item in parent.Items)
             {
-                CSCS_GUI.RemoveControl(item as Control);
+                CSCS_GUI.RemoveControl(item as FrameworkElement);
                 RemoveMenu(item as ItemsControl);
             }
             parent.Items.Clear();
@@ -1595,7 +1634,7 @@ namespace WpfCSCS
             m_paramMode = paramMode;
         }
 
-        public static ParsingScript GetScript(Control widget)
+        public static ParsingScript GetScript(FrameworkElement widget)
         {
             if (!CSCS_GUI.Control2Window.TryGetValue(widget, out Window win))
             {
