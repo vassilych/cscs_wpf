@@ -2484,7 +2484,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 //return DATE_FORMAT;
             }
             string sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
-            var usDate = !sysFormat.StartsWith("dd");
+            var usDate = !sysFormat.StartsWith("dd") && !sysFormat.EndsWith("dd");
             DATE_FORMAT = "dd/MM/yyyy";
             switch (Size)
             {
