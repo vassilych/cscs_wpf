@@ -2582,17 +2582,19 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
 
         public DateTime ToDateTime(string strValue)
         {
-            DateTime dt = DateTime.MinValue;
+            DateTime dt = DateTime.Now;
             if (DefType == "d")
             {
-                if (!DateTime.TryParseExact(strValue, GetDateFormat(), CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+                if (!string.IsNullOrWhiteSpace(strValue) && 
+                    !DateTime.TryParseExact(strValue, GetDateFormat(), CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
                 {
                     throw new ArgumentException("Error: Couldn't parse [" + strValue + "] with format [" + GetDateFormat() + "]");
                 }
             }
             if (DefType == "t")
             {
-                if (!DateTime.TryParseExact(strValue, GetTimeFormat(), CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+                if (!string.IsNullOrWhiteSpace(strValue) &&
+                    !DateTime.TryParseExact(strValue, GetTimeFormat(), CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
                 {
                     throw new ArgumentException("Error: Couldn't parse [" + strValue + "] with format [" + GetTimeFormat() + "]");
                 }
@@ -2606,23 +2608,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
         {
             if (m_datetime == DateTime.MinValue)
             { // not initialized
-                var strValue = AsString();
-                if (DefType == "d")
-                {
-                    if (!DateTime.TryParseExact(strValue, GetDateFormat(), CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
-                    {
-                        throw new ArgumentException("Error: Couldn't parse [" + strValue + "] with format [" + GetDateFormat() + "]");
-                    }
-                    m_datetime = dt;
-                }
-                if (DefType == "t")
-                {
-                    if (!DateTime.TryParseExact(strValue, GetTimeFormat(), CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
-                    {
-                        throw new ArgumentException("Error: Couldn't parse [" + strValue + "] with format [" + GetTimeFormat() + "]");
-                    }
-                    m_datetime = dt;
-                }
+                m_datetime = ToDateTime(AsString());
             }
             return m_datetime;
         }

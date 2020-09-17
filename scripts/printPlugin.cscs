@@ -7,7 +7,7 @@ print("Got params:",arg1,arg2,arg3,arg4);
 
 DEFINE TOTAL_A Type "N" Size 11 Dec 3;
 
-print("PrintPlugin 1. TOTAL_A.Size=" + TOTAL_A.Size + ", Dec=" + TOTAL_A.Dec + ", Type=" + TOTAL_A.Type + ", exists: " + NameExists(TOTAL_A));
+print("PrintPlugin 1. TOTAL_A.Size=" + TOTAL_A.Size + ", Type=" + TOTAL_A.Type + ", exists: " + NameExists(TOTAL_A));
 quit;
 return;
 
