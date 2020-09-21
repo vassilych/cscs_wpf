@@ -2435,19 +2435,6 @@ namespace WpfCSCS
 
         public void InitVariable(Variable init, ParsingScript script)
         {
-            string sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
-            string sysUIFormat = CultureInfo.CurrentUICulture.DateTimeFormat.ShortDatePattern;
-            var d1 = DateTime.Now.ToString(CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern);
-            var d2 = DateTime.Now.ToString(CultureInfo.CurrentUICulture.DateTimeFormat.ShortDatePattern);
-            string sysFormat2 = CultureInfo.CurrentCulture.DateTimeFormat.MonthDayPattern;
-            string sysUIFormat2 = CultureInfo.CurrentUICulture.DateTimeFormat.MonthDayPattern;
-            string sysFormat3 = CultureInfo.CurrentCulture.DateTimeFormat.YearMonthPattern;
-            string sysUIFormat3 = CultureInfo.CurrentUICulture.DateTimeFormat.FullDateTimePattern;
-            string sysFormat4 = CultureInfo.CurrentCulture.DateTimeFormat.LongDatePattern;
-            string sysUIFormat4 = CultureInfo.CurrentUICulture.DateTimeFormat.LongDatePattern;
-            var d11 = DateTime.Now.ToString(CultureInfo.CurrentCulture.DateTimeFormat.LongDatePattern);
-            var d21 = DateTime.Now.ToString(CultureInfo.CurrentUICulture.DateTimeFormat.LongDatePattern);
-            var d22 = DateTime.Now.ToString(CultureInfo.CurrentUICulture.DateTimeFormat.FullDateTimePattern);
             /*
 I  - signed small int (2 bytes), from -32,768 to 32.767
 R  - signed int (4 bytes), from -2,147,483,648 to 2,147,483,647
@@ -2582,7 +2569,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
 
         public DateTime ToDateTime(string strValue)
         {
-            DateTime dt = DateTime.Now;
+            DateTime dt = DateTime.MinValue;
             if (DefType == "d")
             {
                 if (!string.IsNullOrWhiteSpace(strValue) && 
@@ -2606,10 +2593,6 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
 
         public override DateTime AsDateTime()
         {
-            if (m_datetime == DateTime.MinValue)
-            { // not initialized
-                m_datetime = ToDateTime(AsString());
-            }
             return m_datetime;
         }
 
@@ -2635,6 +2618,27 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
         public override double AsDouble()
         {
             return base.AsDouble();
+        }
+
+        public override void AddToDate(Variable valueB, int sign)
+        {
+            if (valueB.Type == Variable.VarType.NUMBER)
+            {
+                var dt = AsDateTime();
+                var delta = valueB.Value * sign;
+                if (DefType == "t")
+                {
+                    DateTime = dt.AddSeconds(delta);
+                }
+                else
+                {
+                    DateTime = dt.AddDays(delta);
+                }
+            }
+            else
+            {
+                base.AddToDate(valueB, sign);
+            }
         }
     }
 
