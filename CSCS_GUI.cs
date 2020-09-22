@@ -2646,12 +2646,14 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
     {
         protected override Variable Evaluate(ParsingScript script)
         {
+            var pointer = script.Pointer;
             List<string> args = Utils.GetTokens(script);
             Utils.CheckArgs(args.Count, 1, m_name);
 
             DefineVariable defVar;
             if (!CSCS_GUI.DEFINES.TryGetValue(m_name, out defVar))
             {
+                script.Pointer = pointer;
                 return base.Evaluate(script);
             }
 
@@ -2663,6 +2665,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
     class MyAssignFunction : AssignFunction
     {
         bool m_pointerAssign;
+        string m_originalName;
         protected override Variable Evaluate(ParsingScript script)
         {
             DefineVariable defVar = IsDefinedVariable(script);
@@ -2688,6 +2691,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
             m_pointerAssign = m_name.StartsWith("&");
             if (m_pointerAssign)
             {
+                m_originalName = m_name;
                 m_name = m_name.Substring(1);
             }
             if (!CSCS_GUI.DEFINES.TryGetValue(m_name, out DefineVariable defVar))
@@ -2717,6 +2721,8 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 if (CSCS_GUI.DEFINES.TryGetValue(defVar.Pointer, out DefineVariable refValue))
                 {
                     refValue.InitVariable(varValue, script);
+                    ParserFunction.AddGlobalOrLocalVariable(m_originalName,
+                            new GetVarFunction(refValue));
                 }
             }
             else
