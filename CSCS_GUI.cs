@@ -2827,28 +2827,17 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
 
         public static void AddCell(DataGrid dg, int rowNb, int colNb, string value)
         {
-            while (dg.Items.Count < rowNb)
+            while (dg.Items.Count < rowNb + 1)
             {
-                dg.Items.Add(Enumerable.Repeat("", dg.Columns.Count).ToArray());
+                dg.Items.Add(new ExpandoObject());
             }
 
             var textCol = dg.Columns[colNb] as DataGridTextColumn;
             Binding binding = textCol.Binding as Binding;
             var colBinding = binding.Path.Path;
-            if (dg.Items.Count <= rowNb)
-            {
-                dynamic row = new ExpandoObject();
-                ((IDictionary<String, Object>)row)[colBinding] = value;
-                dg.Items.Add(row);
-            }
-            else
-            {
-                var rowData = dg.Items[rowNb] as ExpandoObject;
-                ((IDictionary<String, Object>)rowData)[colBinding] = value;
-            }
 
-            dg.Items.Refresh();
-            dg.UpdateLayout();
+            dynamic row = dg.Items[rowNb] as ExpandoObject;
+            ((IDictionary<String, Object>)row)[colBinding] = value;
         }
 
         override public ParserFunction NewInstance()
