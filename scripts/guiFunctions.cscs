@@ -21,6 +21,18 @@ function myNewButton@Clicked(sender, load) {
    AsyncCall("worker", "workDone", 100000, 10000);
 }
 
+var1 = "asdasd";
+function batun@clicked(sender, load){
+    MessageBox(var1);
+    var1 = "next";
+    array1[0] = "Header 1";
+    array2[0] = "Header 2";
+    array1[1] = "Value 1";
+    array2[1] = "Value 2";
+    array1[2] = "Value 3";
+    array2[2] = "Value 4";
+    grid1 = 10;
+}
 
 function button1@Clicked(sender, load) {
   if (!refresh) {
@@ -55,7 +67,9 @@ function Window3Button@Clicked(sender, load) {
   Window4Button@Clicked(sender, load);
 }
 function Window4Button@Clicked(sender, load) {
-  result = MessageBox("Hello from " + sender, title, "OK", "info");
+  //result = MessageBox("Hello from " + sender, title, "OK", "info");
+  Window4Button="lala";
+  Window4Box="lulu";
 }
 
 function Window4_OnOpen(sender, load) {
@@ -186,6 +200,7 @@ function startWindow2(sender, load) {
     CHAIN "drugiProgram.cscs" WITH "argument1" "argument2" "argument3" "argument4";
 }
 
+clicks = 0;
 function fillMenus@Clicked(sender, load) {
   mainMenu = sender == "fillMenus" ? "mainMenu" : "mainMenu1";
 
@@ -210,7 +225,10 @@ function fillMenus@Clicked(sender, load) {
   AddMenuItem("helpMenu", "about", "About", "aboutEntry");
 
   datePicker="2020/05/09";
+
+  fillMenus = "Fill Menus " + (++clicks);
 }
+
 function setDate@Clicked(sender, load) {
   if (!refresh) {
     return;

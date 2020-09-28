@@ -9,7 +9,7 @@
     <Grid Margin="0,0,230.6,172">
         <Button Content="Button2" HorizontalAlignment="Left" Margin="48,68,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.579,-8.562"  DataContext="Window2Button"/>
         <Label Content="Window2" HorizontalAlignment="Left" Margin="48,10,0,0" VerticalAlignment="Top" Height="44" Width="76"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="225,31,-123.8,0" TextWrapping="Wrap" Text="TextBox2" VerticalAlignment="Top" Width="94"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="225,31,-123.8,0" TextWrapping="Wrap" Text="TextBox2" VerticalAlignment="Top" Width="94" DataContext="Window2Box"/>
 
     </Grid>
 </Window>

@@ -225,12 +225,16 @@ namespace WpfCSCS
             }
 
             var widgetName = name.ToLower();
-            if (!s_boundVariables.TryGetValue(widgetName, out _))
+            if (!s_boundVariables.TryGetValue(widgetName, out Variable bounded))
             {
                 return;
             }
 
             var widget = GetWidget(widgetName);
+            if (widget == null)
+            {
+                var obj = bounded.Object;
+            }
             var text = newValue.AsString();
 
             SetTextWidgetFunction.SetText(widget, text);
@@ -240,10 +244,17 @@ namespace WpfCSCS
         static void UpdateVariable(FrameworkElement widget, Variable newValue)
         {
             var widgetName = GetWidgetBindingName(widget);
-            if (string.IsNullOrEmpty(widgetName))
+            if (string.IsNullOrWhiteSpace(widgetName))
             {
                 return;
             }
+
+            if (CSCS_GUI.DEFINES.TryGetValue(widgetName, out DefineVariable defVar))
+            {
+                defVar.InitVariable(newValue);
+                return;
+            }
+
             ChangingBoundVariable = true;
             ParserFunction.AddGlobalOrLocalVariable(widgetName,
                                         new GetVarFunction(newValue));
@@ -297,7 +308,25 @@ namespace WpfCSCS
             Variable baseValue = new Variable(text);
             ParserFunction.AddGlobal(name, new GetVarFunction(baseValue), false /* not native */);
 
-            s_boundVariables[name.ToLower()] = Variable.EmptyInstance;
+            var current = new Variable(widget);
+            if (widget is DataGrid)
+            {
+                var dg = widget as DataGrid;
+                for (int i = 0; i < dg.Columns.Count; i++)
+                {
+                    var textCol = dg.Columns[i] as DataGridTextColumn;
+                    var header = (dg.Columns[i].Header as string).Replace(' ', '_');
+                    textCol.Binding = new Binding(header);
+
+                    if (!string.IsNullOrWhiteSpace(header))
+                    {
+                        var headerStr = header.ToLower();
+                        DEFINES[headerStr] = new DefineVariable(headerStr, "datagrid", dg, i);
+                    }
+                }
+            }
+
+            s_boundVariables[name.ToLower()] = current;
             return true;
         }
 
@@ -312,6 +341,7 @@ namespace WpfCSCS
             clickable.Click += new RoutedEventHandler(Widget_Click);
             return true;
         }
+
         public static bool AddPreActionHandler(string name, string action, FrameworkElement widget)
         {
             s_preActionHandlers[name] = action;
@@ -2380,6 +2410,15 @@ namespace WpfCSCS
             }
         }
 
+        public DefineVariable(string name, string type, Object obj, int index)
+        {
+            Name = name;
+            Tuple = new List<Variable>();
+            DefType = type.ToLower();
+            Index = index;
+            Object = obj;
+        }
+
         public DefineVariable(string name, string value,
             string type = "", int size = 0, int dec = 3, int array = 0, bool local = false, bool up = false)
         {
@@ -2433,7 +2472,7 @@ namespace WpfCSCS
             return val;
         }
 
-        public void InitVariable(Variable init, ParsingScript script)
+        public void InitVariable(Variable init, ParsingScript script = null, bool update = true)
         {
             /*
 I  - signed small int (2 bytes), from -32,768 to 32.767
@@ -2480,14 +2519,29 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                     break;
             }
 
-            CSCS_GUI.ChangingBoundVariable = true;
-            if (Local)
+            if (Array > 0)
             {
-                ParserFunction.AddLocalVariable(new GetVarFunction(this), Name);
+                DefineVariable item = this.DeepClone() as DefineVariable;
+                item.Array = 0;
+                Tuple = new List<Variable>();
+                for (int i = 0; i < Array; i++)
+                {
+                    Tuple.Add(item.DeepClone());
+                }
             }
-            else
+
+            CSCS_GUI.ChangingBoundVariable = true;
+            if (update)
             {
-                ParserFunction.AddGlobalOrLocalVariable(Name, new GetVarFunction(this), script);
+                if (Local)
+                {
+                    ParserFunction.AddLocalVariable(new GetVarFunction(this), Name);
+                }
+                else
+                {
+                    ParserFunction.AddGlobalOrLocalVariable(Name, new GetVarFunction(this), script);
+                }
+                CSCS_GUI.DEFINES[Name] = this;
             }
             CSCS_GUI.ChangingBoundVariable = false;
 
@@ -2498,9 +2552,6 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
             }
             moduleVars.Add(this);
             CSCS_GUI.DEFINES[script.Filename] = moduleVars;*/
-
-            CSCS_GUI.DEFINES[Name] = this;
-
         }
 
         public string GetDateFormat()
@@ -2666,12 +2717,13 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
     {
         bool m_pointerAssign;
         string m_originalName;
+        int m_arrayIndex = -1;
         protected override Variable Evaluate(ParsingScript script)
         {
             DefineVariable defVar = IsDefinedVariable(script);
             if (defVar == null)
             {
-                return Assign(script, m_name);
+                return Assign(script, m_originalName);
             }
             return DoAssign(script, m_name, defVar);
         }
@@ -2681,22 +2733,41 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
             DefineVariable defVar = IsDefinedVariable(script);
             if (defVar == null)
             {
-                return await AssignAsync(script, m_name);
+                return await AssignAsync(script, m_originalName);
             }
             return DoAssign(script, m_name, defVar);
         }
 
         protected DefineVariable IsDefinedVariable(ParsingScript script)
         {
+            m_originalName = m_name;
             m_pointerAssign = m_name.StartsWith("&");
             if (m_pointerAssign)
             {
-                m_originalName = m_name;
                 m_name = m_name.Substring(1);
             }
+
+            int argStart = m_name.IndexOf(Constants.START_ARRAY);
+            if (argStart > 0)
+            {
+                m_name = m_name.Substring(0, argStart);
+            }
+
             if (!CSCS_GUI.DEFINES.TryGetValue(m_name, out DefineVariable defVar))
             {
-                defVar = null;
+                return null;
+            }
+
+            if (argStart > 0)
+            {
+                int argEnd = m_originalName.IndexOf(Constants.END_ARRAY, argStart + 1);
+                if (Int32.TryParse(m_originalName.Substring(argStart + 1, argEnd - argStart - 1), out m_arrayIndex))
+                {
+                    if (defVar.DefType != "datagrid" && defVar.Tuple != null && m_arrayIndex >= defVar.Tuple.Count - 1)
+                    {
+                        defVar = defVar.Tuple.ElementAt(m_arrayIndex) as DefineVariable;
+                    }
+                }
             }
             return defVar;
         }
@@ -2720,17 +2791,64 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
             {
                 if (CSCS_GUI.DEFINES.TryGetValue(defVar.Pointer, out DefineVariable refValue))
                 {
-                    refValue.InitVariable(varValue, script);
+                    refValue.InitVariable(varValue, script, false);
                     ParserFunction.AddGlobalOrLocalVariable(m_originalName,
                             new GetVarFunction(refValue));
                 }
             }
             else
             {
-                defVar.InitVariable(varValue, script);
+                if (defVar.DefType == "datagrid")
+                {
+                    var dg = defVar.Object as DataGrid;
+                    var column = dg.Columns[defVar.Index] as DataGridTextColumn;
+                    while (defVar.Tuple.Count < m_arrayIndex + 1)
+                    {
+                        defVar.Tuple.Add(Variable.EmptyInstance);
+                    }
+                    if (m_arrayIndex == 0)
+                    {
+                        column.Header = varValue.AsString();
+                    }
+                    else
+                    {
+                        AddCell(dg, m_arrayIndex - 1, defVar.Index, varValue.AsString());
+                    }
+                }
+                else
+                {
+                    defVar.InitVariable(varValue, script, false);
+                    OnVariableChange(m_name, defVar, true);
+                }
             }
 
             return defVar;
+        }
+
+        public static void AddCell(DataGrid dg, int rowNb, int colNb, string value)
+        {
+            while (dg.Items.Count < rowNb)
+            {
+                dg.Items.Add(Enumerable.Repeat("", dg.Columns.Count).ToArray());
+            }
+
+            var textCol = dg.Columns[colNb] as DataGridTextColumn;
+            Binding binding = textCol.Binding as Binding;
+            var colBinding = binding.Path.Path;
+            if (dg.Items.Count <= rowNb)
+            {
+                dynamic row = new ExpandoObject();
+                ((IDictionary<String, Object>)row)[colBinding] = value;
+                dg.Items.Add(row);
+            }
+            else
+            {
+                var rowData = dg.Items[rowNb] as ExpandoObject;
+                ((IDictionary<String, Object>)rowData)[colBinding] = value;
+            }
+
+            dg.Items.Refresh();
+            dg.UpdateLayout();
         }
 
         override public ParserFunction NewInstance()
