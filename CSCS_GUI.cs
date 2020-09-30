@@ -2342,6 +2342,11 @@ namespace WpfCSCS
         public DefineVariable Dup { get; set; }
         public Variable Init { get; set; }
 
+        public string AssignedString { get; set; }
+        public double AssignedNumber { get; set; }
+
+        public bool LocalAssign { get; set; }
+
         public override double Value
         {
             get
@@ -2350,16 +2355,7 @@ namespace WpfCSCS
                 {
                     m_value = Interpreter.Instance.Process(DefValue).AsDouble();
                 }
-
                 m_value = Math.Round(m_value, Dec);
-                if (Size > 0)
-                {
-                    var strValue = m_value.ToString();
-                    if (strValue.Length > Size)
-                    {
-                        m_value = 0;
-                    }
-                }
                 return m_value; 
             }
             set
@@ -2368,6 +2364,11 @@ namespace WpfCSCS
                 {
                     return;
                 }
+                if (!LocalAssign)
+                {
+                    Size = 0;
+                }
+                AssignedNumber = value;
                 m_value = value;
                 Type = VarType.NUMBER;
             }
@@ -2381,13 +2382,6 @@ namespace WpfCSCS
                 {
                     m_string = Interpreter.Instance.Process(DefValue).AsString();
                 }
-                if (Size > 0 && m_string.Length > Size)
-                {
-                    if (m_string.Length > Size)
-                    {
-                        m_string = m_string.Substring(0, Size);
-                    }
-                }
                 return m_string;
             }
             set
@@ -2396,23 +2390,19 @@ namespace WpfCSCS
                 {
                     return;
                 }
+                AssignedString = value;
+                if (!LocalAssign)
+                {
+                    Size = 0;
+                }
                 m_string = value;
-                if (Size > 0 && m_string.Length > Size)
-                {
-                    m_string = m_string.Substring(0, Size);
-                }
-                if (Up)
-                {
-                    m_string = m_string.ToUpper();
-                }
-
                 Type = VarType.STRING;
             }
         }
 
         public DefineVariable(string name, string type, Object obj, int index)
         {
-            Name = name;
+            Name = name.ToLower();
             Tuple = new List<Variable>();
             DefType = type.ToLower();
             Index = index;
@@ -2422,7 +2412,7 @@ namespace WpfCSCS
         public DefineVariable(string name, string value,
             string type = "", int size = 0, int dec = 3, int array = 0, bool local = false, bool up = false)
         {
-            Name = name;
+            Name = name.ToLower();
             DefValue = value;
             DefType = type.ToLower();
             Size = size;
@@ -2434,7 +2424,7 @@ namespace WpfCSCS
 
         public DefineVariable(string name, DefineVariable dup, bool local = false)
         {
-            Name = name;
+            Name = name.ToLower();
             Local = local;
             DefValue = dup.DefValue;
             DefType = dup.DefType.ToLower();
@@ -2445,7 +2435,7 @@ namespace WpfCSCS
             Dup = dup;
         }
 
-        static double CheckValue(string type, Variable varValue)
+        static double CheckValue(string type, int size, Variable varValue)
         {
             double val = varValue.AsDouble();
             switch (type)
@@ -2469,6 +2459,14 @@ namespace WpfCSCS
                     }
                     break;
             }
+            if (size > 0)
+            {
+                var strValue = val.ToString();
+                if (strValue.Length > size)
+                {
+                    return 0;
+                }
+            }
             return val;
         }
 
@@ -2488,11 +2486,21 @@ When using maths, internal precision is max possible for the type. SIZE paramete
 L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as true  false  .true.  .false.  .t.  .f.  ‘Y’  ‘N’
              * */
             Init = init;
+            LocalAssign = true;
             switch (DefType)
             {
                 case "a":
                     String = init.AsString();
                     Type = VarType.STRING;
+                    if (Size > 0 && m_string.Length > Size)
+                    {
+                        m_string = m_string.Substring(0, Size);
+                    }
+                    if (Up)
+                    {
+                        m_string = m_string.ToUpper();
+                    }
+
                     break;
 
                 case "p":
@@ -2514,7 +2522,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 case "n": // number
                 case "r": // small int
                 default:
-                    Value = CheckValue(DefType, init);
+                    Value = CheckValue(DefType, Size, init);
                     Type = VarType.NUMBER;
                     break;
             }
@@ -2552,6 +2560,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
             }
             moduleVars.Add(this);
             CSCS_GUI.DEFINES[script.Filename] = moduleVars;*/
+            LocalAssign = false;
         }
 
         public string GetDateFormat()
@@ -2661,8 +2670,23 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
             }
             if (DefType == "l")
             {
-                return AsDouble() == 0 ? "false" :"true";
+                return AsDouble() == 0 ? "false" : "true";
             }
+            if (Size > 0 && (DefType == "n" || DefType == "i" || DefType == "b" || DefType == "r"))
+            {
+                var strValue = Value.ToString();
+                if (strValue.Length > Size)
+                {
+                    return "0";
+                }
+                return strValue;
+            }
+            if (Size > 0 && DefType == "a" && m_string.Length > Size)
+            {
+                m_string = m_string.Substring(0, Size);
+                return m_string;
+            }
+
             return base.AsString(isList, sameLine, maxCount);
         }
 
@@ -2718,24 +2742,36 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
         bool m_pointerAssign;
         string m_originalName;
         int m_arrayIndex = -1;
+
         protected override Variable Evaluate(ParsingScript script)
         {
             DefineVariable defVar = IsDefinedVariable(script);
-            if (defVar == null)
+            if (defVar != null)
             {
-                return Assign(script, m_originalName);
+                return DoAssign(script, m_name, defVar);
             }
-            return DoAssign(script, m_name, defVar);
+            var res = Assign(script, m_originalName);
+            return ResetNotDefined(res as DefineVariable);
         }
 
         protected override async Task<Variable> EvaluateAsync(ParsingScript script)
         {
             DefineVariable defVar = IsDefinedVariable(script);
-            if (defVar == null)
+            if (defVar != null)
             {
-                return await AssignAsync(script, m_originalName);
+                return DoAssign(script, m_name, defVar);
             }
-            return DoAssign(script, m_name, defVar);
+            var res = await AssignAsync(script, m_originalName);
+            return ResetNotDefined(res as DefineVariable);
+        }
+
+        DefineVariable ResetNotDefined(DefineVariable result)
+        {
+            if (result != null)
+            {
+                result.DefType = "";
+            }
+            return result;
         }
 
         protected DefineVariable IsDefinedVariable(ParsingScript script)
@@ -2777,16 +2813,23 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
             m_name = Constants.GetRealName(varName);
             script.CurrentAssign = m_name;
 
-            /*
-            var pointer = script.Pointer;
-            var token = Utils.GetToken(script, Constants.NEXT_OR_END_ARRAY);
-            if (CSCS_GUI.DEFINES.TryGetValue(token, out defVar))
-            {
-                script.Pointer = pointer;
-                return Assign(script, varName, localIfPossible);
-            }*/
-
             Variable varValue = Utils.GetItem(script);
+            /*if (varValue is DefineVariable)
+            {
+                var defined = varValue as DefineVariable;
+                if (defined.Size > 0)
+                {
+                    defined.Size = 0;
+                    if (defined.DefType == "a" && !string.IsNullOrWhiteSpace(defined.AssignedString))
+                    {
+                        defined.String = defined.AssignedString;
+                    }
+                    else if (defined.AssignedNumber != 0)
+                    {
+                        defined.Value = defined.AssignedNumber;
+                    }
+                }
+            }*/
             if (m_pointerAssign)
             {
                 if (CSCS_GUI.DEFINES.TryGetValue(defVar.Pointer, out DefineVariable refValue))
