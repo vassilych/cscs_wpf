@@ -213,7 +213,7 @@ namespace WpfCSCS
             return widgetName;
         }
 
-        static void OnVariableChange(string name, Variable newValue, bool exists)
+        static void OnVariableChange(string name, Variable newValue, bool exists = true)
         {
             if (ChangingBoundVariable)
             {
@@ -326,7 +326,12 @@ namespace WpfCSCS
                 }
             }
 
-            s_boundVariables[name.ToLower()] = current;
+            name = name.ToLower();
+            s_boundVariables[name] = current;
+            if (DEFINES.TryGetValue(name, out DefineVariable defVar))
+            {
+                OnVariableChange(name, defVar);
+            }
             return true;
         }
 
@@ -2470,7 +2475,7 @@ namespace WpfCSCS
             return val;
         }
 
-        public void InitVariable(Variable init, ParsingScript script = null, bool update = true)
+        public void InitVariable(Variable init, ParsingScript script = null, bool update = true, int arrayIndex =-1)
         {
             /*
 I  - signed small int (2 bytes), from -32,768 to 32.767
@@ -2531,11 +2536,23 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
             {
                 DefineVariable item = this.DeepClone() as DefineVariable;
                 item.Array = 0;
-                Tuple = new List<Variable>();
+                if (Tuple == null || arrayIndex < 0)
+                {
+                    Tuple = new List<Variable>();
+                }
                 for (int i = 0; i < Array; i++)
                 {
-                    Tuple.Add(item.DeepClone());
+                    if (Tuple.Count <= i)
+                    {
+                        Tuple.Add(item.DeepClone());
+                    }
+                    else if (i == arrayIndex)
+                    {
+                        Tuple[i] = item.DeepClone();
+                        break;
+                    }
                 }
+                Type = VarType.ARRAY;
             }
 
             CSCS_GUI.ChangingBoundVariable = true;
@@ -2804,6 +2821,10 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                         defVar = defVar.Tuple.ElementAt(m_arrayIndex) as DefineVariable;
                     }
                 }
+                else
+                {
+                    m_arrayIndex = -1;
+                }
             }
             return defVar;
         }
@@ -2860,7 +2881,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 }
                 else
                 {
-                    defVar.InitVariable(varValue, script, false);
+                    defVar.InitVariable(varValue, script, false, m_arrayIndex);
                     OnVariableChange(m_name, defVar, true);
                 }
             }

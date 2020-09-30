@@ -21,12 +21,32 @@ function myNewButton@Clicked(sender, load) {
    AsyncCall("worker", "workDone", 100000, 10000);
 }
 
-var1 = "asdasd";
+DEFINE myname type a size 4 init "ENZO";
+DEFINE var1 type a size 10 init "123456789012345";
+//var1 = "asdasd";
+
+function Test_OnDisplay(sender, load) {
+    DEFINE variable type n size 1 array 3;//this should define a one-dimensional array with 3 elements
+    //initialization
+    variable[0] = 1;
+    variable[1] = 2;
+    variable[2] = 3;
+    //define var1 type a size 10 init "123456789012345";
+    //var1 = "asdasd";
+    //return;
+}
+
 function batun@clicked(sender, load){
-    MessageBox(var1);
+    MessageBox(myname);
+    MessageBox(variable[0]);//message shows -> "[[0, 0, 0], [0, 0, 0], [0, 0, 0]]"
+    MessageBox(variable[1]);//message shows -> "[[0, 0, 0], [0, 0, 0], [0, 0, 0]]"
+    MessageBox(variable[2]);//message shows -> "3" //CORRECT
+
     var1 = "next";
     array1[0] = "Header 1";
     array2[0] = "Header 2";
+    array1[3] = "Value 5";
+    array2[3] = "Value 6";
     array1[1] = "Value 1";
     array2[1] = "Value 2";
     array1[2] = "Value 3";
