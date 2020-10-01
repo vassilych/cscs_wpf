@@ -12,6 +12,7 @@
         <Button Content="msg" DataContext="batun" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
         <DataGrid HorizontalAlignment="Center" VerticalAlignment="Center" Height="300" Width="300" DataContext="grid1">
             <DataGrid.Columns>
+                <DataGridTextColumn Header="array0" />
                 <DataGridTextColumn Header="array1" />
                 <DataGridTextColumn Header="array2" />
             </DataGrid.Columns>

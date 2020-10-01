@@ -2814,16 +2814,11 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
             if (argStart > 0)
             {
                 int argEnd = m_originalName.IndexOf(Constants.END_ARRAY, argStart + 1);
-                if (Int32.TryParse(m_originalName.Substring(argStart + 1, argEnd - argStart - 1), out m_arrayIndex))
+                var index = m_originalName.Substring(argStart + 1, argEnd - argStart - 1);
+                m_arrayIndex = Interpreter.Instance.Process(index).AsInt();
+                if (defVar.DefType != "datagrid" && defVar.Tuple != null && m_arrayIndex >= defVar.Tuple.Count - 1)
                 {
-                    if (defVar.DefType != "datagrid" && defVar.Tuple != null && m_arrayIndex >= defVar.Tuple.Count - 1)
-                    {
-                        defVar = defVar.Tuple.ElementAt(m_arrayIndex) as DefineVariable;
-                    }
-                }
-                else
-                {
-                    m_arrayIndex = -1;
+                    defVar = defVar.Tuple.ElementAt(m_arrayIndex) as DefineVariable;
                 }
             }
             return defVar;
@@ -2877,6 +2872,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                     else
                     {
                         AddCell(dg, m_arrayIndex - 1, defVar.Index, varValue.AsString());
+                        //AddCell(dg, m_arrayIndex - 1, defVar.Index, varValue.AsDouble());
                     }
                 }
                 else
@@ -2888,8 +2884,8 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
 
             return defVar;
         }
-
-        public static void AddCell(DataGrid dg, int rowNb, int colNb, string value)
+                
+        public static void AddCell<T>(DataGrid dg, int rowNb, int colNb, T value)
         {
             while (dg.Items.Count < rowNb + 1)
             {
