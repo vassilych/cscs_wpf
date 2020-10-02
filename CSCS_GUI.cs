@@ -2871,8 +2871,14 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                     }
                     else
                     {
-                        AddCell(dg, m_arrayIndex - 1, defVar.Index, varValue.AsString());
-                        //AddCell(dg, m_arrayIndex - 1, defVar.Index, varValue.AsDouble());
+                        if (varValue.Type == Variable.VarType.NUMBER)
+                        {
+                            AddCell(dg, m_arrayIndex - 1, defVar.Index, varValue.AsDouble());
+                        }
+                        else
+                        {
+                            AddCell(dg, m_arrayIndex - 1, defVar.Index, varValue.AsString());
+                        }
                     }
                 }
                 else
@@ -2884,7 +2890,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
 
             return defVar;
         }
-                
+
         public static void AddCell<T>(DataGrid dg, int rowNb, int colNb, T value)
         {
             while (dg.Items.Count < rowNb + 1)

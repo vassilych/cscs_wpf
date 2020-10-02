@@ -50,9 +50,12 @@ function batun@clicked(sender, load){
     for (i = 1 ; i <= 3 ; i++){
         //MessageBox("i=" + i);
       
-        array0[i] = string(i); //  -> HERE we get an error -> ArgumentOutOfRangeException: Specified argument was out of the range of valid values. Parameter name: index
-        array1[i] = string(i*2);
-        array2[i] = string(i*3);
+        array0[i] = i;
+        array1[i] = i*2;
+        array2[i] = i*3;
+        //array0[i] = string(i);
+        //array1[i] = string(i*2);
+        //array2[i] = string(i*3);
     }
     grid1 = 10;
 }
