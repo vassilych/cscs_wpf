@@ -182,6 +182,7 @@ namespace WpfCSCS
             ParserFunction.RegisterFunction("ModalWindow", new NewWindowFunction(NewWindowFunction.MODE.MODAL));
             ParserFunction.RegisterFunction("SetMainWindow", new NewWindowFunction(NewWindowFunction.MODE.SET_MAIN));
             ParserFunction.RegisterFunction("UnsetMainWindow", new NewWindowFunction(NewWindowFunction.MODE.UNSET_MAIN));
+            ParserFunction.RegisterFunction("FillWidget", new FillWidgetFunction());
 
             ParserFunction.RegisterFunction("AsyncCall", new AsyncCallFunction());
 
@@ -203,6 +204,7 @@ namespace WpfCSCS
             Precompiler.AddNamespace("using System.Windows.Documents;");
             Precompiler.AddNamespace("using System.Windows.Input;");
             Precompiler.AddNamespace("using System.Windows.Media;");
+            Precompiler.AsyncMode = false;
 
             RequireDEFINE = App.GetConfiguration("Require_Define", "false");
         }
@@ -322,6 +324,8 @@ namespace WpfCSCS
                     {
                         var headerStr = header.ToLower();
                         DEFINES[headerStr] = new DefineVariable(headerStr, "datagrid", dg, i);
+                        var array = new Variable(new List<Variable>());
+                        ParserFunction.AddGlobal(header, new GetVarFunction(array), false /* not native */);
                     }
                 }
             }
@@ -2225,6 +2229,39 @@ namespace WpfCSCS
         }
     }
 
+    class FillWidgetFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 2, m_name);
+            var widgetName = Utils.GetSafeString(args, 0);
+            var varName = Utils.GetSafeString(args, 1);
+
+            var data = ParserFunction.GetVariable(varName, script) as GetVarFunction;
+            var widget = CSCS_GUI.GetWidget(widgetName);
+            if (widget == null || data == null || data.Value == null || data.Value.Tuple == null)
+            {
+                return Variable.EmptyInstance;
+            }
+            var entries = data.Value.Tuple;
+            if (widget is DataGrid)
+            {
+                if (!CSCS_GUI.DEFINES.TryGetValue(varName, out DefineVariable defVar))
+                {
+                    return Variable.EmptyInstance;
+                }
+                var dg = widget as DataGrid;
+                for (int i = 0; i < entries.Count; i++)
+                {
+                    MyAssignFunction.AddCell(dg, i, defVar.Index, entries[i].AsString());
+                }
+            }
+
+            return Variable.EmptyInstance;
+        }
+    }
+
     internal class CheckVATFunction : ParserFunction
     {
         internal enum MODE { CHECK, NAME, ADDRESS };
@@ -2768,7 +2805,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 return DoAssign(script, m_name, defVar);
             }
             var res = Assign(script, m_originalName);
-            return ResetNotDefined(res as DefineVariable);
+            return ResetNotDefined(res);
         }
 
         protected override async Task<Variable> EvaluateAsync(ParsingScript script)
@@ -2779,14 +2816,14 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 return DoAssign(script, m_name, defVar);
             }
             var res = await AssignAsync(script, m_originalName);
-            return ResetNotDefined(res as DefineVariable);
+            return ResetNotDefined(res);
         }
 
-        DefineVariable ResetNotDefined(DefineVariable result)
+        Variable ResetNotDefined(Variable result)
         {
-            if (result != null)
+            if (result is DefineVariable)
             {
-                result.DefType = "";
+                (result as DefineVariable).DefType = "";
             }
             return result;
         }

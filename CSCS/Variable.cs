@@ -153,8 +153,16 @@ namespace SplitAndMerge
             {
                 return new Variable(((bool)obj));
             }
-            return new Variable(obj);
+            if (obj is List<string>)
+            {
+                return new Variable(((List<string>)obj));
+            }
+            if (obj is List<double>)
+            {
+                return new Variable(((List<double>)obj));
+            }
 
+            return new Variable(obj);
         }
 
         public void Reset()
