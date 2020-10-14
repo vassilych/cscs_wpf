@@ -1331,6 +1331,7 @@ namespace WpfCSCS
                 else if (option == "clear")
                 {
                     dg.Items.Clear();
+                    dg.Items.Refresh();
                 }
             }
 

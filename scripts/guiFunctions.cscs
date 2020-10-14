@@ -36,28 +36,46 @@ function Test_OnDisplay(sender, load) {
     //return;
 }
 
-function batun@clicked(sender, load){
-    //MessageBox(myname);
-    //MessageBox(variable[0]);//message shows -> "[[0, 0, 0], [0, 0, 0], [0, 0, 0]]"
-    //MessageBox(variable[1]);//message shows -> "[[0, 0, 0], [0, 0, 0], [0, 0, 0]]"
-    //MessageBox(variable[2]);//message shows -> "3" //CORRECT
+cfunction testFunction(int a) {
+    array0[a] = string(a);
+    array1[a] = string(a*2);
+    array2[a] = string(a*3);
+}
+cfunction loadData(int n) {
+    for (i = 0 ; i < n ; i++){
+        testFunction(i);
+    }
+    return n;
+}
+
+counter = 0;
+function batun@clicked(sender, load) {
+    counter++;
+    if (counter % 2 == 0) {
+      SetWidgetOptions("grid1", "clear");
+      return;
+    }
 
     array0[0] = "i =";
     array1[0] = "i*2 =";
     array2[0] = "i*3 =";
+    
+    //for (i = 1 ; i <= 3 ; i++){
+    //    array0[i] = i;
+    //    array1[i] = i*2;
+    //    array2[i] = i*3;
+    //}
+    rows = 32000;
 
-    //data
-    for (i = 1 ; i <= 3 ; i++){
-        //MessageBox("i=" + i);
-      
-        array0[i] = i;
-        array1[i] = i*2;
-        array2[i] = i*3;
-        //array0[i] = string(i);
-        //array1[i] = string(i*2);
-        //array2[i] = string(i*3);
-    }
-    grid1 = 10;
+    start = pstime;
+    testFunction(rows - 1);
+    loadData(rows);
+    FillWidget("grid1", "array0");
+    FillWidget("grid1", "array1");
+    FillWidget("grid1", "array2");
+    total = pstime-start;
+
+    MessageBox("End. " + rows + " rows added in " + total + " ms.");
 }
 
 function button1@Clicked(sender, load) {
