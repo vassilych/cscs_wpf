@@ -73,6 +73,7 @@ function batun@clicked(sender, load) {
 
 function testbut@clicked(sender, load) {
     cntr2 = 10;
+    cntr1 = 2;
 }
 
 function button1@Clicked(sender, load) {
