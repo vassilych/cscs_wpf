@@ -60,12 +60,7 @@ function batun@clicked(sender, load) {
     array1[0] = "i*2 =";
     array2[0] = "i*3 =";
     
-    //for (i = 1 ; i <= 3 ; i++){
-    //    array0[i] = i;
-    //    array1[i] = i*2;
-    //    array2[i] = i*3;
-    //}
-    rows = 32000;
+    cntr2 = rows = 32000;
 
     start = pstime;
     testFunction(rows - 1);
@@ -74,6 +69,10 @@ function batun@clicked(sender, load) {
     
     total = pstime-start;
     MessageBox("End. " + rows + " rows added in " + total + " ms.");
+}
+
+function testbut@clicked(sender, load) {
+    cntr2 = 10;
 }
 
 function button1@Clicked(sender, load) {

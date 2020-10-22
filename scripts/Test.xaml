@@ -10,6 +10,7 @@
     <Grid>
         <TextBox DataContext="var1" VerticalAlignment="Top" HorizontalAlignment="Left"/>
         <Button Content="msg" DataContext="batun" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+        <Button Content="test" DataContext="testBut" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
         <DataGrid HorizontalAlignment="Center" VerticalAlignment="Center" Height="300" Width="300" DataContext="grid1" IsReadOnly="True">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="array0" />

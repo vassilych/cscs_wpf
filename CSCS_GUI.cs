@@ -3088,10 +3088,15 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                     DataGridRow row = (DataGridRow)dg.ItemContainerGenerator.ContainerFromIndex(dg.SelectedIndex);
                     row.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
                 }
-                else if (defVar.DefType == "maxElems")
+                else if (defVar.DefType == "maxelems")
                 {
-                    var wd = CSCS_GUI.WIDGETS[m_name];
+                    var dg = defVar.Object as DataGrid;
+                    var wd = CSCS_GUI.WIDGETS[dg.DataContext as string];
                     wd.maxElems = varValue.AsInt();
+                    while (dg.Items.Count > wd.maxElems)
+                    {
+                        dg.Items.RemoveAt(dg.Items.Count - 1);
+                    }
                 }
                 else
                 {
