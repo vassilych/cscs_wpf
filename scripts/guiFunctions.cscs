@@ -70,11 +70,9 @@ function batun@clicked(sender, load) {
     start = pstime;
     testFunction(rows - 1);
     loadData(rows);
-    FillWidget("grid1", "array0");
-    FillWidget("grid1", "array1");
-    FillWidget("grid1", "array2");
+    DISPLAYARR grid1 LINECOUNTER cntr1 MAXELEMENTS cntr2 ACTUALELEMENTS cntr3 SETUP;   
+    
     total = pstime-start;
-
     MessageBox("End. " + rows + " rows added in " + total + " ms.");
 }
 

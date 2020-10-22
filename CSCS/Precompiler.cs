@@ -68,6 +68,7 @@ namespace SplitAndMerge
         static string PARSER_TEMP_VAR   = "__funcTempVar";
         static string ACTION_TEMP_VAR   = "__actionTempVar";
         static string VARIABLE_TEMP_VAR = "__varTempVar";
+        static string GETVAR_TEMP_VAR   = "__varTempGetVar";
 
         public static void RegisterReturnType(string functionName, string functionType)
         {
@@ -428,11 +429,13 @@ namespace SplitAndMerge
             m_converted.AppendLine("     string " + ACTION_TEMP_VAR + " = \"\";");
             m_converted.AppendLine("     ParsingScript " + SCRIPT_TEMP_VAR + " = null;");
             m_converted.AppendLine("     ParserFunction " + PARSER_TEMP_VAR + " = null;");
+            m_converted.AppendLine("     GetVarFunction " + GETVAR_TEMP_VAR + " = null;");
             m_converted.AppendLine("     Variable " + VARIABLE_TEMP_VAR + " = null;");
             m_newVariables.Add(ARGS_TEMP_VAR);
             m_newVariables.Add(ACTION_TEMP_VAR);
             m_newVariables.Add(SCRIPT_TEMP_VAR);
             m_newVariables.Add(PARSER_TEMP_VAR);
+            m_newVariables.Add(GETVAR_TEMP_VAR);
             m_newVariables.Add(VARIABLE_TEMP_VAR);
 
             m_statements = TokenizeScript(m_cscsCode);
@@ -853,7 +856,7 @@ namespace SplitAndMerge
             string param = GetTokenType(tokens);
             if (functionName != tokens[0])
             {
-                expr += GetCSCSFunction("", functionName);
+                expr += GetCSCSVariable(functionName);
                 expr += m_depth + "List<Variable> " + functionName + " = null;\n";
                 expr += m_depth + "if (__varTempVar != null && __varTempVar.Tuple != null) " +
                         functionName + "= __varTempVar.Tuple;\n" + m_depth +
@@ -1244,6 +1247,13 @@ namespace SplitAndMerge
                 return "new Variable(Convert.ToString(" + eval + (eval.EndsWith(")") ? "" : "))") + ";";
             }
             return "";
+        }
+
+        //expr += m_depth + VARIABLE_TEMP_VAR + " = ParserFunction.GetVariable(\"" + functionName + "\");\n";
+        string GetCSCSVariable(string functionName, string argsStr = "" , char ch = '(')
+        {
+            string result = m_depth + VARIABLE_TEMP_VAR + " = ParserFunction.GetVariableValue(\"" + functionName + "\");\n";
+            return result;
         }
 
         string GetCSCSFunction(string argsStr, string functionName, char ch = '(')
