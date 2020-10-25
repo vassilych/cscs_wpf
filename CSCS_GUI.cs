@@ -1368,20 +1368,66 @@ namespace WpfCSCS
                 }
                 else if (option == "clear")
                 {
-                    dg.Items.Clear();
-                    dg.Items.Refresh();
-                    if (CSCS_GUI.WIDGETS.TryGetValue(widgetName, out CSCS_GUI.WidgetData wd))
-                    {
-                        foreach (var entry in wd.headers)
-                        {
-                            entry.Value.Tuple.Clear();
-                            ParserFunction.AddGlobal(entry.Key, new GetVarFunction(entry.Value), false);
-                        }
-                    }
+                    ClearWidget(widgetName, dg);
                 }
             }
 
             return new Variable(true);
+        }
+
+        public static bool ClearWidget(string widgetName, FrameworkElement widget = null)
+        {
+            widget = widget == null ?  CSCS_GUI.GetWidget(widgetName) as DataGrid : null;
+            if (widget is DataGrid)
+            {
+                var dg = widget as DataGrid;
+                dg.Items.Clear();
+                dg.Items.Refresh();
+                if (CSCS_GUI.WIDGETS.TryGetValue(widgetName, out CSCS_GUI.WidgetData wd))
+                {
+                    foreach (var entry in wd.headers)
+                    {
+                        entry.Value.Tuple.Clear();
+                        ParserFunction.AddGlobal(entry.Key, new GetVarFunction(entry.Value), false);
+                    }
+                }
+            }
+
+            return widget is DataGrid;
+        }
+
+        static bool IsUserVisible(FrameworkElement element, FrameworkElement container)
+        {
+            if (element == null || !element.IsVisible)
+                return false;
+            Rect bounds = element.TransformToAncestor(container).TransformBounds(new Rect(0.0, 0.0, element.ActualWidth, element.ActualHeight));
+            Rect rect = new Rect(0.0, 0.0, container.ActualWidth, container.ActualHeight);
+            return rect.Contains(bounds.TopLeft) || rect.Contains(bounds.BottomRight);
+        }
+
+        public static void RedisplayWidget(DataGrid dg, string option = "current", int row = -1)
+        {
+            if (dg.Items == null || dg.Items.Count == 0)
+            {
+                return;
+            }
+            row = row >= 0 ? row : option.EndsWith("top") ? 0 : option.EndsWith("end") || option.EndsWith("bottom") ? dg.Items.Count - 1 : dg.SelectedIndex;
+            row = row < 0 ? 0 : row;
+            //var visibles = dg.Scr;
+            dg.ScrollIntoView(dg.Items[row]);
+
+            if (row != 0 && row != dg.Items.Count - 1)
+            {
+                DataGridRow rowElem = (DataGridRow)dg.ItemContainerGenerator.ContainerFromIndex(dg.SelectedIndex);
+                rowElem?.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+                int visible = rowElem != null ? (int)(dg.ActualHeight / rowElem.ActualHeight) - 2 : 0;
+
+                var adjusted = row - visible >= 0 ? row + visible : 0;
+                if (adjusted != row)
+                {
+                    dg.ScrollIntoView(dg.Items[adjusted]);
+                }
+            }
         }
 
         void DataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
@@ -1965,6 +2011,7 @@ namespace WpfCSCS
     {
         bool m_processFirstToken = true;
         Dictionary<string, Variable> m_parameters;
+        string m_lastParameter;
 
         public VariableArgsFunction(bool processFirst = true)
         {
@@ -1979,10 +2026,11 @@ namespace WpfCSCS
             while (script.Current != Constants.END_STATEMENT && script.StillValid())
             {
                 var labelName = Utils.GetToken(script, Constants.TOKEN_SEPARATION);
-                var value = labelName == "up" || labelName == "local" || labelName == "setup" ? new Variable(true) :
+                var value = labelName == "up" || labelName == "local" || labelName == "setup" || labelName == "close" ? new Variable(true) :
                             script.Current == Constants.END_STATEMENT ? Variable.EmptyInstance :
                             new Variable(Utils.GetToken(script, separator));
                 m_parameters[labelName.ToLower()] = value;
+                m_lastParameter = labelName;
             }
         }
 
@@ -2053,7 +2101,7 @@ namespace WpfCSCS
             if (Name.ToUpper() == "DISPLAYARR")
             {
                 Variable newVar = DisplayArray(script, objectName, GetParameter("linecounter"), GetParameter("maxelements"),
-                    GetParameter("actualelements"), GetBoolParameter("setup"));
+                    GetParameter("actualelements"), m_lastParameter);
                 return newVar;
             }
             if (Name.ToUpper() == "SET_OBJECT")
@@ -2092,8 +2140,9 @@ namespace WpfCSCS
 
         //DISPLAYARR ‘DataGridName’ LINECOUNTER cntr1 MAXELEMENTS cntr2 ACTUALELEMENTS cntr3 SETUP
         static DefineVariable DisplayArray(ParsingScript script, string name, string
-            lineCounter, string maxElems, string actualElems, bool setup = false)
+            lineCounter, string maxElems, string actualElems, string action)
         {
+            action = action.ToLower();
             if (!CSCS_GUI.DEFINES.TryGetValue(name, out DefineVariable gridVar))
             {
                 throw new ArgumentException("Couldn't find variable [" + name + "]");
@@ -2104,8 +2153,17 @@ namespace WpfCSCS
             }
 
             DataGrid dg = gridVar.Object as DataGrid;
-
-            gridVar.Active = gridVar.Active || setup;
+            gridVar.Active = action != "close" && (gridVar.Active || action == "setup");
+            if (action == "close")
+            {
+                SetWidgetOptionsFunction.ClearWidget(name, dg);
+                return gridVar;
+            }
+            else if (action != "setup")
+            {
+                SetWidgetOptionsFunction.RedisplayWidget(dg, action);
+                return gridVar;
+            }
 
             CSCS_GUI.DEFINES[lineCounter] = new DefineVariable(name, "lineCounter", gridVar.Object, true);
             CSCS_GUI.DEFINES[maxElems] = new DefineVariable(name, "maxElems", gridVar.Object, true);
@@ -3057,17 +3115,17 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 if (defVar.DefType == "datagrid")
                 {
                     var dg = defVar.Object as DataGrid;
-                    var column = dg.Columns[defVar.Index] as DataGridTextColumn;
-                    while (defVar.Tuple.Count < m_arrayIndex + 1)
+                    if (defVar.Index < 0 && CSCS_GUI.WIDGETS.TryGetValue(m_name, out CSCS_GUI.WidgetData wd))
                     {
-                        defVar.Tuple.Add(Variable.EmptyInstance);
-                    }
-                    if (m_arrayIndex == 0)
-                    {
+                        var column = dg.Columns[m_arrayIndex] as DataGridTextColumn;
                         column.Header = varValue.AsString();
                     }
                     else
                     {
+                        while (defVar.Tuple.Count < m_arrayIndex + 1)
+                        {
+                            defVar.Tuple.Add(Variable.EmptyInstance);
+                        }
                         if (varValue.Type == Variable.VarType.NUMBER)
                         {
                             AddCell(dg, m_arrayIndex - 1, defVar.Index, varValue.AsDouble());

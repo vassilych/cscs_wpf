@@ -52,7 +52,7 @@ counter = 0;
 function batun@clicked(sender, load) {
     counter++;
     if (counter % 2 == 0) {
-      SetWidgetOptions("grid1", "clear");
+      DISPLAYARR grid1 CLOSE;
       return;
     }
 
@@ -72,8 +72,20 @@ function batun@clicked(sender, load) {
 }
 
 function testbut@clicked(sender, load) {
-    cntr2 = 10;
-    cntr1 = 2;
+    //cntr2 = 10;
+    //cntr1 = 2;
+    grid1[0] = "lala i";
+    grid1[1] = "lala i*2";
+    grid1[2] = "lala i*3";
+    counter++;
+    cntr1 = 100 + counter;
+    if (counter % 3 == 0) {
+        DISPLAYARR grid1 REDISPLAYFROMEND;
+    } elif (counter % 3 == 1) {
+        DISPLAYARR grid1 REDISPLAYFROMTOP;
+    } else {
+        DISPLAYARR grid1 REDISPLAYACTIVE;
+    }
 }
 
 function button1@Clicked(sender, load) {
