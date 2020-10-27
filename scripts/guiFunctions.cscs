@@ -41,6 +41,11 @@ cfunction testFunction(int a) {
     array1[a] = string(a*2);
     array2[a] = string(a*3);
 }
+cfunction testFunction(int a) {
+    array0[a] = int(a);
+    array1[a] = int(a*2);
+    array2[a] = int(a*3);
+}
 cfunction loadData(int n) {
     for (i = 0 ; i < n ; i++){
         testFunction(i);
@@ -56,9 +61,9 @@ function batun@clicked(sender, load) {
       return;
     }
 
-    array0[0] = "i =";
-    array1[0] = "i*2 =";
-    array2[0] = "i*3 =";
+    grid1[0] = "lala i";
+    grid1[1] = "lala i*2";
+    grid1[2] = "lala i*3";
     
     cntr2 = rows = 32000;
 
@@ -74,9 +79,7 @@ function batun@clicked(sender, load) {
 function testbut@clicked(sender, load) {
     //cntr2 = 10;
     //cntr1 = 2;
-    grid1[0] = "lala i";
-    grid1[1] = "lala i*2";
-    grid1[2] = "lala i*3";
+    MessageBox("array1[4] = [" + array1[4] + "]");
     counter++;
     cntr1 = 100 + counter;
     if (counter % 3 == 0) {

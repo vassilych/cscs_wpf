@@ -18,6 +18,7 @@ using System.Net;
 using System.Globalization;
 using System.Threading;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace SplitAndMerge
 {
@@ -90,6 +91,8 @@ namespace WpfCSCS
 
     public class CSCS_GUI
     {
+        public static Dispatcher Dispatcher { get; set; }
+
         public class WidgetData
         {
             public WidgetData(FrameworkElement w)
@@ -366,6 +369,7 @@ namespace WpfCSCS
                     }
                 }
                 WIDGETS[name] = wd;
+                dg.Sorting += Dg_Sorting;
             }
 
             name = name.ToLower();
@@ -375,6 +379,16 @@ namespace WpfCSCS
                 OnVariableChange(name, defVar);
             }
             return true;
+        }
+
+        private static void Dg_Sorting(object sender, DataGridSortingEventArgs e)
+        {
+            Dispatcher.BeginInvoke((Action)delegate ()
+            {
+                FillWidgetFunction.ResetArrays(sender as FrameworkElement);
+            }, null);
+
+            Console.WriteLine(e.Handled);
         }
 
         public static bool AddActionHandler(string name, string action, FrameworkElement widget)
@@ -1377,7 +1391,7 @@ namespace WpfCSCS
 
         public static bool ClearWidget(string widgetName, FrameworkElement widget = null)
         {
-            widget = widget == null ?  CSCS_GUI.GetWidget(widgetName) as DataGrid : null;
+            widget = widget == null ?  CSCS_GUI.GetWidget(widgetName) as DataGrid : widget;
             if (widget is DataGrid)
             {
                 var dg = widget as DataGrid;
@@ -2209,6 +2223,7 @@ namespace WpfCSCS
                 wd.actualElems = dg.Items.Count;
                 wd.maxElemsName = maxElems;
                 wd.maxElems = maxValue;
+
                 foreach (var headerName in wd.headerNames)
                 {
                     FillWidgetFunction.AddGridData(name, headerName);
@@ -2466,17 +2481,70 @@ namespace WpfCSCS
                 return 0;
             }
 
+            if (CSCS_GUI.DEFINES.TryGetValue(dg.DataContext as string, out DefineVariable headerDef) &&
+                dg.Columns.Count > defVar.Index)
+            {
+                var textCol = dg.Columns[defVar.Index] as DataGridTextColumn;
+                textCol.Header = headerDef.Tuple[defVar.Index];
+            }
+
             var entries = data.Tuple;
             defVar.Active = true;
             int count = wd.maxElems <= 0 ? entries.Count : Math.Min(entries.Count, wd.maxElems);
             for (int i = 0; i < count; i++)
             {
-                MyAssignFunction.AddCell(dg, i, defVar.Index, entries[i].AsString());
+                if (entries[i].Type == Variable.VarType.NUMBER)
+                {
+                    MyAssignFunction.AddCell(dg, i, defVar.Index, entries[i].AsDouble());
+                }
+                else
+                {
+                    MyAssignFunction.AddCell(dg, i, defVar.Index, entries[i].AsString());
+                }
             }
 
             wd.headers[headerName] = data;
 
             return count;
+        }
+
+        public static void ResetArrays(FrameworkElement widget)
+        {
+            DataGrid dg = widget as DataGrid;
+            if (dg == null)
+            {
+                return;
+            }
+            var name = dg.DataContext as string;
+            if (string.IsNullOrWhiteSpace(name) || !CSCS_GUI.WIDGETS.TryGetValue(name, out CSCS_GUI.WidgetData wd))
+            {
+                return;
+            }
+
+            for (int colNb = 0; colNb < wd.headerNames.Count; colNb++)
+            {
+                var headerData = ParserFunction.GetVariableValue(wd.headerNames[colNb]);
+                headerData.SetAsArray();
+                headerData.Tuple.Clear();
+
+                var textCol = dg.Columns[colNb] as DataGridTextColumn;
+                if (CSCS_GUI.DEFINES.TryGetValue(name, out DefineVariable headerDef) &&
+                    headerDef.Tuple.Count > colNb)
+                {
+                    textCol.Header = headerDef.Tuple[colNb];
+                }
+
+                Binding binding = textCol.Binding as Binding;
+                var colBinding = binding.Path.Path;
+
+                for (int rowNb = 0; rowNb < dg.Items.Count; rowNb++)
+                {
+                    dynamic row = dg.Items[rowNb] as ExpandoObject;
+                    var cell = ((IDictionary<String, Object>)row)[colBinding];
+                    var v = cell == null ? "" : cell.ToString();
+                    headerData.Tuple.Add(new Variable(v));
+                }
+            }
         }
     }
 
@@ -3076,7 +3144,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 m_name = m_name.Substring(0, argStart);
             }
 
-            if (!CSCS_GUI.DEFINES.TryGetValue(m_name, out DefineVariable defVar) || !defVar.Active)
+            if (!CSCS_GUI.DEFINES.TryGetValue(m_name, out DefineVariable defVar))
             {
                 return null;
             }
@@ -3117,8 +3185,20 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                     var dg = defVar.Object as DataGrid;
                     if (defVar.Index < 0 && CSCS_GUI.WIDGETS.TryGetValue(m_name, out CSCS_GUI.WidgetData wd))
                     {
-                        var column = dg.Columns[m_arrayIndex] as DataGridTextColumn;
-                        column.Header = varValue.AsString();
+                        if (defVar.Active)
+                        {
+                            var column = dg.Columns[m_arrayIndex] as DataGridTextColumn;
+                            column.Header = varValue.AsString();
+                        }
+                        if (CSCS_GUI.DEFINES.TryGetValue(m_name, out DefineVariable headerDef))
+                        {
+                            headerDef.SetAsArray();
+                            while(headerDef.Tuple.Count < dg.Columns.Count)
+                            {
+                                headerDef.Tuple.Add(Variable.EmptyInstance);
+                            }
+                            headerDef.Tuple[m_arrayIndex] = varValue;
+                        }
                     }
                     else
                     {
@@ -3126,13 +3206,13 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                         {
                             defVar.Tuple.Add(Variable.EmptyInstance);
                         }
-                        if (varValue.Type == Variable.VarType.NUMBER)
+                        if (defVar.Active && varValue.Type == Variable.VarType.NUMBER)
                         {
-                            AddCell(dg, m_arrayIndex - 1, defVar.Index, varValue.AsDouble());
+                            AddCell(dg, m_arrayIndex, defVar.Index, varValue.AsDouble());
                         }
-                        else
+                        else if (defVar.Active)
                         {
-                            AddCell(dg, m_arrayIndex - 1, defVar.Index, varValue.AsString());
+                            AddCell(dg, m_arrayIndex, defVar.Index, varValue.AsString());
                         }
                     }
                 }

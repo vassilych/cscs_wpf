@@ -35,6 +35,9 @@ namespace WpfCSCS
                                          MessageBoxButton.OK, MessageBoxImage.Error);
                 Environment.Exit(1);
             }
+
+            CSCS_GUI.Dispatcher = this.Dispatcher;
+
             //cscsScript = "../../scripts/start.cscs";
             Console.WriteLine("Running CSCS script: " + pathName);
             CSCS_SQL.Init();

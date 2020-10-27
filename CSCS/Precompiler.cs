@@ -1246,6 +1246,11 @@ namespace SplitAndMerge
                 var eval = EvaluateToken(arguments);
                 return "new Variable(Convert.ToString(" + eval + (eval.EndsWith(")") ? "" : "))") + ";";
             }
+            else if (functionName == "int" && !string.IsNullOrWhiteSpace(arguments))
+            {
+                var eval = EvaluateToken(arguments);
+                return "new Variable(Convert.ToInt32(" + eval + (eval.EndsWith(")") ? "" : "))") + ";";
+            }
             return "";
         }
 
