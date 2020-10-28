@@ -1251,6 +1251,21 @@ namespace SplitAndMerge
                 var eval = EvaluateToken(arguments);
                 return "new Variable(Convert.ToInt32(" + eval + (eval.EndsWith(")") ? "" : "))") + ";";
             }
+            else if (functionName == "long" && !string.IsNullOrWhiteSpace(arguments))
+            {
+                var eval = EvaluateToken(arguments);
+                return "new Variable(Convert.ToInt64(" + eval + (eval.EndsWith(")") ? "" : "))") + ";";
+            }
+            else if (functionName == "bool" && !string.IsNullOrWhiteSpace(arguments))
+            {
+                var eval = EvaluateToken(arguments);
+                return "new Variable(Convert.ToBoolean(" + eval + (eval.EndsWith(")") ? "" : "))") + ";";
+            }
+            else if (functionName == "double" && !string.IsNullOrWhiteSpace(arguments))
+            {
+                var eval = EvaluateToken(arguments);
+                return "new Variable(Convert.ToDouble(" + eval + (eval.EndsWith(")") ? "" : "))") + ";";
+            }
             return "";
         }
 
