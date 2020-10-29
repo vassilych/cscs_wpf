@@ -2441,29 +2441,6 @@ namespace WpfCSCS
 
             int count = AddGridData(widgetName, varName);
             return new Variable(count);
-
-            /*var data = ParserFunction.GetVariable(varName, script) as GetVarFunction;
-            var widget = CSCS_GUI.GetWidget(widgetName);
-            if (widget == null || data == null || data.Value == null || data.Value.Tuple == null)
-            {
-                return Variable.EmptyInstance;
-            }
-            var entries = data.Value.Tuple;
-            if (widget is DataGrid)
-            {
-                if (!CSCS_GUI.DEFINES.TryGetValue(varName, out DefineVariable defVar))
-                {
-                    return Variable.EmptyInstance;
-                }
-                defVar.Active = true;
-                var dg = widget as DataGrid;
-                for (int i = 0; i < entries.Count; i++)
-                {
-                    MyAssignFunction.AddCell(dg, i, defVar.Index, entries[i].AsString());
-                }
-            }
-
-            return Variable.EmptyInstance;*/
         }
 
         public static int AddGridData(string widgetName, string headerName)
@@ -2493,14 +2470,13 @@ namespace WpfCSCS
             int count = wd.maxElems <= 0 ? entries.Count : Math.Min(entries.Count, wd.maxElems);
             for (int i = 0; i < count; i++)
             {
-                if (entries[i].Type == Variable.VarType.NUMBER)
-                {
-                    MyAssignFunction.AddCell(dg, i, defVar.Index, entries[i].AsDouble());
-                }
-                else
-                {
-                    MyAssignFunction.AddCell(dg, i, defVar.Index, entries[i].AsString());
-                }
+                MyAssignFunction.AddCell(dg, i, defVar.Index, entries[i]);
+            }
+
+            if (CSCS_GUI.DEFINES.TryGetValue(wd.actualElemsName, out DefineVariable actualElems))
+            {
+                actualElems.Value = dg.Items.Count;
+                ParserFunction.AddGlobal(wd.actualElemsName, new GetVarFunction(actualElems), false);
             }
 
             wd.headers[headerName] = data;
@@ -3183,7 +3159,8 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 if (defVar.DefType == "datagrid")
                 {
                     var dg = defVar.Object as DataGrid;
-                    if (defVar.Index < 0 && CSCS_GUI.WIDGETS.TryGetValue(m_name, out CSCS_GUI.WidgetData wd))
+                    CSCS_GUI.WidgetData wd;
+                    if (defVar.Index < 0 && CSCS_GUI.WIDGETS.TryGetValue(m_name, out wd))
                     {
                         if (defVar.Active)
                         {
@@ -3206,13 +3183,15 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                         {
                             defVar.Tuple.Add(Variable.EmptyInstance);
                         }
-                        if (defVar.Active && varValue.Type == Variable.VarType.NUMBER)
+                        if (defVar.Active)
                         {
-                            AddCell(dg, m_arrayIndex, defVar.Index, varValue.AsDouble());
-                        }
-                        else if (defVar.Active)
-                        {
-                            AddCell(dg, m_arrayIndex, defVar.Index, varValue.AsString());
+                            AddCell(dg, m_arrayIndex, defVar.Index, varValue);
+                            if (CSCS_GUI.WIDGETS.TryGetValue(dg.DataContext as string, out wd) &&
+                                CSCS_GUI.DEFINES.TryGetValue(wd.actualElemsName, out DefineVariable actualElems))
+                            {
+                                actualElems.Value = dg.Items.Count;
+                                ParserFunction.AddGlobal(wd.actualElemsName, new GetVarFunction(actualElems), false);
+                            }
                         }
                     }
                 }
@@ -3231,6 +3210,15 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                     var dg = defVar.Object as DataGrid;
                     var wd = CSCS_GUI.WIDGETS[dg.DataContext as string];
                     wd.maxElems = varValue.AsInt();
+                    if (wd.actualElems <= 0 || wd.actualElems > wd.maxElems)
+                    {
+                        wd.actualElems = wd.maxElems;
+                        if (CSCS_GUI.DEFINES.TryGetValue(wd.actualElemsName, out DefineVariable actualElems))
+                        {
+                            actualElems.Value = wd.maxElems;
+                            ParserFunction.AddGlobal(wd.actualElemsName, new GetVarFunction(actualElems), false);
+                        }
+                    }
                     while (dg.Items.Count > wd.maxElems)
                     {
                         dg.Items.RemoveAt(dg.Items.Count - 1);
@@ -3247,7 +3235,19 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
             return defVar;
         }
 
-        public static void AddCell<T>(DataGrid dg, int rowNb, int colNb, T value)
+        public static void AddCell(DataGrid dg, int rowNb, int colNb, Variable varValue)
+        {
+            if (varValue.Type == Variable.VarType.NUMBER)
+            {
+                AddCell(dg, rowNb, colNb, varValue.AsDouble());
+            }
+            else
+            {
+                AddCell(dg, rowNb, colNb, varValue.AsString());
+            }
+        }
+
+        static void AddCell<T>(DataGrid dg, int rowNb, int colNb, T value)
         {
             while (dg.Items.Count < rowNb + 1)
             {

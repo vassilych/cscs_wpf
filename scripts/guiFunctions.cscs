@@ -77,17 +77,21 @@ function batun@clicked(sender, load) {
 }
 
 function testbut@clicked(sender, load) {
-    //cntr2 = 10;
+    MessageBox("array1[4] = [" + array1[4] + "], actual cntr3=" + cntr3 +
+     ", curr cntr1=" + cntr1+ ",max cntr2="+cntr2);
+
     //cntr1 = 2;
-    MessageBox("array1[4] = [" + array1[4] + "]");
+    cntr2 = 100;
+    grid1[0] = "lala i";
+    grid1[1] = "lala i*2";
+    grid1[2] = "lala i*3";
     counter++;
-    cntr1 = 100 + counter;
     if (counter % 3 == 0) {
         DISPLAYARR grid1 REDISPLAYFROMEND;
     } elif (counter % 3 == 1) {
         DISPLAYARR grid1 REDISPLAYFROMTOP;
     } else {
-        DISPLAYARR grid1 REDISPLAYACTIVE;
+        DISPLAYARR grid1 REDISPLAYCURRENT ;
     }
 }
 
