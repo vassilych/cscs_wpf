@@ -11,11 +11,12 @@
         <TextBox DataContext="var1" VerticalAlignment="Top" HorizontalAlignment="Left"/>
         <Button Content="msg" DataContext="batun" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
         <Button Content="test" DataContext="testBut" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
-        <DataGrid HorizontalAlignment="Center" VerticalAlignment="Center" Height="300" Width="300" DataContext="grid1" IsReadOnly="True">
+        <DataGrid HorizontalAlignment="Center" VerticalAlignment="Center" Height="300" Width="300" DataContext="grid1"
+                  VirtualizingStackPanel.IsVirtualizing="False" IsReadOnly="True">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="array0" />
-                <DataGridTextColumn Header="array1" />
-                <DataGridTextColumn Header="array2" />
+                <DataGridTextColumn Header="array0" Binding="{Binding array0}" />
+                <DataGridTextColumn Header="array1" Binding="{Binding array1}" />
+                <DataGridTextColumn Header="array2" Binding="{Binding array2}" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

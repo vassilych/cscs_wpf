@@ -60,26 +60,30 @@ function batun@clicked(sender, load) {
       DISPLAYARR grid1 CLOSE;
       return;
     }
-
+   
     grid1[0] = "lala i";
     grid1[1] = "lala i*2";
     grid1[2] = "lala i*3";
-    
-    cntr2 = rows = 32000;
+    cntr2 = rows = 3200;
 
+    startElapsed = StartStopWatch();
     start = pstime;
     testFunction(rows - 1);
     loadData(rows);
     DISPLAYARR grid1 LINECOUNTER cntr1 MAXELEMENTS cntr2 ACTUALELEMENTS cntr3 SETUP;   
     
     total = pstime-start;
-    MessageBox("End. " + rows + " rows added in " + total + " ms.");
+    stopElapsed = StopStopWatch("ms");
+
+    MessageBox(rows + " rows added in " + total + " process ms. Elapsed: " + stopElapsed + " ms.");
 }
 
 function testbut@clicked(sender, load) {
     MessageBox("array1[4] = [" + array1[4] + "], actual cntr3=" + cntr3 +
      ", curr cntr1=" + cntr1+ ",max cntr2="+cntr2);
 
+    DATA_GRID "grid1" GOEDIT;
+    DATA_GRID "grid1" INSERTROW;
     //cntr1 = 2;
     cntr2 = 100;
     grid1[0] = "lala i";

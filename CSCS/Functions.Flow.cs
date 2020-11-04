@@ -1604,6 +1604,10 @@ namespace SplitAndMerge
 
         protected override Variable Evaluate(ParsingScript script)
         {
+            if (m_value.Preprocess())
+            {
+                return m_value;
+            }
             // First check if this element is part of an array:
             if (script.TryPrev() == Constants.START_ARRAY)
             {
@@ -1659,6 +1663,10 @@ namespace SplitAndMerge
         }
         protected override async Task<Variable> EvaluateAsync(ParsingScript script)
         {
+            if (m_value.Preprocess())
+            {
+                return m_value;
+            }
             // First check if this element is part of an array:
             if (script.TryPrev() == Constants.START_ARRAY)
             {

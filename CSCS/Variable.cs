@@ -229,6 +229,11 @@ namespace SplitAndMerge
             return AsString() == other.AsString();
         }
 
+        public virtual bool Preprocess()
+        {
+            return false;
+        }
+
         public void AddVariableToHash(string hash, Variable newVar)
         {
             int retValue = 0;
@@ -358,7 +363,7 @@ namespace SplitAndMerge
 
         public int GetArrayIndex(Variable indexVar)
         {
-            if (this.Type != VarType.ARRAY)
+            if (this.Tuple == null || this.Tuple.Count == 0)
             {
                 return -1;
             }
@@ -1590,6 +1595,11 @@ namespace SplitAndMerge
 
         public static Variable EmptyInstance = new Variable();
         public static Variable Undefined = new Variable(VarType.UNDEFINED);
+
+        public virtual Variable Default()
+        {
+            return EmptyInstance;
+        }
 
         protected double m_value;
         protected string m_string;

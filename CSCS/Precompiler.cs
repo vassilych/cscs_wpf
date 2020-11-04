@@ -69,6 +69,7 @@ namespace SplitAndMerge
         static string ACTION_TEMP_VAR   = "__actionTempVar";
         static string VARIABLE_TEMP_VAR = "__varTempVar";
         static string GETVAR_TEMP_VAR   = "__varTempGetVar";
+        static string BOOL_TEMP_VAR     = "__boolTempVar";
 
         public static void RegisterReturnType(string functionName, string functionType)
         {
@@ -431,12 +432,15 @@ namespace SplitAndMerge
             m_converted.AppendLine("     ParserFunction " + PARSER_TEMP_VAR + " = null;");
             m_converted.AppendLine("     GetVarFunction " + GETVAR_TEMP_VAR + " = null;");
             m_converted.AppendLine("     Variable " + VARIABLE_TEMP_VAR + " = null;");
+            m_converted.AppendLine("     bool " + BOOL_TEMP_VAR + " = false;");
+            
             m_newVariables.Add(ARGS_TEMP_VAR);
             m_newVariables.Add(ACTION_TEMP_VAR);
             m_newVariables.Add(SCRIPT_TEMP_VAR);
             m_newVariables.Add(PARSER_TEMP_VAR);
             m_newVariables.Add(GETVAR_TEMP_VAR);
             m_newVariables.Add(VARIABLE_TEMP_VAR);
+            m_newVariables.Add(BOOL_TEMP_VAR);
 
             m_statements = TokenizeScript(m_cscsCode);
             m_statementId = 0;
@@ -810,15 +814,13 @@ namespace SplitAndMerge
             var arrayPart = token.Substring(start + 1, end - start - 1);
 
             var arrayIndex = EvaluateToken(arrayPart);
-            var defaultValue = " Variable.EmptyInstance";
-            string result = "if ("+ arrayName + ".Count <= (int)" + arrayIndex + ") { \n"
-                + arrayName + ".Capacity = (int)" + arrayIndex + " + 1; \n"
-                + "  while(" + arrayName + ".Count <= (int)" + arrayIndex + ")  "
-                + arrayName + ".Add(" + defaultValue + ");\n }\n";
+            string result = "Utils.ExtendArrayIfNeeded(" + arrayName + ", (int)" + arrayIndex + ", Variable.EmptyInstance); \n";
             result += m_depth + token.Substring(0, start + 1) + "(int)" + arrayIndex + token.Substring(end, token.Length - end);
 
-            extra += m_depth + "ParserFunction.AddGlobalOrLocalVariable(\"" + arrayName +
-                     "\", new GetVarFunction(new Variable(" + arrayName + ")));\n";
+            extra += m_depth + "if (" + BOOL_TEMP_VAR + ") " + "ParserFunction.AddGlobalOrLocalVariable(\"" + arrayName +
+                     "\", new GetVarFunction(Variable.ConvertToVariable(__varTempVar)));\n"; ;
+            extra += m_depth + "else ParserFunction.AddGlobalOrLocalVariable(\"" + arrayName +
+                     "\", new GetVarFunction(Variable.ConvertToVariable(" + arrayName + ")));\n";
             return result;
         }
 
@@ -851,16 +853,16 @@ namespace SplitAndMerge
                 return m_depth + "var " + functionName;
             }
             bool firstString = tokens[0].Contains("\"");
-            string expr = m_depth;
+            string expr = m_depth + BOOL_TEMP_VAR + " = false;\n";
 
             string param = GetTokenType(tokens);
             if (functionName != tokens[0])
             {
                 expr += GetCSCSVariable(functionName);
                 expr += m_depth + "List<Variable> " + functionName + " = null;\n";
-                expr += m_depth + "if (__varTempVar != null && __varTempVar.Tuple != null) " +
-                        functionName + "= __varTempVar.Tuple;\n" + m_depth +
-                      " else " + functionName + " = new List<Variable> ();\n";
+                expr += m_depth + "if (__varTempVar != null && __varTempVar.Tuple != null) {\n" + m_depth + m_depth +
+                    functionName + "= __varTempVar.Tuple; " + BOOL_TEMP_VAR + " = true;\n" + m_depth +
+                    "} else " + functionName + " = new List<Variable> ();\n";
             }
             else if (!firstString)
             {
