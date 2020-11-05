@@ -64,7 +64,7 @@ function batun@clicked(sender, load) {
     grid1[0] = "lala i";
     grid1[1] = "lala i*2";
     grid1[2] = "lala i*3";
-    cntr2 = rows = 3200;
+    cntr2 = rows = 32000;
 
     startElapsed = StartStopWatch();
     start = pstime;
@@ -82,10 +82,10 @@ function testbut@clicked(sender, load) {
     MessageBox("array1[4] = [" + array1[4] + "], actual cntr3=" + cntr3 +
      ", curr cntr1=" + cntr1+ ",max cntr2="+cntr2);
 
-    DATA_GRID "grid1" GOEDIT;
-    DATA_GRID "grid1" INSERTROW;
+    //DATA_GRID "grid1" GOEDIT;
+    //DATA_GRID "grid1" INSERTROW;
     //cntr1 = 2;
-    cntr2 = 100;
+    //cntr2 = 100;
     grid1[0] = "lala i";
     grid1[1] = "lala i*2";
     grid1[2] = "lala i*3";
