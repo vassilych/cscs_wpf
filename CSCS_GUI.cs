@@ -403,8 +403,8 @@ namespace WpfCSCS
 
         private static void Dg_Sorting(object sender, DataGridSortingEventArgs e)
         {
-            var col = e.Column;
-            /*var name = sender is DataGrid ? (sender as DataGrid).DataContext as string : "";
+            /*var col = e.Column;
+            var name = sender is DataGrid ? (sender as DataGrid).DataContext as string : "";
             if (!string.IsNullOrWhiteSpace(name) && CSCS_GUI.WIDGETS.TryGetValue(name, out CSCS_GUI.WidgetData wd))
             {
                 wd.needsReset = true;
@@ -412,10 +412,10 @@ namespace WpfCSCS
 
             Dispatcher.BeginInvoke((Action)delegate ()
             {
-                FillWidgetFunction.ResetArrays(sender as FrameworkElement, col as DataGridTextColumn);
+                FillWidgetFunction.ResetArrays(sender as FrameworkElement);
             }, null);
 
-            Console.WriteLine(e.Handled);
+            //Console.WriteLine(e.Handled);
         }
 
         public static bool AddActionHandler(string name, string action, FrameworkElement widget)
@@ -1431,8 +1431,10 @@ namespace WpfCSCS
                 }
 
                 var dg = widget as DataGrid;
+                FillWidgetFunction.ResetArrays(dg);
                 var rowList = dg.ItemsSource as List<ExpandoObject>;
                 rowList?.Clear();
+                dg.ItemsSource = null;
                 dg.Items.Refresh();
                 dg.UpdateLayout();
             }
@@ -2272,6 +2274,8 @@ namespace WpfCSCS
                 return gridVar;
             }
 
+            FillWidgetFunction.ResetArrays(dg);
+
             CSCS_GUI.DEFINES[lineCounter] = new DefineVariable(name, "lineCounter", gridVar.Object, true);
             CSCS_GUI.DEFINES[maxElems] = new DefineVariable(name, "maxElems", gridVar.Object, true);
             CSCS_GUI.DEFINES[actualElems] = new DefineVariable(name, "actualElems", gridVar.Object, true);
@@ -2598,7 +2602,7 @@ namespace WpfCSCS
             return num1 < num2 ? -1 : num2 > num1 ? 1 : 0;
         }
 
-        public static void ResetArrays(FrameworkElement widget, DataGridTextColumn col = null)
+        public static void ResetArrays(FrameworkElement widget)
         {
             DataGrid dg = widget as DataGrid;
             if (dg == null)
@@ -2612,17 +2616,17 @@ namespace WpfCSCS
                 return;
             }
 
+            var rowList = dg.ItemsSource as List<ExpandoObject>;
             var sorted = dg.Items.SourceCollection;
             var casted = dg.Items.Cast<ExpandoObject>();
             var sortedCast = casted != null ? casted.ToList() : sorted.Cast<ExpandoObject>();
 
-            if (sortedCast == null)
+            if (rowList == null || sortedCast == null)
             {
                 return;
             }
             var sortedByTheUser = sortedCast.ToList();
 
-            var rowList = dg.ItemsSource as List<ExpandoObject>;
             rowList.Clear();
 
             for (int rowNb = 0; rowNb < sortedByTheUser.Count; rowNb++)
@@ -2636,6 +2640,11 @@ namespace WpfCSCS
                         v is string ? new Variable(v.ToString()) : new Variable((double)v);
 
                     var headerData = ParserFunction.GetVariableValue(colStr);
+                    headerData.SetAsArray();
+                    while (headerData.Tuple.Count <= rowNb)
+                    {
+                        headerData.Tuple.Add(Variable.EmptyInstance);
+                    }
                     headerData.Tuple[rowNb] = cellValue;
                     MyAssignFunction.AddCell(dg, rowNb, colNb, cellValue);
                 }
@@ -3379,7 +3388,8 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                             ParserFunction.AddGlobal(wd.actualElemsName, new GetVarFunction(actualElems), false);
                         }
                     }
-                    var rowList = dg.ItemsSource as List<ExpandoObject>;
+                    var rowList = dg.ItemsSource == null ? new List<ExpandoObject>() : 
+                                  dg.ItemsSource as List<ExpandoObject>;
                     while (rowList.Count > wd.maxElems)
                     {
                         rowList.RemoveAt(rowList.Count - 1);
