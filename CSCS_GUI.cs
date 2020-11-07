@@ -32,6 +32,9 @@ namespace SplitAndMerge
         public const string DEFINE = "DEFINE";
         public const string DISPLAY_ARRAY = "DISPLAYARR";
         public const string DATA_GRID = "DATA_GRID";
+        public const string ADD_COLUMN = "NEWCOLUMN";
+        public const string DELETE_COLUMN = "DELETECOLUMN";
+        public const string SHIFT_COLUMN = "SHIFTCOLUMN";
         public const string MSG = "MSG";
         public const string SET_OBJECT = "SET_OBJECT";
 
@@ -178,6 +181,9 @@ namespace WpfCSCS
             ParserFunction.RegisterFunction(Constants.SET_OBJECT, new VariableArgsFunction(true));
             ParserFunction.RegisterFunction(Constants.DISPLAY_ARRAY, new VariableArgsFunction(true));
             ParserFunction.RegisterFunction(Constants.DATA_GRID, new VariableArgsFunction(true));
+            ParserFunction.RegisterFunction(Constants.ADD_COLUMN, new VariableArgsFunction(true));
+            ParserFunction.RegisterFunction(Constants.DELETE_COLUMN, new VariableArgsFunction(true));
+            ParserFunction.RegisterFunction(Constants.SHIFT_COLUMN, new VariableArgsFunction(true));
 
             ParserFunction.RegisterFunction(Constants.CHAIN, new ChainFunction(false));
             ParserFunction.RegisterFunction(Constants.PARAM, new ChainFunction(true));
@@ -366,7 +372,7 @@ namespace WpfCSCS
                 for (int i = 0; i < dg.Columns.Count; i++)
                 {
                     var textCol = dg.Columns[i] as DataGridTextColumn;
-                    var header = (textCol.Header as string).Replace(' ', '_');
+                    var header = textCol.Header as string;
                     if (textCol.Binding == null)
                     {
                         textCol.Binding = new Binding(header);
@@ -376,7 +382,7 @@ namespace WpfCSCS
 
                     if (!string.IsNullOrWhiteSpace(header))
                     {
-                        var headerStr = header.ToLower();
+                        var headerStr = binding.Path.Path.ToLower();
                         var headerVar = new DefineVariable(headerStr, "datagrid", dg, i);
                         DEFINES[headerStr] = headerVar;
                         wd.headers[headerStr] = headerVar;
@@ -1033,10 +1039,16 @@ namespace WpfCSCS
         public static Variable RunOnMainThread(CustomFunction callbackFunction, List<Variable> args)
         {
             Variable result = Variable.EmptyInstance;
-            Application.Current.Dispatcher.Invoke(new Action(() =>
+            /*Application.Current.Dispatcher.Invoke(new Action(() =>
             {
                 result = callbackFunction.Run(args);
-            }));
+            }));*/
+
+            CSCS_GUI.Dispatcher.Invoke((Action)delegate ()
+            {
+                result = callbackFunction.Run(args);
+            }, null);
+
             return result;
         }
         public static Variable RunOnMainThread(ParserFunction func, string argsStr)
@@ -2161,6 +2173,21 @@ namespace WpfCSCS
                     GetBoolParameter("deleterow"), m_lastParameter);
                 return newVar;
             }
+            if (Name == Constants.ADD_COLUMN)
+            {
+                AddGridColumn(script, objectName, GetParameter("header"), GetParameter("binding"));
+                return new Variable(true);
+            }
+            if (Name == Constants.DELETE_COLUMN)
+            {
+                DeleteGridColumn(script, objectName, GetIntParameter("num"));
+                return new Variable(true);
+            }
+            if (Name == Constants.SHIFT_COLUMN)
+            {
+                ShiftGridColumns(script, objectName, GetIntParameter("num"), GetIntParameter("to"));
+                return new Variable(true);
+            }
             if (Name == Constants.SET_OBJECT)
             {
                 string prop = GetParameter("property");
@@ -2342,9 +2369,104 @@ namespace WpfCSCS
             return gridVar;
         }
 
-        private static void Dg_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        static void AddGridColumn(ParsingScript script, string name, string header, string binding)
         {
-            throw new NotImplementedException();
+            if (!CSCS_GUI.DEFINES.TryGetValue(name, out DefineVariable gridVar))
+            {
+                throw new ArgumentException("Couldn't find variable [" + name + "]");
+            }
+            if (gridVar.DefType != "datagrid")
+            {
+                throw new ArgumentException("Variable of wrong type: [" + gridVar.DefType + "]");
+            }
+            if (!CSCS_GUI.WIDGETS.TryGetValue(name, out CSCS_GUI.WidgetData wd))
+            {
+                throw new ArgumentException("Couldn't find widget data for widget: [" + name + "]");
+            }
+
+            DataGrid dg = gridVar.Object as DataGrid;
+
+            DataGridTextColumn textColumn = new DataGridTextColumn();
+            textColumn.Header = header;
+            textColumn.Binding = new Binding(binding);
+            dg.Columns.Add(textColumn);
+
+            wd.headerBindings.Add(binding);
+            var headerStr = binding.ToLower();
+            var headerVar = new DefineVariable(headerStr, "datagrid", dg, dg.Columns.Count - 1);
+            headerVar.Active = true;
+            CSCS_GUI.DEFINES[headerStr] = headerVar;
+            wd.headers[headerStr] = headerVar;
+            wd.headerNames.Add(headerStr);
+            wd.colTypes.Add(CSCS_GUI.WidgetData.COL_TYPE.STRING);
+            ParserFunction.AddGlobal(header, new GetVarFunction(headerVar), false);
+
+            dg.Items.Refresh();
+            dg.UpdateLayout();
+        }
+
+        static void ShiftGridColumns(ParsingScript script, string name, int from, int to)
+        {
+            if (!CSCS_GUI.DEFINES.TryGetValue(name, out DefineVariable gridVar))
+            {
+                throw new ArgumentException("Couldn't find variable [" + name + "]");
+            }
+            if (gridVar.DefType != "datagrid")
+            {
+                throw new ArgumentException("Variable of wrong type: [" + gridVar.DefType + "]");
+            }
+            if (!CSCS_GUI.WIDGETS.TryGetValue(name, out CSCS_GUI.WidgetData wd))
+            {
+                throw new ArgumentException("Couldn't find widget data for widget: [" + name + "]");
+            }
+
+            DataGrid dg = gridVar.Object as DataGrid;
+
+            var cols = dg.Columns;
+            cols[from].DisplayIndex = to;
+            cols[to].DisplayIndex = from;
+
+            var header1  = wd.headerNames[from];
+            var header2  = wd.headerNames[to];
+            var colType1 = wd.colTypes[from];
+            var colType2 = wd.colTypes[to];
+
+            wd.headerNames[from] = header2;
+            wd.headerNames[to]   = header1;
+            wd.colTypes[from]    = colType2;
+            wd.colTypes[to]      = colType1;
+
+            dg.Items.Refresh();
+            dg.UpdateLayout();
+        }
+
+        static void DeleteGridColumn(ParsingScript script, string name, int colId)
+        {
+            if (!CSCS_GUI.DEFINES.TryGetValue(name, out DefineVariable gridVar))
+            {
+                throw new ArgumentException("Couldn't find variable [" + name + "]");
+            }
+            if (gridVar.DefType != "datagrid")
+            {
+                throw new ArgumentException("Variable of wrong type: [" + gridVar.DefType + "]");
+            }
+            if (!CSCS_GUI.WIDGETS.TryGetValue(name, out CSCS_GUI.WidgetData wd))
+            {
+                throw new ArgumentException("Couldn't find widget data for widget: [" + name + "]");
+            }
+
+            DataGrid dg = gridVar.Object as DataGrid;
+
+            dg.Columns.RemoveAt(colId);
+            var cols = dg.Columns;
+            for (int i = colId; i < cols.Count - 1; i++)
+            {
+                wd.headerNames[i] = wd.headerNames[i + 1];
+                wd.colTypes[i]    = wd.colTypes[i + 1];
+            }
+
+            dg.Items.Refresh();
+            dg.UpdateLayout();
         }
     }
 
@@ -3443,21 +3565,6 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
 
             var pp = rowList[rowNb] as IDictionary<String, object>;
             pp[wd.headerNames[colNb]] = value;
-        }
-
-        public static void AddCellZ<T>(DataGrid dg, int rowNb, int colNb, CSCS_GUI.WidgetData wd, T value)
-        {
-            while (dg.Items.Count < rowNb + 1)
-            {
-                dg.Items.Add(new ExpandoObject());
-            }
-
-            var textCol = dg.Columns[colNb] as DataGridTextColumn;
-            Binding binding = textCol.Binding as Binding;
-            var colBinding = binding.Path.Path;
-
-            dynamic row = dg.Items[rowNb] as ExpandoObject;
-            ((IDictionary<String, Object>)row)[colBinding] = value;
         }
 
         public static ExpandoObject GetNewRow(DataGrid dg, CSCS_GUI.WidgetData wd)
