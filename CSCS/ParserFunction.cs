@@ -330,10 +330,11 @@ namespace SplitAndMerge
             ParserFunction impl = null;
             StackLevel localStack = script != null && script.StackLevel != null ?
                  script.StackLevel : s_locals.Count > StackLevelDelta ? s_lastExecutionLevel : null;
-            if (localStack != null)
+            if (localStack != null && localStack.Variables.TryGetValue(name, out impl) &&
+                impl is GetVarFunction)
             {
-                localStack.Variables.TryGetValue(name, out impl);
-            }        
+                return (impl as GetVarFunction).Value;
+            }
 
             string scopeName = script == null || script.Filename == null ? "" : script.Filename;
             impl = GetLocalScopeVariable(name, scopeName);

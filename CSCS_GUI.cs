@@ -390,7 +390,7 @@ namespace WpfCSCS
                         wd.colTypes.Add(WidgetData.COL_TYPE.STRING);
 
                         //var array = new DefineVariable(new List<Variable>());
-                        ParserFunction.AddGlobal(header, new GetVarFunction(headerVar), false /* not native */);
+                        ParserFunction.AddGlobal(headerStr, new GetVarFunction(headerVar), false /* not native */);
                     }
                 }
                 WIDGETS[name] = wd;
@@ -409,6 +409,7 @@ namespace WpfCSCS
 
         private static void Dg_Sorting(object sender, DataGridSortingEventArgs e)
         {
+            var dg = sender as DataGrid;
             /*var col = e.Column;
             var name = sender is DataGrid ? (sender as DataGrid).DataContext as string : "";
             if (!string.IsNullOrWhiteSpace(name) && CSCS_GUI.WIDGETS.TryGetValue(name, out CSCS_GUI.WidgetData wd))
@@ -418,7 +419,11 @@ namespace WpfCSCS
 
             Dispatcher.BeginInvoke((Action)delegate ()
             {
-                FillWidgetFunction.ResetArrays(sender as FrameworkElement);
+                var sorted = dg.Items.SourceCollection;
+                var casted = dg.Items.Cast<ExpandoObject>();
+                var sortedCast = casted != null ? casted.ToList() : sorted.Cast<ExpandoObject>();
+
+                FillWidgetFunction.ResetArrays(sender as FrameworkElement, sortedCast);
             }, null);
 
             //Console.WriteLine(e.Handled);
@@ -1443,8 +1448,8 @@ namespace WpfCSCS
                 }
 
                 var dg = widget as DataGrid;
-                FillWidgetFunction.ResetArrays(dg);
                 var rowList = dg.ItemsSource as List<ExpandoObject>;
+                FillWidgetFunction.ResetArrays(dg);
                 rowList?.Clear();
                 dg.ItemsSource = null;
                 dg.Items.Refresh();
@@ -2091,6 +2096,11 @@ namespace WpfCSCS
                     new Variable(true) :
                             script.Current == Constants.END_STATEMENT ? Variable.EmptyInstance :
                             new Variable(Utils.GetToken(script, separator));
+                if (script.Prev != '"' && !string.IsNullOrWhiteSpace(value.String))
+                {
+                    var existing = ParserFunction.GetVariableValue(value.String, script);
+                    value = existing == null ? value : existing;
+                }
                 m_parameters[labelName] = value;
                 m_lastParameter = labelName;
             }
@@ -2301,6 +2311,7 @@ namespace WpfCSCS
                 return gridVar;
             }
 
+            var rowList = dg.ItemsSource as List<ExpandoObject>;
             FillWidgetFunction.ResetArrays(dg);
 
             CSCS_GUI.DEFINES[lineCounter] = new DefineVariable(name, "lineCounter", gridVar.Object, true);
@@ -2309,8 +2320,6 @@ namespace WpfCSCS
 
             var max = ParserFunction.GetVariableValue(maxElems, script);
             int maxValue = max == null ? 0 : max.AsInt();
-
-            var rowList = dg.ItemsSource as List<ExpandoObject>;
 
             ParserFunction.AddGlobal(lineCounter, new GetVarFunction(new Variable(dg.SelectedIndex)), false);
             ParserFunction.AddGlobal(actualElems, new GetVarFunction(new Variable(rowList == null ? 0 : rowList.Count)), false);
@@ -2399,7 +2408,15 @@ namespace WpfCSCS
             wd.headers[headerStr] = headerVar;
             wd.headerNames.Add(headerStr);
             wd.colTypes.Add(CSCS_GUI.WidgetData.COL_TYPE.STRING);
-            ParserFunction.AddGlobal(header, new GetVarFunction(headerVar), false);
+            ParserFunction.AddGlobal(headerStr, new GetVarFunction(headerVar), false);
+
+            var rowList = dg.ItemsSource as List<ExpandoObject>;
+            for (int i = 0; i < rowList.Count; i++)
+            {
+                var p = rowList[i] as IDictionary<String, object>;
+                p[headerStr] = "";
+            }
+            FillWidgetFunction.ResetArrays(dg);
 
             dg.Items.Refresh();
             dg.UpdateLayout();
@@ -2426,15 +2443,27 @@ namespace WpfCSCS
             cols[from].DisplayIndex = to;
             cols[to].DisplayIndex = from;
 
-            var header1  = wd.headerNames[from];
-            var header2  = wd.headerNames[to];
+            var binding1  = wd.headerNames[from];
+            var binding2  = wd.headerNames[to];
             var colType1 = wd.colTypes[from];
             var colType2 = wd.colTypes[to];
 
-            wd.headerNames[from] = header2;
-            wd.headerNames[to]   = header1;
+            wd.headerNames[from] = binding2;
+            wd.headerNames[to]   = binding1;
             wd.colTypes[from]    = colType2;
             wd.colTypes[to]      = colType1;
+
+            var array1 = ParserFunction.GetVariableValue(binding1);
+            var array2 = ParserFunction.GetVariableValue(binding2);
+            var max = array1 == null || array1 == null || array1.Tuple == null || array2.Tuple == null ? 0 :
+                Math.Min(array1.Tuple.Count, array2.Tuple.Count);
+
+            /*for (int rowNb = 0; rowNb < max; rowNb++)
+            {
+                var tmp = array1.Tuple[rowNb];
+                array1.Tuple[rowNb] = array2.Tuple[rowNb];
+                array2.Tuple[rowNb] = tmp;
+            }*/
 
             dg.Items.Refresh();
             dg.UpdateLayout();
@@ -2724,7 +2753,7 @@ namespace WpfCSCS
             return num1 < num2 ? -1 : num2 > num1 ? 1 : 0;
         }
 
-        public static void ResetArrays(FrameworkElement widget)
+        public static void ResetArrays(FrameworkElement widget, IEnumerable<ExpandoObject> newCollection = null)
         {
             DataGrid dg = widget as DataGrid;
             if (dg == null)
@@ -2739,21 +2768,30 @@ namespace WpfCSCS
             }
 
             var rowList = dg.ItemsSource as List<ExpandoObject>;
-            var sorted = dg.Items.SourceCollection;
-            var casted = dg.Items.Cast<ExpandoObject>();
-            var sortedCast = casted != null ? casted.ToList() : sorted.Cast<ExpandoObject>();
-
-            if (rowList == null || sortedCast == null)
+            if (rowList == null)
             {
                 return;
             }
-            var sortedByTheUser = sortedCast.ToList();
 
-            rowList.Clear();
-
-            for (int rowNb = 0; rowNb < sortedByTheUser.Count; rowNb++)
+            bool sorting = newCollection != null;
+            if (!sorting)
             {
-                var row = sortedByTheUser[rowNb] as IDictionary<String, object>; ;
+                newCollection = rowList;
+            }
+            var correctList = newCollection.ToList();
+
+            if (sorting)
+            {
+                rowList.Clear();
+            }
+            else
+            {
+                dg.ItemsSource = null;
+            }
+
+            for (int rowNb = 0; rowNb < correctList.Count; rowNb++)
+            {
+                var row = correctList[rowNb] as IDictionary<String, object>; ;
                 for (int colNb = 0; colNb < dg.Columns.Count; colNb++)
                 {
                     var colStr = wd.headerNames[colNb];
@@ -3444,8 +3482,6 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 if (defVar.DefType == "datagrid")
                 {
                     var dg = defVar.Object as DataGrid;
-                    var rowList = dg.ItemsSource as List<ExpandoObject>;
-
                     CSCS_GUI.WidgetData wd;
                     if (defVar.Index < 0 && CSCS_GUI.WIDGETS.TryGetValue(m_name, out wd))
                     {
@@ -3471,8 +3507,12 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                             defVar.Tuple.Add(Variable.EmptyInstance);
                         }
                         if (defVar.Active)
-                        {
+                        { // Changing value of an existing cell
                             AddCell(dg, m_arrayIndex, defVar.Index, varValue);
+
+                            var rowList = dg.ItemsSource as List<ExpandoObject>;
+                            FillWidgetFunction.ResetArrays(dg);
+
                             if (CSCS_GUI.WIDGETS.TryGetValue(dg.DataContext as string, out wd) &&
                                 CSCS_GUI.DEFINES.TryGetValue(wd.actualElemsName, out DefineVariable actualElems))
                             {
