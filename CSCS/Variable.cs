@@ -363,7 +363,7 @@ namespace SplitAndMerge
 
         public int GetArrayIndex(Variable indexVar)
         {
-            if (this.Tuple == null || this.Tuple.Count == 0)
+            if (this.Type != VarType.ARRAY)
             {
                 return -1;
             }
