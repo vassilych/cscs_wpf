@@ -70,7 +70,7 @@ function batun@clicked(sender, load) {
     start = pstime;
     testFunction(rows - 1);
     loadData(rows);
-    DISPLAYARR grid1 LINECOUNTER cntr1 MAXELEMENTS cntr2 ACTUALELEMENTS cntr3 SETUP;   
+    DISPLAYARR grid1 LINECOUNTER "cntr1" MAXELEMENTS "cntr2" ACTUALELEMENTS "cntr3" SETUP;   
     
     total = pstime-start;
     stopElapsed = StopStopWatch("ms");
