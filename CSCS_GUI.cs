@@ -419,9 +419,17 @@ namespace WpfCSCS
 
             Dispatcher.BeginInvoke((Action)delegate ()
             {
-                var sorted = dg.Items.SourceCollection;
-                var casted = dg.Items.Cast<ExpandoObject>();
-                var sortedCast = casted != null ? casted.ToList() : sorted.Cast<ExpandoObject>();
+                IEnumerable<ExpandoObject> sortedCast = null;
+                try
+                {
+                    var casted = dg.Items.Cast<ExpandoObject>();
+                    sortedCast = casted.ToList();
+                }
+                catch(Exception exc)
+                {
+                    var sorted = dg.Items.SourceCollection;
+                    sortedCast = sorted.Cast<ExpandoObject>();
+                }
 
                 FillWidgetFunction.ResetArrays(sender as FrameworkElement, sortedCast);
             }, null);
@@ -2276,6 +2284,11 @@ namespace WpfCSCS
                 dg.IsReadOnly = true;
             }
 
+            if ((insertrow || addrow) && !dg.IsReadOnly)
+            {
+                FillWidgetFunction.ResetArrays(dg);
+            }
+
             dg.Items.Refresh();
             dg.UpdateLayout();
             return gridVar;
@@ -3158,20 +3171,9 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 item.Array = 0;
                 if (Tuple == null || arrayIndex < 0)
                 {
-                    Tuple = new List<Variable>();
+                    Tuple = new List<Variable>(Array);
                 }
-                for (int i = 0; i < Array; i++)
-                {
-                    if (Tuple.Count <= i)
-                    {
-                        Tuple.Add(item.DeepClone());
-                    }
-                    else if (i == arrayIndex)
-                    {
-                        Tuple[i] = item.DeepClone();
-                        break;
-                    }
-                }
+                Tuple.AddRange(System.Linq.Enumerable.Repeat(item, Array));
                 Type = VarType.ARRAY;
             }
 
