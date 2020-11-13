@@ -242,6 +242,9 @@ namespace WpfCSCS
             Constants.FUNCT_WITH_SPACE.Add(Constants.DEFINE);
             Constants.FUNCT_WITH_SPACE.Add(Constants.DISPLAY_ARRAY);
             Constants.FUNCT_WITH_SPACE.Add(Constants.DATA_GRID);
+            Constants.FUNCT_WITH_SPACE.Add(Constants.ADD_COLUMN);
+            Constants.FUNCT_WITH_SPACE.Add(Constants.DELETE_COLUMN);
+            Constants.FUNCT_WITH_SPACE.Add(Constants.SHIFT_COLUMN);
             Constants.FUNCT_WITH_SPACE.Add(Constants.MSG);
             Constants.FUNCT_WITH_SPACE.Add(Constants.SET_OBJECT);
             Constants.FUNCT_WITH_SPACE.Add(Constants.SET_TEXT);
@@ -3504,6 +3507,16 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                     }
                     else
                     {
+                        var rowList = dg.ItemsSource as List<ExpandoObject>;
+                        if (!CSCS_GUI.WIDGETS.TryGetValue(dg.DataContext as string, out wd) ||
+                            !CSCS_GUI.DEFINES.TryGetValue(wd.actualElemsName, out DefineVariable actualElems))
+                        {
+                            return Variable.EmptyInstance;
+                        }
+                        if (wd.maxElems <= m_arrayIndex)
+                        {
+                            throw new ArgumentException("Requested element is too big: " + m_arrayIndex + ". Max=" + wd.maxElems);
+                        }
                         while (defVar.Tuple.Count < m_arrayIndex + 1)
                         {
                             defVar.Tuple.Add(Variable.EmptyInstance);
@@ -3512,15 +3525,9 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                         { // Changing value of an existing cell
                             AddCell(dg, m_arrayIndex, defVar.Index, varValue);
 
-                            var rowList = dg.ItemsSource as List<ExpandoObject>;
                             FillWidgetFunction.ResetArrays(dg);
+                            actualElems.Value = rowList.Count;
 
-                            if (CSCS_GUI.WIDGETS.TryGetValue(dg.DataContext as string, out wd) &&
-                                CSCS_GUI.DEFINES.TryGetValue(wd.actualElemsName, out DefineVariable actualElems))
-                            {
-                                actualElems.Value = rowList.Count;
-                                ParserFunction.AddGlobal(wd.actualElemsName, new GetVarFunction(actualElems), false);
-                            }
                             dg.Items.Refresh();
                             dg.UpdateLayout();
                         }
@@ -3559,6 +3566,8 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                         rowList.RemoveAt(rowList.Count - 1);
                     }
                     dg.ItemsSource = rowList;
+                    dg.Items.Refresh();
+                    dg.UpdateLayout();
                 }
                 else
                 {
