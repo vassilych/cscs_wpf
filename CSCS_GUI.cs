@@ -387,6 +387,11 @@ namespace WpfCSCS
                     {
                         var headerStr = binding.Path.Path.ToLower();
                         var headerVar = new DefineVariable(headerStr, "datagrid", dg, i);
+                        if (DEFINES.TryGetValue(headerStr, out DefineVariable existing) && existing.Tuple != null)
+                        {
+                            headerVar.Tuple = existing.Tuple;
+                            headerVar.Size = existing.Size;
+                        }
                         DEFINES[headerStr] = headerVar;
                         wd.headers[headerStr] = headerVar;
                         wd.headerNames.Add(headerStr);
@@ -419,6 +424,10 @@ namespace WpfCSCS
             {
                 wd.needsReset = true;
             }*/
+
+            string dgName = dg.DataContext as string;
+            var funcName = dgName + "@OnHeader";
+            CSCS_GUI.RunScript(funcName, dg.Parent as Window, new Variable(dgName), new Variable(e.Column.DisplayIndex));
 
             Dispatcher.BeginInvoke((Action)delegate ()
             {
@@ -2337,14 +2346,31 @@ namespace WpfCSCS
             var max = ParserFunction.GetVariableValue(maxElems, script);
             int maxValue = max == null ? 0 : max.AsInt();
 
-            ParserFunction.AddGlobal(lineCounter, new GetVarFunction(new Variable(dg.SelectedIndex)), false);
-            ParserFunction.AddGlobal(actualElems, new GetVarFunction(new Variable(rowList == null ? 0 : rowList.Count)), false);
-            ParserFunction.AddGlobal(maxElems, new GetVarFunction(new Variable(maxValue)), false);
+            if (Utils.CheckLegalName(lineCounter, script, false))
+            {
+                ParserFunction.AddGlobal(lineCounter, new GetVarFunction(new Variable(dg.SelectedIndex)), false);
+            }
+            if (Utils.CheckLegalName(actualElems, script, false))
+            {
+                ParserFunction.AddGlobal(actualElems, new GetVarFunction(new Variable(rowList == null ? 0 : rowList.Count)), false);
+            }
+            if (Utils.CheckLegalName(maxElems, script, false))
+            {
+                ParserFunction.AddGlobal(maxElems, new GetVarFunction(new Variable(maxValue)), false);
+            }
 
             dg.SelectionChanged += (s, e) =>
             {
                 ParserFunction.AddGlobal(lineCounter, new GetVarFunction(new Variable(dg.SelectedIndex)), false);
                 wd.lineCounter = dg.SelectedIndex;
+                var funcName = name + "@OnMove";
+                CSCS_GUI.RunScript(funcName, s as Window, new Variable(name), new Variable(dg.SelectedIndex));
+            };
+
+            dg.MouseDoubleClick += (s, e) =>
+            {
+                var funcName = name + "@OnSelect";
+                CSCS_GUI.RunScript(funcName, s as Window, new Variable(name), new Variable(dg.SelectedIndex));
             };
 
             dg.AddingNewItem += (s, e) =>
@@ -3191,17 +3217,16 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 {
                     ParserFunction.AddGlobalOrLocalVariable(Name, new GetVarFunction(this), script);
                 }
+                if (CSCS_GUI.DEFINES.TryGetValue(Name, out DefineVariable existing) && existing.Object != null)
+                {
+                    this.Object = existing.Object;
+                    this.DefType = existing.DefType;
+                    this.Index = existing.Index;
+                }
                 CSCS_GUI.DEFINES[Name] = this;
             }
             CSCS_GUI.ChangingBoundVariable = false;
 
-            /*List<Variable> moduleVars;
-            if (!CSCS_GUI.DEFINES.TryGetValue(script.Filename, out moduleVars))
-            {
-                moduleVars = new List<Variable>();
-            }
-            moduleVars.Add(this);
-            CSCS_GUI.DEFINES[script.Filename] = moduleVars;*/
             LocalAssign = false;
         }
 

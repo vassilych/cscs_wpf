@@ -25,6 +25,36 @@ DEFINE myname type a size 4 init "ENZO";
 DEFINE var1 type a size 10 init "123456789012345";
 //var1 = "asdasd";
 
+cfunction fillGridRow(int a) {
+    array0[a] = int(a);
+    array1[a] = int(a*2);
+    array2[a] = int(a*3);
+}
+cfunction loadData(int n) {
+    for (i = 0 ; i < n ; i++) {
+        //if(i == 0){
+        //    fillGridRow(n-1);
+        //}
+        fillGridRow(i); 
+    }
+    return n;
+}
+
+counter1 = 0;
+define array0, array1, array2 type i size 9 array 32000; 
+
+function fillDataGrid(){
+    cntr2 = rows = 32000;
+    start = pstime;
+    //fillGridRow(rows - 1);
+    loadData(rows);
+
+    DISPLAYARR grid1 LINECOUNTER cntr1 MAXELEMENTS cntr2 ACTUALELEMENTS cntr3 SETUP;
+    total = pstime-start;
+
+    MessageBox("End. " + rows + " rows added in " + total + " ms.");
+}
+
 function Test_OnDisplay(sender, load) {
     DEFINE variable type n size 1 array 3;//this should define a one-dimensional array with 3 elements
     //initialization
@@ -34,6 +64,8 @@ function Test_OnDisplay(sender, load) {
     //define var1 type a size 10 init "123456789012345";
     //var1 = "asdasd";
     //return;
+
+    fillDataGrid();
 }
 
 cfunction testFunction(int a) {
@@ -41,41 +73,38 @@ cfunction testFunction(int a) {
     array1[a] = string(a*2);
     array2[a] = string(a*3);
 }
-cfunction testFunction(int a) {
-    array0[a] = int(a);
-    array1[a] = int(a*2);
-    array2[a] = int(a*3);
-}
-cfunction loadData(int n) {
-    for (i = 0 ; i < n ; i++){
-        testFunction(i);
-    }
-    return n;
-}
 
+function grid1@OnSelect(sender, load) {
+    MessageBox("Selected for " + sender + ": " + load);
+}
+function grid1@OnHeader(sender, load) {
+    MessageBox("Header for " + sender + ": " + load);
+}
+function grid1@OnMove(sender, load) {
+    MessageBox("Selected row for " + sender + ": " + load);
+}
 counter = 0;
+
 function batun@clicked(sender, load) {
+    MessageBox("cntr3 = " + cntr3);
     counter++;
     if (counter % 2 == 0) {
       DISPLAYARR grid1 CLOSE;
       return;
     }
-   
+
     grid1[0] = "lala i";
     grid1[1] = "lala i*2";
     grid1[2] = "lala i*3";
     cntr2 = rows = 32000;
 
-    startElapsed = StartStopWatch();
     start = pstime;
     testFunction(rows - 1);
     loadData(rows);
     DISPLAYARR grid1 LINECOUNTER "cntr1" MAXELEMENTS "cntr2" ACTUALELEMENTS "cntr3" SETUP;   
     
     total = pstime-start;
-    stopElapsed = StopStopWatch("ms");
-
-    MessageBox(rows + " rows added in " + total + " process ms. Elapsed: " + stopElapsed + " ms.");
+    MessageBox(rows + " rows added in " + total + " process ms.");
 }
 
 function testbut@clicked(sender, load) {
