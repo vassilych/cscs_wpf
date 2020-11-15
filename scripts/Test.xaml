@@ -12,7 +12,7 @@
         <Button Content="msg" DataContext="batun" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
         <Button Content="test" DataContext="testBut" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
         <DataGrid HorizontalAlignment="Center" VerticalAlignment="Center" Height="300" Width="300" DataContext="grid1"
-                  IsReadOnly="True">
+                  IsReadOnly="True" CanUserAddRows="False" >
             <DataGrid.Columns>
                 <DataGridTextColumn Header="array0" Binding="{Binding array0}" />
                 <DataGridTextColumn Header="array1" Binding="{Binding array1}" />

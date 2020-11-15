@@ -49,7 +49,7 @@ function fillDataGrid(){
     //fillGridRow(rows - 1);
     loadData(rows);
 
-    DISPLAYARR grid1 LINECOUNTER cntr1 MAXELEMENTS cntr2 ACTUALELEMENTS cntr3 SETUP;
+    DISPLAYARR grid1 LINECOUNTER "cntr1" MAXELEMENTS "cntr2" ACTUALELEMENTS "cntr3" SETUP;
     total = pstime-start;
 
     MessageBox("End. " + rows + " rows added in " + total + " ms.");
@@ -74,13 +74,18 @@ cfunction testFunction(int a) {
     array2[a] = string(a*3);
 }
 
-function grid1@OnSelect(sender, load) {
+function grid1@Add(sender, load) {
+    canAdd = cntr3 < cntr2;
+    MessageBox("Adding " + sender + ": " + load + ", actual: " + cntr3 + ", max: " + cntr2 + ", canAdd=" + canAdd);
+    return canAdd;
+}
+function grid1@Select(sender, load) {
     MessageBox("Selected for " + sender + ": " + load);
 }
-function grid1@OnHeader(sender, load) {
+function grid1@Header(sender, load) {
     MessageBox("Header for " + sender + ": " + load);
 }
-function grid1@OnMove(sender, load) {
+function grid1@Move(sender, load) {
     MessageBox("Selected row for " + sender + ": " + load);
 }
 counter = 0;

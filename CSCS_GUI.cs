@@ -418,15 +418,8 @@ namespace WpfCSCS
         private static void Dg_Sorting(object sender, DataGridSortingEventArgs e)
         {
             var dg = sender as DataGrid;
-            /*var col = e.Column;
-            var name = sender is DataGrid ? (sender as DataGrid).DataContext as string : "";
-            if (!string.IsNullOrWhiteSpace(name) && CSCS_GUI.WIDGETS.TryGetValue(name, out CSCS_GUI.WidgetData wd))
-            {
-                wd.needsReset = true;
-            }*/
-
             string dgName = dg.DataContext as string;
-            var funcName = dgName + "@OnHeader";
+            var funcName = dgName + "@Header";
             CSCS_GUI.RunScript(funcName, dg.Parent as Window, new Variable(dgName), new Variable(e.Column.DisplayIndex));
 
             Dispatcher.BeginInvoke((Action)delegate ()
@@ -439,6 +432,7 @@ namespace WpfCSCS
                 }
                 catch(Exception exc)
                 {
+                    Console.WriteLine(exc);
                     var sorted = dg.Items.SourceCollection;
                     sortedCast = sorted.Cast<ExpandoObject>();
                 }
@@ -447,6 +441,18 @@ namespace WpfCSCS
             }, null);
 
             //Console.WriteLine(e.Handled);
+        }
+
+        public static bool OnAddingRow(DataGrid dg)
+        {
+            string dgName = dg.DataContext as string;
+            var funcName = dgName + "@Add";
+            var rowList = dg.ItemsSource as List<ExpandoObject>;
+            var currentSize = rowList == null ? 0 : rowList.Count; 
+            var res = CSCS_GUI.RunScript(funcName, dg.Parent as Window, new Variable(dgName), new Variable(currentSize));
+            bool canAddRow = res == Variable.EmptyInstance || res.AsDouble() != 0;
+
+            return canAddRow;
         }
 
         public static bool AddActionHandler(string name, string action, FrameworkElement widget)
@@ -2272,12 +2278,12 @@ namespace WpfCSCS
             var where = wd.lineCounter >= 0 ? wd.lineCounter : 0;
             var rowList = dg.ItemsSource as List<ExpandoObject>;
 
-            if ((addrow || where >= rowList.Count) && !dg.IsReadOnly)
+            if ((addrow || where >= rowList.Count) && !dg.IsReadOnly && CSCS_GUI.OnAddingRow(dg))
             {
                 var expando = MyAssignFunction.GetNewRow(dg, wd);
                 rowList.Add(expando);
             }
-            else if (insertrow && !dg.IsReadOnly)
+            else if (insertrow && !dg.IsReadOnly && CSCS_GUI.OnAddingRow(dg))
             {
                 var expando = MyAssignFunction.GetNewRow(dg, wd);
                 rowList.Insert(where, expando);
@@ -2363,13 +2369,13 @@ namespace WpfCSCS
             {
                 ParserFunction.AddGlobal(lineCounter, new GetVarFunction(new Variable(dg.SelectedIndex)), false);
                 wd.lineCounter = dg.SelectedIndex;
-                var funcName = name + "@OnMove";
+                var funcName = name + "@Move";
                 CSCS_GUI.RunScript(funcName, s as Window, new Variable(name), new Variable(dg.SelectedIndex));
             };
 
             dg.MouseDoubleClick += (s, e) =>
             {
-                var funcName = name + "@OnSelect";
+                var funcName = name + "@Select";
                 CSCS_GUI.RunScript(funcName, s as Window, new Variable(name), new Variable(dg.SelectedIndex));
             };
 
@@ -2380,7 +2386,7 @@ namespace WpfCSCS
                 {
                 }
             };
-            dg.CellEditEnding += (s, e) =>
+            /*dg.CellEditEnding += (s, e) =>
             {
                 DataGridRow row = e.Row;
                 DataGridColumn col = e.Column;
@@ -2399,7 +2405,7 @@ namespace WpfCSCS
                     }
 
                 }
-            };
+            };*/
 
             dg.RowEditEnding += (s, e) =>
             {
@@ -3354,7 +3360,15 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 return m_string;
             }
 
-            return base.AsString(isList, sameLine, maxCount);
+            try
+            {
+                return base.AsString(isList, sameLine, maxCount);
+            }
+            catch(Exception exc)
+            {
+                Console.WriteLine(exc);
+                return "";
+            }
         }
 
         public override double AsDouble()
