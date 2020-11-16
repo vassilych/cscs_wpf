@@ -3615,7 +3615,10 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 }
             }
 
-            ParserFunction.AddGlobalOrLocalVariable(m_name, new GetVarFunction(varValue));
+            if (defVar.Object == null)
+            {
+                ParserFunction.AddGlobalOrLocalVariable(m_name, new GetVarFunction(varValue));
+            }
             return defVar;
         }
 
