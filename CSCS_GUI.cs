@@ -387,11 +387,7 @@ namespace WpfCSCS
                     {
                         var headerStr = binding.Path.Path.ToLower();
                         var headerVar = new DefineVariable(headerStr, "datagrid", dg, i);
-                        if (DEFINES.TryGetValue(headerStr, out DefineVariable existing) && existing.Tuple != null)
-                        {
-                            headerVar.Tuple = existing.Tuple;
-                            headerVar.Size = existing.Size;
-                        }
+                        headerVar.InitFromExisting(headerStr);
                         DEFINES[headerStr] = headerVar;
                         wd.headers[headerStr] = headerVar;
                         wd.headerNames.Add(headerStr);
@@ -2307,7 +2303,7 @@ namespace WpfCSCS
                 FillWidgetFunction.ResetArrays(dg);
             }
 
-            dg.Items.Refresh();
+            FillWidgetFunction.UpdateGridCounts(dg, wd);
             dg.UpdateLayout();
             return gridVar;
         }
@@ -2451,6 +2447,7 @@ namespace WpfCSCS
             wd.headerBindings.Add(binding);
             var headerStr = binding.ToLower();
             var headerVar = new DefineVariable(headerStr, "datagrid", dg, dg.Columns.Count - 1);
+            headerVar.InitFromExisting(headerStr);
             headerVar.Active = true;
             CSCS_GUI.DEFINES[headerStr] = headerVar;
             wd.headers[headerStr] = headerVar;
@@ -2461,8 +2458,9 @@ namespace WpfCSCS
             var rowList = dg.ItemsSource as List<ExpandoObject>;
             for (int i = 0; i < rowList.Count; i++)
             {
-                var p = rowList[i] as IDictionary<String, object>;
-                p[headerStr] = "";
+                Variable cellValue = headerVar.Tuple != null && headerVar.Tuple.Count > i ?
+                                     headerVar.Tuple[i] : Variable.EmptyInstance;
+                MyAssignFunction.AddCell(dg, i, dg.Columns.Count - 1, cellValue);
             }
             FillWidgetFunction.ResetArrays(dg);
 
@@ -2781,19 +2779,37 @@ namespace WpfCSCS
                 MyAssignFunction.AddCell(dg, i, defVar.Index, entries[i]);
             }
 
-            //var rowList = dg.ItemsSource as List<ExpandoObject>;
-            if (CSCS_GUI.DEFINES.TryGetValue(wd.actualElemsName, out DefineVariable actualElems))
-            {
-                actualElems.Value = dg.Items.Count;
-                //actualElems.Value = rowList.Count;
-                ParserFunction.AddGlobal(wd.actualElemsName, new GetVarFunction(actualElems), false);
-            }
+            UpdateGridCounts(dg, wd);
 
             wd.headers[headerName] = data;
             dg.Items.Refresh();
             dg.UpdateLayout();
 
             return count;
+        }
+
+        public static void UpdateGridCounts(DataGrid dg, CSCS_GUI.WidgetData wd = null)
+        {
+            if (wd == null && !CSCS_GUI.WIDGETS.TryGetValue(dg.DataContext as string, out wd))
+            {
+                return;
+            }
+
+            dg.Items.Refresh();
+            var rowList = dg.ItemsSource as List<ExpandoObject>;
+            if (CSCS_GUI.DEFINES.TryGetValue(wd.actualElemsName, out DefineVariable actualElems))
+            {
+                actualElems.Value = wd.actualElems = dg.Items.Count;
+                //actualElems.Value = rowList.Count;
+                ParserFunction.AddGlobal(wd.actualElemsName, new GetVarFunction(actualElems), false);
+                if (CSCS_GUI.DEFINES.TryGetValue(wd.lineCounterName, out DefineVariable lineCounter) &&
+                    lineCounter.Value >= actualElems.Value)
+                {
+                    lineCounter.Value = wd.lineCounter = dg.Items.Count - 1;
+                    dg.SelectedIndex = wd.lineCounter;
+                    ParserFunction.AddGlobal(wd.lineCounterName, new GetVarFunction(lineCounter), false);
+                }
+            }
         }
 
         static int Compare(double num1, double num2)
@@ -2857,8 +2873,7 @@ namespace WpfCSCS
                     MyAssignFunction.AddCell(dg, rowNb, colNb, cellValue);
                 }
             }
-            dg.Items.Refresh();
-            dg.UpdateLayout();
+            //dg.Items.Refresh();
         }
     }
 
@@ -3223,17 +3238,36 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 {
                     ParserFunction.AddGlobalOrLocalVariable(Name, new GetVarFunction(this), script);
                 }
-                if (CSCS_GUI.DEFINES.TryGetValue(Name, out DefineVariable existing) && existing.Object != null)
-                {
-                    this.Object = existing.Object;
-                    this.DefType = existing.DefType;
-                    this.Index = existing.Index;
-                }
+                InitFromExisting(Name);
                 CSCS_GUI.DEFINES[Name] = this;
             }
             CSCS_GUI.ChangingBoundVariable = false;
 
             LocalAssign = false;
+        }
+
+        public void InitFromExisting(string name)
+        {
+            if (!CSCS_GUI.DEFINES.TryGetValue(name, out DefineVariable existing))
+            {
+                var existingVar = ParserFunction.GetVariableValue(name);
+                if (existingVar != null && existingVar.Tuple != null)
+                {
+                    this.Tuple = existingVar.Tuple;
+                }
+                return;
+            }
+            if (existing.Object != null)
+            {
+                this.Object = existing.Object;
+                this.DefType = existing.DefType;
+                this.Index = existing.Index;
+            }
+            if (existing.Tuple != null)
+            {
+                this.Tuple = existing.Tuple;
+                this.Size = existing.Size;
+            }
         }
 
         public string GetDateFormat()
