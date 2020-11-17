@@ -2364,8 +2364,11 @@ namespace WpfCSCS
             dg.SelectionChanged += (s, e) =>
             {
                 ParserFunction.AddGlobal(lineCounter, new GetVarFunction(new Variable(dg.SelectedIndex)), false);
-                wd.lineCounter = dg.SelectedIndex;
                 var funcName = name + "@Move";
+                if (dg.SelectedIndex >= 0)
+                {
+                    wd.lineCounter = dg.SelectedIndex;
+                }
                 CSCS_GUI.RunScript(funcName, s as Window, new Variable(name), new Variable(dg.SelectedIndex));
             };
 
@@ -2803,9 +2806,13 @@ namespace WpfCSCS
                 //actualElems.Value = rowList.Count;
                 ParserFunction.AddGlobal(wd.actualElemsName, new GetVarFunction(actualElems), false);
                 if (CSCS_GUI.DEFINES.TryGetValue(wd.lineCounterName, out DefineVariable lineCounter) &&
-                    lineCounter.Value >= actualElems.Value)
+                    dg.SelectedIndex < 0)
                 {
-                    lineCounter.Value = wd.lineCounter = dg.Items.Count - 1;
+                    if (wd.lineCounter < 0)
+                    {
+                        wd.lineCounter = 0;
+                    }
+                    lineCounter.Value = wd.lineCounter;
                     dg.SelectedIndex = wd.lineCounter;
                     ParserFunction.AddGlobal(wd.lineCounterName, new GetVarFunction(lineCounter), false);
                 }
