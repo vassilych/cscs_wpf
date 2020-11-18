@@ -2304,8 +2304,18 @@ namespace WpfCSCS
             }
 
             FillWidgetFunction.UpdateGridCounts(dg, wd);
-            dg.UpdateLayout();
+            UpdateGridSelection(dg, wd);
             return gridVar;
+        }
+
+        public static void UpdateGridSelection(DataGrid dg, CSCS_GUI.WidgetData wd)
+        {
+            dg.Items.Refresh();
+            if (dg.SelectedIndex < 0 && wd.lineCounter >= 0)
+            {
+                dg.SelectedIndex = wd.lineCounter;
+            }
+            dg.UpdateLayout();
         }
 
         //DISPLAYARR ‘DataGridName’ LINECOUNTER cntr1 MAXELEMENTS cntr2 ACTUALELEMENTS cntr3 SETUP
@@ -2422,6 +2432,7 @@ namespace WpfCSCS
                 FillWidgetFunction.AddGridData(name, headerName);
             }
 
+            UpdateGridSelection(dg, wd);
             return gridVar;
         }
 
@@ -2798,12 +2809,11 @@ namespace WpfCSCS
                 return;
             }
 
-            dg.Items.Refresh();
+            //dg.Items.Refresh();
             var rowList = dg.ItemsSource as List<ExpandoObject>;
             if (CSCS_GUI.DEFINES.TryGetValue(wd.actualElemsName, out DefineVariable actualElems))
             {
-                actualElems.Value = wd.actualElems = dg.Items.Count;
-                //actualElems.Value = rowList.Count;
+                actualElems.Value = wd.actualElems = rowList.Count;// dg.Items.Count;
                 ParserFunction.AddGlobal(wd.actualElemsName, new GetVarFunction(actualElems), false);
                 if (CSCS_GUI.DEFINES.TryGetValue(wd.lineCounterName, out DefineVariable lineCounter) &&
                     dg.SelectedIndex < 0)
