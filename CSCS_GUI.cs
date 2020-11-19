@@ -2304,18 +2304,8 @@ namespace WpfCSCS
             }
 
             FillWidgetFunction.UpdateGridCounts(dg, wd);
-            UpdateGridSelection(dg, wd);
+            FillWidgetFunction.UpdateGridSelection(dg, wd);
             return gridVar;
-        }
-
-        public static void UpdateGridSelection(DataGrid dg, CSCS_GUI.WidgetData wd)
-        {
-            dg.Items.Refresh();
-            if (dg.SelectedIndex < 0 && wd.lineCounter >= 0)
-            {
-                dg.SelectedIndex = wd.lineCounter;
-            }
-            dg.UpdateLayout();
         }
 
         //DISPLAYARR ‘DataGridName’ LINECOUNTER cntr1 MAXELEMENTS cntr2 ACTUALELEMENTS cntr3 SETUP
@@ -2432,7 +2422,7 @@ namespace WpfCSCS
                 FillWidgetFunction.AddGridData(name, headerName);
             }
 
-            UpdateGridSelection(dg, wd);
+            FillWidgetFunction.UpdateGridSelection(dg, wd);
             return gridVar;
         }
 
@@ -2476,10 +2466,9 @@ namespace WpfCSCS
                                      headerVar.Tuple[i] : Variable.EmptyInstance;
                 MyAssignFunction.AddCell(dg, i, dg.Columns.Count - 1, cellValue);
             }
-            FillWidgetFunction.ResetArrays(dg);
 
-            dg.Items.Refresh();
-            dg.UpdateLayout();
+            FillWidgetFunction.ResetArrays(dg);
+            FillWidgetFunction.UpdateGridSelection(dg, wd);
         }
 
         static void ShiftGridColumns(ParsingScript script, string name, int from, int to)
@@ -2800,6 +2789,16 @@ namespace WpfCSCS
             dg.UpdateLayout();
 
             return count;
+        }
+
+        public static void UpdateGridSelection(DataGrid dg, CSCS_GUI.WidgetData wd)
+        {
+            dg.Items.Refresh();
+            if (dg.SelectedIndex < 0 && wd.lineCounter >= 0)
+            {
+                dg.SelectedIndex = wd.lineCounter;
+            }
+            dg.UpdateLayout();
         }
 
         public static void UpdateGridCounts(DataGrid dg, CSCS_GUI.WidgetData wd = null)
@@ -3548,9 +3547,14 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 int argEnd = m_originalName.IndexOf(Constants.END_ARRAY, argStart + 1);
                 var index = m_originalName.Substring(argStart + 1, argEnd - argStart - 1);
                 m_arrayIndex = Interpreter.Instance.Process(index).AsInt();
-                if (defVar.DefType != "datagrid" && defVar.Tuple != null && m_arrayIndex >= defVar.Tuple.Count - 1)
+                if (defVar.DefType != "datagrid" && defVar.Tuple != null &&
+                    m_arrayIndex >= 0 && m_arrayIndex <= defVar.Tuple.Count - 1)
                 {
                     defVar = defVar.Tuple.ElementAt(m_arrayIndex) as DefineVariable;
+                }
+                if (m_arrayIndex < 0)
+                {
+                    Console.WriteLine(m_arrayIndex);
                 }
             }
             return defVar;
@@ -3611,15 +3615,14 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                         {
                             defVar.Tuple.Add(Variable.EmptyInstance);
                         }
-                        if (defVar.Active)
+                        if (defVar.Active && m_arrayIndex >= 0 && defVar.Index >= 0)
                         { // Changing value of an existing cell
                             AddCell(dg, m_arrayIndex, defVar.Index, varValue);
 
                             FillWidgetFunction.ResetArrays(dg);
                             actualElems.Value = rowList.Count;
 
-                            dg.Items.Refresh();
-                            dg.UpdateLayout();
+                            FillWidgetFunction.UpdateGridSelection(dg, wd);
                         }
                     }
                 }
