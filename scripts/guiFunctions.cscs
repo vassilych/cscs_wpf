@@ -79,6 +79,8 @@ function grid1@Add(sender, load) {
     MessageBox("Adding " + sender + ": " + load + ", actual: " + cntr3 + ", max: " + cntr2 + ", canAdd=" + canAdd);
     return canAdd;
 }
+function enzo@svasta(){
+}
 function grid1@Select(sender, load) {
     MessageBox("Selected for " + sender + ": " + load);
 }
@@ -376,15 +378,16 @@ function buttonAddData@Clicked(sender, load) {
   }
 }
 
-function buttonRefresh@Clicked(sender, load) {
+function button13@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
-  BindSQL("myGrid", "Users");
+  //MessageBox("123123123123123");
 
-  query = "SELECT TOP 15 * FROM Users " +
-           "where id <= 100";
-  print(SQLQuery(query));
+  BindSQL("myGrid", "SY_DATABASES");
+
+  //query = "SELECT TOP 15 * FROM SY_TABLES ";
+  //print(SQLQuery(query));
 
 }
 

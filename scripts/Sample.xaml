@@ -61,7 +61,7 @@
                             <ColumnDefinition Width="7*"/>
                             <ColumnDefinition Width="580*"/>
                         </Grid.ColumnDefinitions>
-                        <DataGrid HorizontalAlignment="Left" Height="260" Margin="91.6,55,0,0" VerticalAlignment="Top" Width="400" Name ="grid1" AutoGenerateColumns="True" Grid.Column="3" DataContext="mygrid"/>
+                        <DataGrid HorizontalAlignment="Left" Height="260" Margin="91.6,55,0,0" VerticalAlignment="Top" Width="400" AutoGenerateColumns="True" Grid.Column="3" Name="grid1" DataContext="mygrid"/>
                         <Button Content="Button" HorizontalAlignment="Left" Margin="222,341,0,0" VerticalAlignment="Top" Width="75" Name ="button13" Grid.Column="3" DataContext="buttonRefresh"/>
                         <Button Content="Add Data" HorizontalAlignment="Left" Margin="580,26,0,0" VerticalAlignment="Top" Width="95" Name ="button12" Grid.Column="3" DataContext="buttonAddData"/>
                         <TextBox HorizontalAlignment="Left" Height="23" Margin="89,24,0,0" TextWrapping="Wrap" ToolTip="Beat Meier" Text="" VerticalAlignment="Top" Width="120" Name="textbox4" Grid.Column="3" DataContext="textName"/>

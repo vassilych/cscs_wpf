@@ -1,0 +1,29 @@
+
+function btn1@Clicked(sender, load){
+    //MessageBox(varijabla);
+    varijabla += "x";
+
+}
+
+function tb1@textChange(sender, load){
+    MessageBox("tb1@textChange");
+}
+
+
+CreateWindow("../../scripts/lalala.xaml");
+
+
+
+
+SQLConnectionString("Server=192.168.0.58;Database=adictionary;User Id=sa;Password=aura;");
+BindSQL("grid1", "SY_DATABASES");
+
+
+
+varijabla = "tekst varijable";
+
+//SetWidgetOptions("tb1", "FontColor", "red");
+
+
+
+
