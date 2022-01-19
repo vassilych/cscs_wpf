@@ -28,6 +28,10 @@ namespace SplitAndMerge
     {
         public const string READ_XML_FILE = "readXmlFile";
         public const string READ_TAGCONTENT_FROM_XMLSTRING = "readTagContentFromXmlString";
+        
+        public const string SET_FOCUS = "SetFocus";
+        public const string LAST_OBJ = "LastObj";
+        public const string LAST_OBJ_CLICKED = "LastObjClick";
 
         public const string DEFINE = "DEFINE";
         public const string DISPLAY_ARRAY = "DISPLAYARR";
@@ -65,6 +69,7 @@ namespace WpfCSCS
             return new Variable(xmlString);
         }
     }
+
     class ReadTagContentFromXmlStringFunction : ParserFunction
     {
         protected override Variable Evaluate(ParsingScript script)
@@ -98,6 +103,11 @@ namespace WpfCSCS
 
     public class CSCS_GUI
     {
+        /*ENZO*/
+        public static string lastObjWidgetName;
+        public static string lastObjClickedWidgetName;
+
+
         public static Dispatcher Dispatcher { get; set; }
 
         public class WidgetData
@@ -148,6 +158,12 @@ namespace WpfCSCS
         static Dictionary<string, string> s_selChangedHandlers = new Dictionary<string, string>();
         static Dictionary<string, string> s_mouseHoverHandlers = new Dictionary<string, string>();
         static Dictionary<string, string> s_dateSelectedHandlers = new Dictionary<string, string>();
+        
+        //Pre, Check, Post
+        static Dictionary<string, string> s_PreHandlers = new Dictionary<string, string>();
+        static Dictionary<string, string> s_CheckHandlers = new Dictionary<string, string>();
+        static Dictionary<string, string> s_Check2Handlers = new Dictionary<string, string>();
+        static Dictionary<string, string> s_PostHandlers = new Dictionary<string, string>();
 
         static Dictionary<string, Variable> s_boundVariables = new Dictionary<string, Variable>();
         //static Dictionary<string, TabPage> s_tabPages           = new Dictionary<string, TabPage>();
@@ -191,6 +207,10 @@ namespace WpfCSCS
 
             ParserFunction.RegisterFunction(Constants.WITH, new ConstantsFunction());
             ParserFunction.RegisterFunction(Constants.NEWRUNTIME, new ConstantsFunction());
+
+            ParserFunction.RegisterFunction(Constants.SET_FOCUS, new SetFocusFunction());
+            ParserFunction.RegisterFunction(Constants.LAST_OBJ, new LastObjFunction());
+            ParserFunction.RegisterFunction(Constants.LAST_OBJ_CLICKED, new LastObjClickedFunction());
 
             ParserFunction.RegisterFunction("OpenFile", new OpenFileFunction(false));
             ParserFunction.RegisterFunction("OpenFileContents", new OpenFileFunction(true));
@@ -271,6 +291,12 @@ namespace WpfCSCS
             return widgetName;
         }
 
+        public static string GetWidgetName(FrameworkElement widget)
+        {
+            var widgetName = widget == null || widget.Name == null ? "" : widget.Name.ToString().ToString().ToString();
+            return widgetName;
+        }
+
         static void OnVariableChange(string name, Variable newValue, bool exists = true)
         {
             if (ChangingBoundVariable)
@@ -301,7 +327,9 @@ namespace WpfCSCS
 
         static void UpdateVariable(FrameworkElement widget, Variable newValue)
         {
+            //=)//
             var widgetName = GetWidgetBindingName(widget);
+            //var widgetName = GetWidgetName(widget);
             if (string.IsNullOrWhiteSpace(widgetName))
             {
                 return;
@@ -507,7 +535,10 @@ namespace WpfCSCS
             {
                 return false;
             }
+
             s_textChangedHandlers[name] = action;
+            //2 puta
+            textable.TextChanged -= new TextChangedEventHandler(Widget_TextChanged);
             textable.TextChanged += new TextChangedEventHandler(Widget_TextChanged);
 
             return true;
@@ -532,6 +563,63 @@ namespace WpfCSCS
             }
             s_dateSelectedHandlers[name] = action;
             datePicker.SelectedDateChanged += DatePicker_SelectedDateChanged;
+
+            return true;
+        }
+        
+        //Pre, Check, Post
+        public static bool AddWidgetPreHandler(string name, string action, FrameworkElement widget)
+        {
+            //var textable = widget as TextBoxBase;
+            var textable = widget as Control;
+            if (textable == null)
+            {
+                return false;
+            }
+
+            s_PreHandlers[name] = action;
+            //2 puta
+            //textable.PreviewGotKeyboardFocus -= new KeyboardFocusChangedEventHandler(Widget_Pre);
+            //textable.PreviewGotKeyboardFocus += new KeyboardFocusChangedEventHandler(Widget_Pre);
+            textable.GotFocus -= new RoutedEventHandler(Widget_Pre);
+            textable.GotFocus += new RoutedEventHandler(Widget_Pre);
+
+            return true;
+        }
+        //public static bool AddWidgetCheckHandler(string name, string action, FrameworkElement widget, string check2action)
+        //{
+        //    var textable = widget as TextBoxBase;
+        //    if (textable == null)
+        //    {
+        //        return false;
+        //    }
+
+        //    s_CheckHandlers[name] = action;
+        //    s_Check2Handlers[name] = check2action;
+
+        //    //2 puta
+        //    textable.PreviewLostKeyboardFocus -= new KeyboardFocusChangedEventHandler(Widget_Check);
+        //    textable.PreviewLostKeyboardFocus -= new KeyboardFocusChangedEventHandler(Widget_Check2);
+
+        //    textable.PreviewLostKeyboardFocus += new KeyboardFocusChangedEventHandler(Widget_Check);
+        //    textable.PreviewLostKeyboardFocus += new KeyboardFocusChangedEventHandler(Widget_Check2);
+
+        //    return true;
+        //}
+        public static bool AddWidgetPostHandler(string name, string action, FrameworkElement widget)
+        {
+            var textable = widget as TextBoxBase;
+            if (textable == null)
+            {
+                return false;
+            }
+
+            s_PostHandlers[name] = action;
+            //2 puta
+            //textable.LostFocus -= new RoutedEventHandler(Widget_Post);
+            //textable.LostFocus += new RoutedEventHandler(Widget_Post);
+            textable.PreviewLostKeyboardFocus -= new KeyboardFocusChangedEventHandler(Widget_Post);
+            textable.PreviewLostKeyboardFocus += new KeyboardFocusChangedEventHandler(Widget_Post);
 
             return true;
         }
@@ -567,8 +655,12 @@ namespace WpfCSCS
 
         private static void Widget_Click(object sender, RoutedEventArgs e)
         {
+            lastObjClickedWidgetName = ((Control)sender).Name;
+            lastObjWidgetName = lastObjClickedWidgetName;
+
             var widget = sender as FrameworkElement;
-            var widgetName = GetWidgetBindingName(widget);
+            //=)//var widgetName = GetWidgetBindingName(widget);
+            var widgetName = GetWidgetName(widget);
             if (string.IsNullOrEmpty(widgetName))
             {
                 return;
@@ -672,7 +764,8 @@ namespace WpfCSCS
         private static void Widget_TextChanged(object sender, TextChangedEventArgs e)
         {
             TextBoxBase widget = sender as TextBoxBase;
-            var widgetName = GetWidgetBindingName(widget);
+            //=)//var widgetName = GetWidgetBindingName(widget);
+            var widgetName = GetWidgetName(widget);
             if (string.IsNullOrWhiteSpace(widgetName))
             {
                 return;
@@ -717,6 +810,137 @@ namespace WpfCSCS
                 Control2Window.TryGetValue(widget, out Window win);
                 Interpreter.Run(funcName, new Variable(widgetName), new Variable(e.ToString()),
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
+            }
+        }
+
+
+        static string lastFocusedWidgetName = "";
+        public static bool skipPostEvent;
+
+
+        /// //////////////////////////sada/sd/asd/as/dasd/as/d/asd/as/d/as/das/d/asd
+        private static void Widget_Pre(object sender, RoutedEventArgs e)
+        {
+            lastObjWidgetName = ((Control)sender).Name;
+
+            //TextBoxBase widget = sender as TextBoxBase;
+            Control widget = sender as Control;
+            //=)//var widgetName = GetWidgetBindingName(widget);
+            var widgetName = GetWidgetName(widget);
+            if (string.IsNullOrWhiteSpace(widgetName))
+            {
+                return;
+            }
+
+            skipPostEvent = false;
+
+            //var text = GetTextWidgetFunction.GetText(widget);
+            //UpdateVariable(widget, text);
+
+            string funcName;
+            if (s_PreHandlers.TryGetValue(widgetName, out funcName))
+            {
+                Control2Window.TryGetValue(widget, out Window win);
+                var result = Interpreter.Run(funcName, new Variable(widgetName), null,
+                    Variable.EmptyInstance, ChainFunction.GetScript(win));
+                if (result.Type == Variable.VarType.NUMBER && !result.AsBool()) // if script returned false
+                {
+                    skipPostEvent = true;
+                    //e.Handled = true; //staro - za PreviewGotKeyboardFocus
+                    var widgetToFocusTo = CSCS_GUI.GetWidget(lastFocusedWidgetName);
+                    if (widgetToFocusTo != null && (widgetToFocusTo is Control))
+                    {
+                        widgetToFocusTo.Focus();
+                    }
+                }
+                else
+                {
+                    lastFocusedWidgetName = widgetName;
+                }
+            }
+        }
+
+
+        //private static void Widget_Check(object sender, KeyboardFocusChangedEventArgs e)
+        //{
+        //    TextBoxBase widget = sender as TextBoxBase;
+        //    //=)//var widgetName = GetWidgetBindingName(widget);
+        //    var widgetName = GetWidgetName(widget);
+        //    if (string.IsNullOrWhiteSpace(widgetName))
+        //    {
+        //        return;
+        //    }
+
+        //    //var text = GetTextWidgetFunction.GetText(widget);
+        //    //UpdateVariable(widget, text);
+
+        //    string funcName;
+        //    if (s_CheckHandlers.TryGetValue(widgetName, out funcName))
+        //    {
+        //        Control2Window.TryGetValue(widget, out Window win);
+        //        var result = Interpreter.Run(funcName, new Variable(widgetName), null,
+        //            Variable.EmptyInstance, ChainFunction.GetScript(win));
+        //        if (result.Type == Variable.VarType.NUMBER && !result.AsBool())
+        //            e.Handled = true;
+        //    }
+        //}
+        //private static void Widget_Check2(object sender, KeyboardFocusChangedEventArgs e)
+        //{
+        //    TextBoxBase widget = sender as TextBoxBase;
+        //    //=)//var widgetName = GetWidgetBindingName(widget);
+        //    var widgetName = GetWidgetName(widget);
+        //    if (string.IsNullOrWhiteSpace(widgetName))
+        //    {
+        //        return;
+        //    }
+
+        //    //var text = GetTextWidgetFunction.GetText(widget);
+        //    //UpdateVariable(widget, text);
+
+        //    string funcName;
+        //    if (s_Check2Handlers.TryGetValue(widgetName, out funcName))
+        //    {
+        //        Control2Window.TryGetValue(widget, out Window win);
+        //        var result = Interpreter.Run(funcName, new Variable(widgetName), null,
+        //            Variable.EmptyInstance, ChainFunction.GetScript(win));
+        //        if (result.Type == Variable.VarType.NUMBER && !result.AsBool())
+        //            e.Handled = true;
+        //    }
+        //}
+
+
+        private static void Widget_Post(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            if (skipPostEvent)
+            {
+                skipPostEvent = false;
+                return;
+            }
+
+            TextBoxBase widget = sender as TextBoxBase;
+            //=)//var widgetName = GetWidgetBindingName(widget);
+            var widgetName = GetWidgetName(widget);
+            if (string.IsNullOrWhiteSpace(widgetName))
+            {
+                return;
+            }
+
+            //var text = GetTextWidgetFunction.GetText(widget);
+            //UpdateVariable(widget, text);
+
+            lastObjWidgetName = ((Control)e.NewFocus).Name;
+
+            string funcName;
+            if (s_PostHandlers.TryGetValue(widgetName, out funcName))
+            {
+                Control2Window.TryGetValue(widget, out Window win);
+                var result = Interpreter.Run(funcName, new Variable(widgetName), null,
+                    Variable.EmptyInstance, ChainFunction.GetScript(win));
+                if (result.Type == Variable.VarType.NUMBER && !result.AsBool())
+                { 
+                    e.Handled = true;
+                    lastObjWidgetName = widgetName;
+                }
             }
         }
 
@@ -837,6 +1061,16 @@ namespace WpfCSCS
 
         public static void CacheControl(FrameworkElement widget, Window win = null, List<FrameworkElement> controls = null)
         {
+
+            if (widget != null && !string.IsNullOrEmpty(widget.Name))
+            {
+                Controls[widget.Name.ToString().ToLower()] = widget;
+                controls?.Add(widget);
+                if (win != null)
+                {
+                    Control2Window[widget] = win;
+                }
+            }
             if (widget != null && widget.DataContext != null)
             {
                 Controls[widget.DataContext.ToString().ToLower()] = widget;
@@ -855,32 +1089,55 @@ namespace WpfCSCS
 
         public static void AddWidgetActions(FrameworkElement widget)
         {
-            var widgetName = GetWidgetBindingName(widget);
-            if (string.IsNullOrWhiteSpace(widgetName))
+            //xaml Name property
+            var widgetName = GetWidgetName(widget);
+            if (!string.IsNullOrWhiteSpace(widgetName))
             {
-                return;
+                string clickAction = widgetName + "@Clicked";
+                string preClickAction = widgetName + "@PreClicked";
+                string postClickAction = widgetName + "@PostClicked";
+                string keyDownAction = widgetName + "@KeyDown";
+                string keyUpAction = widgetName + "@KeyUp";
+                string textChangeAction = widgetName + "@TextChange";
+                string mouseHoverAction = widgetName + "@MouseHover";
+                string selectionChangedAction = widgetName + "@SelectionChanged";
+                string dateChangedAction = widgetName + "@DateChanged";
+
+                //Pre, Check, Post
+                string widgetPreAction = widgetName + "@Pre";
+                
+                //string widgetCheckAction = widgetName + "@Check";
+                //string widgetCheck2Action = widgetName + "@Check2";
+                
+                string widgetPostAction = widgetName + "@Post";
+
+                AddActionHandler(widgetName, clickAction, widget);
+                AddPreActionHandler(widgetName, preClickAction, widget);
+                AddPostActionHandler(widgetName, postClickAction, widget);
+                AddKeyDownHandler(widgetName, keyDownAction, widget);
+                AddKeyUpHandler(widgetName, keyUpAction, widget);
+
+                AddTextChangedHandler(widgetName, textChangeAction, widget);
+
+                AddSelectionChangedHandler(widgetName, selectionChangedAction, widget);
+                AddMouseHoverHandler(widgetName, mouseHoverAction, widget);
+                AddDateChangedHandler(widgetName, dateChangedAction, widget);
+
+                //Pre, Check, Post
+                AddWidgetPreHandler(widgetName, widgetPreAction, widget);
+                
+                //AddWidgetCheckHandler(widgetName, widgetCheckAction, widget, widgetCheck2Action);
+                
+                
+                AddWidgetPostHandler(widgetName, widgetPostAction, widget);
             }
 
-            string clickAction = widgetName + "@Clicked";
-            string preClickAction = widgetName + "@PreClicked";
-            string postClickAction = widgetName + "@PostClicked";
-            string keyDownAction = widgetName + "@KeyDown";
-            string keyUpAction = widgetName + "@KeyUp";
-            string textChangeAction = widgetName + "@TextChange";
-            string mouseHoverAction = widgetName + "@MouseHover";
-            string selectionChangedAction = widgetName + "@SelectionChanged";
-            string dateChangedAction = widgetName + "@DateChanged";
-
-            AddActionHandler(widgetName, clickAction, widget);
-            AddPreActionHandler(widgetName, preClickAction, widget);
-            AddPostActionHandler(widgetName, postClickAction, widget);
-            AddKeyDownHandler(widgetName, keyDownAction, widget);
-            AddKeyUpHandler(widgetName, keyUpAction, widget);
-            AddTextChangedHandler(widgetName, textChangeAction, widget);
-            AddSelectionChangedHandler(widgetName, selectionChangedAction, widget);
-            AddMouseHoverHandler(widgetName, mouseHoverAction, widget);
-            AddDateChangedHandler(widgetName, dateChangedAction, widget);
-            AddBinding(widgetName, widget);
+            //xaml DataContext property
+            var widgetBindingName = GetWidgetBindingName(widget);
+            if (!string.IsNullOrWhiteSpace(widgetBindingName))
+            {
+                AddBinding(widgetBindingName, widget);
+            }
         }
 
         public static string Encode(string plainText)
@@ -1595,6 +1852,63 @@ namespace WpfCSCS
     }
 
 
+    class SetFocusFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            var widgetName = Utils.GetSafeString(args, 0);
+            var widget = CSCS_GUI.GetWidget(widgetName);
+            if (widget == null || !(widget is Control))
+            {
+                return Variable.EmptyInstance;
+            }
+            //CSCS_GUI.skipPostEvent = true;
+            widget.Focus();
+
+            return Variable.EmptyInstance;
+        }
+    }
+    
+    
+
+    class LastObjFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 0, m_name);
+
+            if(string.IsNullOrEmpty(CSCS_GUI.lastObjWidgetName))
+            {
+                return Variable.EmptyInstance;
+            }
+            else
+            {
+                return new Variable(CSCS_GUI.lastObjWidgetName);
+            }
+        }
+    }
+    
+    class LastObjClickedFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 0, m_name);
+
+            if (string.IsNullOrEmpty(CSCS_GUI.lastObjClickedWidgetName))
+            {
+                return Variable.EmptyInstance;
+            }
+            else
+            {
+                return new Variable(CSCS_GUI.lastObjClickedWidgetName);
+            }
+        }
+    }
     class OpenFileFunction : ParserFunction
     {
         bool m_getFileContents;

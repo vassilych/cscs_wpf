@@ -340,7 +340,7 @@ namespace SplitAndMerge
 
             int numberDigits = Utils.GetSafeInt(args, 1, 0);
 
-            args[0].Value = Math.Round(args[0].AsDouble(), numberDigits);
+            args[0].Value = Math.Round(args[0].AsDouble(), numberDigits, MidpointRounding.AwayFromZero);
             return args[0];
         }
     }
