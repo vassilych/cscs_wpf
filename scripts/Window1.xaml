@@ -6,13 +6,69 @@
         xmlns:local="clr-namespace:WpfCSCS"
         mc:Ignorable="d"
         Title="Window1" Height="350" Width="500">
-    <DockPanel>
-        <Menu DockPanel.Dock="Top" DataContext="mainMenu1"/>
-        <Grid Margin="0,0,230.6,172">
-        <Button Content="Button1" HorizontalAlignment="Left" Margin="48,68,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.579,-8.562"  DataContext="Window1Button"/>
-        <Label Content="Window1" HorizontalAlignment="Left" Margin="48,10,0,0" VerticalAlignment="Top" Height="44" Width="76"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="225,31,-123.8,0" TextWrapping="Wrap" Text="TextBox1" VerticalAlignment="Top" Width="94"/>
+    <Window.Resources>
+        <Style x:Key="MyFocusVisual">
+        <Setter Property="Control.Template">
+            <Setter.Value>
+            <ControlTemplate>
+                <Rectangle Margin="-2" StrokeThickness="10" Stroke="Red" StrokeDashArray="1 2"/>
+            </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        </Style>
+  </Window.Resources>
+    
+    <Grid>
 
-        </Grid>
-    </DockPanel>
+    <TextBox Name="tb1" DataContext="var1" 
+            HorizontalAlignment="Left" Height="40" TextWrapping="Wrap" VerticalAlignment="Top" Width="100"/>
+    <TextBox Name="tb2" DataContext="var2"
+            HorizontalAlignment="Left" Height="40" Margin="100,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="100"/>
+    <TextBox Name="tb3" DataContext="var3"
+        HorizontalAlignment="Left" Height="40" Margin="200,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="100"/>
+
+    <CheckBox Name="chk1" Content="6546545"
+     Margin="0,0,200,0" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+
+    <Button
+FocusVisualStyle="{DynamicResource MyFocusVisual}"
+
+    Content="Klikni" Name="btn1" FontSize="35"
+    HorizontalAlignment="Right" VerticalAlignment="Bottom"
+    />
+<!--
+        <TabControl>
+            <TabItem Header="prvi tab">
+                <Grid>
+                    <StackPanel VerticalAlignment="Bottom" Orientation="Horizontal">
+                        <TextBox Name="tb3" DataContext="varijabla"
+                                HorizontalAlignment="Left" Height="40" TextWrapping="Wrap" VerticalAlignment="Top" Width="100"/>
+                        <TextBox Name="tb4"
+                                HorizontalAlignment="Left" Height="40" Margin="100,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="100"/>
+                    </StackPanel>
+                </Grid>
+                
+            </TabItem>
+            <TabItem Header="drugi tab">
+                <Grid>
+                    <TextBox Name="tb1" DataContext="varijabla"
+                        HorizontalAlignment="Left" Height="40" TextWrapping="Wrap" VerticalAlignment="Top" Width="100"/>
+                    <TextBox Name="tb2"
+                        HorizontalAlignment="Left" Height="40" Margin="100,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="100"/>
+                </Grid>
+
+            </TabItem>
+        </TabControl>
+
+
+        <Button Name="btn1"
+            Content="Batunnn" HorizontalAlignment="Left" Margin="200,0,0,0" VerticalAlignment="Top" Height="40" Width="100"/>
+
+
+-->
+        
+
+
+
+    </Grid>
 </Window>
