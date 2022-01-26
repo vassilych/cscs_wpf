@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SplitAndMerge
@@ -1399,6 +1401,47 @@ namespace SplitAndMerge
             return new Variable(result);
         }
     }
+    class ToByteArrayFunction : ParserFunction, INumericFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            string arg = Utils.GetSafeString(args, 0);
+            string pass = Utils.GetSafeString(args, 1);
+
+            var encoded = !string.IsNullOrWhiteSpace(pass);
+
+            var bytes = encoded ? Utils.EncryptStringToBytes(arg, pass) :
+                                  Encoding.UTF8.GetBytes(arg);
+
+            return new Variable(bytes);
+        }
+    }
+
+    class EncodeDecodeFunction : ParserFunction, IStringFunction
+    {
+        bool m_encode;
+        internal EncodeDecodeFunction(bool encode = true)
+        {
+            m_encode = encode;
+        }
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 2, m_name);
+
+            string arg = Utils.GetSafeString(args, 0);
+            string pass = Utils.GetSafeString(args, 1);
+
+            var result = m_encode ? Utils.EncryptString(arg, pass) :
+                                    Utils.DecryptString(arg, pass);
+
+            return new Variable(result);
+        }
+    }
+
     class ToBoolFunction : ParserFunction, INumericFunction
     {
         protected override Variable Evaluate(ParsingScript script)
@@ -1432,6 +1475,12 @@ namespace SplitAndMerge
 
             Variable arg = args[0];
             string format = Utils.GetSafeString(args, 1);
+
+            if (arg.Type == Variable.VarType.BYTE_ARRAY && !string.IsNullOrWhiteSpace(format))
+            {
+                var decoded = Utils.DecryptStringFromBytes(arg.AsByteArray(), format);
+                return new Variable(decoded);
+            }
 
             string result = arg.AsString(format);
             return new Variable(result);
@@ -2408,6 +2457,98 @@ namespace SplitAndMerge
 
             Variable newValue = new Variable(type);
             return newValue;
+        }
+    }
+
+    class TypeRefFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            string typeName = Utils.GetSafeString(args, 0);
+
+            Type t = GetTypeAnywhere(typeName, true);
+
+            // TODO: Support Using to look in other namespaces
+            if (t == null)
+                throw new ArgumentException($"Type [{typeName}] not found");
+            return new Variable(t);
+        }
+
+        public static Type GetTypeAnywhere(string typeName, bool ignoreCase = false)
+        {
+            // If this is called often and is slow, we could save the Assembly array globally
+            // We could also save the answer in a Dictionary<string, Type>
+            Type type = Type.GetType(typeName, false, ignoreCase);
+            if (type != null)
+                return type;
+
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (var a in assemblies)
+            {
+                type = a.GetType(typeName, false, ignoreCase);
+                if (type != null)
+                    return type;
+            }
+
+            return GetTypeFromAssembly(typeName, ignoreCase, System.Reflection.Assembly.GetEntryAssembly(), assemblies.ToList(), new List<System.Reflection.Assembly>());
+        }
+
+        static Type GetTypeFromAssembly(string typeName, bool ignoreCase, System.Reflection.Assembly assembly,
+            List<System.Reflection.Assembly> loadedAssemblies, List<System.Reflection.Assembly> checkedAssemblies)
+        {
+            Type type;
+
+            // Maybe it's not loaded yet. Try to load them all and look again.
+            // I could put in an optimization to first look for any assemblies whose name begins with part of the type name
+            var location = assembly.Location;
+            var folder = Path.GetDirectoryName(location);
+
+            var refAssemblies = assembly.GetReferencedAssemblies();
+            foreach (var refAssemblyName in refAssemblies)
+            {
+                try
+                {
+                    var loadedAssembly = FindAssembly(loadedAssemblies, refAssemblyName);
+                    if (loadedAssembly == null)
+                    {
+                        string name = refAssemblyName.Name;
+                        string assemblyPath = Path.Combine(folder, name + ".dll");
+                        if (File.Exists(assemblyPath))
+                        {
+                            loadedAssembly = System.Reflection.Assembly.LoadFrom(assemblyPath);
+                            if (loadedAssembly != null)
+                            {
+                                type = loadedAssembly.GetType(typeName, false, ignoreCase);
+                                if (type != null)
+                                    return type;
+                                loadedAssemblies.Add(loadedAssembly);
+                            }
+                        }
+                    }
+                    if (loadedAssembly != null)
+                    {
+                        if (FindAssembly(checkedAssemblies, refAssemblyName) == null)
+                        {
+                            checkedAssemblies.Add(loadedAssembly);
+                            type = GetTypeFromAssembly(typeName, ignoreCase, loadedAssembly, loadedAssemblies, checkedAssemblies);
+                            if (type != null)
+                                return type;
+                        }
+                    }
+                }
+                catch
+                {
+                }
+            }
+            return null;
+        }
+
+        private static System.Reflection.Assembly FindAssembly(List<System.Reflection.Assembly> assemblies, System.Reflection.AssemblyName assemblyName)
+        {
+            return assemblies.Where((a) => a.FullName == assemblyName.FullName).FirstOrDefault();
         }
     }
 

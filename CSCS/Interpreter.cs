@@ -128,6 +128,7 @@ namespace SplitAndMerge
             ParserFunction.RegisterFunction(Constants.THROW, new ThrowFunction());
             ParserFunction.RegisterFunction(Constants.TYPE, new TypeFunction());
             ParserFunction.RegisterFunction(Constants.TYPE_OF, new TypeOfFunction());
+            ParserFunction.RegisterFunction(Constants.TYPE_REF, new TypeRefFunction());
             ParserFunction.RegisterFunction(Constants.TRUE, new BoolFunction(true));
             ParserFunction.RegisterFunction(Constants.FALSE, new BoolFunction(false));
             ParserFunction.RegisterFunction(Constants.UNDEFINED, new UndefinedFunction());
@@ -141,8 +142,10 @@ namespace SplitAndMerge
             ParserFunction.RegisterFunction(Constants.CONTAINS, new ContainsFunction());
             ParserFunction.RegisterFunction(Constants.CURRENT_PATH, new CurrentPathFunction());
             ParserFunction.RegisterFunction(Constants.DATE_TIME, new DateTimeFunction(false));
+            ParserFunction.RegisterFunction(Constants.DECODE, new EncodeDecodeFunction(false));
             ParserFunction.RegisterFunction(Constants.DEEP_COPY, new DeepCopyFunction());
             ParserFunction.RegisterFunction(Constants.DEFINE_LOCAL, new DefineLocalFunction());
+            ParserFunction.RegisterFunction(Constants.ENCODE, new EncodeDecodeFunction(true));
             ParserFunction.RegisterFunction(Constants.ENV, new GetEnvFunction());
             ParserFunction.RegisterFunction(Constants.FIND_INDEX, new FindIndexFunction());
             ParserFunction.RegisterFunction(Constants.GET_COLUMN, new GetColumnFunction());
@@ -186,6 +189,7 @@ namespace SplitAndMerge
             ParserFunction.RegisterFunction(Constants.TOKENIZE, new TokenizeFunction());
             ParserFunction.RegisterFunction(Constants.TOKENIZE_LINES, new TokenizeLinesFunction());
             ParserFunction.RegisterFunction(Constants.TOKEN_COUNTER, new TokenCounterFunction());
+            ParserFunction.RegisterFunction(Constants.TO_BYTEARRAY, new ToByteArrayFunction());
             ParserFunction.RegisterFunction(Constants.TO_BOOL, new ToBoolFunction());
             ParserFunction.RegisterFunction(Constants.TO_DECIMAL, new ToDecimalFunction());
             ParserFunction.RegisterFunction(Constants.TO_DOUBLE, new ToDoubleFunction());
@@ -1204,6 +1208,33 @@ namespace SplitAndMerge
                 result = task.Result;
             }
             return result;
+        }
+
+        public static void RunScript(string fileName = "start.cscs")
+        {
+            Interpreter.Instance.Init();
+
+            string script = FileToString(fileName);
+            Variable result = null;
+            try
+            {
+                result = Interpreter.Instance.Process(script, fileName);
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine("Exception: " + exc.Message);
+                Console.WriteLine(exc.StackTrace);
+                ParserFunction.InvalidateStacksAfterLevel(0);
+                throw;
+            }
+        }
+
+        public static string FileToString(string filename)
+        {
+            string contents = "";
+            string[] lines = System.IO.File.ReadAllLines(filename);
+            contents = string.Join("\n", lines);
+            return contents;
         }
     }
 }

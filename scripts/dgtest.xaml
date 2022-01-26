@@ -1,0 +1,29 @@
+<Window 
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TestiranjeTextboxEvenata"
+        mc:Ignorable="d"
+        Title="Window1" Height="450" Width="800">
+    <Grid>
+        <DataGrid HorizontalAlignment="Center" VerticalAlignment="Center" Height="300" Width="300"  DataContext="grid1">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Header1">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox  Name="Array1" DataContext="Variable1" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Header2">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Datepicker  Name="Array2" DataContext="Variable2" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>                
+                <DataGridCheckBoxColumn Header="Header3" Name="Array3" DataContext="Variable3"/>
+        </DataGrid>
+    </Grid>
+</Window>
