@@ -170,22 +170,18 @@ namespace SplitAndMerge
             return Tokenize(data, sep, option);
         }
 
-        static public Variable Tokenize(string data, string sep, string option = "", int max = int.MaxValue-1)
+        static public Variable Tokenize(string data, string sep, string option = "")
         {
             if (sep == "\\t")
             {
                 sep = "\t";
-            }
-            if (sep == "\\n")
-            {
-                sep = "\n";
             }
 
             string[] tokens;
             var sepArray = sep.ToCharArray();
             if (sepArray.Count() == 1)
             {
-                tokens = data.Split(sepArray, max);
+                tokens = data.Split(sepArray);
             }
             else
             {

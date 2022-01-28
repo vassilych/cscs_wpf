@@ -93,10 +93,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="scripts\dgtest.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="scripts\Window2.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -129,7 +125,6 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="scripts\defaultWindow.cscs" />
-    <None Include="scripts\dgtest.cscs" />
     <None Include="scripts\drugiProgram.cscs" />
     <None Include="scripts\extra.cscs" />
     <None Include="scripts\guiFunctions.cscs" />

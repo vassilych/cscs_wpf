@@ -2348,7 +2348,7 @@ namespace WpfCSCS
             return result;
         }
     }
-
+    // WINFORM alternative form of CreateWindow
     class WINFORMcommand : NewWindowFunction
     {
         bool m_paramMode;
@@ -2362,12 +2362,12 @@ namespace WpfCSCS
         {
             if (m_paramMode)
             {
-                var NazivIliPutanjaFormeIzgleda = Utils.GetBodyBetween(script, '\0', '\0', Constants.END_STATEMENT);
-                if (NazivIliPutanjaFormeIzgleda.EndsWith(".xaml") == false)
+                var NameOrPathOfXamlForm= Utils.GetBodyBetween(script, '\0', '\0', Constants.END_STATEMENT);
+                if (NameOrPathOfXamlForm.EndsWith(".xaml") == false)
                 {
-                    NazivIliPutanjaFormeIzgleda = NazivIliPutanjaFormeIzgleda + ".xaml";
+                    NameOrPathOfXamlForm= NameOrPathOfXamlForm+ ".xaml";
                 }
-                if (File.Exists(NazivIliPutanjaFormeIzgleda))
+                if (File.Exists(NameOrPathOfXamlForm))
                 {
                     var parentWin = ChainFunction.GetParentWindow(script);
                     SpecialWindow modalwin;
@@ -2377,12 +2377,12 @@ namespace WpfCSCS
                         //parentWin.
 
                         var winMode = SpecialWindow.MODE.SPECIAL_MODAL;
-                        modalwin = CreateNew(NazivIliPutanjaFormeIzgleda, parentWin, winMode, script.Filename);
+                        modalwin = CreateNew(NameOrPathOfXamlForm, parentWin, winMode, script.Filename);
                     }
                     else
                     {
                         var winMode = SpecialWindow.MODE.NORMAL;
-                        modalwin = CreateNew(NazivIliPutanjaFormeIzgleda, parentWin, winMode, script.Filename);
+                        modalwin = CreateNew(NameOrPathOfXamlForm, parentWin, winMode, script.Filename);
                     }
 
 
@@ -2390,7 +2390,7 @@ namespace WpfCSCS
                 }
                 else
                 {
-                    MessageBox.Show($"Ne postoji datoteka {NazivIliPutanjaFormeIzgleda}! Gasim program.");
+                    MessageBox.Show($"File does not exist {NameOrPathOfXamlForm}! Closing program.");
                     Environment.Exit(0);
                     return null;
                 }
@@ -3903,6 +3903,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                             var column = dg.Columns[m_arrayIndex] as DataGridTextColumn;
                             column.Header = varValue.AsString();
                         }
+                        
                         if (CSCS_GUI.DEFINES.TryGetValue(m_name, out DefineVariable headerDef))
                         {
                             headerDef.SetAsArray();
