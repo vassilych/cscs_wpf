@@ -1,40 +1,19 @@
 #WINFORM dgtest;
+// WINFORM alternative way of CreateWindow of main xaml.
 
-/*
-In short, program has 3 arrays that has to be displayed in datagrid
-using datagridTemplateColumn in place of datagridTextColumn;
-datagridTemplateColumn use TextBox as DataTemplate, so we can name column as Name property of TextBox, and Databinding with Datacontext as variable name (in this case it is an array)
-
-Functionality with DatagridTemplateColumn has not been implemented; if this works, then TextBox Events @Pre and @Post could also work when moving from one datagrid cell to another.
-
-There is code for one Post event, for testing purposes.
-
-Leo is preparing code with arrays of 1000 elements, so it can be used for Datagrid performace test. It seems performance is very bad with large arrays (we use arrays of 100.000 elements or more)
-
-Naturally, this code will work if cscs_gui is changed appropriately
-*/
-
-
-DEFINE Variable1 type a size 10 array 1000; //string
-DEFINE Variable2 type d size 8 array 1000;  //date
-DEFINE Variable3 type l size 10 array 1000; //boolean
+DEFINE array1 type s size 10 array 1000;
+DEFINE array2 type s  size 8 array 1000;
+DEFINE array3 type s size 10 array 1000;
 
 
 
 cfunction fillGridRow(int a) {
-
-    Variable1[a] = string(a + "abcd");
-
-    Variable2[a] = DateTime.Now();
-
-     if(a%2==0)
-    {
-        Variable3[a] = true;
-    }
-    else
-    {
-        Variable3[a] = false;
-    }
+                                                  
+    array1[a] = string(a);
+   
+    array2[a] = string(a*2);
+    array3[a] = string(a*3);
+    
 }
 
 
@@ -48,25 +27,19 @@ counter1 = 0;
 
 counter1++;
 
-grid1[0] = "column 1";
-grid1[1] = "column 2";
-grid1[2] = "column 3";
 
+    
 cntr2 = rows = 1000;
 fillGridRow(rows - 1);
 loadData(rows);
 
 
 
-DISPLAYARR grid1 LINECOUNTER  "cntr1" MAXELEMENTS "cntr2" ACTUALELEMENTS "cntr3" SETUP;
+DISPLAYARR grid1 LINECOUNTER  "cntr1" MAXELEMENTS "cntr2" ACTUALELEMENTS "cntr3" SETUP;  
 
 
 
-function Array3@post() {
 
-    MessageBox("Post Event of Array3 Changes Variable1[5] to AuraSoft.");
-    Variable1[5] = "AuraSoft";
-    return true;
-}
+
 
 

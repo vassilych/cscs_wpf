@@ -2362,12 +2362,12 @@ namespace WpfCSCS
         {
             if (m_paramMode)
             {
-                var NazivIliPutanjaFormeIzgleda = Utils.GetBodyBetween(script, '\0', '\0', Constants.END_STATEMENT);
-                if (NazivIliPutanjaFormeIzgleda.EndsWith(".xaml") == false)
+                var NameOrPathOfXamlForm = Utils.GetBodyBetween(script, '\0', '\0', Constants.END_STATEMENT);
+                if (NameOrPathOfXamlForm.EndsWith(".xaml") == false)
                 {
-                    NazivIliPutanjaFormeIzgleda = NazivIliPutanjaFormeIzgleda + ".xaml";
+                    NameOrPathOfXamlForm = NameOrPathOfXamlForm + ".xaml";
                 }
-                if (File.Exists(NazivIliPutanjaFormeIzgleda))
+                if (File.Exists(NameOrPathOfXamlForm))
                 {
                     var parentWin = ChainFunction.GetParentWindow(script);
                     SpecialWindow modalwin;
@@ -2377,12 +2377,12 @@ namespace WpfCSCS
                         //parentWin.
 
                         var winMode = SpecialWindow.MODE.SPECIAL_MODAL;
-                        modalwin = CreateNew(NazivIliPutanjaFormeIzgleda, parentWin, winMode, script.Filename);
+                        modalwin = CreateNew(NameOrPathOfXamlForm, parentWin, winMode, script.Filename);
                     }
                     else
                     {
                         var winMode = SpecialWindow.MODE.NORMAL;
-                        modalwin = CreateNew(NazivIliPutanjaFormeIzgleda, parentWin, winMode, script.Filename);
+                        modalwin = CreateNew(NameOrPathOfXamlForm, parentWin, winMode, script.Filename);
                     }
 
 
@@ -2390,7 +2390,7 @@ namespace WpfCSCS
                 }
                 else
                 {
-                    MessageBox.Show($"Ne postoji datoteka {NazivIliPutanjaFormeIzgleda}! Gasim program.");
+                    MessageBox.Show($"Ne postoji datoteka {NameOrPathOfXamlForm }! Gasim program.");
                     Environment.Exit(0);
                     return null;
                 }

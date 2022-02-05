@@ -7,23 +7,36 @@
         mc:Ignorable="d"
         Title="Window1" Height="450" Width="800">
     <Grid>
-        <DataGrid HorizontalAlignment="Center" VerticalAlignment="Center" Height="300" Width="300"  DataContext="grid1">
+        <DataGrid HorizontalAlignment="Center" VerticalAlignment="Center" Height="300" Width="300" AutoGenerateColumns="False" DataContext="grid1">
             <DataGrid.Columns>
-                <DataGridTemplateColumn Header="Header1">
+            <DataGridTextColumn  Header="array1"/>
+            <DataGridTextColumn  Header="array2"/>
+            <DataGridTextColumn  Header="array3"/>
+           <!--     
+               <DataGridTemplateColumn Header="head1">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox  Name="Array1" DataContext="Variable1" />
+                            <TextBox  DataContext ="Variable3"  />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Header2">
+                <DataGridTemplateColumn Header="head2" >
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Datepicker  Name="Array2" DataContext="Variable2" />
+                            <DatePicker  DataContext ="Variable2" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>                
-                <DataGridCheckBoxColumn Header="Header3" Name="Array3" DataContext="Variable3"/>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="head3">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox  DataContext ="Variable3"  />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn> 
+                -->
+            </DataGrid.Columns>
         </DataGrid>
+        
     </Grid>
 </Window>
