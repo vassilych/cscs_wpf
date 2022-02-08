@@ -24,7 +24,7 @@ SetText("button1",  "Open File") ;
 SetText("button2",  "Save File") ;
 SetText("button3",  "Message Box") ;
 
-SQLConnectionString("Server=192.168.0.58;Database=adictionary;User Id=sa;Password=aura;");
+SQLConnectionString("Server=localhost;Database=adictionary;User Id=sa;Password=aura;");
 cols = SQLTableColumns("SY_TABLES");
 //SetWidgetOptions("myGrid", "colors", "green", "white");
 

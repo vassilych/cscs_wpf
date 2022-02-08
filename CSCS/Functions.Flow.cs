@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,6 +15,10 @@ namespace SplitAndMerge
         {
             return new Variable(Variable.VarType.BREAK);
         }
+        public override string Description()
+        {
+            return "Breaks out of a loop.";
+        }
     }
 
     class ContinueStatement : ParserFunction
@@ -21,6 +26,10 @@ namespace SplitAndMerge
         protected override Variable Evaluate(ParsingScript script)
         {
             return new Variable(Variable.VarType.CONTINUE);
+        }
+        public override string Description()
+        {
+            return "Forces the next iteration of the loop.";
         }
     }
 
@@ -56,6 +65,10 @@ namespace SplitAndMerge
 
             return result;
         }
+        public override string Description()
+        {
+            return "Finishes execution of a function and optionally can return a value.";
+        }
     }
 
     class TryBlock : ParserFunction
@@ -68,14 +81,35 @@ namespace SplitAndMerge
         {
             return await Interpreter.Instance.ProcessTryAsync(script);
         }
+        public override string Description()
+        {
+            return "Try and catch control flow: try { statements; } catch (exceptionString) { statements; }. Curly brackets are mandatory.";
+        }
     }
 
     class ExitFunction : ParserFunction
     {
         protected override Variable Evaluate(ParsingScript script)
         {
-            Environment.Exit(0);
+            List<Variable> args = script.GetFunctionArgs();
+            int code = Utils.GetSafeInt(args, 0, 0);
+            Environment.Exit(code);
             return Variable.EmptyInstance;
+        }
+        public override string Description()
+        {
+            return "Stops execution and exits process with the specified return code (default 0).";
+        }
+    }
+    class QuitFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            return new Variable(Variable.VarType.QUIT);
+        }
+        public override string Description()
+        {
+            return "Quits scripting engine without terminating the process. Stops Debugger if attached.";
         }
     }
 
@@ -85,6 +119,10 @@ namespace SplitAndMerge
         {
             return Variable.EmptyInstance;
         }
+        public override string Description()
+        {
+            return "Returns a null value.";
+        }
     }
     class InfinityFunction : ParserFunction
     {
@@ -92,12 +130,20 @@ namespace SplitAndMerge
         {
             return new Variable(double.PositiveInfinity);
         }
+        public override string Description()
+        {
+            return "Returns mathematical C# PositiveInfinity.";
+        }
     }
     class NegInfinityFunction : ParserFunction
     {
         protected override Variable Evaluate(ParsingScript script)
         {
             return new Variable(double.NegativeInfinity);
+        }
+        public override string Description()
+        {
+            return "Returns mathematical C# NegativeInfinity.";
         }
     }
 
@@ -110,7 +156,11 @@ namespace SplitAndMerge
             Variable arg = args[0];
             return new Variable(arg.Type != Variable.VarType.NUMBER || double.IsNaN(arg.Value));
         }
-    }   
+        public override string Description()
+        {
+            return "Returns if the expression is not a number.";
+        }
+    }
 
     class TypeOfFunction : ParserFunction
     {
@@ -158,6 +208,10 @@ namespace SplitAndMerge
             Variable newValue = new Variable(type.ToLower());
             return newValue;
         }
+        public override string Description()
+        {
+            return "Returns what type of a variable the expression is.";
+        }
     }
 
     class IsFiniteFunction : ParserFunction
@@ -176,6 +230,10 @@ namespace SplitAndMerge
             }
 
             return new Variable(!double.IsInfinity(value));
+        }
+        public override string Description()
+        {
+            return "Returns if the current expression is finite.";
         }
     }
 
@@ -200,6 +258,10 @@ namespace SplitAndMerge
                           !isUndefined;
             return new Variable(result);
         }
+        public override string Description()
+        {
+            return "Returns if the current expression is defined.";
+        }
     }
 
     class ObjectPropsFunction : ParserFunction
@@ -216,6 +278,10 @@ namespace SplitAndMerge
             ParserFunction.AddGlobal(obj.ParamName, new GetVarFunction(obj), false);
              
             return new Variable(obj.ParamName);
+        }
+        public override string Description()
+        {
+            return "Returns all of the properties of the given object.";
         }
     }
 
@@ -242,6 +308,10 @@ namespace SplitAndMerge
 
             // 3. Throw it!
             throw new ArgumentException(result);
+        }
+        public override string Description()
+        {
+            return "Throws an exception, e.g. throw \"value must be positive\".";
         }
     }
 
@@ -323,6 +393,10 @@ namespace SplitAndMerge
 
             return new Variable(body);
         }
+        public override string Description()
+        {
+            return "Shows the implementation of a CSCS function.";
+        }
     }
 
     class FunctionCreator : ParserFunction
@@ -365,6 +439,11 @@ namespace SplitAndMerge
             }
 
             return Variable.EmptyInstance;
+        }
+
+        public override string Description()
+        {
+            return "Creates a new CSCS function.";
         }
     }
 
@@ -695,6 +774,13 @@ namespace SplitAndMerge
             script.MoveForwardIf(Constants.START_ARG);
             List<Variable> args = script.GetFunctionArgs();
 
+            Type t = TypeRefFunction.GetTypeAnywhere(className, true);
+            if (t != null)
+            {
+                object reflectedObj = CreateReflectedObj(t, args);
+                return new Variable(reflectedObj);
+            }
+
             CompiledClass csClass = CSCSClass.GetClass(className) as CompiledClass;
             if (csClass != null)
             {
@@ -712,6 +798,33 @@ namespace SplitAndMerge
                 CSCSClass.ClassInstance(script.CurrentAssign, className, args, script);
 
             return new Variable(instance);
+        }
+
+       private object CreateReflectedObj(Type t, List<Variable> args)
+        {
+            var constructors = t.GetConstructors(BindingFlags.Public);
+            if (constructors == null)
+                return null;
+
+            ConstructorInfo bestConstructor = null;
+            var pConv = new Variable.ParameterConverter();
+            foreach (var ctor in constructors)
+            {
+                if (pConv.ConvertVariablesToTypedArgs(args, ctor.GetParameters()))
+                {
+                    bestConstructor = ctor;
+                    if (pConv.BestConversion == Variable.ParameterConverter.Conversion.Exact)
+                        break;
+                }
+            }
+
+            if (bestConstructor == null)
+            {
+                if (args.Count > 0)
+                    throw new ArgumentException($"No suitable constructor found for [{t.FullName}]");
+                return Activator.CreateInstance(t);
+            }
+            return bestConstructor?.Invoke(pConv.BestTypedArgs);
         }
 
         protected override async Task<Variable> EvaluateAsync(ParsingScript script)
@@ -782,6 +895,16 @@ namespace SplitAndMerge
             }
 
             return Variable.EmptyInstance;
+        }
+    }
+
+    public class HelpFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            var data = ParserFunction.GetDefinedFunctions();            
+
+            return new Variable(data);
         }
     }
 
@@ -1518,6 +1641,10 @@ namespace SplitAndMerge
             Variable result = await Interpreter.Instance.ProcessIfAsync(script);
             return result;
         }
+        public override string Description()
+        {
+            return "If-else control flow statements. if (condition) { statements; } elif(condition) { statements; } else { statements; }";
+        }
     }
 
     class ForStatement : ParserFunction
@@ -1529,6 +1656,10 @@ namespace SplitAndMerge
         protected override async Task<Variable> EvaluateAsync(ParsingScript script)
         {
             return await Interpreter.Instance.ProcessForAsync(script);
+        }
+        public override string Description()
+        {
+            return "A canonic for loop, e.g. for (i = 0; i < 10; ++i) or for (item : listOfValues)";
         }
     }
 
@@ -1542,6 +1673,10 @@ namespace SplitAndMerge
         {
             return await Interpreter.Instance.ProcessWhileAsync(script);
         }
+        public override string Description()
+        {
+            return "Execute a loop as long as the condition is true: while (condition) { statements; }";
+        }
     }
 
     class DoWhileStatement : ParserFunction
@@ -1553,6 +1688,10 @@ namespace SplitAndMerge
         protected override async Task<Variable> EvaluateAsync(ParsingScript script)
         {
             return Interpreter.Instance.ProcessDoWhile(script);
+        }
+        public override string Description()
+        {
+            return "Execute a loop at least once and as long as the condition is true: do { statements; } while (condition);";
         }
     }
 
@@ -1566,6 +1705,10 @@ namespace SplitAndMerge
         {
             return Interpreter.Instance.ProcessSwitch(script);
         }
+        public override string Description()
+        {
+            return "Execute a switch(value) statement.";
+        }
     }
 
     class CaseStatement : ParserFunction
@@ -1577,6 +1720,10 @@ namespace SplitAndMerge
         protected override async Task<Variable> EvaluateAsync(ParsingScript script)
         {
             return Interpreter.Instance.ProcessCase(script, Name);
+        }
+        public override string Description()
+        {
+            return "A case inside of a switch statement.";
         }
     }
 
@@ -1641,9 +1788,15 @@ namespace SplitAndMerge
             }
             return result == null ? Variable.EmptyInstance : result;
         }
+
+        public override string Description()
+        {
+            var name = this.GetType().Name;
+            return "Includes another scripting file, e.g. include(\"functions.cscs\");";
+        }
     }
 
-    // Get a value of a variable or of an array element
+        // Get a value of a variable or of an array element
     public class GetVarFunction : ParserFunction
     {
         public GetVarFunction(Variable value)
@@ -1653,10 +1806,6 @@ namespace SplitAndMerge
 
         protected override Variable Evaluate(ParsingScript script)
         {
-            if (m_value.Preprocess())
-            {
-                return m_value;
-            }
             // First check if this element is part of an array:
             if (script.TryPrev() == Constants.START_ARRAY)
             {
@@ -1712,10 +1861,6 @@ namespace SplitAndMerge
         }
         protected override async Task<Variable> EvaluateAsync(ParsingScript script)
         {
-            if (m_value.Preprocess())
-            {
-                return m_value;
-            }
             // First check if this element is part of an array:
             if (script.TryPrev() == Constants.START_ARRAY)
             {
@@ -2458,6 +2603,10 @@ namespace SplitAndMerge
             Variable newValue = new Variable(type);
             return newValue;
         }
+        public override string Description()
+        {
+            return "Returns the type of the specified variable.";
+        }
     }
 
     class TypeRefFunction : ParserFunction
@@ -2584,6 +2733,10 @@ namespace SplitAndMerge
 
             Variable newValue = new Variable(size);
             return newValue;
+        }
+        public override string Description()
+        {
+            return "Returns either a number of elements in an array if variable is of type ARRAY or a number of characters in a string representation of this variable.";
         }
     }
 

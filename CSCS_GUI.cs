@@ -43,7 +43,6 @@ namespace SplitAndMerge
         public const string SET_OBJECT = "SET_OBJECT";
 
         public const string SET_TEXT = "SetText";
-        public const string QUIT = "quit";
 
         public const string CHAIN = "chain";
         public const string PARAM = "param";

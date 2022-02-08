@@ -384,7 +384,7 @@ function button13@Clicked(sender, load) {
   }
   //MessageBox("123123123123123");
 
-  BindSQL("myGrid", "SY_DATABASES");
+  BindSQL("myGrid", "SY_TABLES");
 
   //query = "SELECT TOP 15 * FROM SY_TABLES ";
   //print(SQLQuery(query));

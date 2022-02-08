@@ -448,7 +448,7 @@ namespace SplitAndMerge
                 case "text":
                 case "ntext":
                 case "string":
-                    return new Variable((string)item);
+                    return new Variable(item.ToString());
                 case "date":
                 case "time":
                 case "timestamp":
