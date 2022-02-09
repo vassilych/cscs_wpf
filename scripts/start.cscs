@@ -1,5 +1,5 @@
 StartDebugger();
-//include("wpfgui.cscs");
-//CreateWindow("../../scripts/Sample.xaml");
-CreateWindow("../../scripts/dgtest.xaml");
-include("dgtest.cscs");
+include("wpfgui.cscs");
+CreateWindow("../../scripts/Sample.xaml");
+//CreateWindow("../../scripts/dgtest.xaml");
+//include("dgtest.cscs");
