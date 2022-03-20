@@ -227,6 +227,7 @@ namespace WpfCSCS
             ParserFunction.RegisterFunction("SetForegroundColor", new SetColorFunction(false));
             ParserFunction.RegisterFunction("SetImage", new SetImageFunction());
 
+            ParserFunction.RegisterFunction("FillOutGrid", new FillOutGridFunction());
             ParserFunction.RegisterFunction("BindSQL", new BindSQLFunction());
             ParserFunction.RegisterFunction("MessageBox", new MessageBoxFunction());
             ParserFunction.RegisterFunction("SendToPrinter", new PrintFunction());
@@ -402,26 +403,30 @@ namespace WpfCSCS
                 for (int i = 0; i < dg.Columns.Count; i++)
                 {
                     var textCol = dg.Columns[i] as DataGridTextColumn;
-                    var header = textCol.Header as string;
-                    if (textCol.Binding == null)
+                    var templCol = dg.Columns[i] as DataGridTemplateColumn;
+                    var header = textCol != null ? textCol.Header as string : templCol.Header as string;
+                    if (textCol != null && textCol.Binding == null)
                     {
                         textCol.Binding = new Binding(header);
                     }
-                    Binding binding = textCol.Binding as Binding;
-                    wd.headerBindings.Add(binding.Path.Path);
-
-                    if (!string.IsNullOrWhiteSpace(header))
+                    if (textCol != null)
                     {
-                        var headerStr = binding.Path.Path.ToLower();
-                        var headerVar = new DefineVariable(headerStr, "datagrid", dg, i);
-                        headerVar.InitFromExisting(headerStr);
-                        DEFINES[headerStr] = headerVar;
-                        wd.headers[headerStr] = headerVar;
-                        wd.headerNames.Add(headerStr);
-                        wd.colTypes.Add(WidgetData.COL_TYPE.STRING);
+                        Binding binding = textCol.Binding as Binding;
+                        wd.headerBindings.Add(binding.Path.Path);
 
-                        //var array = new DefineVariable(new List<Variable>());
-                        ParserFunction.AddGlobal(headerStr, new GetVarFunction(headerVar), false /* not native */);
+                        if (!string.IsNullOrWhiteSpace(header))
+                        {
+                            var headerStr = binding.Path.Path.ToLower();
+                            var headerVar = new DefineVariable(headerStr, "datagrid", dg, i);
+                            headerVar.InitFromExisting(headerStr);
+                            DEFINES[headerStr] = headerVar;
+                            wd.headers[headerStr] = headerVar;
+                            wd.headerNames.Add(headerStr);
+                            wd.colTypes.Add(WidgetData.COL_TYPE.STRING);
+
+                            //var array = new DefineVariable(new List<Variable>());
+                            ParserFunction.AddGlobal(headerStr, new GetVarFunction(headerVar), false /* not native */);
+                        }
                     }
                 }
                 WIDGETS[name] = wd;
@@ -1219,6 +1224,99 @@ namespace WpfCSCS
             return GetTextWidgetFunction.GetText(widget);
         }
     }
+
+    class FillOutGridFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            var widgetName = Utils.GetSafeString(args, 0);
+            var dg = CSCS_GUI.GetWidget(widgetName) as DataGrid;
+            if (dg == null)
+            {
+                return Variable.EmptyInstance;
+            }
+            var firstCol = Utils.GetSafeVariable(args, 1);
+            var rows = firstCol.Tuple.Count;
+
+            var list = new ObservableCollection<Row>();
+            for (int i = 0; i < rows; i++)
+            {
+                var row = new Row();
+                for (int j = 1; j < args.Count; j++)
+                {
+                    var current = args[j].Tuple[i];
+                    if (current.Type == Variable.VarType.STRING)
+                    {
+                        row.AddCol(current.String);
+                    }
+                    else if (current.Type == Variable.VarType.NUMBER)
+                    {
+                        row.AddCol(current.AsBool());
+                    }
+                   
+                }
+                list.Add(row);
+            }
+            dg.ItemsSource = list;
+
+            return new Variable("");
+
+        }
+        public class Row
+        {
+            int strIndex = 0;
+            int boolIndex = 0;
+            public void AddCol(string str)
+            {
+                switch(strIndex)
+                {
+                    case 0: S1 = str; break;
+                    case 1: S2 = str; break;
+                    case 2: S3 = str; break;
+                    case 3: S4 = str; break;
+                    case 4: S5 = str; break;
+                    case 5: S6 = str; break;
+                    case 6: S7 = str; break;
+                    case 7: S8 = str; break;
+                    case 8: S9 = str; break;
+                    case 9: S10 = str; break;
+                }
+                strIndex++;
+            }
+            public void AddCol(bool b)
+            {
+                switch (boolIndex)
+                {
+                    case 0: B1 = b; break;
+                    case 1: B2 = b; break;
+                    case 2: B3 = b; break;
+                    case 3: B4 = b; break;
+                    case 4: B5 = b; break;
+                }
+                boolIndex++;
+            }
+            public string S1 { get; set; }
+            public string S2 { get; set; }
+            public string S3 { get; set; }
+            public string S4 { get; set; }
+            public string S5 { get; set; }
+            public string S6 { get; set; }
+            public string S7 { get; set; }
+            public string S8 { get; set; }
+            public string S9 { get; set; }
+            public string S10 { get; set; }
+            public bool B1 { get; set; }
+            public bool B2 { get; set; }
+            public bool B3 { get; set; }
+            public bool B4 { get; set; }
+            public bool B5 { get; set; }
+
+        }
+    }
+
 
     class BindSQLFunction : ParserFunction
     {

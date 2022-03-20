@@ -388,9 +388,20 @@ function button13@Clicked(sender, load) {
 
   //query = "SELECT TOP 15 * FROM SY_TABLES ";
   //print(SQLQuery(query));
-
 }
+function buttonReload@Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
+  NamesArray = {"John", "Frank", "John", "Lulu" };
+  SurnamesArray = { "Mayer", "Zappa", "Fogerty", "Perez"};
+  EmployedArray = { true, false, false, true};
 
+  FillOutGrid("gridNew", NamesArray, SurnamesArray, EmployedArray);
+
+  //query = "SELECT TOP 15 * FROM SY_TABLES ";
+  //print(SQLQuery(query));
+}
 function checkVat@Clicked(sender, load) {
   if (!refresh) {
     return;

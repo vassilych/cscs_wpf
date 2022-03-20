@@ -62,7 +62,7 @@
                             <ColumnDefinition Width="580*"/>
                         </Grid.ColumnDefinitions>
                         <DataGrid HorizontalAlignment="Left" Height="260" Margin="91.6,55,0,0" VerticalAlignment="Top" Width="400" AutoGenerateColumns="True" Grid.Column="3" Name="grid1" DataContext="mygrid"/>
-                        <Button Content="Button" HorizontalAlignment="Left" Margin="222,341,0,0" VerticalAlignment="Top" Width="75" Name ="button13" Grid.Column="3" DataContext="buttonRefresh"/>
+                        <Button Content="Reload" HorizontalAlignment="Left" Margin="222,341,0,0" VerticalAlignment="Top" Width="75" Name ="button13" Grid.Column="3" DataContext="buttonRefresh"/>
                         <Button Content="Add Data" HorizontalAlignment="Left" Margin="580,26,0,0" VerticalAlignment="Top" Width="95" Name ="button12" Grid.Column="3" DataContext="buttonAddData"/>
                         <TextBox HorizontalAlignment="Left" Height="23" Margin="89,24,0,0" TextWrapping="Wrap" ToolTip="Beat Meier" Text="" VerticalAlignment="Top" Width="120" Name="textbox4" Grid.Column="3" DataContext="textName"/>
                         <TextBox HorizontalAlignment="Left" Height="23" Margin="265,24,0,0" TextWrapping="Wrap" ToolTip="20000" Text="" VerticalAlignment="Top" Width="120" Name="textbox5" Grid.Column="3" DataContext="textSalary"/>
@@ -72,6 +72,45 @@
                         <Label Content="Email:" HorizontalAlignment="Left" Margin="392,22,0,0" VerticalAlignment="Top" Name="label5" Grid.Column="3" DataContext="label5"/>
                         <Button Content="Delete Selected" HorizontalAlignment="Left" Margin="580,55,0,0" VerticalAlignment="Top" Width="95" Name ="button14" Grid.Column="3" DataContext="buttonDeleteData"/>
                         <Button Content="Print" Grid.Column="3" HorizontalAlignment="Left" Margin="580,114,0,0" VerticalAlignment="Top" Width="95" Name ="button15"  DataContext="button15"/>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="New Data Grid">
+                    <Grid Background="#FFE5E5E5" Margin="0,0,-399.6,-208">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="4*"/>
+                            <ColumnDefinition Width="6*"/>
+                            <ColumnDefinition Width="7*"/>
+                            <ColumnDefinition Width="580*"/>
+                        </Grid.ColumnDefinitions>
+                        <DataGrid HorizontalAlignment="Left" Height="260" Width="400" Margin="91.6,55,0,0" VerticalAlignment="Top"
+                                  SelectionUnit="Cell"  AutoGenerateColumns="false" Grid.Column="3" Name="gridNew" DataContext="gridNewContext">
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Header="Name">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox  Name="NameColumnName" Text="{Binding S1}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Surname">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Name="SurnameColumnName"  Text="{Binding S2}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Employed">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox IsChecked="{Binding B1 }" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <Button Content="Reload" HorizontalAlignment="Left" Margin="222,341,0,0" VerticalAlignment="Top" Width="75" Name ="buttonReload" Grid.Column="3" DataContext="buttonRefresh"/>
                     </Grid>
                 </TabItem>
             </TabControl>
