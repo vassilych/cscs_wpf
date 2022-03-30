@@ -398,9 +398,13 @@ function buttonReload@Clicked(sender, load) {
   EmployedArray = { true, false, false, true};
 
   FillOutGrid("gridNew", NamesArray, SurnamesArray, EmployedArray);
+}
+function buttonReloadFromDB@Clicked(sender, load) {
+  if (!refresh) {
+    return;
+  }
 
-  //query = "SELECT TOP 15 * FROM SY_TABLES ";
-  //print(SQLQuery(query));
+  FillOutGridFromDB("gridNew", "USERS");
 }
 function checkVat@Clicked(sender, load) {
   if (!refresh) {

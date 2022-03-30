@@ -82,7 +82,7 @@
                             <ColumnDefinition Width="7*"/>
                             <ColumnDefinition Width="580*"/>
                         </Grid.ColumnDefinitions>
-                        <DataGrid HorizontalAlignment="Left" Height="260" Width="400" Margin="91.6,55,0,0" VerticalAlignment="Top"
+                        <DataGrid HorizontalAlignment="Left" Height="260" Width="400" Margin="91.6,55,0,0" VerticalAlignment="Top" CanUserAddRows="False"
                                   SelectionUnit="Cell"  AutoGenerateColumns="false" Grid.Column="3" Name="gridNew" DataContext="gridNewContext">
                             <DataGrid.Columns>
                                 <DataGridTemplateColumn Header="Name">
@@ -111,6 +111,7 @@
                             </DataGrid.Columns>
                         </DataGrid>
                         <Button Content="Reload" HorizontalAlignment="Left" Margin="222,341,0,0" VerticalAlignment="Top" Width="75" Name ="buttonReload" Grid.Column="3" DataContext="buttonRefresh"/>
+                        <Button Content="Reload From DB" HorizontalAlignment="Left" Margin="334.6,341,0,0" VerticalAlignment="Top" Width="118" x:Name ="buttonReloadFromDB" Grid.Column="3" DataContext="buttonRefreshFromDB"/>
                     </Grid>
                 </TabItem>
             </TabControl>

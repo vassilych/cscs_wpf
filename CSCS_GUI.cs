@@ -228,6 +228,7 @@ namespace WpfCSCS
             ParserFunction.RegisterFunction("SetImage", new SetImageFunction());
 
             ParserFunction.RegisterFunction("FillOutGrid", new FillOutGridFunction());
+            ParserFunction.RegisterFunction("FillOutGridFromDB", new FillOutGridFunction(true));
             ParserFunction.RegisterFunction("BindSQL", new BindSQLFunction());
             ParserFunction.RegisterFunction("MessageBox", new MessageBoxFunction());
             ParserFunction.RegisterFunction("SendToPrinter", new PrintFunction());
@@ -1227,6 +1228,11 @@ namespace WpfCSCS
 
     class FillOutGridFunction : ParserFunction
     {
+        bool m_fromDB;
+        public FillOutGridFunction(bool fromDB = false)
+        {
+            m_fromDB = fromDB;
+        }
         protected override Variable Evaluate(ParsingScript script)
         {
             List<Variable> args = script.GetFunctionArgs();
@@ -1237,6 +1243,11 @@ namespace WpfCSCS
             if (dg == null)
             {
                 return Variable.EmptyInstance;
+            }
+            if (m_fromDB)
+            {
+                var tableName = Utils.GetSafeString(args, 1);
+                return FillOutFromDB(dg, tableName);
             }
             var firstCol = Utils.GetSafeVariable(args, 1);
             var rows = firstCol.Tuple.Count;
@@ -1263,8 +1274,37 @@ namespace WpfCSCS
             dg.ItemsSource = list;
 
             return new Variable("");
-
         }
+        protected Variable FillOutFromDB(DataGrid dg, string tableName)
+        {
+
+            var query = "select * from " + tableName;
+            var sqlResult = SQLQueryFunction.GetData(query, tableName);
+
+            var list = new ObservableCollection<Row>();
+            for (int i = 1; i < sqlResult.Tuple.Count; i++)
+            {
+                var data = sqlResult.Tuple[i];
+                var row = new Row();
+                for (int j = 0; j < dg.Columns.Count; j++)
+                {
+                    //var column = dg.Columns[j] as DataGridTemplateColumn;
+                    var elem = data.Tuple[j];
+                    if (elem.Original == Variable.OriginalType.BOOL)
+                    {
+                        row.AddCol(elem.AsBool());
+                    }
+                    else
+                    {
+                        row.AddCol(elem.AsString());
+                    }
+                }
+                list.Add(row);
+            }
+            dg.ItemsSource = list;
+            return new Variable(sqlResult.Tuple.Count);
+        }
+
         public class Row
         {
             int strIndex = 0;
@@ -1316,7 +1356,6 @@ namespace WpfCSCS
 
         }
     }
-
 
     class BindSQLFunction : ParserFunction
     {
