@@ -364,7 +364,7 @@ namespace WpfCSCS
 
         public static Variable RunScript(string funcName, Window win, Variable arg1, Variable arg2 = null)
         {
-            CustomFunction customFunction = ParserFunction.GetFunction(funcName, null) as CustomFunction;
+            CustomFunction customFunction = ParserFunction.GetFunction(funcName) as CustomFunction;
             if (customFunction != null)
             {
                 List<Variable> args = new List<Variable>();
@@ -1434,7 +1434,7 @@ namespace WpfCSCS
         {
             string funcName = Utils.GetToken(script, Constants.NEXT_OR_END_ARRAY);
 
-            ParserFunction func = ParserFunction.GetFunction(funcName, script);
+            ParserFunction func = ParserFunction.GetFunction(funcName);
             Utils.CheckNotNull(funcName, func, script);
 
             Variable result = Variable.EmptyInstance;
@@ -3930,6 +3930,12 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
             }
 
             defVar.Pointer = args[0];
+            var existing = ParserFunction.GetVariableValue(defVar.Pointer, script);
+            if (existing != null)
+            {
+                ParserFunction.AddGlobalOrLocalVariable(Constants.POINTER_REF + m_name,
+                               new GetVarFunction(existing));
+            }
             return defVar;
         }
     }
@@ -4023,6 +4029,8 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                     refValue.InitVariable(varValue, script, false);
                     ParserFunction.AddGlobalOrLocalVariable(m_originalName,
                             new GetVarFunction(refValue));
+                    ParserFunction.AddGlobalOrLocalVariable(defVar.Pointer,
+                            new GetVarFunction(varValue));
                     return refValue;
                 }
             }
@@ -4192,12 +4200,12 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
 
             List<Variable> args = script.GetFunctionArgs();
 
-            CustomFunction newThreadFunction = ParserFunction.GetFunction(funcName, null) as CustomFunction;
+            CustomFunction newThreadFunction = ParserFunction.GetFunction(funcName) as CustomFunction;
             if (newThreadFunction == null)
             {
                 throw new ArgumentException("Error: Couldn't find function [" + funcName + "]");
             }
-            CustomFunction callbackFunction = ParserFunction.GetFunction(callback, null) as CustomFunction;
+            CustomFunction callbackFunction = ParserFunction.GetFunction(callback) as CustomFunction;
             if (callbackFunction == null)
             {
                 throw new ArgumentException("Error: Couldn't find function [" + callback + "]");

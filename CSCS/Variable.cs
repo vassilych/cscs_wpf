@@ -99,6 +99,7 @@ namespace SplitAndMerge
                 tuple.Add(new Variable(a[key]));
             }
             this.Tuple = tuple;
+            Original = OriginalType.ARRAY;
         }
         public Variable(Dictionary<string, double> a)
         {
@@ -111,6 +112,7 @@ namespace SplitAndMerge
                 tuple.Add(new Variable(a[key]));
             }
             this.Tuple = tuple;
+            Original = OriginalType.ARRAY;
         }
 
         public Variable(object o)
@@ -125,12 +127,9 @@ namespace SplitAndMerge
             return newVar;
         }
 
-        public virtual Variable DeepClone()
+        public virtual Variable DeepClone(string newName = "")
         {
-            //Variable newVar = new Variable();
-            //newVar.Copy(this);
             Variable newVar = (Variable)this.MemberwiseClone();
-
             if (m_tuple != null)
             {
                 List<Variable> newTuple = new List<Variable>();
@@ -147,6 +146,8 @@ namespace SplitAndMerge
                 newVar.m_propertyMap = new Dictionary<string, Variable>(m_propertyMap);
                 newVar.m_enumMap = m_enumMap == null ? null : new Dictionary<int, string>(m_enumMap);
             }
+            newVar.ParamName = string.IsNullOrWhiteSpace(newName) ? newVar.ParamName : newName;
+            var newClass = CSCSClass.ClassInstance.AssignIfClass(this, newVar);
             return newVar;
         }
 
@@ -623,48 +624,12 @@ namespace SplitAndMerge
                                        bool sameLine = true,
                                        int maxCount = -1)
         {
-            if (Type == VarType.NUMBER)
+            var result = BaseAsString();
+            if (result != null)
             {
-                return Value.ToString();
+                return result;
             }
-            if (Type == VarType.STRING)
-            {
-                return m_string == null ? "" : m_string;
-            }
-            if (Type == VarType.DATETIME)
-            {
-                return DateTime.ToString();
-            }
-            if (Type == VarType.OBJECT)
-            {
-                return ObjectToString();
-            }
-            if (Type == VarType.BYTE_ARRAY)
-            {
-                return Encoding.Unicode.GetString(m_byteArray, 0, m_byteArray.Length);
-            }
-
             StringBuilder sb = new StringBuilder();
-            if (Type == VarType.ENUM)
-            {
-                sb.Append(Constants.START_GROUP.ToString() + " ");
-                foreach (string key in m_propertyMap.Keys)
-                {
-                    sb.Append(key + " ");
-                }
-                sb.Append(Constants.END_GROUP.ToString());
-                return sb.ToString();
-            }
-
-            if (Type == VarType.UNDEFINED)
-            {
-                return Constants.UNDEFINED;
-            }
-            if (Type == VarType.NONE || m_tuple == null)
-            {
-                return string.Empty;
-            }
-
             if (isList)
             {
                 sb.Append(Constants.START_ARRAY.ToString() +
@@ -673,6 +638,7 @@ namespace SplitAndMerge
 
             int count = maxCount < 0 ? m_tuple.Count : Math.Min(maxCount, m_tuple.Count);
             int i = 0;
+            HashSet<int> arrayKeys = new HashSet<int>();
             if (m_dictionary.Count > 0)
             {
                 count = maxCount < 0 ? m_dictionary.Count : Math.Min(maxCount, m_dictionary.Count);
@@ -680,9 +646,11 @@ namespace SplitAndMerge
                 {
                     if (entry.Value >= 0 && entry.Value < m_tuple.Count)
                     {
-                        string value = m_tuple[entry.Value].AsString(isList, sameLine, maxCount);
+                        var quote = m_tuple[entry.Value].Type == VarType.STRING ? "\"" : "";
+                        string value = quote + m_tuple[entry.Value].AsString(isList, sameLine, maxCount) + quote;
                         string realKey = entry.Key;
                         m_keyMappings.TryGetValue(entry.Key.ToLower(), out realKey);
+                        arrayKeys.Add(entry.Value);
 
                         sb.Append("\"" + realKey + "\" : " + value);
                         if (i++ < count - 1)
@@ -705,7 +673,8 @@ namespace SplitAndMerge
                 for (; i < count; i++)
                 {
                     Variable arg = m_tuple[i];
-                    sb.Append(arg.AsString(isList, sameLine, maxCount));
+                    var quote = arg.Type == VarType.STRING ? "\"" : "";
+                    sb.Append(quote + arg.AsString(isList, sameLine, maxCount) + quote);
                     if (i != count - 1)
                     {
                         sb.Append(sameLine ? ", " : Environment.NewLine);
@@ -714,7 +683,21 @@ namespace SplitAndMerge
             }
             if (count < m_tuple.Count)
             {
-                sb.Append(" ...");
+                for (int j = 0; j < m_tuple.Count; j++)
+                {
+                    if (arrayKeys.Contains(j))
+                    {
+                        continue;
+                    }
+                    if (sb.Length > 0)
+                    {
+                        sb.Append(sameLine ? ", " : Environment.NewLine);
+                    }
+                    Variable arg = m_tuple[j];
+                    var quote = arg.Type == VarType.STRING ? "\"" : "";
+                    sb.Append(quote + arg.AsString(isList, sameLine, maxCount) + quote);
+                }
+                //sb.Append(" ...");
             }
             if (isList)
             {
@@ -723,6 +706,231 @@ namespace SplitAndMerge
             }
 
             return sb.ToString();
+        }
+
+        public string BaseAsString()
+        {
+            if (Type == VarType.NUMBER)
+            {
+                return Value.ToString();
+            }
+            if (Type == VarType.STRING)
+            {
+                return m_string == null ? "" : m_string;
+            }
+            if (Type == VarType.DATETIME)
+            {
+                return DateTime.ToString();
+            }
+            if (Type == VarType.OBJECT)
+            {
+                return ObjectToString();
+            }
+            if (Type == VarType.BYTE_ARRAY)
+            {
+                return Encoding.Unicode.GetString(m_byteArray, 0, m_byteArray.Length);
+            }
+            if (Type == VarType.UNDEFINED)
+            {
+                return Constants.UNDEFINED;
+            }
+            if (Type == VarType.ENUM)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append(Constants.START_ARRAY.ToString() + " ");
+                foreach (string key in m_propertyMap.Keys)
+                {
+                    sb.Append(key + " ");
+                }
+                sb.Append(Constants.END_ARRAY.ToString());
+                return sb.ToString();
+            }
+            if (Type == VarType.NONE || m_tuple == null)
+            {
+                return string.Empty;
+            }
+
+            return null;
+        }
+
+        public string GetStringRep()
+        {
+            var stringRep = BaseAsString();
+            var type = ToString(Type);
+            if (stringRep != null)
+            {
+                var quote = Type == VarType.STRING ? "\"" : "";
+                return type + ":" + quote + stringRep + quote;
+            }
+
+            StringBuilder sb = new StringBuilder(type + ":[");
+            for (int i = 0; i < m_tuple.Count; i++)
+            {
+                var child = m_tuple[i].GetStringRep();
+                sb.Append(child);
+                if (i != m_tuple.Count - 1)
+                {
+                    sb.Append(",");
+                }
+            }
+            sb.Append("]");
+            GetMapRep(sb);
+            
+            return sb.ToString();
+        }
+
+        public string GetMapRep(StringBuilder sb)
+        {
+            if (m_dictionary == null || m_dictionary.Count == 0)
+            {
+                return "";
+            }
+
+            sb.Append("MAP:[");
+            int count = 0;
+            foreach (var entry in m_dictionary)
+            {
+                if (!m_keyMappings.TryGetValue(entry.Key, out string key))
+                {
+                    key = entry.Key;
+                }
+                sb.Append('"' + key + "\":" + entry.Value);
+                if (count++ != m_dictionary.Count - 1)
+                {
+                    sb.Append(",");
+                }
+            }
+            sb.Append("]");
+            return sb.ToString();
+        }
+
+        public string Marshal(string name)
+        {
+            var stringRep = GetStringRep();
+            var result = "<" + name + ":" + stringRep + ">";
+            return result;
+        }
+
+        public static Variable Unmarshal(string type, string source, ref int pointer)
+        {
+            var propStr = Utils.GetNextToken(source, ref pointer);
+            var varValue = UnmarshalVariable(type, propStr);
+            return varValue;
+        }
+
+        public static Variable UnmarshalVariable(string varType, string varStr)
+        {
+            switch (varType.ToLower())
+            {
+                case "num":
+                    double.TryParse(varStr, out double number);
+                    return new Variable(number);
+                case "obj":
+                case "map":
+                case "arr":
+                    int pointer = 0;
+                    var result = new Variable(VarType.ARRAY);
+                    while (pointer < varStr.Length)
+                    {
+                        var tmp1 = varStr.Substring(pointer);
+                        var propType = Utils.GetNextToken(varStr, ref pointer, ':', '[', ']');
+                        if (propType.StartsWith(","))
+                        {
+                            propType = propType.Substring(1);
+                        }
+                        if (string.IsNullOrWhiteSpace(propType) && pointer >= varStr.Length)
+                        {
+                            break;
+                        }
+                        var sep = string.Equals(propType, "arr", StringComparison.OrdinalIgnoreCase) ||
+                            string.Equals(propType, "obj", StringComparison.OrdinalIgnoreCase) ||
+                            string.Equals(propType, "map", StringComparison.OrdinalIgnoreCase) ?
+                            '\0' : ',';
+                        var tmp2 = varStr.Substring(pointer);
+                        var propData = Utils.GetNextToken(varStr, ref pointer, sep, '[', ']');
+                        if (string.Equals(propType, "map", StringComparison.OrdinalIgnoreCase))
+                        {
+                            result.UnmarshalMap(propData);
+                        }
+                        else
+                        {
+                            var child = UnmarshalVariable(propType, propData);
+                            result.Tuple.Add(child);
+                        }
+                    }
+                    return result;
+            }
+
+            var str = varStr.StartsWith("\"") && varStr.Length >= 2 ?
+                varStr.Substring(1, varStr.Length - 2) : varStr;
+            return new Variable(str);
+        }
+
+        public void UnmarshalMap(string mapData)
+        {
+            if (string.IsNullOrWhiteSpace(mapData))
+            {
+                return;
+            }
+            Type = VarType.ARRAY;
+            if (m_dictionary == null)
+            {
+                m_dictionary = new Dictionary<string, int>();
+            }
+            if (m_keyMappings == null)
+            {
+                m_keyMappings = new Dictionary<string, string>();
+            }
+
+            int pointer = 0;
+            var items = mapData.Split(',');
+            while (pointer < mapData.Length)
+            {
+                var key = Utils.GetNextToken(mapData, ref pointer, ':');
+                if (string.IsNullOrWhiteSpace(key) || key.Length < 2)
+                {
+                    break;
+                }
+                key = key.Substring(1, key.Length - 2);
+                var val = Utils.GetNextToken(mapData, ref pointer, ',');
+                if (!int.TryParse(val, out int arrayPtr))
+                {
+                    return;
+                }
+                var lower = key.ToLower();
+                m_dictionary[lower] = arrayPtr;
+                m_keyMappings[lower] = key;
+            }
+        }
+
+        public static string ToString(VarType type)
+        {
+            return type.ToString().Substring(0, 3).ToUpper();
+        }
+
+        public static VarType ToType(string type)
+        {
+            switch (type.ToLower())
+            {
+                case "num":
+                    return VarType.NUMBER;
+                case "str":
+                    return VarType.STRING;
+                case "arr":
+                    return VarType.ARRAY;
+                case "byt":
+                    return VarType.BYTE_ARRAY;
+                case "dat":
+                    return VarType.DATETIME;
+                case "enu":
+                    return VarType.ENUM;
+                case "map":
+                    return VarType.MAP_NUM;
+                case "obj":
+                    return VarType.OBJECT;
+                default:
+                    return VarType.NONE;
+            }
         }
 
         string ObjectToString()
@@ -827,9 +1035,8 @@ namespace SplitAndMerge
 
         string GetRealName(string name)
         {
-            string realName;
             string converted = Constants.ConvertName(name);
-            if (!m_propertyStringMap.TryGetValue(converted, out realName))
+            if (!m_propertyStringMap.TryGetValue(converted, out string realName))
             {
                 realName = name;
             }
@@ -843,9 +1050,9 @@ namespace SplitAndMerge
                 return reflectedProp;
             Variable result = Variable.EmptyInstance;
 
+            var realName = GetRealName(propName);
             // Check for an existing custom setter
-            if ((m_propertyMap.TryGetValue(propName, out result) ||
-                m_propertyMap.TryGetValue(GetRealName(propName), out result)))
+            if (m_propertyMap.TryGetValue(realName, out result))
             {
                 if (!result.Writable)
                 {
@@ -862,18 +1069,19 @@ namespace SplitAndMerge
                 {
                     return ParsingScript.RunString(result.CustomSet);
                 }
+                propName = realName;
+            }
+            else
+            {
+                m_propertyMap[propName] = value;
+                string converted = Constants.ConvertName(propName);
+                m_propertyStringMap[converted] = propName;
             }
 
-            m_propertyMap[propName] = value;
-
-            string converted = Constants.ConvertName(propName);
-            m_propertyStringMap[converted] = propName;
-
             Type = VarType.OBJECT;
-
-            if (Object is ScriptObject)
-            {
-                ScriptObject obj = Object as ScriptObject;
+            ScriptObject obj = Object as ScriptObject;
+            if (obj != null)
+            {                
                 result = obj.SetProperty(propName, value).Result;
             }
             return result;
@@ -1293,7 +1501,7 @@ namespace SplitAndMerge
 
             if (customFunc == null)
             {
-                customFunc = ParserFunction.GetFunction(token, script) as CustomFunction;
+                customFunc = ParserFunction.GetFunction(token) as CustomFunction;
             }
             if (customFunc == null)
             {
@@ -1723,7 +1931,13 @@ namespace SplitAndMerge
         {
             if (Type == VarType.OBJECT && Object != null)
             {
-                return Object.GetType().ToString();
+                var result = Object.GetType().ToString();
+                var instance = Object as CSCSClass.ClassInstance;
+                if (instance != null)
+                {
+                    result += ": " + instance.CscsClass.OriginalName;
+                }
+                return result;
             }
             return Constants.TypeToString(Type);
         }
