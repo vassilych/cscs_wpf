@@ -3683,14 +3683,24 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
 
             if (Array > 0)
             {
-                DefineVariable item = this.DeepClone() as DefineVariable;
-                item.Array = 0;
+                var maxElems = Math.Max(Array, arrayIndex);
+                var missingElems = Tuple == null || arrayIndex < 0 ? maxElems : maxElems - Tuple.Count;
+                DefineVariable item = missingElems > 0 ?
+                                      this.DeepClone() as DefineVariable : null;
                 if (Tuple == null || arrayIndex < 0)
                 {
                     Tuple = new List<Variable>(Array);
                 }
-                Tuple.AddRange(System.Linq.Enumerable.Repeat(item, Array));
+                if (missingElems > 0)
+                {
+                    item.Array = 0;
+                    Tuple.AddRange(System.Linq.Enumerable.Repeat(item, missingElems));
+                }
                 Type = VarType.ARRAY;
+                if (arrayIndex >= 0)
+                {
+                    Tuple[arrayIndex] = init;
+                }
             }
 
             CSCS_GUI.ChangingBoundVariable = true;
@@ -3704,7 +3714,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 {
                     ParserFunction.AddGlobalOrLocalVariable(Name, new GetVarFunction(this), script);
                 }
-                InitFromExisting(Name);
+                //InitFromExisting(Name);
                 CSCS_GUI.DEFINES[Name] = this;
             }
             CSCS_GUI.ChangingBoundVariable = false;
@@ -4003,7 +4013,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 int argEnd = m_originalName.IndexOf(Constants.END_ARRAY, argStart + 1);
                 var index = m_originalName.Substring(argStart + 1, argEnd - argStart - 1);
                 m_arrayIndex = Interpreter.Instance.Process(index).AsInt();
-                if (defVar.DefType != "datagrid" && defVar.Tuple != null &&
+                /*if (defVar.DefType != "datagrid" && defVar.Tuple != null &&
                     m_arrayIndex >= 0 && m_arrayIndex <= defVar.Tuple.Count - 1)
                 {
                     defVar = defVar.Tuple.ElementAt(m_arrayIndex) as DefineVariable;
@@ -4011,7 +4021,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 if (m_arrayIndex < 0)
                 {
                     Console.WriteLine(m_arrayIndex);
-                }
+                }*/
             }
             return defVar;
         }
@@ -4127,7 +4137,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 }
             }
 
-            if (defVar.Object == null)
+            if (defVar.Object == null && defVar.Tuple == null)
             {
                 ParserFunction.AddGlobalOrLocalVariable(m_name, new GetVarFunction(varValue));
             }
