@@ -3423,37 +3423,9 @@ WHERE ID = {thisOpenv.currentRow}
             ParserFunction.RegisterFunction("#MAINMENU", new MAINMENUcommand());
             ParserFunction.RegisterFunction("#WINFORM", new WINFORMcommand(true));
 
-            ParserFunction.RegisterFunction(Constants.SETUP_REPORT, new ReportFunction(ReportOption.Setup));
-            ParserFunction.RegisterFunction(Constants.OUTPUT_REPORT, new ReportFunction(ReportOption.Output));
-            ParserFunction.RegisterFunction(Constants.UPDATE_REPORT, new ReportFunction(ReportOption.Update));
-            ParserFunction.RegisterFunction(Constants.PRINT_REPORT, new ReportFunction(ReportOption.Print));
-
-            ParserFunction.RegisterFunction(Constants.OPENVfunc, new OpenvFunction());
-            ParserFunction.RegisterFunction(Constants.FINDVfunc, new FindvFunction());
-            ParserFunction.RegisterFunction(Constants.CLOSEVfunc, new ClosevFunction());
-
-            ParserFunction.RegisterFunction(Constants.REPL, new ReplFunction());
-            
-            ParserFunction.RegisterFunction(Constants.CLR, new ClrFunction());
-            ParserFunction.RegisterFunction(Constants.RCNGET, new RcnGetFunction());
-            ParserFunction.RegisterFunction(Constants.RCNSET, new RcnSetFunction());
-            
-            ParserFunction.RegisterFunction(Constants.ACTIVE, new ActiveFunction());
-            ParserFunction.RegisterFunction(Constants.DEL, new DelFunction());
-            ParserFunction.RegisterFunction(Constants.SAVE, new SaveFunction());
-
-            ParserFunction.RegisterFunction(Constants.RDA, new RDAFunction());
-            ParserFunction.RegisterFunction(Constants.WRTA, new WRTAFunction());
-
-
-            ParserFunction.RegisterFunction(Constants.FLERR, new FlerrFunction());
-
             ParserFunction.RegisterFunction(Constants.READ_XML_FILE, new ReadXmlFileFunction());
             ParserFunction.RegisterFunction(Constants.READ_TAGCONTENT_FROM_XMLSTRING,
                 new ReadTagContentFromXmlStringFunction());
-
-            //ParserFunction.RegisterFunction(Constants.OPENV, new VariableArgsOPENVFunction(true));
-            //ParserFunction.RegisterFunction(Constants.FINDV, new VariableArgsFINDVFunction(true));
 
             ParserFunction.RegisterFunction(Constants.MSG, new VariableArgsFunction(true));
             ParserFunction.RegisterFunction(Constants.DEFINE, new VariableArgsFunction(true));
@@ -3491,8 +3463,6 @@ WHERE ID = {thisOpenv.currentRow}
             ParserFunction.RegisterFunction("SetForegroundColor", new SetColorFunction(false));
             ParserFunction.RegisterFunction("SetImage", new SetImageFunction());
 
-            ParserFunction.RegisterFunction("DisplayArrFunc", new DisplayArrFuncFunction());
-
             ParserFunction.RegisterFunction("FillOutGrid", new FillOutGridFunction());
             ParserFunction.RegisterFunction("FillOutGridFromDB", new FillOutGridFunction(true));
             ParserFunction.RegisterFunction("BindSQL", new BindSQLFunction());
@@ -3526,9 +3496,6 @@ WHERE ID = {thisOpenv.currentRow}
             ParserFunction.AddAction(Constants.ASSIGNMENT, new MyAssignFunction());
             ParserFunction.AddAction(Constants.POINTER, new MyPointerFunction());
 
-            Constants.FUNCT_WITH_SPACE.Add(Constants.OPENV);
-            Constants.FUNCT_WITH_SPACE.Add(Constants.FINDV);
-
             Constants.FUNCT_WITH_SPACE.Add(Constants.DEFINE);
             Constants.FUNCT_WITH_SPACE.Add(Constants.DISPLAY_ARRAY);
             Constants.FUNCT_WITH_SPACE.Add(Constants.DATA_GRID);
@@ -3553,87 +3520,6 @@ WHERE ID = {thisOpenv.currentRow}
             Precompiler.AsyncMode = false;
 
             RequireDEFINE = App.GetConfiguration("Require_Define", "false");
-            DefaultDB = App.GetConfiguration("DefaultDB", "adictionary");
-            CSCS_SQL.ConnectionString = App.GetConfiguration("ConnectionString", "");
-
-            CSCS_SQL.SqlServerConnection = new SqlConnection(CSCS_SQL.ConnectionString);
-
-            if (int.TryParse(App.GetConfiguration("MaxCacheSize", "300"), out int cacheSize))
-            {
-                MaxCacheSize = cacheSize;
-            }
-
-
-            CacheAdictionary();
-
-            FillDatabasesDictionary();
-        }
-
-        private static bool CacheAdictionary()
-        {
-            try
-            {
-                SqlConnection conn = new SqlConnection(CSCS_SQL.ConnectionString);
-
-                conn.Open();
-
-                CSCS_GUI.Adictionary.SY_DATABASESList = AdictionaryLocal.CacheAdictionary.GetSY_DATABASES(conn);
-                CSCS_GUI.Adictionary.SY_TABLESList = AdictionaryLocal.CacheAdictionary.GetSY_TABLES(conn);
-                CSCS_GUI.Adictionary.SY_FIELDSList = AdictionaryLocal.CacheAdictionary.GetSY_FIELDS(conn);
-                CSCS_GUI.Adictionary.SY_INDEXESList = AdictionaryLocal.CacheAdictionary.GetSY_INDEXES(conn);
-
-                conn.Close();
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        private static void FillDatabasesDictionaryOLD()
-        {
-            //            var query = $@"
-            //use adictionary;
-            //SELECT
-            //SYCD_USERCODE, SYCD_DBASENAME
-            //  FROM SY_DATABASES
-            //               ";
-
-            //            using (SqlConnection con = new SqlConnection(CSCS_SQL.ConnectionString))
-            //            {
-            //                using (SqlCommand cmd = new SqlCommand(query, con))
-            //                {
-            //                    con.Open();
-            //                    using (SqlDataReader reader = cmd.ExecuteReader())
-            //                    {
-            //                        if (!reader.HasRows)
-            //                        {
-            //                            // nema baza u sy_databases
-            //                            throw new Exception("No databases found");
-            //                        }
-            //                        else
-            //                        {
-            //                            while (reader.Read()) // unique???
-            //                            {
-            //                                var dbCode = reader["SYCD_USERCODE"].ToString().TrimEnd();
-            //                                var dbName = reader["SYCD_DBASENAME"].ToString().TrimEnd();
-            //                                Databases[dbCode] = dbName;
-            //                            }
-
-            //                        }
-
-            //                    }
-            //                }
-            //            }
-        }
-        private static void FillDatabasesDictionary()
-        {
-            foreach (var db in Adictionary.SY_DATABASESList)
-            {
-                Databases[db.SYCD_USERCODE] = db.SYCD_DBASENAME;
-            }
         }
 
         public static string GetWidgetBindingName(FrameworkElement widget)
@@ -3648,7 +3534,7 @@ WHERE ID = {thisOpenv.currentRow}
             return widgetName;
         }
 
-        public static void OnVariableChange(string name, Variable newValue, bool exists = true)
+        static void OnVariableChange(string name, Variable newValue, bool exists = true)
         {
             if (ChangingBoundVariable)
             {
@@ -4292,7 +4178,7 @@ WHERE ID = {thisOpenv.currentRow}
                 var result = Interpreter.Run(funcName, new Variable(widgetName), null,
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
                 if (result.Type == Variable.VarType.NUMBER && !result.AsBool())
-                {
+                { 
                     e.Handled = true;
                     lastObjWidgetName = widgetName;
                 }
@@ -6030,7 +5916,7 @@ WHERE ID = {thisOpenv.currentRow}
             return new Variable(objectName);
         }
 
-        public static Variable CreateVariable(ParsingScript script, string name, Variable value, Variable init,
+        static Variable CreateVariable(ParsingScript script, string name, Variable value, Variable init,
             string type = "", int size = 0, int dec = 3, int array = 0, bool local = false, bool up = false, string dup = null)
         {
             DefineVariable dupVar = null;
@@ -6347,199 +6233,6 @@ WHERE ID = {thisOpenv.currentRow}
             dg.UpdateLayout();
         }
     }
-    
-    //class VariableArgsOPENVFunction : ParserFunction
-    //{
-    //    bool m_processFirstToken = true;
-    //    Dictionary<string, Variable> m_parameters;
-    //    string m_lastParameter;
-
-    //    public VariableArgsOPENVFunction(bool processFirst = true)
-    //    {
-    //        m_processFirstToken = processFirst;
-    //    }
-
-    //    void GetParameters(ParsingScript script)
-    //    {
-    //        var separator = new char[] { ' ', ';' };
-    //        m_parameters = new Dictionary<string, Variable>();
-
-    //        while (script.Current != Constants.END_STATEMENT && script.StillValid())
-    //        {
-    //            var labelName = Utils.GetToken(script, Constants.TOKEN_SEPARATION).ToLower();
-    //            var value = labelName == "up" || labelName == "local" || labelName == "setup" || labelName == "close" ||
-    //                labelName == "addrow" || labelName == "insertrow" || labelName == "deleterow" ?
-    //                new Variable(true) :
-    //                        script.Current == Constants.END_STATEMENT ? Variable.EmptyInstance :
-    //                        new Variable(Utils.GetToken(script, separator));
-
-    //            if (labelName == "fnum" || labelName == "ext")
-    //            {
-    //                m_parameters[labelName] = value;
-    //            }
-    //            else
-    //            {
-    //                //// za izvuć vrijednost varijable
-    //                if (script.Prev != '"' && !string.IsNullOrWhiteSpace(value.String))
-    //                {
-    //                    var existing = ParserFunction.GetVariableValue(value.String, script);
-    //                    value = existing == null ? value : existing;
-    //                }
-    //                m_parameters[labelName] = value;
-    //            }
-
-    //            //// ?
-    //            //m_lastParameter = labelName;
-    //        }
-    //    }
-
-    //    string GetParameter(string key, string defValue = "")
-    //    {
-    //        Variable res;
-    //        if (!m_parameters.TryGetValue(key.ToLower(), out res))
-    //        {
-    //            return defValue;
-    //        }
-    //        return res.AsString();
-    //    }
-        
-
-    //    protected override Variable Evaluate(ParsingScript script)
-    //    {
-    //        m_processFirstToken = false;
-    //        //var tableToken = m_processFirstToken ? Utils.GetToken(script, new char[] { ' ', '}', ')', ';' }) : "";
-    //        //var existing = ParserFunction.GetVariableValue(tableToken, script);
-    //        //string tableString = existing == null ? tableToken : existing.String;
-
-
-    //        Name = Name.ToUpper();
-    //        GetParameters(script);
-
-    //        var tableString = GetParameter("table");
-
-    //        var hndlName = GetParameter("fnum");
-    //        var shortDbName = GetParameter("ext");
-    //        if (string.IsNullOrEmpty(shortDbName)) shortDbName = DefaultDB;
-
-    //        var resultVariable = Btrieve.OPENV(tableString.ToLower(), shortDbName);
-    //        if(resultVariable.Type == Variable.VarType.NUMBER)
-    //        {
-    //            if (CSCS_GUI.DEFINES.TryGetValue(hndlName, out DefineVariable hndlVar))
-    //            {
-    //                hndlVar.InitVariable(resultVariable);
-    //            }
-    //        }
-
-    //        return Variable.EmptyInstance;
-    //    }
-    //}
-    
-    //class VariableArgsFINDVFunction : ParserFunction
-    //{
-    //    bool m_processFirstToken = true;
-    //    Dictionary<string, Variable> m_parameters;
-    //    string m_lastParameter;
-
-    //    public VariableArgsFINDVFunction(bool processFirst = true)
-    //    {
-    //        m_processFirstToken = processFirst;
-    //    }
-
-    //    void GetParameters(ParsingScript script)
-    //    {
-    //        var separator = new char[] { ' ', ';' };
-    //        m_parameters = new Dictionary<string, Variable>();
-
-    //        while (script.Current != Constants.END_STATEMENT && script.StillValid())
-    //        {
-    //            var labelName = Utils.GetToken(script, Constants.TOKEN_SEPARATION).ToLower();
-    //            var value = labelName == "up" || labelName == "local" || labelName == "setup" || labelName == "close" ||
-    //                labelName == "addrow" || labelName == "insertrow" || labelName == "deleterow" ?
-    //                new Variable(true) :
-    //                        script.Current == Constants.END_STATEMENT ? Variable.EmptyInstance :
-    //                        new Variable(Utils.GetToken(script, separator));
-
-    //            if (/*labelName == "fnum" ||*/ labelName == "key")
-    //            {
-    //                m_parameters[labelName] = value;
-    //            }
-    //            else
-    //            {
-    //                //// za izvuć vrijednost varijable
-    //                if (script.Prev != '"' && !string.IsNullOrWhiteSpace(value.String))
-    //                {
-    //                    var existing = ParserFunction.GetVariableValue(value.String, script);
-    //                    value = existing == null ? value : existing;
-    //                }
-    //                m_parameters[labelName] = value;
-    //            }
-
-    //            //// ?
-    //            //m_lastParameter = labelName;
-    //        }
-    //    }
-
-    //    string GetParameter(string key, string defValue = "")
-    //    {
-    //        Variable res;
-    //        if (!m_parameters.TryGetValue(key.ToLower(), out res))
-    //        {
-    //            return defValue;
-    //        }
-    //        return res.AsString();
-    //    }
-    //    double GetDoubleParameter(string key, double defValue = 0.0)
-    //    {
-    //        Variable res;
-    //        if (!m_parameters.TryGetValue(key.ToLower(), out res))
-    //        {
-    //            return defValue;
-    //        }
-    //        return res.AsDouble();
-    //    }
-    //    int GetIntParameter(string key, int defValue = 0)
-    //    {
-    //        Variable res;
-    //        if (!m_parameters.TryGetValue(key.ToLower(), out res))
-    //        {
-    //            return defValue;
-    //        }
-    //        return res.AsInt();
-    //    }
-    //    bool GetBoolParameter(string key, bool defValue = false)
-    //    {
-    //        Variable res;
-    //        if (!m_parameters.TryGetValue(key.ToLower(), out res))
-    //        {
-    //            return defValue;
-    //        }
-    //        return res.AsBool();
-    //    }
-    //    Variable GetVariableParameter(string key, Variable defValue = null)
-    //    {
-    //        Variable res;
-    //        if (!m_parameters.TryGetValue(key.ToLower(), out res))
-    //        {
-    //            return defValue;
-    //        }
-    //        return res;
-    //    }
-
-    //    protected override Variable Evaluate(ParsingScript script)
-    //    {
-    //        var operationType = m_processFirstToken ? Utils.GetToken(script, new char[] { ' ', '}', ')', ';' }) : "";
-    //        Name = Name.ToUpper();
-    //        GetParameters(script);
-
-    //        var hndlNum = GetIntParameter("fnum");
-    //        var keyName = GetParameter("key");
-    //        // if(keyname starts with "@"  ... )
-
-    //        new Btrieve.FINDVClass(hndlNum, operationType, keyName, "").FINDV(); 
-            
-    //        return Variable.EmptyInstance;
-    //    }
-    //}
 
     class ReturnStatement : ParserFunction
     {
