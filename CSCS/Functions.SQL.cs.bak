@@ -12,8 +12,6 @@ namespace SplitAndMerge
     {
         internal static string ConnectionString { get; set; }
 
-        public static SqlConnection SqlServerConnection = new SqlConnection();
-        
         internal static void CheckConnectionString(ParsingScript script = null, string funcName = "")
         {
             if (string.IsNullOrWhiteSpace(ConnectionString))
