@@ -4692,8 +4692,8 @@ WHERE ID = {thisOpenv.currentRow}
             {
                 for (int j = 0; j < rowsOfGrids[gridName].Count; j++)
                 {
-                    //var asd = s_variables[arrayNames[i]];
-                    //var asdasd = rowsOfGrids[gridName][j][i];
+                    var array = DEFINES[arrayNames[i]];
+                    array.Tuple[j] = new Variable( rowsOfGrids[gridName][j][i]);
                 }
             }
         }
