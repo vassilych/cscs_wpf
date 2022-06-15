@@ -4683,8 +4683,8 @@ WHERE ID = {thisOpenv.currentRow}
             {
                 for (int j = 0; j < rowsOfGrids[gridName].Count; j++)
                 {
-                    var asd = s_variables[arrayNames[i]];
-                    var asdasd = rowsOfGrids[gridName][j][i];
+                    //var asd = s_variables[arrayNames[i]];
+                    //var asdasd = rowsOfGrids[gridName][j][i];
                 }
             }
         }
