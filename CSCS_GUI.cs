@@ -4627,13 +4627,22 @@ WHERE ID = {thisOpenv.currentRow}
                         //b.Source = rows;
 
                         //tb.SetBinding(TextBox.TextProperty, b);
-
-                        Variable variableArrayVar = ParserFunction.GetVariableValue(arrayToBindTo); //TryGetValue(arrayToBindTo, out DefineVariable defVar))
-
-                        if (variableArrayVar.Type == Variable.VarType.ARRAY)
+                        
+                        if(DEFINES.TryGetValue(arrayToBindTo, out DefineVariable defVar))
                         {
-                            cols.Add(variableArrayVar.Tuple);
+                            if(defVar.Array > 0)
+                            {
+                                cols.Add(defVar.Tuple);
+                            }
+                            
                         }
+
+                        //Variable variableArrayVar = ParserFunction.GetVariableValue(arrayToBindTo); //TryGetValue(arrayToBindTo, out DefineVariable defVar))
+
+                        //if (variableArrayVar.Type == Variable.VarType.ARRAY)
+                        //{
+                        //    cols.Add(variableArrayVar.Tuple);
+                        //}
 
                     }
                 }
