@@ -4576,6 +4576,285 @@ WHERE ID = {thisOpenv.currentRow}
         }
     }
 
+    class DisplayArrFuncFunction : ParserFunction
+    {
+        static Dictionary<string, List<string>> arraysOfGrids = new Dictionary<string, List<string>>();
+
+        Dictionary<string, ObservableCollection<object[]>> rowsOfGrids { get; set; } = new Dictionary<string, ObservableCollection<object[]>>();
+
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            var widgetName = Utils.GetSafeString(args, 0);
+            var dg = CSCS_GUI.GetWidget(widgetName) as DataGrid;
+            if (dg == null)
+            {
+                return Variable.EmptyInstance;
+            }
+
+            //dg.ItemsSource = rows;
+
+            List<List<Variable>> cols = new List<List<Variable>>();
+            List<string> headers = new List<string>();
+            List<string> tags = new List<string>();
+
+
+            var columns = dg.Columns;
+            foreach (var column in columns)
+            {
+                if (column is DataGridTemplateColumn)
+                {
+                    var dgtc = column as DataGridTemplateColumn;
+
+                    var header = dgtc.Header;
+                    headers.Add(header.ToString());
+
+                    var displayIndex = dgtc.DisplayIndex;
+
+                    var content = dgtc.CellTemplate.LoadContent();
+
+
+                    if (content is TextBox)
+                    {
+                        var tb = content as TextBox;
+                        var arrayToBindTo = tb.Tag.ToString().ToLower();
+
+                        tags.Add(arrayToBindTo);
+
+                        //Binding b = new Binding($"Binding");
+                        //b.Source = rows;
+
+                        //tb.SetBinding(TextBox.TextProperty, b);
+
+                        Variable variableArrayVar = ParserFunction.GetVariableValue(arrayToBindTo); //TryGetValue(arrayToBindTo, out DefineVariable defVar))
+
+                        if (variableArrayVar.Type == Variable.VarType.ARRAY)
+                        {
+                            cols.Add(variableArrayVar.Tuple);
+                        }
+
+                    }
+                }
+            }
+
+            arraysOfGrids[dg.Name] = tags;
+
+            ObservableCollection<object[]> rows = new ObservableCollection<object[]>();
+
+            for (int i = 0; i < cols[0].Count; i++)
+            {
+                object[] row = new object[cols.Count];
+                for (int j = 0; j < cols.Count; j++)
+                {
+                    var cell = cols[j][i];
+                    switch (cell.Type)
+                    {
+                        case Variable.VarType.STRING:
+                            row[j] = cell.AsString();
+                            break;
+                        case Variable.VarType.NUMBER:
+                            row[j] = cell.AsDouble();
+                            break;
+                    }
+                }
+                rows.Add(row);
+            }
+
+            rowsOfGrids[dg.Name] = rows;
+
+            dg.ItemsSource = rows;
+
+            dg.Columns.Clear();
+            for (int i = 0; i < rows[0].Length; ++i)
+                dg.Columns.Add(new DataGridTextColumn { Binding = new Binding("[" + i.ToString() + "]"), Header = headers[i] });
+
+            dg.CurrentCellChanged += Dg_CurrentCellChanged;
+
+            return new Variable("");
+        }
+
+        private void Dg_CurrentCellChanged(object sender, EventArgs e)
+        {
+            var gridName = (sender as DataGrid).Name;
+            var arrayNames = arraysOfGrids[gridName];
+            for (int i = 0; i < arrayNames.Count(); i++)
+            {
+                for (int j = 0; j < rowsOfGrids[gridName].Count; j++)
+                {
+                    var asd = s_variables[arrayNames[i]];
+                    var asdasd = rowsOfGrids[gridName][j][i];
+                }
+            }
+        }
+
+    }
+
+    class DisplayArrFuncFunction_old2 : ParserFunction
+    {
+        class cell
+        {
+            public dynamic Key { get; set; }
+            public dynamic Value { get; set; }
+        }
+        ObservableCollection<cell[]> rows { get; set; }
+
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            var widgetName = Utils.GetSafeString(args, 0);
+            var dg = CSCS_GUI.GetWidget(widgetName) as DataGrid;
+            if (dg == null)
+            {
+                return Variable.EmptyInstance;
+            }
+
+            //dg.ItemsSource = rows;
+
+            List<List<Variable>> cols = new List<List<Variable>>();
+
+            rows = new ObservableCollection<cell[]>();
+
+            var columns = dg.Columns;
+            foreach (var column in columns)
+            {
+                if (column is DataGridTemplateColumn)
+                {
+                    var dgtc = column as DataGridTemplateColumn;
+
+                    //var header = dgtc.Header;
+                    var displayIndex = dgtc.DisplayIndex;
+
+                    var content = dgtc.CellTemplate.LoadContent();
+
+                    if (content is TextBox)
+                    {
+                        var tb = content as TextBox;
+                        var arrayToBindTo = tb.Tag.ToString().ToLower();
+
+                        Binding b = new Binding($"Binding");
+                        b.Source = rows;
+
+                        tb.SetBinding(TextBox.TextProperty, b);
+
+                        Variable variableArrayVar = ParserFunction.GetVariableValue(arrayToBindTo); //TryGetValue(arrayToBindTo, out DefineVariable defVar))
+
+                        if (variableArrayVar.Type == Variable.VarType.ARRAY)
+                        {
+                            cols.Add(variableArrayVar.Tuple);
+                        }
+
+                    }
+                }
+            }
+
+            for (int i = 0; i < cols[0].Count; i++)
+            {
+                cell[] row = new cell[cols.Count];
+                for (int j = 0; j < cols.Count; j++)
+                {
+                    var cell = cols[j][i];
+                    switch (cell.Type)
+                    {
+                        case Variable.VarType.STRING:
+                            row[j] = new cell() { Key = j, Value = cell.AsString() };
+                            break;
+                        case Variable.VarType.NUMBER:
+                            row[j] = new cell() { Key = j, Value = cell.AsDouble() };
+                            break;
+                    }
+                }
+                rows.Add(row);
+            }
+
+            dg.ItemsSource = rows;
+
+            return new Variable("");
+        }
+
+    }
+
+    class DisplayArrFuncFunction_old : ParserFunction
+    {
+        ObservableCollection<object[]> rows { get; set; }
+
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            var widgetName = Utils.GetSafeString(args, 0);
+            var dg = CSCS_GUI.GetWidget(widgetName) as DataGrid;
+            if (dg == null)
+            {
+                return Variable.EmptyInstance;
+            }
+
+            List<List<Variable>> cols = new List<List<Variable>>();
+
+            rows = new ObservableCollection<object[]>();
+
+            var columns = dg.Columns;
+            foreach (var column in columns)
+            {
+                if (column is DataGridTemplateColumn)
+                {
+                    var dgtc = column as DataGridTemplateColumn;
+
+                    //var header = dgtc.Header;
+
+                    var content = dgtc.CellTemplate.LoadContent();
+
+                    if (content is TextBox)
+                    {
+                        var tb = content as TextBox;
+                        var arrayToBindTo = tb.Tag.ToString().ToLower();
+
+                        Binding b = new Binding("[0]");  // The selected item's 'rr_addr' column ...
+                        b.Source = dg;
+
+                        tb.SetBinding(TextBox.TextProperty, b);
+
+                        Variable variableArrayVar = ParserFunction.GetVariableValue(arrayToBindTo); //TryGetValue(arrayToBindTo, out DefineVariable defVar))
+
+                        if (variableArrayVar.Type == Variable.VarType.ARRAY)
+                        {
+                            cols.Add(variableArrayVar.Tuple);
+                        }
+
+                    }
+                }
+            }
+
+            for (int i = 0; i < cols[0].Count; i++)
+            {
+                object[] row = new object[cols.Count];
+                for (int j = 0; j < cols.Count; j++)
+                {
+                    var cell = cols[j][i];
+                    switch (cell.Type)
+                    {
+                        case Variable.VarType.STRING:
+                            row[j] = cell.AsString();
+                            break;
+                        case Variable.VarType.NUMBER:
+                            row[j] = cell.AsDouble();
+                            break;
+                    }
+                }
+                rows.Add(row);
+            }
+
+            dg.ItemsSource = rows;
+
+            return new Variable("");
+        }
+
+    }
+
     class FillOutGridFunction : ParserFunction
     {
         bool m_fromDB;
