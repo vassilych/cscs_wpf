@@ -131,10 +131,10 @@ namespace WpfCSCS
             var table = CSCS_GUI.Adictionary.SY_TABLESList.FirstOrDefault(p => p.SYCT_NAME == tableName.ToUpper() && p.SYCT_USERCODE == databaseName.ToUpper());
             if (table == null)
             {
-                // error "There's no table with name {tableName.ToUpper()} in database {databaseName.ToUpper()}!"
+                // err: "There's no table with name {tableName.ToUpper()} in database {databaseName.ToUpper()}!"
 
-                SetFlerr(7); // testno ? treba li nam ?
-                return new Variable((long)0); // ovo treba, puni hndl s nulom
+                SetFlerr(7);
+                return new Variable((long)0); // tableHndl fill with 0 -> error
             }
 
             var listOfFields = CSCS_GUI.Adictionary.SY_FIELDSList.Where(p => p.SYTD_SCHEMA == table.SYCT_SCHEMA).ToList();
@@ -146,29 +146,8 @@ namespace WpfCSCS
                     DefineVariable newVar = new DefineVariable(field.SYTD_FIELD, null, field.SYTD_TYPE, field.SYTD_SIZE, field.SYTD_DEC, field.SYTD_ARRAYNUM/*, local, up*/);
                     newVar.InitVariable(Variable.EmptyInstance, script);
                 }
-
-                //DefineVariable dupVar = null;
-                //if (!string.IsNullOrWhiteSpace(dup) && !CSCS_GUI.DEFINES.TryGetValue(dup, out dupVar))
-                //{
-                //    throw new ArgumentException("Couldn't find variable [" + dup + "]");
-                //}
-
-                //var valueStr = value == null ? "" : value.AsString();
-                //init = init == null ? Variable.EmptyInstance : init;
-
-                //DefineVariable newVar = null;
-                //var parts = name.Split(new char[] { ',' });
-                //foreach (var objName in parts)
-                //{
-                //    newVar = dupVar != null ? new DefineVariable(objName, dupVar, local) :
-                //                              new DefineVariable(objName, valueStr, type, size, dec, array, local, up);
-                //    newVar.InitVariable(dupVar != null ? dupVar.Init : init, script);
-                //}
-
             }
 
-
-            // 
             List<KeyClass> listOfKeys = new List<KeyClass>();
 
             var listOfKeySegments = CSCS_GUI.Adictionary.SY_INDEXESList.Where(p => p.SYKI_SCHEMA == table.SYCT_SCHEMA).OrderBy(p => p.SYKI_KEYNUM).ThenBy(p => p.SYKI_SEGNUM).ToList();
@@ -193,8 +172,6 @@ namespace WpfCSCS
                 });
             }
 
-
-            //
             var thisFnum = Btrieve.OPENVs.Keys.Count > 0 ? Btrieve.OPENVs.Keys.Max() + 1 : 1;
             Btrieve.OPENVs.Add(thisFnum, new OpenvTable()
             {
@@ -202,7 +179,7 @@ namespace WpfCSCS
                 databaseName = databaseName.ToLower(),
                 FieldNames = listOfFields.Select(p => p.SYTD_FIELD).ToList(),
                 Keys = listOfKeys,
-                Cache = new CachingClass() // treba li to u openv-u - da
+                Cache = new CachingClass()
             });
 
             SetFlerr(0, thisFnum);
@@ -235,9 +212,9 @@ namespace WpfCSCS
             string columnsToSelect;
             string keyo;
 
-            public static Dictionary<int, string> nextPrevCachedWhereStrings = new Dictionary<int, string>();//<tableHndlNum, nextPrevCachedWhereString>
-            public static Dictionary<int, string> cachedSqlForString = new Dictionary<int, string>();//<tableHndlNum, cachedSqlForString>
-            public static Dictionary<int, string> cachedColumnsToSelect = new Dictionary<int, string>();//<tableHndlNum, cachedColumnsToSelect>
+            public static Dictionary<int, string> nextPrevCachedWhereStrings = new Dictionary<int, string>(); // <tableHndlNum, nextPrevCachedWhereString>
+            public static Dictionary<int, string> cachedSqlForString = new Dictionary<int, string>(); // <tableHndlNum, cachedSqlForString>
+            public static Dictionary<int, string> cachedColumnsToSelect = new Dictionary<int, string>(); // <tableHndlNum, cachedColumnsToSelect>
 
             static Dictionary<int, FindvOption> lastUsedPreviousOrNext = new Dictionary<int, FindvOption>();
 
@@ -254,7 +231,7 @@ namespace WpfCSCS
                     keyNeeded = true;
                 }
 
-                thisOpenv = OPENVs[tableHndlNum]; // tu more bit greska, ako programer fula broj(hndl) ?? ili ako tabla nije otvorena(hndl nije dobio broj)
+                thisOpenv = OPENVs[tableHndlNum];
 
                 if (keyNeeded)
                 {
@@ -262,7 +239,7 @@ namespace WpfCSCS
                     {
                         if (keyNum > 0)
                         {
-                            //OPTIMIZIRAT
+                            // for optimization
                             var kljuceviTable = CSCS_GUI.Adictionary.SY_INDEXESList.Where(p => p.SYKI_SCHEMA == CSCS_GUI.Adictionary.SY_TABLESList.First(r => r.SYCT_NAME == thisOpenv.tableName.ToUpper()).SYCT_SCHEMA).OrderBy(s => s.SYKI_KEYNUM);
 
                             KeyClass = thisOpenv.Keys.First(p => p.KeyName == kljuceviTable.Where(r => r.SYKI_KEYNUM == keyNum).First().SYKI_KEYNAME);
@@ -272,7 +249,7 @@ namespace WpfCSCS
                             KeyClass = new KeyClass() { KeyName = "ID", Ascending = true, Unique = true, KeyNum = 0, KeyColumns = new Dictionary<string, string>() { { "ID", "" } } };
                         }
                     }
-                    else if (!thisOpenv.Keys.Any(p => p.KeyName == tableKey.ToUpper()) /* or ne postoji ključ s tim BROJEM*/)
+                    else if (!thisOpenv.Keys.Any(p => p.KeyName == tableKey.ToUpper())/)
                     {
                         // "Key does not exist for this table!"
                         SetFlerr(4, tableHndlNum);
@@ -281,7 +258,6 @@ namespace WpfCSCS
                     else
                     {
                         KeyClass = thisOpenv.Keys.First(p => p.KeyName == tableKey.ToUpper());
-                        //**************
                     }
                 }
                 else
@@ -306,8 +282,6 @@ namespace WpfCSCS
                     matchExactString = matchExactStringBuilder.ToString();
                 }
 
-
-
                 switch (operationType)
                 {
                     case "f":
@@ -318,14 +292,12 @@ namespace WpfCSCS
                         return findNextOrPrevious(FindvOption.Next);
                     case "p":
                         return findNextOrPrevious(FindvOption.Previous);
-                    //match exact
                     case "m":
                         return findMatchExact(FindvOption.MatchExact);
-                    //generic -> matchexact or greater
                     case "g":
                         return findGeneric(FindvOption.Generic);
                     default:
-                        SetFlerr(1, tableHndlNum); // krivo slovo operacije
+                        SetFlerr(1, tableHndlNum);
                         return Variable.EmptyInstance;
                 }
             }
