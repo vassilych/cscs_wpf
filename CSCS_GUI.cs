@@ -3354,7 +3354,7 @@ WHERE ID = {thisOpenv.currentRow}
 
         public class CacheLine
         {
-            public Dictionary<string, DefineVariable> Line = new Dictionary<string, DefineVariable>(); // jedna linija table, string = fieldName, DefineVariable = value
+            public Dictionary<string, DefineVariable> Line = new Dictionary<string, DefineVariable>(); // one line of the table, string = fieldName, DefineVariable = value
         }
 
         public class CachingClass
