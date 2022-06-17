@@ -3324,7 +3324,6 @@ WHERE ID = {thisOpenv.currentRow}
         public static string DefaultDB { get; set; }
         public static int MaxCacheSize { get; set; }
         public static Dictionary<string, string> Databases { get; set; } = new Dictionary<string, string>(); // <SYCD_USERCODE, SYCD_DBASENAME>
-
         public static Dictionary<string, FrameworkElement> Controls { get; set; } = new Dictionary<string, FrameworkElement>();
         public static Dictionary<FrameworkElement, Window> Control2Window { get; set; } = new Dictionary<FrameworkElement, Window>();
         //public static Action<string, string> OnWidgetClick;
@@ -3339,10 +3338,8 @@ WHERE ID = {thisOpenv.currentRow}
         static Dictionary<string, string> s_mouseHoverHandlers = new Dictionary<string, string>();
         static Dictionary<string, string> s_dateSelectedHandlers = new Dictionary<string, string>();
 
-        //Pre, Check, Post
+        //Pre, Post
         static Dictionary<string, string> s_PreHandlers = new Dictionary<string, string>();
-        static Dictionary<string, string> s_CheckHandlers = new Dictionary<string, string>();
-        static Dictionary<string, string> s_Check2Handlers = new Dictionary<string, string>();
         static Dictionary<string, string> s_PostHandlers = new Dictionary<string, string>();
 
         static Dictionary<string, Variable> s_boundVariables = new Dictionary<string, Variable>();
@@ -3886,34 +3883,12 @@ WHERE ID = {thisOpenv.currentRow}
             }
 
             s_PreHandlers[name] = action;
-            //2 puta
-            //textable.PreviewGotKeyboardFocus -= new KeyboardFocusChangedEventHandler(Widget_Pre);
-            //textable.PreviewGotKeyboardFocus += new KeyboardFocusChangedEventHandler(Widget_Pre);
             textable.GotFocus -= new RoutedEventHandler(Widget_Pre);
             textable.GotFocus += new RoutedEventHandler(Widget_Pre);
 
             return true;
         }
-        //public static bool AddWidgetCheckHandler(string name, string action, FrameworkElement widget, string check2action)
-        //{
-        //    var textable = widget as TextBoxBase;
-        //    if (textable == null)
-        //    {
-        //        return false;
-        //    }
 
-        //    s_CheckHandlers[name] = action;
-        //    s_Check2Handlers[name] = check2action;
-
-        //    //2 puta
-        //    textable.PreviewLostKeyboardFocus -= new KeyboardFocusChangedEventHandler(Widget_Check);
-        //    textable.PreviewLostKeyboardFocus -= new KeyboardFocusChangedEventHandler(Widget_Check2);
-
-        //    textable.PreviewLostKeyboardFocus += new KeyboardFocusChangedEventHandler(Widget_Check);
-        //    textable.PreviewLostKeyboardFocus += new KeyboardFocusChangedEventHandler(Widget_Check2);
-
-        //    return true;
-        //}
         public static bool AddWidgetPostHandler(string name, string action, FrameworkElement widget)
         {
             var textable = widget as TextBoxBase;
@@ -3923,9 +3898,6 @@ WHERE ID = {thisOpenv.currentRow}
             }
 
             s_PostHandlers[name] = action;
-            //2 puta
-            //textable.LostFocus -= new RoutedEventHandler(Widget_Post);
-            //textable.LostFocus += new RoutedEventHandler(Widget_Post);
             textable.PreviewLostKeyboardFocus -= new KeyboardFocusChangedEventHandler(Widget_Post);
             textable.PreviewLostKeyboardFocus += new KeyboardFocusChangedEventHandler(Widget_Post);
 
@@ -3967,7 +3939,6 @@ WHERE ID = {thisOpenv.currentRow}
             lastObjWidgetName = lastObjClickedWidgetName;
 
             var widget = sender as FrameworkElement;
-            //=)//var widgetName = GetWidgetBindingName(widget);
             var widgetName = GetWidgetName(widget);
             if (string.IsNullOrEmpty(widgetName))
             {
@@ -4072,7 +4043,6 @@ WHERE ID = {thisOpenv.currentRow}
         private static void Widget_TextChanged(object sender, TextChangedEventArgs e)
         {
             TextBoxBase widget = sender as TextBoxBase;
-            //=)//var widgetName = GetWidgetBindingName(widget);
             var widgetName = GetWidgetName(widget);
             if (string.IsNullOrWhiteSpace(widgetName))
             {
@@ -4125,15 +4095,11 @@ WHERE ID = {thisOpenv.currentRow}
         static string lastFocusedWidgetName = "";
         public static bool skipPostEvent;
 
-
-        /// //////////////////////////sada/sd/asd/as/dasd/as/d/asd/as/d/as/das/d/asd
         private static void Widget_Pre(object sender, RoutedEventArgs e)
         {
             lastObjWidgetName = ((Control)sender).Name;
 
-            //TextBoxBase widget = sender as TextBoxBase;
             Control widget = sender as Control;
-            //=)//var widgetName = GetWidgetBindingName(widget);
             var widgetName = GetWidgetName(widget);
             if (string.IsNullOrWhiteSpace(widgetName))
             {
@@ -4141,9 +4107,6 @@ WHERE ID = {thisOpenv.currentRow}
             }
 
             skipPostEvent = false;
-
-            //var text = GetTextWidgetFunction.GetText(widget);
-            //UpdateVariable(widget, text);
 
             string funcName;
             if (s_PreHandlers.TryGetValue(widgetName, out funcName))
@@ -4154,7 +4117,6 @@ WHERE ID = {thisOpenv.currentRow}
                 if (result.Type == Variable.VarType.NUMBER && !result.AsBool()) // if script returned false
                 {
                     skipPostEvent = true;
-                    //e.Handled = true; //staro - za PreviewGotKeyboardFocus
                     var widgetToFocusTo = CSCS_GUI.GetWidget(lastFocusedWidgetName);
                     if (widgetToFocusTo != null && (widgetToFocusTo is Control))
                     {
@@ -4168,55 +4130,6 @@ WHERE ID = {thisOpenv.currentRow}
             }
         }
 
-
-        //private static void Widget_Check(object sender, KeyboardFocusChangedEventArgs e)
-        //{
-        //    TextBoxBase widget = sender as TextBoxBase;
-        //    //=)//var widgetName = GetWidgetBindingName(widget);
-        //    var widgetName = GetWidgetName(widget);
-        //    if (string.IsNullOrWhiteSpace(widgetName))
-        //    {
-        //        return;
-        //    }
-
-        //    //var text = GetTextWidgetFunction.GetText(widget);
-        //    //UpdateVariable(widget, text);
-
-        //    string funcName;
-        //    if (s_CheckHandlers.TryGetValue(widgetName, out funcName))
-        //    {
-        //        Control2Window.TryGetValue(widget, out Window win);
-        //        var result = Interpreter.Run(funcName, new Variable(widgetName), null,
-        //            Variable.EmptyInstance, ChainFunction.GetScript(win));
-        //        if (result.Type == Variable.VarType.NUMBER && !result.AsBool())
-        //            e.Handled = true;
-        //    }
-        //}
-        //private static void Widget_Check2(object sender, KeyboardFocusChangedEventArgs e)
-        //{
-        //    TextBoxBase widget = sender as TextBoxBase;
-        //    //=)//var widgetName = GetWidgetBindingName(widget);
-        //    var widgetName = GetWidgetName(widget);
-        //    if (string.IsNullOrWhiteSpace(widgetName))
-        //    {
-        //        return;
-        //    }
-
-        //    //var text = GetTextWidgetFunction.GetText(widget);
-        //    //UpdateVariable(widget, text);
-
-        //    string funcName;
-        //    if (s_Check2Handlers.TryGetValue(widgetName, out funcName))
-        //    {
-        //        Control2Window.TryGetValue(widget, out Window win);
-        //        var result = Interpreter.Run(funcName, new Variable(widgetName), null,
-        //            Variable.EmptyInstance, ChainFunction.GetScript(win));
-        //        if (result.Type == Variable.VarType.NUMBER && !result.AsBool())
-        //            e.Handled = true;
-        //    }
-        //}
-
-
         private static void Widget_Post(object sender, KeyboardFocusChangedEventArgs e)
         {
             if (skipPostEvent)
@@ -4226,15 +4139,11 @@ WHERE ID = {thisOpenv.currentRow}
             }
 
             TextBoxBase widget = sender as TextBoxBase;
-            //=)//var widgetName = GetWidgetBindingName(widget);
             var widgetName = GetWidgetName(widget);
             if (string.IsNullOrWhiteSpace(widgetName))
             {
                 return;
             }
-
-            //var text = GetTextWidgetFunction.GetText(widget);
-            //UpdateVariable(widget, text);
 
             lastObjWidgetName = ((Control)e.NewFocus).Name;
 
@@ -4411,12 +4320,8 @@ WHERE ID = {thisOpenv.currentRow}
                 string selectionChangedAction = widgetName + "@SelectionChanged";
                 string dateChangedAction = widgetName + "@DateChanged";
 
-                //Pre, Check, Post
+                //Pre, Post
                 string widgetPreAction = widgetName + "@Pre";
-                
-                //string widgetCheckAction = widgetName + "@Check";
-                //string widgetCheck2Action = widgetName + "@Check2";
-                
                 string widgetPostAction = widgetName + "@Post";
 
                 AddActionHandler(widgetName, clickAction, widget);
@@ -4431,12 +4336,8 @@ WHERE ID = {thisOpenv.currentRow}
                 AddMouseHoverHandler(widgetName, mouseHoverAction, widget);
                 AddDateChangedHandler(widgetName, dateChangedAction, widget);
 
-                //Pre, Check, Post
+                //Pre, Post
                 AddWidgetPreHandler(widgetName, widgetPreAction, widget);
-                
-                //AddWidgetCheckHandler(widgetName, widgetCheckAction, widget, widgetCheck2Action);
-                
-                
                 AddWidgetPostHandler(widgetName, widgetPostAction, widget);
             }
 
@@ -4547,8 +4448,6 @@ WHERE ID = {thisOpenv.currentRow}
                 return Variable.EmptyInstance;
             }
 
-            //dg.ItemsSource = rows;
-
             List<List<Variable>> cols = new List<List<Variable>>();
             List<string> headers = new List<string>();
             List<string> tags = new List<string>();
@@ -4575,11 +4474,6 @@ WHERE ID = {thisOpenv.currentRow}
                         var arrayToBindTo = tb.Tag.ToString().ToLower();
 
                         tags.Add(arrayToBindTo);
-
-                        //Binding b = new Binding($"Binding");
-                        //b.Source = rows;
-
-                        //tb.SetBinding(TextBox.TextProperty, b);
                         
                         if(DEFINES.TryGetValue(arrayToBindTo, out DefineVariable defVar))
                         {
@@ -4587,16 +4481,7 @@ WHERE ID = {thisOpenv.currentRow}
                             {
                                 cols.Add(defVar.Tuple);
                             }
-                            
                         }
-
-                        //Variable variableArrayVar = ParserFunction.GetVariableValue(arrayToBindTo); //TryGetValue(arrayToBindTo, out DefineVariable defVar))
-
-                        //if (variableArrayVar.Type == Variable.VarType.ARRAY)
-                        //{
-                        //    cols.Add(variableArrayVar.Tuple);
-                        //}
-
                     }
                 }
             }
@@ -4650,171 +4535,6 @@ WHERE ID = {thisOpenv.currentRow}
                 }
             }
         }
-
-    }
-
-    class DisplayArrFuncFunction_old2 : ParserFunction
-    {
-        class cell
-        {
-            public dynamic Key { get; set; }
-            public dynamic Value { get; set; }
-        }
-        ObservableCollection<cell[]> rows { get; set; }
-
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            List<Variable> args = script.GetFunctionArgs();
-            Utils.CheckArgs(args.Count, 1, m_name);
-
-            var widgetName = Utils.GetSafeString(args, 0);
-            var dg = CSCS_GUI.GetWidget(widgetName) as DataGrid;
-            if (dg == null)
-            {
-                return Variable.EmptyInstance;
-            }
-
-            //dg.ItemsSource = rows;
-
-            List<List<Variable>> cols = new List<List<Variable>>();
-
-            rows = new ObservableCollection<cell[]>();
-
-            var columns = dg.Columns;
-            foreach (var column in columns)
-            {
-                if (column is DataGridTemplateColumn)
-                {
-                    var dgtc = column as DataGridTemplateColumn;
-
-                    //var header = dgtc.Header;
-                    var displayIndex = dgtc.DisplayIndex;
-
-                    var content = dgtc.CellTemplate.LoadContent();
-
-                    if (content is TextBox)
-                    {
-                        var tb = content as TextBox;
-                        var arrayToBindTo = tb.Tag.ToString().ToLower();
-
-                        Binding b = new Binding($"Binding");
-                        b.Source = rows;
-
-                        tb.SetBinding(TextBox.TextProperty, b);
-
-                        Variable variableArrayVar = ParserFunction.GetVariableValue(arrayToBindTo); //TryGetValue(arrayToBindTo, out DefineVariable defVar))
-
-                        if (variableArrayVar.Type == Variable.VarType.ARRAY)
-                        {
-                            cols.Add(variableArrayVar.Tuple);
-                        }
-
-                    }
-                }
-            }
-
-            for (int i = 0; i < cols[0].Count; i++)
-            {
-                cell[] row = new cell[cols.Count];
-                for (int j = 0; j < cols.Count; j++)
-                {
-                    var cell = cols[j][i];
-                    switch (cell.Type)
-                    {
-                        case Variable.VarType.STRING:
-                            row[j] = new cell() { Key = j, Value = cell.AsString() };
-                            break;
-                        case Variable.VarType.NUMBER:
-                            row[j] = new cell() { Key = j, Value = cell.AsDouble() };
-                            break;
-                    }
-                }
-                rows.Add(row);
-            }
-
-            dg.ItemsSource = rows;
-
-            return new Variable("");
-        }
-
-    }
-
-    class DisplayArrFuncFunction_old : ParserFunction
-    {
-        ObservableCollection<object[]> rows { get; set; }
-
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            List<Variable> args = script.GetFunctionArgs();
-            Utils.CheckArgs(args.Count, 1, m_name);
-
-            var widgetName = Utils.GetSafeString(args, 0);
-            var dg = CSCS_GUI.GetWidget(widgetName) as DataGrid;
-            if (dg == null)
-            {
-                return Variable.EmptyInstance;
-            }
-
-            List<List<Variable>> cols = new List<List<Variable>>();
-
-            rows = new ObservableCollection<object[]>();
-
-            var columns = dg.Columns;
-            foreach (var column in columns)
-            {
-                if (column is DataGridTemplateColumn)
-                {
-                    var dgtc = column as DataGridTemplateColumn;
-
-                    //var header = dgtc.Header;
-
-                    var content = dgtc.CellTemplate.LoadContent();
-
-                    if (content is TextBox)
-                    {
-                        var tb = content as TextBox;
-                        var arrayToBindTo = tb.Tag.ToString().ToLower();
-
-                        Binding b = new Binding("[0]");  // The selected item's 'rr_addr' column ...
-                        b.Source = dg;
-
-                        tb.SetBinding(TextBox.TextProperty, b);
-
-                        Variable variableArrayVar = ParserFunction.GetVariableValue(arrayToBindTo); //TryGetValue(arrayToBindTo, out DefineVariable defVar))
-
-                        if (variableArrayVar.Type == Variable.VarType.ARRAY)
-                        {
-                            cols.Add(variableArrayVar.Tuple);
-                        }
-
-                    }
-                }
-            }
-
-            for (int i = 0; i < cols[0].Count; i++)
-            {
-                object[] row = new object[cols.Count];
-                for (int j = 0; j < cols.Count; j++)
-                {
-                    var cell = cols[j][i];
-                    switch (cell.Type)
-                    {
-                        case Variable.VarType.STRING:
-                            row[j] = cell.AsString();
-                            break;
-                        case Variable.VarType.NUMBER:
-                            row[j] = cell.AsDouble();
-                            break;
-                    }
-                }
-                rows.Add(row);
-            }
-
-            dg.ItemsSource = rows;
-
-            return new Variable("");
-        }
-
     }
 
     class FillOutGridFunction : ParserFunction
