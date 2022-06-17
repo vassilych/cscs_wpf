@@ -3409,9 +3409,6 @@ WHERE ID = {thisOpenv.currentRow}
         public static Dictionary<string, WidgetData> WIDGETS { get; set; } =
             new Dictionary<string, WidgetData>();
 
-        //public static Dictionary<string, List<Variable>> DEFINES { get; set; } =
-        //          new Dictionary<string, List<Variable>>();
-
         public static Dictionary<string, Dictionary<string, bool>> s_varExists =
             new Dictionary<string, Dictionary<string, bool>>();
 
