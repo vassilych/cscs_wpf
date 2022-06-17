@@ -1,0 +1,35 @@
+CreateWindow("../../scripts/editDatabasesWindow.xaml");
+
+DEFINE sy_databases_hndl type i;
+
+DEFINE SYCD_DBASENAMEarray, SYCD_USERCODEarray, SYCD_COMPCODEarray, SYCD_YEARarray, SYCD_DESCRIPTIONarray type a array 10;
+
+sy_databases_hndl = openv("sy_databases", "AD");
+
+function editDatabasesWindow_onDisplay(sender, load){
+    findv(sy_databases_hndl, "f", "@1");
+    //MessageBox(SYCD_DBASENAME);
+
+    SYCD_DBASENAMEarray[0] = string(SYCD_DBASENAME);
+    SYCD_USERCODEarray[0] = string(SYCD_USERCODE);
+    SYCD_COMPCODEarray[0] = string(SYCD_COMPCODE);
+    SYCD_YEARarray[0] = string(SYCD_YEAR);
+    SYCD_DESCRIPTIONarray[0] = string(SYCD_DESCRIPTION);
+
+    for(i = 1; i>= 0; i++){
+
+        findv(sy_databases_hndl, "n");
+        if(flerr() != 0){
+            break;
+        }
+
+        SYCD_DBASENAMEarray[i] = string(SYCD_DBASENAME);
+        SYCD_USERCODEarray[i] = string(SYCD_USERCODE);
+        SYCD_COMPCODEarray[i] = string(SYCD_COMPCODE);
+        SYCD_YEARarray[i] = string(SYCD_YEAR);
+        SYCD_DESCRIPTIONarray[i] = string(SYCD_DESCRIPTION);
+    }
+
+
+    FillOutGrid("dg1", SYCD_DBASENAMEarray, SYCD_USERCODEarray, SYCD_COMPCODEarray, SYCD_YEARarray, SYCD_DESCRIPTIONarray)
+}

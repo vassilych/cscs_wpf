@@ -1,0 +1,30 @@
+#MAINMENU;
+//#WINFORM not working
+
+CreateWindow("../../scripts/mainMenuWindow.xaml");
+
+
+function runScript(sender, load){
+    //MessageBox("sender = " + sender + ", load = "  + load);   
+    CHAIN ("../../scripts/" + sender/* + ".cscs"*/); // WITH "argument1" "argument2";
+
+}
+
+function mainMenuWindow_OnDisplay(){
+    
+    RemoveMenu("mainMenuDC");
+    AddMenuItem("mainMenuDC", "scriptsDC", "Scripts");
+
+
+    AddMenuItem("scriptsDC", "defaultWindow.cscs", "Default window", "runScript");
+    AddMenuItem("scriptsDC", "start.cscs", "Sample", "runScript");
+    
+    AddMenuItem("scriptsDC", "script1.cscs", "script1", "runScript");
+    AddMenuItem("scriptsDC", "script2.cscs", "script2", "runScript");
+    AddMenuItem("scriptsDC", "editDatabases.cscs", "editDatabases - using FillOutGrid", "runScript");
+    AddMenuItem("scriptsDC", "editDatabases2.cscs", "editDatabases2 - using DisplayArrFunc", "runScript");
+    
+}
+
+
+
