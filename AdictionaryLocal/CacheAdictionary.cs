@@ -16,9 +16,9 @@ namespace WpfCSCS.AdictionaryLocal
 
             try
             {
-                List<SY_DATABASES> lista = null;
+                List<SY_DATABASES> list = null;
 
-                string upit = $@"
+                string queryString = $@"
 SELECT 
 	[ID]
 	,[SYCD_USERCODE]
@@ -30,13 +30,13 @@ SELECT
 	,[SYCD_USERPSWD]
   FROM [adictionary].[dbo].[SY_DATABASES]
 ";
-                using (SqlCommand cmd = new SqlCommand(upit, myConnection))
+                using (SqlCommand cmd = new SqlCommand(queryString, myConnection))
                 {
                     using (SqlDataReader dr = cmd.ExecuteReader())
                     {
                         if (dr.HasRows)
                         {
-                            lista = new List<SY_DATABASES>();
+                            list = new List<SY_DATABASES>();
 
                             while (dr.Read())
                             {
@@ -51,14 +51,14 @@ SELECT
                                 row.SYCD_USERNAME = dr["SYCD_USERNAME"].ToString().TrimEnd();
                                 row.SYCD_USERPSWD = dr["SYCD_USERPSWD"].ToString().TrimEnd();
 
-                                lista.Add(row);
+                                list.Add(row);
                             }
 
 
                         }
                     }
                 }
-                return lista;
+                return list;
             }
             catch (Exception ex)
             {
@@ -71,9 +71,9 @@ SELECT
 
             try
             {
-                List<SY_FIELDS> lista = null;
+                List<SY_FIELDS> list = null;
 
-                string upit = $@"
+                string queryString = $@"
 SELECT 
     [ID]
     ,[SYTD_SCHEMA]
@@ -86,13 +86,13 @@ SELECT
     ,[SYTD_ARRAYNUM]
   FROM [adictionary].[dbo].[SY_FIELDS]
 ";
-                using (SqlCommand cmd = new SqlCommand(upit, myConnection))
+                using (SqlCommand cmd = new SqlCommand(queryString, myConnection))
                 {
                     using (SqlDataReader dr = cmd.ExecuteReader())
                     {
                         if (dr.HasRows)
                         {
-                            lista = new List<SY_FIELDS>();
+                            list = new List<SY_FIELDS>();
 
                             while (dr.Read())
                             {
@@ -108,14 +108,14 @@ SELECT
                                 row.SYTD_CASE = dr["SYTD_CASE"].ToString().TrimEnd();
                                 row.SYTD_ARRAYNUM = (int)dr["SYTD_ARRAYNUM"];
 
-                                lista.Add(row);
+                                list.Add(row);
                             }
 
 
                         }
                     }
                 }
-                return lista;
+                return list;
             }
             catch (Exception ex)
             {
@@ -128,9 +128,9 @@ SELECT
 
             try
             {
-                List<SY_INDEXES> lista = null;
+                List<SY_INDEXES> list = null;
 
-                string upit = $@"
+                string queryString = $@"
 SELECT 
 	[ID]
 	,[SYKI_SCHEMA]
@@ -143,13 +143,13 @@ SELECT
 	,[SYKI_SEGNUM]
   FROM [adictionary].[dbo].[SY_INDEXES]
 ";
-                using (SqlCommand cmd = new SqlCommand(upit, myConnection))
+                using (SqlCommand cmd = new SqlCommand(queryString, myConnection))
                 {
                     using (SqlDataReader dr = cmd.ExecuteReader())
                     {
                         if (dr.HasRows)
                         {
-                            lista = new List<SY_INDEXES>();
+                            list = new List<SY_INDEXES>();
 
                             while (dr.Read())
                             {
@@ -165,14 +165,14 @@ SELECT
                                 row.SYKI_ASCDESC = dr["SYKI_ASCDESC"].ToString().TrimEnd();
                                 row.SYKI_SEGNUM = (int)dr["SYKI_SEGNUM"];
 
-                                lista.Add(row);
+                                list.Add(row);
                             }
 
 
                         }
                     }
                 }
-                return lista;
+                return list;
             }
             catch (Exception ex)
             {
@@ -186,9 +186,9 @@ SELECT
 
             try
             {
-                List<SY_TABLES> lista = null;
+                List<SY_TABLES> list = null;
 
-                string upit = $@"
+                string queryString = $@"
 SELECT 
 	[ID]
 	,[SYCT_NAME]
@@ -198,13 +198,13 @@ SELECT
 	,[SYCT_USERCODE]
   FROM [adictionary].[dbo].[SY_TABLES]
 ";
-                using (SqlCommand cmd = new SqlCommand(upit, myConnection))
+                using (SqlCommand cmd = new SqlCommand(queryString, myConnection))
                 {
                     using (SqlDataReader dr = cmd.ExecuteReader())
                     {
                         if (dr.HasRows)
                         {
-                            lista = new List<SY_TABLES>();
+                            list = new List<SY_TABLES>();
 
                             while (dr.Read())
                             {
@@ -217,14 +217,14 @@ SELECT
                                 row.SYCT_TYPE = dr["SYCT_TYPE"].ToString().TrimEnd();
                                 row.SYCT_USERCODE = dr["SYCT_USERCODE"].ToString().TrimEnd();
 
-                                lista.Add(row);
+                                list.Add(row);
                             }
 
 
                         }
                     }
                 }
-                return lista;
+                return list;
             }
             catch (Exception ex)
             {
