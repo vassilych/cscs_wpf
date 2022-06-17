@@ -1833,13 +1833,10 @@ order by {orderByString}
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 1, m_name);
             var tableHndlNum = Utils.GetSafeInt(args, 0);
-            //var databaseName = Utils.GetSafeString(args, 1, CSCS_GUI.DefaultDB);
-
+            
             return Btrieve.CLOSEV(tableHndlNum);
         }
     }
-
-    
 
     class FindvFunction : ParserFunction
     {
@@ -1858,20 +1855,18 @@ order by {orderByString}
         {
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 2, m_name);
-            tableHndlNum = Utils.GetSafeInt(args, 0); // 1
-            operationType = Utils.GetSafeString(args, 1).ToLower(); // f
-            tableKey = Utils.GetSafeString(args, 2).ToLower(); // npr. VEZM_RNALOGLIN
-            matchExactValue = Utils.GetSafeString(args, 3); // npr. 900000|2
-            forString = Utils.GetSafeString(args, 4); // npr. CUST_CODE = 12345
-            columnsToSelect = Utils.GetSafeString(args, 5); // npr. "VEZM_VEZNIBROJ, VEZM_RNALOG"
-            keyo = Utils.GetSafeString(args, 6); // npr. "VEZM_VEZNIBROJ, VEZM_RNALOG"
+            tableHndlNum = Utils.GetSafeInt(args, 0);
+            operationType = Utils.GetSafeString(args, 1).ToLower(); // f/m/n/p/m/g 
+            tableKey = Utils.GetSafeString(args, 2).ToLower(); // e.g. VEZM_RNALOGLIN
+            matchExactValue = Utils.GetSafeString(args, 3); // e.g. 900000|2
+            forString = Utils.GetSafeString(args, 4); // e.g. CUST_CODE = 12345
+            columnsToSelect = Utils.GetSafeString(args, 5); // e.g. "VEZM_VEZNIBROJ, VEZM_RNALOG"
+            keyo = Utils.GetSafeString(args, 6); // e.g. "VEZM_VEZNIBROJ, VEZM_RNALOG"
 
             new Btrieve.FINDVClass(tableHndlNum, operationType, tableKey, matchExactValue, forString, columnsToSelect, script, keyo).FINDV();
 
             return Variable.EmptyInstance;
-
         }
-
     }
     
     class ClrFunction : ParserFunction
@@ -1885,8 +1880,8 @@ order by {orderByString}
         {
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 2, m_name);
-            tableHndlNum = Utils.GetSafeInt(args, 0); // 1
-            operationType = Utils.GetSafeString(args, 1).ToLower(); // B / R -> buffer and recordNumber(ID)(thisOpenv.currentRow) or ONLY recordNumber
+            tableHndlNum = Utils.GetSafeInt(args, 0);
+            operationType = Utils.GetSafeString(args, 1).ToLower(); // B -> buffer and recordNumber(ID)(thisOpenv.currentRow) / R -> ONLY recordNumber
 
             Clear();
 
@@ -1936,7 +1931,6 @@ order by {orderByString}
         int idNum;
 
         OpenvTable thisOpenv;
-        //KeyClass KeyClass;
 
         protected override Variable Evaluate(ParsingScript script)
         {
@@ -1954,8 +1948,6 @@ order by {orderByString}
         {
             thisOpenv = CSCS_GUI.OPENVs[tableHndlNum];
 
-            //KeyClass = 
-
             int currentSqlId = 0;
 
             string query =
@@ -1965,37 +1957,29 @@ from {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
 
 WHERE ID = {idNum}
 '";
-            //{(!string.IsNullOrEmpty(while) ? "WHERE (" + whereString + ")" : "")}
-
             using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
             {
-                //con.Open();
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     if (!reader.HasRows)
                     {
-                        //MessageBox.Show("Record not found!");
+                        //err: Record not found
                         return new Variable((long)3);
                     }
                     else
                     {
-                        while (reader.Read()) // unique???
+                        while (reader.Read())
                         {
                             currentSqlId = (int)reader["ID"];
-                            int currentFieldNum = 1; // 0-ti je "ID"
+                            int currentFieldNum = 1;
                             while (currentFieldNum < reader.FieldCount)
                             {
                                 var currentColumnName = reader.GetName(currentFieldNum);
-                                //if(thisOpenv.CurrentKey.KeyColumns.Keys.Any(p=>p.ToUpper() == currentColumnName.ToUpper()))
-                                //if (KeyClass.KeyColumns.Keys.Any(p => p.ToUpper() == currentColumnName.ToUpper()))
-                                //{
-                                //    KeyClass.KeyColumns[currentColumnName.ToUpper()] = reader[currentColumnName].ToString();
-                                //}
 
                                 var loweredCurrentColumnName = currentColumnName.ToLower();
                                 if (!CSCS_GUI.DEFINES.ContainsKey(loweredCurrentColumnName))
                                 {
-                                    // err: ta kolona NIJE otvorena u bufferu(DEFINE) sa openv
+                                    // err: this column is not opened in buffer via Openv
                                     return new Variable((long)4);
                                 }
                                 else
