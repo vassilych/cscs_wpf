@@ -107,7 +107,6 @@ namespace SplitAndMerge
         {
             ParserFunction.RegisterFunction(Constants.SCAN, new ScanStatement());
             
-
             ParserFunction.RegisterFunction(Constants.IF, new IfStatement());
             ParserFunction.RegisterFunction(Constants.DO, new DoWhileStatement());
             ParserFunction.RegisterFunction(Constants.WHILE, new WhileStatement());
@@ -364,15 +363,7 @@ namespace SplitAndMerge
            
             return Variable.EmptyInstance;
         }
-        internal Variable ScanLoopStatement(ParsingScript script)
-        {
-            string forString = Utils.GetBodyBetween(script, Constants.START_ARG, Constants.END_ARG);
-            script.Forward();
-
-            ProcessScanLoop(script, forString);
-           
-            return Variable.EmptyInstance;
-        }
+        
         internal Variable ProcessFor(ParsingScript script)
         {
             string forString = Utils.GetBodyBetween(script, Constants.START_ARG, Constants.END_ARG);
@@ -542,11 +533,8 @@ namespace SplitAndMerge
             SkipBlock(script);
         }
 
-        /* ??? */
         void ProcessScan(ParsingScript script, string forString)
         {
-            //List<Variable> args = script.GetFunctionArgs();
-
             string[] forTokens = forString.Split(Constants.END_STATEMENT);
             if (forTokens.Length != 7)
             {
@@ -561,7 +549,6 @@ namespace SplitAndMerge
             var startString = script.GetTempScript(forTokens[2]).Execute(null, 0);
             var whileString = script.GetTempScript(forTokens[3]);
             var forExpression = script.GetTempScript(forTokens[4]).Execute(null, 0);
-            //var scope = script.GetTempScript(forTokens[5]).Execute(null, 0);
             var scope = script.GetTempScript(forTokens[5]).Execute(null, 0);
             var nlock = script.GetTempScript(forTokens[6]).Execute(null, 0);
 
@@ -585,7 +572,7 @@ namespace SplitAndMerge
                 }
                 else
                 {
-                    CSCS_GUI.SetFlerr(12, (int)tableHndlNum.Value);
+                    Btrieve.SetFlerr(12, (int)tableHndlNum.Value);
                     return;
                 }
             }
@@ -594,7 +581,7 @@ namespace SplitAndMerge
             {
                 if (limited && selectLimitCounter == 0)
                 {
-                    CSCS_GUI.SetFlerr(0, (int)tableHndlNum.Value);
+                    Btrieve.SetFlerr(0, (int)tableHndlNum.Value);
                     break;
                 }
 
@@ -620,79 +607,31 @@ namespace SplitAndMerge
                     selectLimitCounter--;
                     if (selectLimitCounter == 0)
                     {
-                        CSCS_GUI.SetFlerr(0, (int)tableHndlNum.Value);
+                        Btrieve.SetFlerr(0, (int)tableHndlNum.Value);
                         break;
                     }
                 }
 
                 if (result.IsReturn || result.Type == Variable.VarType.BREAK)
                 {
-                    //script.Pointer = startForCondition;
-                    //SkipBlock(script);
-                    //return;
                     break;
                 }
-
-                //loopScript.Execute(null, 0); // 3.dio for-a 
                 
                 new Btrieve.FINDVClass((int)tableHndlNum.Value, "n", keyName.String).FINDV();
-                if (CSCS_GUI.LastFlerrsOfFnums[(int)tableHndlNum.Value] == 3)
+                if (Btrieve.LastFlerrsOfFnums[(int)tableHndlNum.Value] == 3)
                 {
-                    CSCS_GUI.SetFlerr(0, (int)tableHndlNum.Value);
+                    Btrieve.SetFlerr(0, (int)tableHndlNum.Value);
                     break;
                 }
 
             }
 
-            CSCS_GUI.SetFlerr(0, (int)tableHndlNum.Value);
+            Btrieve.SetFlerr(0, (int)tableHndlNum.Value);
 
             script.Pointer = startForCondition;
             SkipBlock(script);
         }
-        
-        void ProcessScanLoop(ParsingScript script, string scanloopString)
-        {
-            
-            int startForCondition = script.Pointer;
-
-            var scanHndl = script.GetTempScript(scanloopString);
-
-            var rez = scanHndl.Execute(null, 0);
-
-            int cycles = 0;
-            bool stillValid = true;
-
-            while (stillValid)
-            {
-                //Variable condResult = condScript.Execute(null, 0);
-                //stillValid = Convert.ToBoolean(condResult.Value);
-                //if (!stillValid)
-                //{
-                //    break;
-                //}
-
-                if (MAX_LOOPS > 0 && ++cycles >= MAX_LOOPS)
-                {
-                    throw new ArgumentException("Looks like an infinite loop after " +
-                                                  cycles + " cycles.");
-                }
-
-                script.Pointer = startForCondition;
-                Variable result = ProcessBlock(script);
-                if (result.IsReturn || result.Type == Variable.VarType.BREAK)
-                {
-                    //script.Pointer = startForCondition;
-                    //SkipBlock(script);
-                    //return;
-                    break;
-                }
-                //loopScript.Execute(null, 0);
-            }
-
-            script.Pointer = startForCondition;
-            SkipBlock(script);
-        }
-        
+                
         void ProcessCanonicalFor(ParsingScript script, string forString)
         {
             string[] forTokens = forString.Split(Constants.END_STATEMENT);

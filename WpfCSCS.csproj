@@ -161,6 +161,7 @@
     <Compile Include="AdictionaryLocal\SY_FIELDS.cs" />
     <Compile Include="AdictionaryLocal\SY_INDEXES.cs" />
     <Compile Include="AdictionaryLocal\SY_TABLES.cs" />
+    <Compile Include="Btrieve.cs" />
     <Compile Include="SpecialWindow.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>

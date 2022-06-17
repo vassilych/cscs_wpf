@@ -49,7 +49,6 @@ namespace SplitAndMerge
         public const string DIV_ASSIGN = "/=";
 
         public const string SCAN = "scan";
-        public const string SCANloop = "scanloop";
 
         public const string BREAK = "break";
         public const string CASE = "case";
