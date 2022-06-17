@@ -959,7 +959,7 @@ N'{paramsDeclaration}', ";
                                 return Variable.EmptyInstance;
                             }
 
-                            bool firstPass = true; // za buffer, prvi redak van cachea
+                            bool firstPass = true; // for buffer, first row outside cache
 
                             while (reader.Read()) // unique???
                             {
@@ -3362,8 +3362,8 @@ WHERE ID = {thisOpenv.currentRow}
 
         public class CachingClass
         {
-            public string KeyName;// za usporedbu prilikom findv next sa DRUGIM kljucem
-            public List<CacheLine> CachedLines; // index = 1, 2, 3 do 300 
+            public string KeyName; // for comparison with another key while "findv next"
+            public List<CacheLine> CachedLines; // index = 1, 2, 3 to 300 
             //public static int (in) CSCS_GUI.MaxCacheSize, from .exe.config
 
             public CachingClass()
@@ -3385,16 +3385,16 @@ WHERE ID = {thisOpenv.currentRow}
 
         public class OpenvTable
         {
-            public int currentRow; // public DefineVariable lastValue
+            public int currentRow; // ID column
             public string tableName;
 
-            public KeyClass CurrentKey; // last used index in findv
-            public List<KeyClass> Keys; // indexi/ključevi
+            public KeyClass CurrentKey; // last used index/key
+            public List<KeyClass> Keys; // indexes/keys
 
-            public List<string> FieldNames; // kolone table
+            public List<string> FieldNames; // table columns
 
-            public string databaseName; // opcionalni parametar za neku drugu bazu
-            public string lockingType; //  N, R, F, X
+            public string databaseName; // optional parameter for another databse
+            public string lockingType; //  N, R, F, X // not implemented
             public string lastAscDescOption;
 
             public int currentCacheListIndex;
