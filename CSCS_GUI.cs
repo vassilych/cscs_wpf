@@ -2000,11 +2000,8 @@ WHERE ID = {idNum}
                                 }
                                 currentFieldNum++;
                             }
-
                         }
 
-                        //OPENVs
-                        //thisOpenv.CurrentKey = KeyClass;// thisOpenv.Keys.First(p => p.KeyName == tableKey);
                         thisOpenv.currentRow = currentSqlId;
                         thisOpenv.CurrentKey = new KeyClass() { KeyName = "ID", Ascending = true, Unique = true, KeyNum = 0, KeyColumns = new Dictionary<string, string>() { { "ID", "" } } };
                         CSCS_GUI.OPENVs[tableHndlNum] = thisOpenv;
@@ -2012,15 +2009,11 @@ WHERE ID = {idNum}
                         Btrieve.FINDVClass.cachedColumnsToSelect[tableHndlNum] = null;
                         Btrieve.FINDVClass.cachedSqlForString[tableHndlNum] = null;
                         Btrieve.FINDVClass.nextPrevCachedWhereStrings[tableHndlNum] = null;
-
-                        //CSCS_GUI.OPENVs[tableHndlNum].Cache = new CachingClass() { KeyName = KeyClass.KeyName };
-                        CSCS_GUI.OPENVs[tableHndlNum].currentCacheListIndex = 1; // ??
                     }
-
                 }
             }
 
-            SetFlerr(0, tableHndlNum); // 0 znači UREDU
+            SetFlerr(0, tableHndlNum); // 0 means OK
             return Variable.EmptyInstance;
         }
     }
@@ -2086,8 +2079,6 @@ WHERE ID = {idNum}
 
         private bool DeleteCurrentRecord()
         {
-            int currentSqlId = 0; // ?
-
             string query =
 $@"EXECUTE sp_executesql N'
 Delete from {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
@@ -2095,16 +2086,15 @@ WHERE ID = {thisOpenv.currentRow}
 '";
             using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
             {
-                //con.Open();
                 var rez = cmd.ExecuteNonQuery();
                 if (rez == 1)
                 {
-                    SetFlerr(0, tableHndlNum); // 0 znači UREDU
+                    SetFlerr(0, tableHndlNum); // 0 means OK
                     return true;
                 }
                 else
                 {
-                    SetFlerr(6); // not deleted
+                    SetFlerr(6); // err: not deleted
                     return false;
                 }
             }
@@ -2169,7 +2159,6 @@ WHERE ID = {thisOpenv.currentRow}
             foreach (var field in thisOpenv.FieldNames)
             {
                 valuesStringBuilder.AppendLine("");
-                //valuesStringBuilder.Append(field + " = ");
 
                 var bufferVar = CSCS_GUI.DEFINES[field.ToLower()];
                 if (bufferVar.DefType == "a" || bufferVar.DefType == "t" || bufferVar.DefType == "d")
@@ -2199,16 +2188,15 @@ VALUES ({valuesStringBuilder})
 '";
             using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
             {
-                //con.Open();
                 var rez = cmd.ExecuteNonQuery();
                 if (rez == 1)
                 {
-                    SetFlerr(0, tableHndlNum); // 0 znači UREDU
+                    SetFlerr(0, tableHndlNum); // 0 means OK
                     return true;
                 }
                 else
                 {
-                    SetFlerr(6); //
+                    SetFlerr(6); // err: not inserted
                     return false;
                 }
             }
@@ -2216,7 +2204,6 @@ VALUES ({valuesStringBuilder})
 
         private bool UpdateCurrentRecord()
         {
-
             StringBuilder setStringBuilder = new StringBuilder();
 
             foreach (var field in thisOpenv.FieldNames)
@@ -2253,16 +2240,15 @@ WHERE ID = {thisOpenv.currentRow}
 '";
             using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
             {
-                //con.Open();
                 var rez = cmd.ExecuteNonQuery();
                 if (rez == 1)
                 {
-                    SetFlerr(0, tableHndlNum); // 0 znači UREDU
+                    SetFlerr(0, tableHndlNum); // 0 means OK
                     return true;
                 }
                 else
                 {
-                    SetFlerr(6); // not deleted
+                    SetFlerr(6); // not updated
                     return false;
                 }
             }
@@ -2273,21 +2259,20 @@ WHERE ID = {thisOpenv.currentRow}
     class RDAFunction : ParserFunction
     {
 
-        //string from; // 
-        ParsingScript from; // 
-        string to; //
-        int tableHndlNum; // 
+        ParsingScript from;
+        string to;
+        int tableHndlNum;
 
-        string tableKey; // 
+        string tableKey;
 
 
-        string startString; // 
-        ParsingScript whileString; // 
+        string startString;
+        ParsingScript whileString;
 
-        ParsingScript forString; // 
+        ParsingScript forString;
 
-        string scopeString; //
-        string cntrNameString; // 
+        string scopeString;
+        string cntrNameString;
 
         OpenvTable thisOpenv;
         KeyClass KeyClass;
@@ -2304,7 +2289,6 @@ WHERE ID = {thisOpenv.currentRow}
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 6, m_name);
 
-            //from = Utils.GetSafeString(args, 0); // cols from DB
             from = script.GetTempScript(args[0].ToString()); // cols from DB
             to = Utils.GetSafeString(args, 1); // arrays to fill
 
@@ -2312,35 +2296,15 @@ WHERE ID = {thisOpenv.currentRow}
             
             tableKey = Utils.GetSafeString(args, 3).ToLower();
 
-            startString = Utils.GetSafeString(args, 4); // 
-            whileString = script.GetTempScript(args[5].ToString()); // 
+            startString = Utils.GetSafeString(args, 4);
+            whileString = script.GetTempScript(args[5].ToString());
 
-            forString = script.GetTempScript(args[6].ToString()); // 
-            //forString = Utils.GetSafeString(args, 6); // 
+            forString = script.GetTempScript(args[6].ToString());
 
-            scopeString = Utils.GetSafeString(args, 7).ToLower(); // 
-            cntrNameString = Utils.GetSafeString(args, 8).ToLower(); //
+            scopeString = Utils.GetSafeString(args, 7).ToLower();
+            cntrNameString = Utils.GetSafeString(args, 8).ToLower();
 
             thisOpenv = CSCS_GUI.OPENVs[tableHndlNum];
-
-            //if (!string.IsNullOrEmpty(tableKey))
-            //{
-            //    if (!thisOpenv.Keys.Any(p => p.KeyName == tableKey.ToUpper()) /* or ne postoji ključ s tim BROJEM*/)
-            //    {
-            //        // "Key does not exist for this table!"
-            //        SetFlerr(4, tableHndlNum);
-            //        return Variable.EmptyInstance;
-            //    }
-            //    else
-            //    {
-            //        KeyClass = thisOpenv.Keys.First(p => p.KeyName == tableKey.ToUpper());
-            //        //**************
-            //    }
-            //}
-            //else
-            //{
-            //    KeyClass = thisOpenv.CurrentKey;
-            //}
 
             if (!string.IsNullOrEmpty(tableKey))
             {
@@ -2357,7 +2321,7 @@ WHERE ID = {thisOpenv.currentRow}
                         KeyClass = new KeyClass() { KeyName = "ID", Ascending = true, Unique = true, KeyNum = 0, KeyColumns = new Dictionary<string, string>() { { "ID", "" } } };
                     }
                 }
-                else if (!thisOpenv.Keys.Any(p => p.KeyName == tableKey.ToUpper()) /* or ne postoji ključ s tim BROJEM*/)
+                else if (!thisOpenv.Keys.Any(p => p.KeyName == tableKey.ToUpper()) /* or the key with this number does not exist */)
                 {
                     // "Key does not exist for this table!"
                     SetFlerr(4, tableHndlNum);
@@ -2366,7 +2330,6 @@ WHERE ID = {thisOpenv.currentRow}
                 else
                 {
                     KeyClass = thisOpenv.Keys.First(p => p.KeyName == tableKey.ToUpper());
-                    //**************
                 }
             }
             else
@@ -2377,13 +2340,12 @@ WHERE ID = {thisOpenv.currentRow}
 
             if (!string.IsNullOrEmpty(startString))
             {
-                //ako ima start string
-                new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, startString/*, forString.String*/).FINDV();
+                // if has start string
+                new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, startString).FINDV();
             }
             else
             {
-                //ako nema start string
-
+                // doesnt have start string
                 string currentStart = "";
 
                 if (KeyClass.KeyNum != 0)
@@ -2406,23 +2368,7 @@ WHERE ID = {thisOpenv.currentRow}
                     currentStart = thisOpenv.currentRow.ToString();
                 }
 
-                //var segmentsOrdered = CSCS_GUI.Adictionary.SY_INDEXESList.Where(p => p.SYKI_KEYNAME == KeyClass.KeyName).OrderBy(p => p.SYKI_SEGNUM).Select(p => p.SYKI_FIELD).ToArray();
-
-                //string currentStart = "";
-
-                //for (int i = 0; i < segmentsOrdered.Count(); i++)
-                //{
-                //    if (CSCS_GUI.DEFINES.TryGetValue(segmentsOrdered[i].ToLower(), out DefineVariable bufferVar))
-                //    {
-                //        currentStart += bufferVar.AsString();
-                //        currentStart += "|";
-                //    }
-                //}
-                //currentStart = currentStart.TrimEnd('|');
-
-
-
-                new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, currentStart/*, forString.String*/).FINDV();
+                new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, currentStart).FINDV();
             }
 
             bool limited = false;
@@ -2489,7 +2435,6 @@ WHERE ID = {thisOpenv.currentRow}
                     SetFlerr(0, tableHndlNum);
                     break;
                 }
-
             }
 
             var current = CSCS_GUI.DEFINES[cntrNameString];
@@ -2518,7 +2463,6 @@ WHERE ID = {thisOpenv.currentRow}
                 if (CSCS_GUI.DEFINES[arrayName].Array > 1)
                 {
                     DEFINES[arrayName].Tuple[rowNumber] = executed.ElementAt(i).Clone();
-                    //CSCS_GUI.OnVariableChange(...) // <-- ???
                 }
             }
 
@@ -2527,6 +2471,7 @@ WHERE ID = {thisOpenv.currentRow}
         }
     }
     
+    //not fully implemented
     class WRTAFunction : ParserFunction
     {
         ParsingScript from; 
@@ -2567,113 +2512,7 @@ WHERE ID = {thisOpenv.currentRow}
             forString = script.GetTempScript(args[5].ToString()); // 
             cntrNameString = Utils.GetSafeString(args, 6).ToLower(); //
 
-
-
             thisOpenv = CSCS_GUI.OPENVs[tableHndlNum];
-
-            //if (!string.IsNullOrEmpty(tableKey))
-            //{
-            //    if (!thisOpenv.Keys.Any(p => p.KeyName == tableKey.ToUpper()) /* or ne postoji ključ s tim BROJEM*/)
-            //    {
-            //        // "Key does not exist for this table!"
-            //        SetFlerr(4, tableHndlNum);
-            //        return Variable.EmptyInstance;
-            //    }
-            //    else
-            //    {
-            //        KeyClass = thisOpenv.Keys.First(p => p.KeyName == tableKey.ToUpper());
-            //        //**************
-            //    }
-            //}
-            //else
-            //{
-            //    KeyClass = thisOpenv.CurrentKey;
-            //}
-
-
-
-            //if (!string.IsNullOrEmpty(tableKey))
-            //{
-            //    if (tableKey.StartsWith("@") && int.TryParse(tableKey.TrimStart('@'), out int keyNum))
-            //    {
-            //        if (keyNum > 0)
-            //        {
-            //            var kljuceviTable = CSCS_GUI.Adictionary.SY_INDEXESList.Where(p => p.SYKI_SCHEMA == CSCS_GUI.Adictionary.SY_TABLESList.First(r => r.SYCT_NAME == thisOpenv.tableName.ToUpper()).SYCT_SCHEMA).OrderBy(s => s.SYKI_KEYNUM).ToArray();
-
-            //            KeyClass = thisOpenv.Keys.First(p => p.KeyName == kljuceviTable.Where(r => r.SYKI_KEYNUM == keyNum).First().SYKI_KEYNAME);
-            //        }
-            //        else
-            //        {
-            //            KeyClass = new KeyClass() { KeyName = "ID", Ascending = true, Unique = true, KeyNum = 0, KeyColumns = new Dictionary<string, string>() { { "ID", "" } } };
-            //        }
-            //    }
-            //    else if (!thisOpenv.Keys.Any(p => p.KeyName == tableKey.ToUpper()) /* or ne postoji ključ s tim BROJEM*/)
-            //    {
-            //        // "Key does not exist for this table!"
-            //        SetFlerr(4, tableHndlNum);
-            //        return Variable.EmptyInstance;
-            //    }
-            //    else
-            //    {
-            //        KeyClass = thisOpenv.Keys.First(p => p.KeyName == tableKey.ToUpper());
-            //        //**************
-            //    }
-            //}
-            //else
-            //{
-            //    KeyClass = thisOpenv.CurrentKey;
-            //}
-
-
-            //if (!string.IsNullOrEmpty(startString))
-            //{
-            //    //ako ima start string
-            //    new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, startString/*, forString.String*/).FINDV();
-            //}
-            //else
-            //{
-            //    //ako nema start string
-
-            //    string currentStart = "";
-
-            //    if (KeyClass.KeyNum != 0)
-            //    {
-            //        var segmentsOrdered = CSCS_GUI.Adictionary.SY_INDEXESList.Where(p => p.SYKI_KEYNAME == KeyClass.KeyName).OrderBy(p => p.SYKI_SEGNUM).Select(p => p.SYKI_FIELD).ToArray();
-
-            //        for (int i = 0; i < segmentsOrdered.Count(); i++)
-            //        {
-            //            if (CSCS_GUI.DEFINES.TryGetValue(segmentsOrdered[i].ToLower(), out DefineVariable bufferVar))
-            //            {
-            //                currentStart += bufferVar.AsString();
-            //                currentStart += "|";
-            //            }
-            //        }
-            //        currentStart = currentStart.TrimEnd('|');
-            //    }
-            //    else
-            //    {
-            //        // key @0
-            //        currentStart = thisOpenv.currentRow.ToString();
-            //    }
-
-                //var segmentsOrdered = CSCS_GUI.Adictionary.SY_INDEXESList.Where(p => p.SYKI_KEYNAME == KeyClass.KeyName).OrderBy(p => p.SYKI_SEGNUM).Select(p => p.SYKI_FIELD).ToArray();
-
-                //string currentStart = "";
-
-                //for (int i = 0; i < segmentsOrdered.Count(); i++)
-                //{
-                //    if (CSCS_GUI.DEFINES.TryGetValue(segmentsOrdered[i].ToLower(), out DefineVariable bufferVar))
-                //    {
-                //        currentStart += bufferVar.AsString();
-                //        currentStart += "|";
-                //    }
-                //}
-                //currentStart = currentStart.TrimEnd('|');
-
-
-
-            //    new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, currentStart/*, forString.String*/).FINDV();
-            //}
 
             bool limited = false;
             int selectLimit = 0;
@@ -2683,11 +2522,8 @@ WHERE ID = {thisOpenv.currentRow}
                 selectLimit = maxa;
                 limited = true;
                 selectLimitCounter = selectLimit;
-                
             }
-
             
-
             bool forIsSet = false;
             if (!string.IsNullOrEmpty(forString.String))
                 forIsSet = true;
@@ -2700,13 +2536,11 @@ WHERE ID = {thisOpenv.currentRow}
                     continue;
                 }
 
-
                 if (limited && selectLimitCounter == 0)
                 {
                     SetFlerr(0, tableHndlNum);
                     break;
                 }
-
 
                 if (RDA())
                 {
@@ -2730,7 +2564,6 @@ WHERE ID = {thisOpenv.currentRow}
                     SetFlerr(0, tableHndlNum);
                     break;
                 }
-
             }
 
             var current = CSCS_GUI.DEFINES[cntrNameString];
@@ -2759,32 +2592,28 @@ WHERE ID = {thisOpenv.currentRow}
                 if (CSCS_GUI.DEFINES[arrayName].Array > 1)
                 {
                     DEFINES[arrayName].Tuple[rowNumber] = executed.ElementAt(i).Clone();
-                    //CSCS_GUI.OnVariableChange(...) // <-- ???
                 }
             }
-
 
             return true;
         }
     }
-    
-    
 
     class ReplFunction : ParserFunction
     {
-        int tableHndlNum; // 
-        string columnsString; // 
-        string withString; //
-        string tableKey; // 
-        
-        
-        string startString; // 
-        ParsingScript whileString; // 
+        int tableHndlNum;
+        string columnsString;
+        string withString;
+        string tableKey;
 
-        ParsingScript forString; // 
 
-        string scopeString; //
-        string cntrNameString; // 
+        string startString;
+        ParsingScript whileString;
+
+        ParsingScript forString;
+
+        string scopeString;
+        string cntrNameString;
 
         OpenvTable thisOpenv;
         KeyClass KeyClass;
@@ -2801,19 +2630,15 @@ WHERE ID = {thisOpenv.currentRow}
             withString = Utils.GetSafeString(args, 2); // replace values
             tableKey = Utils.GetSafeString(args, 3).ToLower();
 
-            startString = Utils.GetSafeString(args, 4); // 
-            whileString = script.GetTempScript(args[5].ToString()); // 
-            
-            forString = script.GetTempScript(args[6].ToString()); // 
-            //forString = Utils.GetSafeString(args, 6); // 
-            
-            scopeString = Utils.GetSafeString(args, 7).ToLower(); // 
-            cntrNameString = Utils.GetSafeString(args, 8).ToLower(); // 
+            startString = Utils.GetSafeString(args, 4);
+            whileString = script.GetTempScript(args[5].ToString());
 
-            //---
+            forString = script.GetTempScript(args[6].ToString());
+
+            scopeString = Utils.GetSafeString(args, 7).ToLower();
+            cntrNameString = Utils.GetSafeString(args, 8).ToLower();
 
             thisOpenv = CSCS_GUI.OPENVs[tableHndlNum];
-
 
             if (!string.IsNullOrEmpty(tableKey))
             {
@@ -2823,14 +2648,14 @@ WHERE ID = {thisOpenv.currentRow}
                     {
                         var kljuceviTable = CSCS_GUI.Adictionary.SY_INDEXESList.Where(p => p.SYKI_SCHEMA == CSCS_GUI.Adictionary.SY_TABLESList.First(r => r.SYCT_NAME == thisOpenv.tableName.ToUpper()).SYCT_SCHEMA).OrderBy(s => s.SYKI_KEYNUM).ToArray();
 
-                        KeyClass = thisOpenv.Keys.First(p => p.KeyName == kljuceviTable.Where(r=>r.SYKI_KEYNUM == keyNum).First().SYKI_KEYNAME);
+                        KeyClass = thisOpenv.Keys.First(p => p.KeyName == kljuceviTable.Where(r => r.SYKI_KEYNUM == keyNum).First().SYKI_KEYNAME);
                     }
                     else
                     {
                         KeyClass = new KeyClass() { KeyName = "ID", Ascending = true, Unique = true, KeyNum = 0, KeyColumns = new Dictionary<string, string>() { { "ID", "" } } };
                     }
                 }
-                else if (!thisOpenv.Keys.Any(p => p.KeyName == tableKey.ToUpper()) /* or ne postoji ključ s tim BROJEM*/)
+                else if (!thisOpenv.Keys.Any(p => p.KeyName == tableKey.ToUpper()))
                 {
                     // "Key does not exist for this table!"
                     SetFlerr(4, tableHndlNum);
@@ -2839,7 +2664,6 @@ WHERE ID = {thisOpenv.currentRow}
                 else
                 {
                     KeyClass = thisOpenv.Keys.First(p => p.KeyName == tableKey.ToUpper());
-                    //**************
                 }
             }
             else
@@ -2849,16 +2673,16 @@ WHERE ID = {thisOpenv.currentRow}
 
             if (!string.IsNullOrEmpty(startString))
             {
-                //ako ima start string
+                //if has a start string
                 new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, startString/*, forString.String*/).FINDV();
             }
             else
             {
-                //ako nema start string
+                //doesn't nave a start string
 
                 string currentStart = "";
 
-                if(KeyClass.KeyNum != 0)
+                if (KeyClass.KeyNum != 0)
                 {
                     var segmentsOrdered = CSCS_GUI.Adictionary.SY_INDEXESList.Where(p => p.SYKI_KEYNAME == KeyClass.KeyName).OrderBy(p => p.SYKI_SEGNUM).Select(p => p.SYKI_FIELD).ToArray();
 
@@ -2877,9 +2701,9 @@ WHERE ID = {thisOpenv.currentRow}
                     // key @0
                     currentStart = thisOpenv.currentRow.ToString();
                 }
-                
 
-                new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, currentStart/*, forString.String*/).FINDV();
+
+                new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, currentStart).FINDV();
             }
 
             bool limited = false;
@@ -2903,16 +2727,16 @@ WHERE ID = {thisOpenv.currentRow}
             bool whileIsSet = false;
             if (!string.IsNullOrEmpty(whileString.String))
                 whileIsSet = true;
-            
+
             bool forIsSet = false;
             if (!string.IsNullOrEmpty(forString.String))
                 forIsSet = true;
 
-            var whileQoutsReplaced = whileString.String;//.Replace("\\\'", "\""); // ?????
+            var whileQoutsReplaced = whileString.String;
 
             while (!whileIsSet || script.GetTempScript(whileQoutsReplaced).Execute(new char[] { '"' }, 0).AsBool())
             {
-                if (forIsSet && !script.GetTempScript(forString.String/*.Replace("\\\'", "\"")*/).Execute(new char[] { '"' }, 0).AsBool())
+                if (forIsSet && !script.GetTempScript(forString.String).Execute(new char[] { '"' }, 0).AsBool())
                 {
                     new Btrieve.FINDVClass(tableHndlNum, "n").FINDV();
                     if (LastFlerrsOfFnums[tableHndlNum] == 3)
@@ -2922,7 +2746,6 @@ WHERE ID = {thisOpenv.currentRow}
                     }
                     continue;
                 }
-                    
 
                 if (limited && selectLimitCounter == 0)
                 {
@@ -2948,10 +2771,9 @@ WHERE ID = {thisOpenv.currentRow}
                     SetFlerr(0, tableHndlNum);
                     break;
                 }
-                    
             }
 
-            if(CSCS_GUI.DEFINES.TryGetValue(cntrNameString, out DefineVariable currentDefVar))
+            if (CSCS_GUI.DEFINES.TryGetValue(cntrNameString, out DefineVariable currentDefVar))
             {
                 currentDefVar.InitVariable(new Variable(rowsAffected));
                 CSCS_GUI.OnVariableChange(cntrNameString, new Variable(rowsAffected), true);
@@ -2967,7 +2789,7 @@ WHERE ID = {thisOpenv.currentRow}
 
             if (columnsParts.Length != withParts.Length)
             {
-                SetFlerr(78, tableHndlNum);// promijenit broj
+                SetFlerr(78, tableHndlNum);
                 return Variable.EmptyInstance;
             }
 
@@ -2979,181 +2801,21 @@ WHERE ID = {thisOpenv.currentRow}
             }
             setStringBuilder.Remove(setStringBuilder.Length - 2, 2); // remove last ", "
 
-
-
             string query =
     $@"EXECUTE sp_executesql N'
 Update {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
 SET {setStringBuilder}
 WHERE ID = {thisOpenv.currentRow}
 '";
-            //{(!string.IsNullOrEmpty(while) ? "WHERE (" + whereString + ")" : "")}
-
             using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
             {
-                //con.Open();
                 int rows = cmd.ExecuteNonQuery();
                 rowsAffected += rows;
             }
 
-            SetFlerr(0, tableHndlNum); // 0 znači UREDU
+            SetFlerr(0, tableHndlNum); // 0 meanbs OK
             return Variable.EmptyInstance;
         }
-
-        private Variable REPL_OLD()
-        {
-            return Variable.EmptyInstance;
-//            var columnsParts = columnsString.Replace(" ", "").Split(',');
-//            var withParts = withString.Replace(" ", "").Split(',');
-
-//            if (columnsParts.Length != withParts.Length)
-//            {
-//                SetFlerr(0, 0);//**asd*a*sda*sd*asd*as*dsa*d*as*d
-//                return Variable.EmptyInstance;
-//            }
-
-//            StringBuilder setStringBuilder = new StringBuilder();
-//            for (int i = 0; i < columnsParts.Length; i++)
-//            {
-//                setStringBuilder.Append(columnsParts[i] + " = " + withParts[i].Replace("\'", "\'\'"));
-//                setStringBuilder.Append(", ");
-//            }
-//            setStringBuilder.Remove(setStringBuilder.Length - 2, 2); // remove last ", "
-
-//            string selectLimit = "";
-//            if (scopeString.StartsWith("n"))
-//            {
-//                var selectLimitIntString = scopeString.TrimStart('n').Replace(" ", "");
-//                if (int.TryParse(selectLimitIntString, out int selectLimitInt))
-//                {
-//                    selectLimit = "top " + selectLimitInt.ToString();
-//                }
-
-//            }
-
-//            string whereString = GetREPLWhereString();
-
-//            //string sqlWhileString = GetSqlWhileString();
-
-//            string sqlForString = "";
-//            if (!string.IsNullOrEmpty(forString))
-//            {
-//                sqlForString = Btrieve.FINDVClass.GetForString(forString);
-//            }
-
-//            string orderByString = Btrieve.FINDVClass.GetOrderByString(FindvOption.Next, thisOpenv, KeyClass);
-
-//            string query =
-//    $@"EXECUTE sp_executesql N'
-//Update {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
-//SET {setStringBuilder}
-//WHERE ID in (
-//    SELECT {selectLimit} ID
-//    FROM {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
-//    {(!string.IsNullOrEmpty(whereString) ? "WHERE (" + whereString + ")" : "")}
-//    {(!string.IsNullOrEmpty(sqlWhileString) ? $"{(!string.IsNullOrEmpty(whereString) ? "AND" : "WHERE")} (" + sqlWhileString + ")" : "")}
-//    {(!string.IsNullOrEmpty(sqlForString) ? $"{(!string.IsNullOrEmpty(whereString) || !string.IsNullOrEmpty(sqlWhileString) ? "AND" : "WHERE")} (" + sqlForString + ")" : "")}
-//    {(string.IsNullOrEmpty(selectLimit) ? "" : "order by " + orderByString)}
-//)
-//'";
-//            //{(!string.IsNullOrEmpty(while) ? "WHERE (" + whereString + ")" : "")}
-
-//            using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
-//            {
-//                //con.Open();
-//                int rows = cmd.ExecuteNonQuery();
-//                var current = CSCS_GUI.DEFINES[cntrNameString];
-//                current.InitVariable(new Variable((double)rows));
-//            }
-
-//            SetFlerr(0, tableHndlNum); // 0 znači UREDU
-//            return Variable.EmptyInstance;
-
-        }
-
-        private string GetREPLWhereString()
-        {
-            var keyUsed = CSCS_GUI.Adictionary.SY_INDEXESList.Where(p => p.SYKI_KEYNAME == KeyClass.KeyName).ToList();
-
-            var keySegmentsOrdered = keyUsed.OrderBy(p => p.SYKI_SEGNUM).Select(p => p.SYKI_FIELD).ToList();
-
-            if (string.IsNullOrEmpty(startString))
-            { 
-                //if startString IS NOT supplied
-
-                
-                //if (keyUsed.First().SYKI_UNIQUE == "N")
-                //{
-                //    keySegmentsOrdered.Add("ID");
-                //}
-
-                Dictionary<string, DefineVariable> currentValues = new Dictionary<string, DefineVariable>();
-
-                foreach (var segment in KeyClass.KeyColumns.Keys)
-                {
-                    if (CSCS_GUI.DEFINES.TryGetValue(segment.ToLower(), out DefineVariable bufferedValue))
-                    {
-                        currentValues.Add(segment, bufferedValue);
-                    }
-                }
-
-                startString = "";
-
-                foreach (var segment in keySegmentsOrdered)
-                {
-                    startString += "\'\'" + currentValues[segment].AsString() + "\'\'|";
-                }
-                startString = startString.TrimEnd('|');                
-            }
-            else
-            {
-                startString = startString.Replace("\'", "\'\'");
-            }
-
-            var startStringParts = startString.Split('|');
-
-            if (keyUsed.First().SYKI_UNIQUE == "N")
-            {
-                keySegmentsOrdered.Add("ID");
-
-                //startStringParts += new string[] { thisOpenv.currentRow.ToString()};
-            }
-
-            StringBuilder gStringBuilder = new StringBuilder();
-
-            gStringBuilder.Append("(");
-            for (int i = 0; i < keySegmentsOrdered.Count; i++)
-            {
-                gStringBuilder.Append(keySegmentsOrdered[i] + " = " + $"{(keySegmentsOrdered[i] == "ID" ? thisOpenv.currentRow.ToString() : startStringParts[i])} AND ");
-            }
-            gStringBuilder.Remove(gStringBuilder.Length - 5, 5);// remove last " AND "
-
-            gStringBuilder.Append(") OR ");
-
-            for (int j = keySegmentsOrdered.Count/* toliko uvjeta */; j > 0; j--)
-            {
-                gStringBuilder.Append("(");
-                for (int i = 0; i < j; i++)
-                {
-                    gStringBuilder.Append(keySegmentsOrdered[i] + $" {(i + 1 == j ? " > " : " = ")} " + $"{(keySegmentsOrdered[i] == "ID" ? thisOpenv.currentRow.ToString() : startStringParts[i])} AND ");
-                }
-                gStringBuilder.Remove(gStringBuilder.Length - 5, 5); // remove last " AND "
-                gStringBuilder.Append(")");
-
-                gStringBuilder.Append(" OR ");
-            }
-
-            gStringBuilder.Remove(gStringBuilder.Length - 4, 4); // remove last " OR "
-
-            return gStringBuilder.ToString();
-        }
-
-
-        //private string GetSqlWhileString()
-        //{
-        //    var sqlWhileString = whileString.Replace("\'", "\'\'");
-        //    return sqlWhileString;
-        //}
     }
 
     class ReadXmlFileFunction : ParserFunction
@@ -3200,7 +2862,6 @@ WHERE ID = {thisOpenv.currentRow}
             var result = xml.Substring(wordStart, end - wordStart);
             return result.Trim();
         }
-
     }
 
     public class CSCS_GUI
@@ -3561,9 +3222,7 @@ WHERE ID = {thisOpenv.currentRow}
 
         static void UpdateVariable(FrameworkElement widget, Variable newValue)
         {
-            //=)//
             var widgetName = GetWidgetBindingName(widget);
-            //var widgetName = GetWidgetName(widget);
             if (string.IsNullOrWhiteSpace(widgetName))
             {
                 return;
@@ -3805,7 +3464,7 @@ WHERE ID = {thisOpenv.currentRow}
             return true;
         }
         
-        //Pre, Check, Post
+        //Pre, Post
         public static bool AddWidgetPreHandler(string name, string action, FrameworkElement widget)
         {
             //var textable = widget as TextBoxBase;
@@ -6241,199 +5900,6 @@ WHERE ID = {thisOpenv.currentRow}
             dg.UpdateLayout();
         }
     }
-    
-    //class VariableArgsOPENVFunction : ParserFunction
-    //{
-    //    bool m_processFirstToken = true;
-    //    Dictionary<string, Variable> m_parameters;
-    //    string m_lastParameter;
-
-    //    public VariableArgsOPENVFunction(bool processFirst = true)
-    //    {
-    //        m_processFirstToken = processFirst;
-    //    }
-
-    //    void GetParameters(ParsingScript script)
-    //    {
-    //        var separator = new char[] { ' ', ';' };
-    //        m_parameters = new Dictionary<string, Variable>();
-
-    //        while (script.Current != Constants.END_STATEMENT && script.StillValid())
-    //        {
-    //            var labelName = Utils.GetToken(script, Constants.TOKEN_SEPARATION).ToLower();
-    //            var value = labelName == "up" || labelName == "local" || labelName == "setup" || labelName == "close" ||
-    //                labelName == "addrow" || labelName == "insertrow" || labelName == "deleterow" ?
-    //                new Variable(true) :
-    //                        script.Current == Constants.END_STATEMENT ? Variable.EmptyInstance :
-    //                        new Variable(Utils.GetToken(script, separator));
-
-    //            if (labelName == "fnum" || labelName == "ext")
-    //            {
-    //                m_parameters[labelName] = value;
-    //            }
-    //            else
-    //            {
-    //                //// za izvuć vrijednost varijable
-    //                if (script.Prev != '"' && !string.IsNullOrWhiteSpace(value.String))
-    //                {
-    //                    var existing = ParserFunction.GetVariableValue(value.String, script);
-    //                    value = existing == null ? value : existing;
-    //                }
-    //                m_parameters[labelName] = value;
-    //            }
-
-    //            //// ?
-    //            //m_lastParameter = labelName;
-    //        }
-    //    }
-
-    //    string GetParameter(string key, string defValue = "")
-    //    {
-    //        Variable res;
-    //        if (!m_parameters.TryGetValue(key.ToLower(), out res))
-    //        {
-    //            return defValue;
-    //        }
-    //        return res.AsString();
-    //    }
-        
-
-    //    protected override Variable Evaluate(ParsingScript script)
-    //    {
-    //        m_processFirstToken = false;
-    //        //var tableToken = m_processFirstToken ? Utils.GetToken(script, new char[] { ' ', '}', ')', ';' }) : "";
-    //        //var existing = ParserFunction.GetVariableValue(tableToken, script);
-    //        //string tableString = existing == null ? tableToken : existing.String;
-
-
-    //        Name = Name.ToUpper();
-    //        GetParameters(script);
-
-    //        var tableString = GetParameter("table");
-
-    //        var hndlName = GetParameter("fnum");
-    //        var shortDbName = GetParameter("ext");
-    //        if (string.IsNullOrEmpty(shortDbName)) shortDbName = DefaultDB;
-
-    //        var resultVariable = Btrieve.OPENV(tableString.ToLower(), shortDbName);
-    //        if(resultVariable.Type == Variable.VarType.NUMBER)
-    //        {
-    //            if (CSCS_GUI.DEFINES.TryGetValue(hndlName, out DefineVariable hndlVar))
-    //            {
-    //                hndlVar.InitVariable(resultVariable);
-    //            }
-    //        }
-
-    //        return Variable.EmptyInstance;
-    //    }
-    //}
-    
-    //class VariableArgsFINDVFunction : ParserFunction
-    //{
-    //    bool m_processFirstToken = true;
-    //    Dictionary<string, Variable> m_parameters;
-    //    string m_lastParameter;
-
-    //    public VariableArgsFINDVFunction(bool processFirst = true)
-    //    {
-    //        m_processFirstToken = processFirst;
-    //    }
-
-    //    void GetParameters(ParsingScript script)
-    //    {
-    //        var separator = new char[] { ' ', ';' };
-    //        m_parameters = new Dictionary<string, Variable>();
-
-    //        while (script.Current != Constants.END_STATEMENT && script.StillValid())
-    //        {
-    //            var labelName = Utils.GetToken(script, Constants.TOKEN_SEPARATION).ToLower();
-    //            var value = labelName == "up" || labelName == "local" || labelName == "setup" || labelName == "close" ||
-    //                labelName == "addrow" || labelName == "insertrow" || labelName == "deleterow" ?
-    //                new Variable(true) :
-    //                        script.Current == Constants.END_STATEMENT ? Variable.EmptyInstance :
-    //                        new Variable(Utils.GetToken(script, separator));
-
-    //            if (/*labelName == "fnum" ||*/ labelName == "key")
-    //            {
-    //                m_parameters[labelName] = value;
-    //            }
-    //            else
-    //            {
-    //                //// za izvuć vrijednost varijable
-    //                if (script.Prev != '"' && !string.IsNullOrWhiteSpace(value.String))
-    //                {
-    //                    var existing = ParserFunction.GetVariableValue(value.String, script);
-    //                    value = existing == null ? value : existing;
-    //                }
-    //                m_parameters[labelName] = value;
-    //            }
-
-    //            //// ?
-    //            //m_lastParameter = labelName;
-    //        }
-    //    }
-
-    //    string GetParameter(string key, string defValue = "")
-    //    {
-    //        Variable res;
-    //        if (!m_parameters.TryGetValue(key.ToLower(), out res))
-    //        {
-    //            return defValue;
-    //        }
-    //        return res.AsString();
-    //    }
-    //    double GetDoubleParameter(string key, double defValue = 0.0)
-    //    {
-    //        Variable res;
-    //        if (!m_parameters.TryGetValue(key.ToLower(), out res))
-    //        {
-    //            return defValue;
-    //        }
-    //        return res.AsDouble();
-    //    }
-    //    int GetIntParameter(string key, int defValue = 0)
-    //    {
-    //        Variable res;
-    //        if (!m_parameters.TryGetValue(key.ToLower(), out res))
-    //        {
-    //            return defValue;
-    //        }
-    //        return res.AsInt();
-    //    }
-    //    bool GetBoolParameter(string key, bool defValue = false)
-    //    {
-    //        Variable res;
-    //        if (!m_parameters.TryGetValue(key.ToLower(), out res))
-    //        {
-    //            return defValue;
-    //        }
-    //        return res.AsBool();
-    //    }
-    //    Variable GetVariableParameter(string key, Variable defValue = null)
-    //    {
-    //        Variable res;
-    //        if (!m_parameters.TryGetValue(key.ToLower(), out res))
-    //        {
-    //            return defValue;
-    //        }
-    //        return res;
-    //    }
-
-    //    protected override Variable Evaluate(ParsingScript script)
-    //    {
-    //        var operationType = m_processFirstToken ? Utils.GetToken(script, new char[] { ' ', '}', ')', ';' }) : "";
-    //        Name = Name.ToUpper();
-    //        GetParameters(script);
-
-    //        var hndlNum = GetIntParameter("fnum");
-    //        var keyName = GetParameter("key");
-    //        // if(keyname starts with "@"  ... )
-
-    //        new Btrieve.FINDVClass(hndlNum, operationType, keyName, "").FINDV(); 
-            
-    //        return Variable.EmptyInstance;
-    //    }
-    //}
 
     class ReturnStatement : ParserFunction
     {
