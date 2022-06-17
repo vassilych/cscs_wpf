@@ -1353,13 +1353,6 @@ order by {orderByString}
         
     }
 
-
-    public class Varijabla
-    {
-        public string Ime { get; set; }
-        public string Vrijednost { get; set; }
-    }
-
     public enum ReportOption
     {
         Setup,
@@ -1371,10 +1364,6 @@ order by {orderByString}
     {
         ReportOption option;
         
-        //static XtraReport MainReport;
-        //static XtraReport SubReport1;
-        //static XtraReport SubReport2;
-
         static Dictionary<int, XtraReport> Reports;
 
         ParsingScript script;
@@ -1531,10 +1520,7 @@ order by {orderByString}
 
                 Reports[thisSubreportNum].Parameters.Clear();
                 Reports[thisSubreportNum].Parameters.Add(new DevExpress.XtraReports.Parameters.Parameter() { AllowNull = false, Name = $"thisReportsNumberParam_{thisSubreportNum}", Type = typeof(string), Visible = false, Value = "" });
-                var ReportsParameters = Reports[thisSubreportNum].Parameters;
-                //Reports[thisSubreportNum].FilterString = Reports[thisSubreportNum].Tag.ToString(); //"[_VEZNIBROJ] = ?VEZNIBROJparam";
-                //Reports[thisSubreportNum].FilterString = Reports[thisSubreportNum].Tag.ToString(); //"[_VEZNIBROJ] = ?VEZNIBROJparam";
-                Reports[thisSubreportNum].FilterString = $"[thisSubreportsMainReport] = ?thisReportsNumberParam_{thisSubreportNum}";//Reports[thisSubreportNum].Tag.ToString(); //"[_VEZNIBROJ] = ?VEZNIBROJparam";
+                Reports[thisSubreportNum].FilterString = $"[thisSubreportsMainReport] = ?thisReportsNumberParam_{thisSubreportNum}";
 
                 DataSets[thisSubreportNum] = new DataSet();
                 DataSets[thisSubreportNum].DataSetName = $"DataSet{thisSubreportNum}";
@@ -1551,28 +1537,15 @@ order by {orderByString}
                 {
                     if (!string.IsNullOrEmpty(label.Tag.ToString()))
                     {
-                        //has Tag
+                        //has tag
+                        var fieldName = label.Tag.ToString().ToLower();
 
+                        fieldsOfReports[thisSubreportNum].Add(fieldName);
 
-                        //if (label.Tag.ToString().StartsWith("$"))
-                        //{
-                        //    var funcString = label.Tag.ToString().TrimStart('$');
-
-                        //    label.ExpressionBindings.Add(new ExpressionBinding("Text", funcString));
-                        //}
-                        //else
-                        //{
-                            var fieldName = label.Tag.ToString().ToLower();
-
-                            fieldsOfReports[thisSubreportNum].Add(fieldName);
-
-                            label.ExpressionBindings.Add(new ExpressionBinding("Text", $"[{fieldName}]"));
-                        //}
+                        label.ExpressionBindings.Add(new ExpressionBinding("Text", $"[{fieldName}]"));
                     }
                 }
 
-                //************************
-                //fieldsOfReports[thisSubreportNum].Add("vezl_veznibroj");
                 fieldsOfReports[thisSubreportNum].Add("thisSubreportsMainReport");
                 fieldsOfReports[thisSubreportNum].Add("thisReportsNumber");
 
@@ -1610,7 +1583,6 @@ order by {orderByString}
 
                     DataTables[thisSubreportNum].Columns.Add(fieldName, fieldType);
                 }
-
 
                 //linking subreport(s)
                 var parentsSubreports = Reports[parentReportHndlNum].AllControls<XRSubreport>();
@@ -1665,7 +1637,6 @@ order by {orderByString}
                     newObjectArray[i] = thisSubreportsMainReport;
                 }
                 else if (DEFINES.TryGetValue(dataTableFieldName, out DefineVariable defVar))
-                //newObjectArray[i] = defVar.AsString().Trim();
                 {
                     switch (defVar.DefType)
                     {
@@ -1696,16 +1667,13 @@ order by {orderByString}
 
             DataSets[reportHndlNum].Tables[0].Rows.Add(newObjectArray);
 
-
-
             var allBands = Reports[reportHndlNum].AllControls<Band>();
             foreach (var band in allBands)
             {
                 var allControls = band.AllControls<XRControl>();
                 foreach (var control in allControls)
                 {
-                    if (!control.Name.StartsWith("xr" +
-                        "")) // !!!
+                    if (!control.Name.StartsWith("xr"))
                     {
                         string controlName = control.Name.ToLower();
                         if (CSCS_GUI.DEFINES.TryGetValue(controlName, out DefineVariable defVar)) // visibility
@@ -1744,11 +1712,9 @@ order by {orderByString}
                                     label.ForeColor = newColor;
                                 }
                             }
-                            catch (Exception ex)
+                            catch (Exception)
                             {
-
                             }
-                            
                         }
                         if (DEFINES.TryGetValue(controlName + "fs", out DefineVariable defVar5)) // font size
                         {
@@ -1775,10 +1741,8 @@ order by {orderByString}
                                 control.HeightF = requestedHeighth;
                         }
                     }
-
                 }
             }
-            
         }
         
         private void UpdateReport()
@@ -1822,7 +1786,6 @@ order by {orderByString}
                     }
                 }
             }
-
         }
 
         private void PrintReport()
@@ -1837,7 +1800,6 @@ order by {orderByString}
                 }
             }
 
-
             var storage = new MemoryDocumentStorage();
             var Report = Reports[1];
             var cachedReportSource = new CachedReportSource(Report, storage);
@@ -1846,22 +1808,9 @@ order by {orderByString}
             // and load the report document into it.
             PrintHelper.ShowRibbonPrintPreview(null, cachedReportSource);
 
-            // Invoke the Ribbon Print Preview window modally.
+            //// Invoke the Ribbon Print Preview window modally.
             //PrintHelper.ShowRibbonPrintPreviewDialog(null, cachedReportSource);
-
-            // Invoke the standard Print Preview window 
-            // and load the report document into it.
-            //PrintHelper.ShowPrintPreview(null, cachedReportSource);
-
-            // Invoke the standard Print Preview window modally.
-            //PrintHelper.ShowPrintPreviewDialog(null, cachedReportSource);
-
-
-            //Reports[1].ShowPrintMarginsWarning = false;
-            //Reports[1].CreateDocument();
-            //PrintHelper.ShowPrintPreview(null, Reports[1]);
         }
-
     }
     
     class OpenvFunction : ParserFunction
