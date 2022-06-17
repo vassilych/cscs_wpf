@@ -249,7 +249,7 @@ namespace WpfCSCS
                             KeyClass = new KeyClass() { KeyName = "ID", Ascending = true, Unique = true, KeyNum = 0, KeyColumns = new Dictionary<string, string>() { { "ID", "" } } };
                         }
                     }
-                    else if (!thisOpenv.Keys.Any(p => p.KeyName == tableKey.ToUpper())/)
+                    else if (!thisOpenv.Keys.Any(p => p.KeyName == tableKey.ToUpper()))
                     {
                         // "Key does not exist for this table!"
                         SetFlerr(4, tableHndlNum);
@@ -320,7 +320,7 @@ namespace WpfCSCS
                 }
                 else if (option == FindvOption.Next)
                 {
-                    ascDescOption = thisOpenv.lastAscDescOption; // testirat ?? "next" nakon "last"
+                    ascDescOption = thisOpenv.lastAscDescOption;
                 }
                 else if (option == FindvOption.Previous)
                 {
@@ -398,16 +398,12 @@ with (nolock)
 order by {orderByString}
 '";
 
-                //using (SqlConnection con = new SqlConnection(CSCS_SQL.ConnectionString))
-                //{
                 using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
                 {
-                    //con.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         if (!reader.HasRows)
                         {
-                            //MessageBox.Show("Record not found!");
                             SetFlerr(3, tableHndlNum);
                             return new Variable((long)3);
                         }
@@ -419,14 +415,13 @@ order by {orderByString}
                                 return Variable.EmptyInstance;
                             }
 
-                            while (reader.Read()) // unique???
+                            while (reader.Read())
                             {
                                 currentSqlId = (int)reader["ID"];
-                                int currentFieldNum = 1; // 0-ti je "ID"
+                                int currentFieldNum = 1;
                                 while (currentFieldNum < reader.FieldCount)
                                 {
                                     var currentColumnName = reader.GetName(currentFieldNum);
-                                    //if(thisOpenv.CurrentKey.KeyColumns.Keys.Any(p=>p.ToUpper() == currentColumnName.ToUpper()))
                                     if (KeyClass.KeyColumns.Keys.Any(p => p.ToUpper() == currentColumnName.ToUpper()))
                                     {
                                         KeyClass.KeyColumns[currentColumnName.ToUpper()] = reader[currentColumnName].ToString();
@@ -435,7 +430,6 @@ order by {orderByString}
                                     var loweredCurrentColumnName = currentColumnName.ToLower();
                                     if (!CSCS_GUI.DEFINES.ContainsKey(loweredCurrentColumnName))
                                     {
-                                        // err: ta kolona NIJE otvorena u bufferu(DEFINE) sa openv
                                         return new Variable((long)4);
                                     }
                                     else
@@ -452,7 +446,6 @@ order by {orderByString}
                                         {
                                             string fieldValue = reader[currentColumnName].ToString().TrimEnd();
                                             CSCS_GUI.DEFINES[loweredCurrentColumnName].InitVariable(new Variable(fieldValue), script);
-                                            //new MyAssignFunction().DoAssign(script, loweredCurrentColumnName, CSCS_GUI.DEFINES[loweredCurrentColumnName]);
                                             CSCS_GUI.OnVariableChange(loweredCurrentColumnName, new Variable(fieldValue), true);
                                         }
                                     }
@@ -462,18 +455,16 @@ order by {orderByString}
                             }
 
                             //OPENVs
-                            thisOpenv.CurrentKey = KeyClass;// thisOpenv.Keys.First(p => p.KeyName == tableKey);
+                            thisOpenv.CurrentKey = KeyClass;
                             thisOpenv.currentRow = currentSqlId;
                             Btrieve.OPENVs[tableHndlNum] = thisOpenv;
                             Btrieve.OPENVs[tableHndlNum].Cache = new CachingClass() { KeyName = KeyClass.KeyName };
                             Btrieve.OPENVs[tableHndlNum].currentCacheListIndex = 1; // ??
                         }
-
                     }
                 }
-                //}
 
-                SetFlerr(0, tableHndlNum); // 0 znači UREDU
+                SetFlerr(0, tableHndlNum); // 0 means OK
                 return Variable.EmptyInstance;
             }
 
@@ -518,7 +509,7 @@ order by {orderByString}
 
                 string compareSign = GetCompareSign(option);
 
-                for (int j = keySegmentsOrdered.Count/* toliko uvjeta */; j > 0; j--)
+                for (int j = keySegmentsOrdered.Count; j > 0; j--)
                 {
                     wStringBuilder.Append("(");
                     for (int i = 0; i < j; i++)
@@ -595,19 +586,7 @@ order by {orderByString}
                     numOfParams = 1;
                 }
 
-                //var keyUsed = CSCS_GUI.Adictionary.SY_INDEXESList.Where(p => p.SYKI_KEYNAME == thisOpenv.CurrentKey.KeyName).ToList();
-
-                //var numOfParams = keyUsed.Count() + (keyUsed.First().SYKI_UNIQUE == "N" ? 1 : 0);
-
-                //var keySegmentsOrdered = keyUsed.OrderBy(p => p.SYKI_SEGNUM).Select(p => p.SYKI_FIELD).ToList();
-
-                //if (keyUsed.First().SYKI_UNIQUE == "N")
-                //{
-                //    keySegmentsOrdered.Add("ID");
-                //}
-
                 StringBuilder pdStringBuilder = new StringBuilder();
-
 
                 for (int i = 0; i < numOfParams; i++)
                 {
@@ -636,8 +615,6 @@ order by {orderByString}
                 {
                     var keyUsed = CSCS_GUI.Adictionary.SY_INDEXESList.Where(p => p.SYKI_KEYNAME == thisOpenv.CurrentKey.KeyName).ToList();
 
-                    //var numOfParams = keyUsed.Count() + (keyUsed.First().SYKI_UNIQUE == "N" ? 1 : 0);
-
                     keySegmentsOrdered = keyUsed.OrderBy(p => p.SYKI_SEGNUM).Select(p => p.SYKI_FIELD).ToList();
                 }
 
@@ -652,15 +629,13 @@ order by {orderByString}
                 }
                 pvStringBuilder.Remove(pvStringBuilder.Length - 2, 2); // remove last ", "
 
-                // segmenti po redu + ID ako NIJE unique
+                // segments oredered + ID if not unique
                 return pvStringBuilder.ToString();
             }
 
 
             private string GetMatchExactWhereString(string[] matchExactValues = null, string forString = null)
             {
-
-                //return $"{KeyClass.KeyColumns.First().Key} = '{matchExactValue}'";
                 StringBuilder mStringBuilder = new StringBuilder();
 
                 mStringBuilder.Append("(");
@@ -683,22 +658,12 @@ order by {orderByString}
 
                 mStringBuilder.Append(")");
 
-                //if (!string.IsNullOrEmpty(forString))
-                //{
-                //    mStringBuilder.Append(" and (");
-                //    mStringBuilder.Append(GetForString(forString));
-                //    mStringBuilder.Append(")");
-                //}
-
                 return mStringBuilder.ToString();
 
             }
 
             private string GetGenericWhereString(string[] matchExactValues = null)
-            {
-                // IMPLEMENTIRAT !!!!!
-
-                //return $"{KeyClass.KeyColumns.First().Key} = '{matchExactValue}'";
+            { 
                 StringBuilder gStringBuilder = new StringBuilder();
 
                 List<string> keySegmentsOrdered = new List<string>();
@@ -722,7 +687,7 @@ order by {orderByString}
 
                 gStringBuilder.Append(") OR ");
 
-                for (int j = keySegmentsOrdered.Count/* toliko uvjeta */; j > 0; j--)
+                for (int j = keySegmentsOrdered.Count; j > 0; j--)
                 {
                     gStringBuilder.Append("(");
                     for (int i = 0; i < j; i++)
@@ -743,7 +708,8 @@ order by {orderByString}
 
             public static string GetForString(string forString)
             {
-                // fali implementacija za datum s točkom (12.12.1995.)
+                // lacks implementation for date with "."(12.12.1995.)
+
                 // '31/12/94' -> '1994-12-31'
                 Regex rgx = new Regex(@"'\d{2}/\d{2}/\d{2}'");
                 MatchCollection matColl = rgx.Matches(forString);
@@ -792,50 +758,7 @@ order by {orderByString}
             {
                 int currentSqlId = thisOpenv.currentRow;
 
-                //if (thisOpenv.Cache.KeyName == thisOpenv.CurrentKey.KeyName)
-                //{
-                //    // ako postoji u cache-u
-                //    if (option == FindvOption.Next && thisOpenv.Cache.CachedLines.Count > thisOpenv.currentCacheListIndex)
-                //    {
-                //        //izvuci iz cachea NEXT
-                //        int wantedIndex = thisOpenv.currentCacheListIndex + 1;
-
-                //        return new Variable((long)0); // 0 znači UREDU
-                //    }
-                //    else if (option == FindvOption.Previous && thisOpenv.currentCacheListIndex > 1 && thisOpenv.Cache.CachedLines.Count > 1)
-                //    {
-                //        //izvuci iz cachea PREVIOUS
-                //        int wantedIndex = thisOpenv.currentCacheListIndex - 1;
-
-                //        return new Variable((long)0); // 0 znači UREDU
-                //    }
-                //}
-
-
-                //string compareSign = GetCompareSign(option);
-
-                //string parameters = GetParameters(option/*, forString */); // dodat forString
-
                 int numOfRowsToSelect = 1;
-
-                //if (thisOpenv.Cache.CachedLines.Count > 0)
-                //{
-                //    numOfRowsToSelect = thisOpenv.Cache.CachedLines.Count * 3;
-                //    if (numOfRowsToSelect > MaxCacheSize) { numOfRowsToSelect = MaxCacheSize; }
-                //}
-
-                //BRIŠI
-                //numOfRowsToSelect = 1;
-
-                //use {thisOpenv.databaseName};
-                //                var query =
-                //    $@"EXECUTE sp_executesql N'
-                //use {Databases[thisOpenv.databaseName.ToUpper()]};
-                //select top {numOfRowsToSelect}
-                //* from {thisOpenv.tableName} 
-                // where {whereString}  
-                //order by {orderByString}
-                //'";
 
                 string query = "";
 
@@ -886,17 +809,13 @@ N'{paramsDeclaration}', ";
 
                 query += paramsValues;
 
-                //using (SqlConnection con = new SqlConnection(CSCS_SQL.ConnectionString))
-                //{
                 using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
                 {
-                    //con.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         if (!reader.HasRows)
-                        {
-                            // "Record not found!"
-                            SetFlerr(3, tableHndlNum); // 3 ?!?! ne
+                        { 
+                            SetFlerr(3, tableHndlNum);
                             lastUsedPreviousOrNext[tableHndlNum] = option;
                             return Variable.EmptyInstance;
                         }
@@ -911,7 +830,7 @@ N'{paramsDeclaration}', ";
 
                             bool firstPass = true; // for buffer, first row outside cache
 
-                            while (reader.Read()) // unique???
+                            while (reader.Read())
                             {
                                 Dictionary<string, DefineVariable> cacheLine = new Dictionary<string, DefineVariable>();
 
@@ -919,13 +838,10 @@ N'{paramsDeclaration}', ";
                                 if (firstPass)
                                     currentSqlId = (int)reader["ID"];
 
-                                int currentFieldNum = 1; // 0-ti je "ID"
+                                int currentFieldNum = 1;
                                 while (currentFieldNum < reader.FieldCount)
                                 {
                                     var currentColumnName = reader.GetName(currentFieldNum);
-                                    //if(thisOpenv.CurrentKey.KeyColumns.Keys.Any(p=>p.ToUpper() == currentColumnName.ToUpper()))
-
-                                    //if (firstPass)
                                     if (KeyClass.KeyColumns.Keys.Any(p => p.ToUpper() == currentColumnName.ToUpper()))
                                     {
                                         KeyClass.KeyColumns[currentColumnName.ToUpper()] = reader[currentColumnName].ToString();
@@ -935,8 +851,6 @@ N'{paramsDeclaration}', ";
                                     var loweredCurrentColumnName = currentColumnName.ToLower();
                                     if (!CSCS_GUI.DEFINES.ContainsKey(loweredCurrentColumnName))
                                     {
-                                        // err: ta kolona NIJE otvorena u bufferu(DEFINE) sa openv
-                                        //SetFlerr( ?, tableHndlNum);
                                         lastUsedPreviousOrNext[tableHndlNum] = option;
                                         return new Variable((long)4);
                                     }
@@ -949,53 +863,31 @@ N'{paramsDeclaration}', ";
                                             var newVar = new Variable(fieldValue.ToString(dateFormat));
                                             CSCS_GUI.DEFINES[loweredCurrentColumnName].InitVariable(newVar);
                                             CSCS_GUI.OnVariableChange(loweredCurrentColumnName, newVar, true);
-
-                                            //var copy = CSCS_GUI.DEFINES[loweredCurrentColumnName];
-                                            //cacheLine.Add(loweredCurrentColumnName, copy);
                                         }
                                         else
                                         {
                                             string fieldValue = reader[currentColumnName].ToString().TrimEnd();
                                             CSCS_GUI.DEFINES[loweredCurrentColumnName].InitVariable(new Variable(fieldValue));
                                             CSCS_GUI.OnVariableChange(loweredCurrentColumnName, new Variable(fieldValue), true);
-
-                                            //cacheLine.Add(loweredCurrentColumnName, CSCS_GUI.DEFINES[loweredCurrentColumnName]);
-
-                                            //if (CSCS_GUI.DEFINES.TryGetValue(loweredCurrentColumnName, out DefineVariable copy)){
-                                            //    cacheLine.Add(loweredCurrentColumnName, copy.Clone);
-                                            //}
-
-                                            //cacheLine.add[loweredCurrentColumnName] = copy;
                                         }
                                     }
-
-                                    //if (firstPass)
-                                    //    CSCS_GUI.DEFINES[loweredCurrentColumnName] = cacheLine[loweredCurrentColumnName];
 
                                     currentFieldNum++;
                                 }
 
                                 firstPass = false;
-
-                                // NEBOJSA: SVI ELEMENTI SU ISTI !! ??
-                                //thisOpenv.Cache.CachedLines.Add(new CacheLine() { Line = cacheLine });
-
-
                             }
 
-                            //OPENVs
-                            //thisOpenv.CurrentKey = thisOpenv.Keys.First(p => p.KeyName == tableKey.ToUpper());
                             thisOpenv.currentRow = currentSqlId;
                             Btrieve.OPENVs[tableHndlNum] = thisOpenv;
                         }
 
                     }
                 }
-                //}
 
                 lastUsedPreviousOrNext[tableHndlNum] = option;
 
-                SetFlerr(0, tableHndlNum); // 0 znači UREDU
+                SetFlerr(0, tableHndlNum); // 0 means OK
                 return Variable.EmptyInstance;
             }
 
@@ -1009,7 +901,7 @@ N'{paramsDeclaration}', ";
                 var matchExactValues = matchExactString.Split('|');
                 if (matchExactValues.Count() != KeyClass.KeyColumns.Count())
                 {
-                    SetFlerr(99, tableHndlNum); // nejednak broj segmenata kljuca i prilozenih vrijednosti
+                    SetFlerr(99, tableHndlNum); // unequal number of key segments and key values
                     return Variable.EmptyInstance;
                 }
 
@@ -1056,18 +948,13 @@ where (
 {(!string.IsNullOrEmpty(sqlForString) ? "AND (" + sqlForString + ")" : "")} 
 order by {orderByString}
 '";
-
-                //using (SqlConnection con = new SqlConnection(CSCS_SQL.ConnectionString))
-                //{
                 using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
                 {
-                    //con.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         if (!reader.HasRows)
                         {
-                            // "Record not found!"
-                            SetFlerr(3, tableHndlNum); // 3 ?!?!? ne
+                            SetFlerr(3, tableHndlNum);
                             return Variable.EmptyInstance;
                         }
                         else
@@ -1078,14 +965,13 @@ order by {orderByString}
                                 return Variable.EmptyInstance;
                             }
 
-                            while (reader.Read()) // unique???
+                            while (reader.Read())
                             {
                                 currentSqlId = (int)reader["ID"];
-                                int currentFieldNum = 1; // 0-ti je "ID"
+                                int currentFieldNum = 1;
                                 while (currentFieldNum < reader.FieldCount)
                                 {
                                     var currentColumnName = reader.GetName(currentFieldNum);
-                                    //if(thisOpenv.CurrentKey.KeyColumns.Keys.Any(p=>p.ToUpper() == currentColumnName.ToUpper()))
                                     if (KeyClass.KeyColumns.Keys.Any(p => p.ToUpper() == currentColumnName.ToUpper()))
                                     {
                                         KeyClass.KeyColumns[currentColumnName.ToUpper()] = reader[currentColumnName].ToString();
@@ -1094,8 +980,7 @@ order by {orderByString}
                                     var loweredCurrentColumnName = currentColumnName.ToLower();
                                     if (!CSCS_GUI.DEFINES.ContainsKey(loweredCurrentColumnName))
                                     {
-                                        // err: ta kolona NIJE otvorena u bufferu(DEFINE) sa openv
-                                        return new Variable((long)4); // SetFlerr( ?, tableHndlNum);
+                                        return new Variable((long)4);
                                     }
                                     else
                                     {
@@ -1119,8 +1004,6 @@ order by {orderByString}
 
                             }
 
-                            //OPENVs
-                            //thisOpenv.CurrentKey = thisOpenv.Keys.First(p => p.KeyName == tableKey.ToUpper());
                             thisOpenv.CurrentKey = KeyClass;
                             thisOpenv.currentRow = currentSqlId;
                             Btrieve.OPENVs[tableHndlNum] = thisOpenv;
@@ -1128,42 +1011,20 @@ order by {orderByString}
 
                     }
                 }
-                //}
 
                 SetFlerr(0, tableHndlNum);
-                return Variable.EmptyInstance; // 0 znači UREDU
+                return Variable.EmptyInstance;
             }
 
             public Variable clearBuffer(OpenvTable thisOpenv)
             {
-                //var listOfFields = CSCS_GUI.Adictionary.SY_FIELDSList.Where(p => p.SYTD_SCHEMA == table.SYCT_SCHEMA).ToList();
-
-                //foreach (var field in listOfFields)
-                //{
-                //    if (!CSCS_GUI.DEFINES.ContainsKey(field.SYTD_FIELD))
-                //    {
-                //        DefineVariable newVar = new DefineVariable(field.SYTD_FIELD, null, field.SYTD_TYPE, field.SYTD_SIZE, field.SYTD_DEC, field.SYTD_ARRAYNUM/*, local, up*/);
-                //        newVar.InitVariable(Variable.EmptyInstance);
-                //    }
-                //}
-
                 foreach (var bufferField in thisOpenv.FieldNames)
                 {
                     var field = bufferField.ToLower();
                     if (CSCS_GUI.DEFINES.ContainsKey(field))
                     {
-                        //if (CSCS_GUI.DEFINES[bufferField]..GetFieldType(currentFieldNum) == typeof(DateTime))
-                        //{
-                        //    DateTime fieldValue = (DateTime)reader[currentColumnName];
-                        //    var dateFormat = CSCS_GUI.DEFINES[loweredCurrentColumnName].GetDateFormat();
-                        //    CSCS_GUI.DEFINES[loweredCurrentColumnName].InitVariable(new Variable(fieldValue.ToString(dateFormat)));
-                        //}
-                        //else
-                        //{
-                        //string fieldValue = CSCS_GUI.DEFINES[bufferField].ToString().TrimEnd();
                         CSCS_GUI.DEFINES[field].InitVariable(Variable.EmptyInstance);
                         CSCS_GUI.OnVariableChange(field, Variable.EmptyInstance, true);
-                        //}
                     }
                 }
 
@@ -1178,7 +1039,7 @@ order by {orderByString}
                 var matchExactValues = matchExactString.Split('|');
                 if (matchExactValues.Count() != KeyClass.KeyColumns.Count())
                 {
-                    SetFlerr(99, tableHndlNum); // nejednak broj segmenata kljuca i prilozenih vrijednosti
+                    SetFlerr(99, tableHndlNum);
                     return Variable.EmptyInstance;
                 }
 
@@ -1235,8 +1096,7 @@ order by {orderByString}
                         {
                             if (!reader.HasRows)
                             {
-                                // "Record not found!"
-                                SetFlerr(3, tableHndlNum); // 3 ?!?!? ne
+                                SetFlerr(3, tableHndlNum);
                                 return Variable.EmptyInstance;
                             }
                             else
@@ -1247,14 +1107,13 @@ order by {orderByString}
                                     return Variable.EmptyInstance;
                                 }
 
-                                while (reader.Read()) // unique???
+                                while (reader.Read())
                                 {
                                     currentSqlId = (int)reader["ID"];
-                                    int currentFieldNum = 1; // 0-ti je "ID"
+                                    int currentFieldNum = 1;
                                     while (currentFieldNum < reader.FieldCount)
                                     {
                                         var currentColumnName = reader.GetName(currentFieldNum);
-                                        //if(thisOpenv.CurrentKey.KeyColumns.Keys.Any(p=>p.ToUpper() == currentColumnName.ToUpper()))
                                         if (KeyClass.KeyColumns.Keys.Any(p => p.ToUpper() == currentColumnName.ToUpper()))
                                         {
                                             KeyClass.KeyColumns[currentColumnName.ToUpper()] = reader[currentColumnName].ToString();
@@ -1263,8 +1122,7 @@ order by {orderByString}
                                         var loweredCurrentColumnName = currentColumnName.ToLower();
                                         if (!CSCS_GUI.DEFINES.ContainsKey(loweredCurrentColumnName))
                                         {
-                                            // err: ta kolona NIJE otvorena u bufferu(DEFINE) sa openv
-                                            return new Variable((long)4); // SetFlerr( ?, tableHndlNum);
+                                            return new Variable((long)4); 
                                         }
                                         else
                                         {
@@ -1288,8 +1146,6 @@ order by {orderByString}
 
                                 }
 
-                                //OPENVs
-                                //thisOpenv.CurrentKey = thisOpenv.Keys.First(p => p.KeyName == tableKey.ToUpper());
                                 thisOpenv.CurrentKey = KeyClass;
                                 thisOpenv.currentRow = currentSqlId;
                                 Btrieve.OPENVs[tableHndlNum] = thisOpenv;
@@ -1300,7 +1156,7 @@ order by {orderByString}
                 }
 
                 SetFlerr(0, tableHndlNum);
-                return Variable.EmptyInstance; // 0 znači UREDU
+                return Variable.EmptyInstance;
             }
         }
 
@@ -1837,7 +1693,7 @@ WHERE ID = {thisOpenv.currentRow}
                 }
                 else
                 {
-                    // doesnt have start string
+                    // doesn't have start string
                     string currentStart = "";
 
                     if (KeyClass.KeyNum != 0)
