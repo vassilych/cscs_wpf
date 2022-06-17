@@ -42,9 +42,9 @@ namespace SplitAndMerge
         public const string UPDATE_REPORT = "UpdateReport";
         public const string PRINT_REPORT = "PrintReport";
 
-        public const string OPENVfunc = "OpenvFunc";
-        public const string FINDVfunc = "FindvFunc";
-        public const string CLOSEVfunc = "ClosevFunc";
+        public const string OPENV = "Openv";
+        public const string FINDV = "Findv";
+        public const string CLOSEV = "Closev";
         
         public const string REPL = "Repl";
         
@@ -60,9 +60,6 @@ namespace SplitAndMerge
         public const string WRTA = "Wrta";
          
         public const string SCANTABLE = "ScanTable";
-
-        public const string OPENV = "Openv";
-        public const string FINDV = "Findv";
 
         public const string FLERR = "Flerr";
 
@@ -3326,7 +3323,7 @@ WHERE ID = {thisOpenv.currentRow}
         public static string RequireDEFINE { get; set; }
         public static string DefaultDB { get; set; }
         public static int MaxCacheSize { get; set; }
-        public static Dictionary<string, string> Databases { get; set; } = new Dictionary<string, string>();
+        public static Dictionary<string, string> Databases { get; set; } = new Dictionary<string, string>(); // <SYCD_USERCODE, SYCD_DBASENAME>
 
         public static Dictionary<string, FrameworkElement> Controls { get; set; } = new Dictionary<string, FrameworkElement>();
         public static Dictionary<FrameworkElement, Window> Control2Window { get; set; } = new Dictionary<FrameworkElement, Window>();
@@ -3425,9 +3422,9 @@ WHERE ID = {thisOpenv.currentRow}
             ParserFunction.RegisterFunction(Constants.UPDATE_REPORT, new ReportFunction(ReportOption.Update));
             ParserFunction.RegisterFunction(Constants.PRINT_REPORT, new ReportFunction(ReportOption.Print));
 
-            ParserFunction.RegisterFunction(Constants.OPENVfunc, new OpenvFunction());
-            ParserFunction.RegisterFunction(Constants.FINDVfunc, new FindvFunction());
-            ParserFunction.RegisterFunction(Constants.CLOSEVfunc, new ClosevFunction());
+            ParserFunction.RegisterFunction(Constants.OPENV, new OpenvFunction());
+            ParserFunction.RegisterFunction(Constants.FINDV, new FindvFunction());
+            ParserFunction.RegisterFunction(Constants.CLOSEV, new ClosevFunction());
 
             ParserFunction.RegisterFunction(Constants.REPL, new ReplFunction());
             
@@ -3442,15 +3439,11 @@ WHERE ID = {thisOpenv.currentRow}
             ParserFunction.RegisterFunction(Constants.RDA, new RDAFunction());
             ParserFunction.RegisterFunction(Constants.WRTA, new WRTAFunction());
 
-
             ParserFunction.RegisterFunction(Constants.FLERR, new FlerrFunction());
 
             ParserFunction.RegisterFunction(Constants.READ_XML_FILE, new ReadXmlFileFunction());
             ParserFunction.RegisterFunction(Constants.READ_TAGCONTENT_FROM_XMLSTRING,
                 new ReadTagContentFromXmlStringFunction());
-
-            //ParserFunction.RegisterFunction(Constants.OPENV, new VariableArgsOPENVFunction(true));
-            //ParserFunction.RegisterFunction(Constants.FINDV, new VariableArgsFINDVFunction(true));
 
             ParserFunction.RegisterFunction(Constants.MSG, new VariableArgsFunction(true));
             ParserFunction.RegisterFunction(Constants.DEFINE, new VariableArgsFunction(true));
@@ -3560,7 +3553,6 @@ WHERE ID = {thisOpenv.currentRow}
                 MaxCacheSize = cacheSize;
             }
 
-
             CacheAdictionary();
 
             FillDatabasesDictionary();
@@ -3589,42 +3581,6 @@ WHERE ID = {thisOpenv.currentRow}
             }
         }
 
-        private static void FillDatabasesDictionaryOLD()
-        {
-            //            var query = $@"
-            //use adictionary;
-            //SELECT
-            //SYCD_USERCODE, SYCD_DBASENAME
-            //  FROM SY_DATABASES
-            //               ";
-
-            //            using (SqlConnection con = new SqlConnection(CSCS_SQL.ConnectionString))
-            //            {
-            //                using (SqlCommand cmd = new SqlCommand(query, con))
-            //                {
-            //                    con.Open();
-            //                    using (SqlDataReader reader = cmd.ExecuteReader())
-            //                    {
-            //                        if (!reader.HasRows)
-            //                        {
-            //                            // nema baza u sy_databases
-            //                            throw new Exception("No databases found");
-            //                        }
-            //                        else
-            //                        {
-            //                            while (reader.Read()) // unique???
-            //                            {
-            //                                var dbCode = reader["SYCD_USERCODE"].ToString().TrimEnd();
-            //                                var dbName = reader["SYCD_DBASENAME"].ToString().TrimEnd();
-            //                                Databases[dbCode] = dbName;
-            //                            }
-
-            //                        }
-
-            //                    }
-            //                }
-            //            }
-        }
         private static void FillDatabasesDictionary()
         {
             foreach (var db in Adictionary.SY_DATABASESList)
