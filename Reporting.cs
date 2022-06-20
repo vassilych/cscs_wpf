@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace WpfCSCS
 {
+      
     public enum ReportOption
     {
         Setup,
@@ -20,6 +21,14 @@ namespace WpfCSCS
     }
     public class ReportFunction : ParserFunction
     {
+        public static void Init()
+        {
+            ParserFunction.RegisterFunction(Constants.SETUP_REPORT, new ReportFunction(ReportOption.Setup));
+            ParserFunction.RegisterFunction(Constants.OUTPUT_REPORT, new ReportFunction(ReportOption.Output));
+            ParserFunction.RegisterFunction(Constants.UPDATE_REPORT, new ReportFunction(ReportOption.Update));
+            ParserFunction.RegisterFunction(Constants.PRINT_REPORT, new ReportFunction(ReportOption.Print));
+        }
+
         ReportOption option;
 
         static Dictionary<int, XtraReport> Reports;

@@ -23,6 +23,8 @@ function mainMenuWindow_OnDisplay(){
     AddMenuItem("scriptsDC", "script2.cscs", "script2", "runScript");
     AddMenuItem("scriptsDC", "editDatabases.cscs", "editDatabases - using FillOutGrid", "runScript");
     AddMenuItem("scriptsDC", "editDatabases2.cscs", "editDatabases2 - using DisplayArrFunc", "runScript");
+
+    AddMenuItem("scriptsDC", "testScan1.cscs", "testScan1", "runScript");
     
 }
 

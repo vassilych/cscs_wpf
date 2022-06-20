@@ -219,11 +219,6 @@ namespace WpfCSCS
             ParserFunction.RegisterFunction("#MAINMENU", new MAINMENUcommand());
             ParserFunction.RegisterFunction("#WINFORM", new WINFORMcommand(true));
 
-            ParserFunction.RegisterFunction(Constants.SETUP_REPORT, new ReportFunction(ReportOption.Setup));
-            ParserFunction.RegisterFunction(Constants.OUTPUT_REPORT, new ReportFunction(ReportOption.Output));
-            ParserFunction.RegisterFunction(Constants.UPDATE_REPORT, new ReportFunction(ReportOption.Update));
-            ParserFunction.RegisterFunction(Constants.PRINT_REPORT, new ReportFunction(ReportOption.Print));
-
             ParserFunction.RegisterFunction(Constants.OPENV, new OpenvFunction());
             ParserFunction.RegisterFunction(Constants.FINDV, new FindvFunction());
             ParserFunction.RegisterFunction(Constants.CLOSEV, new ClosevFunction());
@@ -1169,6 +1164,7 @@ namespace WpfCSCS
         public static Variable RunScript(string fileName, bool encode = false)
         {
             Init();
+            ReportFunction.Init();
 
             if (encode)
             {

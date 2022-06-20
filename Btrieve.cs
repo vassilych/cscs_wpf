@@ -247,7 +247,7 @@ namespace WpfCSCS
             }
 
             //
-            var table = CSCS_GUI.Adictionary.SY_TABLESList.FirstOrDefault(p => p.SYCT_NAME == tableName.ToUpper() && p.SYCT_USERCODE == databaseName.ToUpper());
+            var table = CSCS_GUI.Adictionary.SY_TABLESList.FirstOrDefault(p => p.SYCT_NAME.ToUpper() == tableName.ToUpper() && p.SYCT_USERCODE == databaseName.ToUpper());
             if (table == null)
             {
                 // err: "There's no table with name {tableName.ToUpper()} in database {databaseName.ToUpper()}!"
