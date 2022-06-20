@@ -6,5 +6,6 @@
 *.cache
 [Bb]in/
 [Oo]bj/
+packages/
 *.resources
 .vs/WpfCSCS/v16/.suo

@@ -21,11 +21,48 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Data.SqlClient;
+using static WpfCSCS.CSCS_GUI;
+using DevExpress.Xpf.Printing;
+using DevExpress.Xpf.Editors;
+using DevExpress.XtraReports.UI;
+
+
+using System.Text.RegularExpressions;
+using System.Data;
+using DevExpress.XtraPrinting.Caching;
+using static WpfCSCS.Btrieve;
 
 namespace SplitAndMerge
 {
     public partial class Constants
     {
+        public const string SETUP_REPORT = "SetupReport";
+        public const string OUTPUT_REPORT = "OutputReport";
+        public const string UPDATE_REPORT = "UpdateReport";
+        public const string PRINT_REPORT = "PrintReport";
+
+        public const string OPENV = "Openv";
+        public const string FINDV = "Findv";
+        public const string CLOSEV = "Closev";
+        
+        public const string REPL = "Repl";
+        
+        public const string CLR = "Clr";
+        public const string RCNGET = "RCNGet";
+        public const string RCNSET = "RCNSet";
+        
+        public const string ACTIVE = "Active";
+        public const string DEL = "Del";
+        public const string SAVE = "Save";
+
+        public const string RDA = "Rda";
+        public const string WRTA = "Wrta";
+
+        public const string SCAN = "Scan";
+
+        public const string FLERR = "Flerr";
+
         public const string READ_XML_FILE = "readXmlFile";
         public const string READ_TAGCONTENT_FROM_XMLSTRING = "readTagContentFromXmlString";
         
@@ -97,16 +134,13 @@ namespace WpfCSCS
             var result = xml.Substring(wordStart, end - wordStart);
             return result.Trim();
         }
-
     }
 
     public class CSCS_GUI
     {
-        /*ENZO*/
         public static string lastObjWidgetName;
         public static string lastObjClickedWidgetName;
-
-
+       
         public static Dispatcher Dispatcher { get; set; }
 
         public class WidgetData
@@ -143,7 +177,8 @@ namespace WpfCSCS
         public static Window MainWindow { get; set; }
         public static bool ChangingBoundVariable { get; set; }
         public static string RequireDEFINE { get; set; }
-
+        public static string DefaultDB { get; set; }
+        public static int MaxCacheSize { get; set; }
         public static Dictionary<string, FrameworkElement> Controls { get; set; } = new Dictionary<string, FrameworkElement>();
         public static Dictionary<FrameworkElement, Window> Control2Window { get; set; } = new Dictionary<FrameworkElement, Window>();
         //public static Action<string, string> OnWidgetClick;
@@ -157,24 +192,21 @@ namespace WpfCSCS
         static Dictionary<string, string> s_selChangedHandlers = new Dictionary<string, string>();
         static Dictionary<string, string> s_mouseHoverHandlers = new Dictionary<string, string>();
         static Dictionary<string, string> s_dateSelectedHandlers = new Dictionary<string, string>();
-        
-        //Pre, Check, Post
+
+        //Pre, Post
         static Dictionary<string, string> s_PreHandlers = new Dictionary<string, string>();
-        static Dictionary<string, string> s_CheckHandlers = new Dictionary<string, string>();
-        static Dictionary<string, string> s_Check2Handlers = new Dictionary<string, string>();
         static Dictionary<string, string> s_PostHandlers = new Dictionary<string, string>();
 
         static Dictionary<string, Variable> s_boundVariables = new Dictionary<string, Variable>();
         //static Dictionary<string, TabPage> s_tabPages           = new Dictionary<string, TabPage>();
         //static TabControl s_tabControl;
+ 
+        public static AdictionaryLocal.Adictionary Adictionary { get; set; } = new AdictionaryLocal.Adictionary();
 
         public static Dictionary<string, DefineVariable> DEFINES { get; set; } =
             new Dictionary<string, DefineVariable>();
         public static Dictionary<string, WidgetData> WIDGETS { get; set; } =
             new Dictionary<string, WidgetData>();
-
-        //public static Dictionary<string, List<Variable>> DEFINES { get; set; } =
-        //          new Dictionary<string, List<Variable>>();
 
         public static Dictionary<string, Dictionary<string, bool>> s_varExists =
             new Dictionary<string, Dictionary<string, bool>>();
@@ -186,6 +218,27 @@ namespace WpfCSCS
 
             ParserFunction.RegisterFunction("#MAINMENU", new MAINMENUcommand());
             ParserFunction.RegisterFunction("#WINFORM", new WINFORMcommand(true));
+
+            ParserFunction.RegisterFunction(Constants.OPENV, new OpenvFunction());
+            ParserFunction.RegisterFunction(Constants.FINDV, new FindvFunction());
+            ParserFunction.RegisterFunction(Constants.CLOSEV, new ClosevFunction());
+
+            ParserFunction.RegisterFunction(Constants.REPL, new ReplFunction());
+            
+            ParserFunction.RegisterFunction(Constants.CLR, new ClrFunction());
+            ParserFunction.RegisterFunction(Constants.RCNGET, new RcnGetFunction());
+            ParserFunction.RegisterFunction(Constants.RCNSET, new RcnSetFunction());
+            
+            ParserFunction.RegisterFunction(Constants.ACTIVE, new ActiveFunction());
+            ParserFunction.RegisterFunction(Constants.DEL, new DelFunction());
+            ParserFunction.RegisterFunction(Constants.SAVE, new SaveFunction());
+
+            ParserFunction.RegisterFunction(Constants.RDA, new RDAFunction());
+            ParserFunction.RegisterFunction(Constants.WRTA, new WRTAFunction());
+
+            ParserFunction.RegisterFunction(Constants.FLERR, new FlerrFunction());
+
+            ParserFunction.RegisterFunction(Constants.SCAN, new ScanStatement());
 
             ParserFunction.RegisterFunction(Constants.READ_XML_FILE, new ReadXmlFileFunction());
             ParserFunction.RegisterFunction(Constants.READ_TAGCONTENT_FROM_XMLSTRING,
@@ -227,6 +280,8 @@ namespace WpfCSCS
             ParserFunction.RegisterFunction("SetForegroundColor", new SetColorFunction(false));
             ParserFunction.RegisterFunction("SetImage", new SetImageFunction());
 
+            ParserFunction.RegisterFunction("DisplayArrFunc", new DisplayArrFuncFunction());
+
             ParserFunction.RegisterFunction("FillOutGrid", new FillOutGridFunction());
             ParserFunction.RegisterFunction("FillOutGridFromDB", new FillOutGridFunction(true));
             ParserFunction.RegisterFunction("BindSQL", new BindSQLFunction());
@@ -260,6 +315,9 @@ namespace WpfCSCS
             ParserFunction.AddAction(Constants.ASSIGNMENT, new MyAssignFunction());
             ParserFunction.AddAction(Constants.POINTER, new MyPointerFunction());
 
+            Constants.FUNCT_WITH_SPACE.Add(Constants.OPENV);
+            Constants.FUNCT_WITH_SPACE.Add(Constants.FINDV);
+
             Constants.FUNCT_WITH_SPACE.Add(Constants.DEFINE);
             Constants.FUNCT_WITH_SPACE.Add(Constants.DISPLAY_ARRAY);
             Constants.FUNCT_WITH_SPACE.Add(Constants.DATA_GRID);
@@ -284,6 +342,50 @@ namespace WpfCSCS
             Precompiler.AsyncMode = false;
 
             RequireDEFINE = App.GetConfiguration("Require_Define", "false");
+            DefaultDB = App.GetConfiguration("DefaultDB", "adictionary");
+            CSCS_SQL.ConnectionString = App.GetConfiguration("ConnectionString", "");
+
+            CSCS_SQL.SqlServerConnection = new SqlConnection(CSCS_SQL.ConnectionString);
+
+            if (int.TryParse(App.GetConfiguration("MaxCacheSize", "300"), out int cacheSize))
+            {
+                MaxCacheSize = cacheSize;
+            }
+
+            CacheAdictionary();
+
+            FillDatabasesDictionary();
+        }
+
+        private static bool CacheAdictionary()
+        {
+            try
+            {
+                SqlConnection conn = new SqlConnection(CSCS_SQL.ConnectionString);
+
+                conn.Open();
+
+                CSCS_GUI.Adictionary.SY_DATABASESList = AdictionaryLocal.CacheAdictionary.GetSY_DATABASES(conn);
+                CSCS_GUI.Adictionary.SY_TABLESList = AdictionaryLocal.CacheAdictionary.GetSY_TABLES(conn);
+                CSCS_GUI.Adictionary.SY_FIELDSList = AdictionaryLocal.CacheAdictionary.GetSY_FIELDS(conn);
+                CSCS_GUI.Adictionary.SY_INDEXESList = AdictionaryLocal.CacheAdictionary.GetSY_INDEXES(conn);
+
+                conn.Close();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private static void FillDatabasesDictionary()
+        {
+            foreach (var db in Adictionary.SY_DATABASESList)
+            {
+                Databases[db.SYCD_USERCODE] = db.SYCD_DBASENAME;
+            }
         }
 
         public static string GetWidgetBindingName(FrameworkElement widget)
@@ -298,7 +400,7 @@ namespace WpfCSCS
             return widgetName;
         }
 
-        static void OnVariableChange(string name, Variable newValue, bool exists = true)
+        public static void OnVariableChange(string name, Variable newValue, bool exists = true)
         {
             if (ChangingBoundVariable)
             {
@@ -328,9 +430,7 @@ namespace WpfCSCS
 
         static void UpdateVariable(FrameworkElement widget, Variable newValue)
         {
-            //=)//
             var widgetName = GetWidgetBindingName(widget);
-            //var widgetName = GetWidgetName(widget);
             if (string.IsNullOrWhiteSpace(widgetName))
             {
                 return;
@@ -572,7 +672,7 @@ namespace WpfCSCS
             return true;
         }
         
-        //Pre, Check, Post
+        //Pre, Post
         public static bool AddWidgetPreHandler(string name, string action, FrameworkElement widget)
         {
             //var textable = widget as TextBoxBase;
@@ -583,34 +683,12 @@ namespace WpfCSCS
             }
 
             s_PreHandlers[name] = action;
-            //2 puta
-            //textable.PreviewGotKeyboardFocus -= new KeyboardFocusChangedEventHandler(Widget_Pre);
-            //textable.PreviewGotKeyboardFocus += new KeyboardFocusChangedEventHandler(Widget_Pre);
             textable.GotFocus -= new RoutedEventHandler(Widget_Pre);
             textable.GotFocus += new RoutedEventHandler(Widget_Pre);
 
             return true;
         }
-        //public static bool AddWidgetCheckHandler(string name, string action, FrameworkElement widget, string check2action)
-        //{
-        //    var textable = widget as TextBoxBase;
-        //    if (textable == null)
-        //    {
-        //        return false;
-        //    }
 
-        //    s_CheckHandlers[name] = action;
-        //    s_Check2Handlers[name] = check2action;
-
-        //    //2 puta
-        //    textable.PreviewLostKeyboardFocus -= new KeyboardFocusChangedEventHandler(Widget_Check);
-        //    textable.PreviewLostKeyboardFocus -= new KeyboardFocusChangedEventHandler(Widget_Check2);
-
-        //    textable.PreviewLostKeyboardFocus += new KeyboardFocusChangedEventHandler(Widget_Check);
-        //    textable.PreviewLostKeyboardFocus += new KeyboardFocusChangedEventHandler(Widget_Check2);
-
-        //    return true;
-        //}
         public static bool AddWidgetPostHandler(string name, string action, FrameworkElement widget)
         {
             var textable = widget as TextBoxBase;
@@ -620,9 +698,6 @@ namespace WpfCSCS
             }
 
             s_PostHandlers[name] = action;
-            //2 puta
-            //textable.LostFocus -= new RoutedEventHandler(Widget_Post);
-            //textable.LostFocus += new RoutedEventHandler(Widget_Post);
             textable.PreviewLostKeyboardFocus -= new KeyboardFocusChangedEventHandler(Widget_Post);
             textable.PreviewLostKeyboardFocus += new KeyboardFocusChangedEventHandler(Widget_Post);
 
@@ -664,7 +739,6 @@ namespace WpfCSCS
             lastObjWidgetName = lastObjClickedWidgetName;
 
             var widget = sender as FrameworkElement;
-            //=)//var widgetName = GetWidgetBindingName(widget);
             var widgetName = GetWidgetName(widget);
             if (string.IsNullOrEmpty(widgetName))
             {
@@ -769,7 +843,6 @@ namespace WpfCSCS
         private static void Widget_TextChanged(object sender, TextChangedEventArgs e)
         {
             TextBoxBase widget = sender as TextBoxBase;
-            //=)//var widgetName = GetWidgetBindingName(widget);
             var widgetName = GetWidgetName(widget);
             if (string.IsNullOrWhiteSpace(widgetName))
             {
@@ -822,15 +895,11 @@ namespace WpfCSCS
         static string lastFocusedWidgetName = "";
         public static bool skipPostEvent;
 
-
-        /// //////////////////////////sada/sd/asd/as/dasd/as/d/asd/as/d/as/das/d/asd
         private static void Widget_Pre(object sender, RoutedEventArgs e)
         {
             lastObjWidgetName = ((Control)sender).Name;
 
-            //TextBoxBase widget = sender as TextBoxBase;
             Control widget = sender as Control;
-            //=)//var widgetName = GetWidgetBindingName(widget);
             var widgetName = GetWidgetName(widget);
             if (string.IsNullOrWhiteSpace(widgetName))
             {
@@ -838,9 +907,6 @@ namespace WpfCSCS
             }
 
             skipPostEvent = false;
-
-            //var text = GetTextWidgetFunction.GetText(widget);
-            //UpdateVariable(widget, text);
 
             string funcName;
             if (s_PreHandlers.TryGetValue(widgetName, out funcName))
@@ -851,7 +917,6 @@ namespace WpfCSCS
                 if (result.Type == Variable.VarType.NUMBER && !result.AsBool()) // if script returned false
                 {
                     skipPostEvent = true;
-                    //e.Handled = true; //staro - za PreviewGotKeyboardFocus
                     var widgetToFocusTo = CSCS_GUI.GetWidget(lastFocusedWidgetName);
                     if (widgetToFocusTo != null && (widgetToFocusTo is Control))
                     {
@@ -865,55 +930,6 @@ namespace WpfCSCS
             }
         }
 
-
-        //private static void Widget_Check(object sender, KeyboardFocusChangedEventArgs e)
-        //{
-        //    TextBoxBase widget = sender as TextBoxBase;
-        //    //=)//var widgetName = GetWidgetBindingName(widget);
-        //    var widgetName = GetWidgetName(widget);
-        //    if (string.IsNullOrWhiteSpace(widgetName))
-        //    {
-        //        return;
-        //    }
-
-        //    //var text = GetTextWidgetFunction.GetText(widget);
-        //    //UpdateVariable(widget, text);
-
-        //    string funcName;
-        //    if (s_CheckHandlers.TryGetValue(widgetName, out funcName))
-        //    {
-        //        Control2Window.TryGetValue(widget, out Window win);
-        //        var result = Interpreter.Run(funcName, new Variable(widgetName), null,
-        //            Variable.EmptyInstance, ChainFunction.GetScript(win));
-        //        if (result.Type == Variable.VarType.NUMBER && !result.AsBool())
-        //            e.Handled = true;
-        //    }
-        //}
-        //private static void Widget_Check2(object sender, KeyboardFocusChangedEventArgs e)
-        //{
-        //    TextBoxBase widget = sender as TextBoxBase;
-        //    //=)//var widgetName = GetWidgetBindingName(widget);
-        //    var widgetName = GetWidgetName(widget);
-        //    if (string.IsNullOrWhiteSpace(widgetName))
-        //    {
-        //        return;
-        //    }
-
-        //    //var text = GetTextWidgetFunction.GetText(widget);
-        //    //UpdateVariable(widget, text);
-
-        //    string funcName;
-        //    if (s_Check2Handlers.TryGetValue(widgetName, out funcName))
-        //    {
-        //        Control2Window.TryGetValue(widget, out Window win);
-        //        var result = Interpreter.Run(funcName, new Variable(widgetName), null,
-        //            Variable.EmptyInstance, ChainFunction.GetScript(win));
-        //        if (result.Type == Variable.VarType.NUMBER && !result.AsBool())
-        //            e.Handled = true;
-        //    }
-        //}
-
-
         private static void Widget_Post(object sender, KeyboardFocusChangedEventArgs e)
         {
             if (skipPostEvent)
@@ -923,15 +939,11 @@ namespace WpfCSCS
             }
 
             TextBoxBase widget = sender as TextBoxBase;
-            //=)//var widgetName = GetWidgetBindingName(widget);
             var widgetName = GetWidgetName(widget);
             if (string.IsNullOrWhiteSpace(widgetName))
             {
                 return;
             }
-
-            //var text = GetTextWidgetFunction.GetText(widget);
-            //UpdateVariable(widget, text);
 
             lastObjWidgetName = ((Control)e.NewFocus).Name;
 
@@ -942,7 +954,7 @@ namespace WpfCSCS
                 var result = Interpreter.Run(funcName, new Variable(widgetName), null,
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
                 if (result.Type == Variable.VarType.NUMBER && !result.AsBool())
-                { 
+                {
                     e.Handled = true;
                     lastObjWidgetName = widgetName;
                 }
@@ -1108,12 +1120,8 @@ namespace WpfCSCS
                 string selectionChangedAction = widgetName + "@SelectionChanged";
                 string dateChangedAction = widgetName + "@DateChanged";
 
-                //Pre, Check, Post
+                //Pre, Post
                 string widgetPreAction = widgetName + "@Pre";
-                
-                //string widgetCheckAction = widgetName + "@Check";
-                //string widgetCheck2Action = widgetName + "@Check2";
-                
                 string widgetPostAction = widgetName + "@Post";
 
                 AddActionHandler(widgetName, clickAction, widget);
@@ -1128,12 +1136,8 @@ namespace WpfCSCS
                 AddMouseHoverHandler(widgetName, mouseHoverAction, widget);
                 AddDateChangedHandler(widgetName, dateChangedAction, widget);
 
-                //Pre, Check, Post
+                //Pre, Post
                 AddWidgetPreHandler(widgetName, widgetPreAction, widget);
-                
-                //AddWidgetCheckHandler(widgetName, widgetCheckAction, widget, widgetCheck2Action);
-                
-                
                 AddWidgetPostHandler(widgetName, widgetPostAction, widget);
             }
 
@@ -1160,6 +1164,7 @@ namespace WpfCSCS
         public static Variable RunScript(string fileName, bool encode = false)
         {
             Init();
+            ReportFunction.Init();
 
             if (encode)
             {
@@ -1223,6 +1228,113 @@ namespace WpfCSCS
             }
 
             return GetTextWidgetFunction.GetText(widget);
+        }
+    }
+
+    class DisplayArrFuncFunction : ParserFunction
+    {
+        static Dictionary<string, List<string>> arraysOfGrids = new Dictionary<string, List<string>>();
+
+        Dictionary<string, ObservableCollection<object[]>> rowsOfGrids { get; set; } = new Dictionary<string, ObservableCollection<object[]>>();
+
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            var widgetName = Utils.GetSafeString(args, 0);
+            var dg = CSCS_GUI.GetWidget(widgetName) as DataGrid;
+            if (dg == null)
+            {
+                return Variable.EmptyInstance;
+            }
+
+            List<List<Variable>> cols = new List<List<Variable>>();
+            List<string> headers = new List<string>();
+            List<string> tags = new List<string>();
+
+
+            var columns = dg.Columns;
+            foreach (var column in columns)
+            {
+                if (column is DataGridTemplateColumn)
+                {
+                    var dgtc = column as DataGridTemplateColumn;
+
+                    var header = dgtc.Header;
+                    headers.Add(header.ToString());
+
+                    var displayIndex = dgtc.DisplayIndex;
+
+                    var content = dgtc.CellTemplate.LoadContent();
+
+
+                    if (content is TextBox)
+                    {
+                        var tb = content as TextBox;
+                        var arrayToBindTo = tb.Tag.ToString().ToLower();
+
+                        tags.Add(arrayToBindTo);
+                        
+                        if(DEFINES.TryGetValue(arrayToBindTo, out DefineVariable defVar))
+                        {
+                            if(defVar.Array > 0)
+                            {
+                                cols.Add(defVar.Tuple);
+                            }
+                        }
+                    }
+                }
+            }
+
+            arraysOfGrids[dg.Name] = tags;
+
+            ObservableCollection<object[]> rows = new ObservableCollection<object[]>();
+
+            for (int i = 0; i < cols[0].Count; i++)
+            {
+                object[] row = new object[cols.Count];
+                for (int j = 0; j < cols.Count; j++)
+                {
+                    var cell = cols[j][i];
+                    switch (cell.Type)
+                    {
+                        case Variable.VarType.STRING:
+                            row[j] = cell.AsString();
+                            break;
+                        case Variable.VarType.NUMBER:
+                            row[j] = cell.AsDouble();
+                            break;
+                    }
+                }
+                rows.Add(row);
+            }
+
+            rowsOfGrids[dg.Name] = rows;
+
+            dg.ItemsSource = rows;
+
+            dg.Columns.Clear();
+            for (int i = 0; i < rows[0].Length; ++i)
+                dg.Columns.Add(new DataGridTextColumn { Binding = new Binding("[" + i.ToString() + "]"), Header = headers[i] });
+
+            dg.CurrentCellChanged += Dg_CurrentCellChanged;
+
+            return new Variable("");
+        }
+
+        private void Dg_CurrentCellChanged(object sender, EventArgs e)
+        {
+            var gridName = (sender as DataGrid).Name;
+            var arrayNames = arraysOfGrids[gridName];
+            for (int i = 0; i < arrayNames.Count(); i++)
+            {
+                for (int j = 0; j < rowsOfGrids[gridName].Count; j++)
+                {
+                    var array = DEFINES[arrayNames[i]];
+                    array.Tuple[j] = new Variable( rowsOfGrids[gridName][j][i]);
+                }
+            }
         }
     }
 
@@ -2680,7 +2792,7 @@ namespace WpfCSCS
             return new Variable(objectName);
         }
 
-        static Variable CreateVariable(ParsingScript script, string name, Variable value, Variable init,
+        public static Variable CreateVariable(ParsingScript script, string name, Variable value, Variable init,
             string type = "", int size = 0, int dec = 3, int array = 0, bool local = false, bool up = false, string dup = null)
         {
             DefineVariable dupVar = null;

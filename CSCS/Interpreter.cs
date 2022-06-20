@@ -350,7 +350,7 @@ namespace SplitAndMerge
 
             return result;
         }
-
+        
         internal Variable ProcessFor(ParsingScript script)
         {
             string forString = Utils.GetBodyBetween(script, Constants.START_ARG, Constants.END_ARG);
@@ -519,7 +519,7 @@ namespace SplitAndMerge
             script.Pointer = startForCondition;
             SkipBlock(script);
         }
-
+                
         void ProcessCanonicalFor(ParsingScript script, string forString)
         {
             string[] forTokens = forString.Split(Constants.END_STATEMENT);
@@ -1072,7 +1072,7 @@ namespace SplitAndMerge
             return result;
         }
 
-        private Variable ProcessBlock(ParsingScript script)
+        public Variable ProcessBlock(ParsingScript script)
         {
             int blockStart = script.Pointer;
             Variable result = null;
@@ -1140,7 +1140,7 @@ namespace SplitAndMerge
             return result;
         }
 
-        private void SkipBlock(ParsingScript script)
+        public void SkipBlock(ParsingScript script)
         {
             int blockStart = script.Pointer;
             int startCount = 0;

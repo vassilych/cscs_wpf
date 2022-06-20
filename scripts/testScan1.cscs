@@ -1,0 +1,37 @@
+
+
+DEFINE invoiceHeaders_hndl type i;
+
+invoiceHeaders_hndl = openv("invoiceHeaders");
+if(flerr()){
+    MessageBox("flerr = " + flerr());
+    exit;
+}
+
+MessageBox("start");
+
+i = 0;
+
+scan(invoiceHeaders_hndl; "@0"; "0" /*"0|0"*/; true ; ""  ; "n 4"; "")
+{
+    i++;
+    if(flerr() != 0){
+        break;
+    }
+
+    for(j= 1;j < 4; j++){
+        if(j == 2){
+            continue;
+        }
+        Messagebox("total = " + total + " " + j +". time!");
+    }
+}
+if(flerr(invoiceHeaders_hndl)){
+    MessageBox("flerr on SCAN = " + flerr(invoiceHeaders_hndl));
+}
+
+MessageBox("End. " + i + " records read.");
+
+MessageBox(invoiceNumber + ", " + customerNumber + ", " + total);
+
+quit;
