@@ -215,6 +215,30 @@ namespace WpfCSCS
 
     public class Btrieve
     {
+        public static void Init()
+        {
+            ParserFunction.RegisterFunction(Constants.OPENV, new OpenvFunction());
+            ParserFunction.RegisterFunction(Constants.FINDV, new FindvFunction());
+            ParserFunction.RegisterFunction(Constants.CLOSEV, new ClosevFunction());
+
+            ParserFunction.RegisterFunction(Constants.REPL, new ReplFunction());
+
+            ParserFunction.RegisterFunction(Constants.CLR, new ClrFunction());
+            ParserFunction.RegisterFunction(Constants.RCNGET, new RcnGetFunction());
+            ParserFunction.RegisterFunction(Constants.RCNSET, new RcnSetFunction());
+
+            ParserFunction.RegisterFunction(Constants.ACTIVE, new ActiveFunction());
+            ParserFunction.RegisterFunction(Constants.DEL, new DelFunction());
+            ParserFunction.RegisterFunction(Constants.SAVE, new SaveFunction());
+
+            ParserFunction.RegisterFunction(Constants.RDA, new RDAFunction());
+            ParserFunction.RegisterFunction(Constants.WRTA, new WRTAFunction());
+
+            ParserFunction.RegisterFunction(Constants.FLERR, new FlerrFunction());
+
+            ParserFunction.RegisterFunction(Constants.SCAN, new ScanStatement());
+        }
+
         public static Dictionary<string, string> Databases { get; set; } = new Dictionary<string, string>(); // <SYCD_USERCODE, SYCD_DBASENAME>
 
         public static Dictionary<int, OpenvTable> OPENVs { get; set; } =
