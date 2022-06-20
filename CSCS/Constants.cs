@@ -48,8 +48,6 @@ namespace SplitAndMerge
         public const string MULT_ASSIGN = "*=";
         public const string DIV_ASSIGN = "/=";
 
-        public const string SCAN = "scan";
-
         public const string BREAK = "break";
         public const string CASE = "case";
         public const string CATCH = "catch";

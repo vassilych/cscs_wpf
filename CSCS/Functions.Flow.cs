@@ -1714,15 +1714,6 @@ namespace SplitAndMerge
         }
     }
 
-    class ScanStatement : ParserFunction
-    {
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            return Interpreter.Instance.ProcessScan(script);
-        }
-        
-    }
-
     class ForStatement : ParserFunction
     {
         protected override Variable Evaluate(ParsingScript script)

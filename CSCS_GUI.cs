@@ -58,8 +58,8 @@ namespace SplitAndMerge
 
         public const string RDA = "Rda";
         public const string WRTA = "Wrta";
-         
-        public const string SCANTABLE = "ScanTable";
+
+        public const string SCAN = "Scan";
 
         public const string FLERR = "Flerr";
 
@@ -242,6 +242,8 @@ namespace WpfCSCS
             ParserFunction.RegisterFunction(Constants.WRTA, new WRTAFunction());
 
             ParserFunction.RegisterFunction(Constants.FLERR, new FlerrFunction());
+
+            ParserFunction.RegisterFunction(Constants.SCAN, new ScanStatement());
 
             ParserFunction.RegisterFunction(Constants.READ_XML_FILE, new ReadXmlFileFunction());
             ParserFunction.RegisterFunction(Constants.READ_TAGCONTENT_FROM_XMLSTRING,

@@ -94,6 +94,125 @@ namespace WpfCSCS
         }
     }
 
+    class ScanStatement : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            return ProcessScan(script);
+        }
+        Variable ProcessScan(ParsingScript script)
+        {
+            string forString = Utils.GetBodyBetween(script, Constants.START_ARG, Constants.END_ARG);
+            script.Forward();
+
+            ProcessScan(script, forString);
+
+            return Variable.EmptyInstance;
+        }
+        void ProcessScan(ParsingScript script, string forString)
+        {
+            int MAX_LOOPS = Interpreter.Instance.ReadConfig("maxLoops", 256000);
+
+            string[] forTokens = forString.Split(Constants.END_STATEMENT);
+            if (forTokens.Length != 7)
+            {
+                throw new ArgumentException("Expecting: scan(hndlNum; \"keyName\"; \"start|start2\"; \"whileString\"; \"forString\"; \"scope(a)\"; \"lock(t / f)\")");
+            }
+
+            int startForCondition = script.Pointer;
+
+
+            var tableHndlNum = script.GetTempScript(forTokens[0]).Execute(null, 0);
+            var keyName = script.GetTempScript(forTokens[1]).Execute(null, 0);
+            var startString = script.GetTempScript(forTokens[2]).Execute(null, 0);
+            var whileString = script.GetTempScript(forTokens[3]);
+            var forExpression = script.GetTempScript(forTokens[4]).Execute(null, 0);
+            var scope = script.GetTempScript(forTokens[5]).Execute(null, 0);
+            var nlock = script.GetTempScript(forTokens[6]).Execute(null, 0);
+
+
+            int cycles = 0;
+            bool stillValid = true;
+
+            new Btrieve.FINDVClass((int)tableHndlNum.Value, "g", keyName.String, startString.String, forExpression.String).FINDV();
+
+            var scopeString = scope.String.ToLower();
+            bool limited = false;
+            int selectLimit = 0;
+            int selectLimitCounter = 0;
+            if (scopeString.StartsWith("n"))
+            {
+                var selectLimitString = scopeString.TrimStart('n').Replace(" ", "");
+                if (int.TryParse(selectLimitString, out selectLimit))
+                {
+                    limited = true;
+                    selectLimitCounter = selectLimit;
+                }
+                else
+                {
+                    Btrieve.SetFlerr(12, (int)tableHndlNum.Value);
+                    return;
+                }
+            }
+
+            while (stillValid)
+            {
+                if (limited && selectLimitCounter == 0)
+                {
+                    Btrieve.SetFlerr(0, (int)tableHndlNum.Value);
+                    break;
+                }
+
+                var condResult = whileString.Execute(null, 0);
+
+                stillValid = Convert.ToBoolean(condResult.Value);
+                if (!stillValid)
+                {
+                    break;
+                }
+
+                if (MAX_LOOPS > 0 && ++cycles >= MAX_LOOPS)
+                {
+                    throw new ArgumentException("Looks like an infinite loop after " +
+                                                  cycles + " cycles.");
+                }
+
+                script.Pointer = startForCondition;
+                Variable result = Interpreter.Instance.ProcessBlock(script);
+
+                if (limited)
+                {
+                    selectLimitCounter--;
+                    if (selectLimitCounter == 0)
+                    {
+                        Btrieve.SetFlerr(0, (int)tableHndlNum.Value);
+                        break;
+                    }
+                }
+
+                if (result.IsReturn || result.Type == Variable.VarType.BREAK)
+                {
+                    break;
+                }
+
+                new Btrieve.FINDVClass((int)tableHndlNum.Value, "n", keyName.String).FINDV();
+                if (Btrieve.LastFlerrsOfFnums[(int)tableHndlNum.Value] == 3)
+                {
+                    Btrieve.SetFlerr(0, (int)tableHndlNum.Value);
+                    break;
+                }
+
+            }
+
+            Btrieve.SetFlerr(0, (int)tableHndlNum.Value);
+
+            script.Pointer = startForCondition;
+            Interpreter.Instance.SkipBlock(script);
+        }
+    }
+
+    
+
     public class Btrieve
     {
         public static Dictionary<string, string> Databases { get; set; } = new Dictionary<string, string>(); // <SYCD_USERCODE, SYCD_DBASENAME>
