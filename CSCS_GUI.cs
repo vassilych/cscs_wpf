@@ -200,6 +200,7 @@ namespace WpfCSCS
         static Dictionary<string, string> s_PreHandlers = new Dictionary<string, string>();
         static Dictionary<string, string> s_PostHandlers = new Dictionary<string, string>();
 
+<<<<<<< Updated upstream
         static Dictionary<string, string> s_NavigatedHandlers = new Dictionary<string, string>();
 =======
         static Dictionary<string, string> s_ChangeHandlers = new Dictionary<string, string>();
@@ -1260,8 +1261,14 @@ namespace WpfCSCS
                 //Pre, Post
                 AddWidgetPreHandler(widgetName, widgetPreAction, widget);
                 AddWidgetPostHandler(widgetName, widgetPostAction, widget);
+<<<<<<< Updated upstream
                 
                 AddWidgetNavigatedHandler(widgetName, widgetNavigatedAction, widget);
+=======
+
+                AddWidgetChangeHandler(widgetName, widgetChangeAction, widget);
+                //AddWidgetAfterChangeHandler(widgetName, widgetAfterChangeAction, widget);
+>>>>>>> Stashed changes
             }
 
             //xaml DataContext property
@@ -2027,6 +2034,8 @@ namespace WpfCSCS
 
     class SetWidgetOptionsFunction : ParserFunction
     {
+        public static bool settingTabControlPosition;
+
         Dictionary<string, Color> m_bgcolors = new Dictionary<string, Color>();
         Dictionary<string, Color> m_fgcolors = new Dictionary<string, Color>();
 
@@ -2079,6 +2088,16 @@ namespace WpfCSCS
                 else if (option == "clear")
                 {
                     ClearWidget(widgetName, dg);
+                }
+            }
+            if (widget is TabControl)
+            {
+                TabControl tc = widget as TabControl;
+                if (option == "position")
+                {
+                    settingTabControlPosition = true;
+                    tc.SelectedIndex = Utils.GetSafeInt(args, 2);
+                    settingTabControlPosition = false;
                 }
             }
 
