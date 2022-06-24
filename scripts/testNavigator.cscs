@@ -1,1 +1,16 @@
 #WINFORM testNavigator.xaml;
+
+DEFINE table_hndl type i;
+
+table_hndl = openv("invoiceLines");
+if(flerr() != 0){
+    MessageBox("flerrrr");
+}
+
+Navigator("navigator1", table_hndl, "@1");
+
+
+function navigator1@Navigated(){
+    //MessageBox("navigator1@Navigated");
+    MessageBox(price);
+}

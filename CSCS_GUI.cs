@@ -200,11 +200,11 @@ namespace WpfCSCS
         static Dictionary<string, string> s_PreHandlers = new Dictionary<string, string>();
         static Dictionary<string, string> s_PostHandlers = new Dictionary<string, string>();
 
-<<<<<<< Updated upstream
+
         static Dictionary<string, string> s_NavigatedHandlers = new Dictionary<string, string>();
-=======
+
         static Dictionary<string, string> s_ChangeHandlers = new Dictionary<string, string>();
->>>>>>> Stashed changes
+
 
         static Dictionary<string, Variable> s_boundVariables = new Dictionary<string, Variable>();
         //static Dictionary<string, TabPage> s_tabPages           = new Dictionary<string, TabPage>();
@@ -1239,12 +1239,12 @@ namespace WpfCSCS
                 string widgetPreAction = widgetName + "@Pre";
                 string widgetPostAction = widgetName + "@Post";
 
-<<<<<<< Updated upstream
+
                 string widgetNavigatedAction = widgetName + "@Navigated";
-=======
+
                 string widgetChangeAction = widgetName + "@Change";
                 //string widgetAfterChangeAction = widgetName + "@AfterChange";
->>>>>>> Stashed changes
+
 
                 AddActionHandler(widgetName, clickAction, widget);
                 AddPreActionHandler(widgetName, preClickAction, widget);
@@ -1261,14 +1261,12 @@ namespace WpfCSCS
                 //Pre, Post
                 AddWidgetPreHandler(widgetName, widgetPreAction, widget);
                 AddWidgetPostHandler(widgetName, widgetPostAction, widget);
-<<<<<<< Updated upstream
+
                 
                 AddWidgetNavigatedHandler(widgetName, widgetNavigatedAction, widget);
-=======
-
                 AddWidgetChangeHandler(widgetName, widgetChangeAction, widget);
                 //AddWidgetAfterChangeHandler(widgetName, widgetAfterChangeAction, widget);
->>>>>>> Stashed changes
+
             }
 
             //xaml DataContext property
