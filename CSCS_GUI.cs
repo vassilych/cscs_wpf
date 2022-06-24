@@ -201,7 +201,8 @@ namespace WpfCSCS
         static Dictionary<string, string> s_PostHandlers = new Dictionary<string, string>();
 
 
-        static Dictionary<string, string> s_NavigatedHandlers = new Dictionary<string, string>();
+        static Dictionary<string, string> s_NavigatorChangeHandlers = new Dictionary<string, string>();
+        static Dictionary<string, string> s_NavigatorAfterChangeHandlers = new Dictionary<string, string>();
 
         static Dictionary<string, string> s_ChangeHandlers = new Dictionary<string, string>();
 
@@ -694,48 +695,72 @@ namespace WpfCSCS
         
         public static bool AddWidgetChangeHandler(string name, string action, FrameworkElement widget)
         {
-            var tabControl = widget as TabControl;
-            if (tabControl == null)
+            if(widget is TabControl)
             {
-                return false;
+                var tabControl = widget as TabControl;
+                if (tabControl == null)
+                {
+                    return false;
+                }
+
+                s_ChangeHandlers[name] = action;
+                //tabControl.SelectionChanged -= new SelectionChangedEventHandler(Widget_Change);
+                tabControl.SelectionChanged += new SelectionChangedEventHandler(Widget_Change);
+
+                return true;
+            }
+            else if (widget is Navigator)
+            {
+                var nav = widget as WpfControlLibrary1.Navigator;
+                if (nav == null)
+                {
+                    return false;
+                }
+
+                s_NavigatorChangeHandlers[name] = action;
+                nav.Navigator_buttonClicked -= new EventHandler(Navigator_Change);
+                nav.Navigator_buttonClicked += new EventHandler(Navigator_Change);
+
+                return true;
             }
 
-            s_ChangeHandlers[name] = action;
-            //tabControl.SelectionChanged -= new SelectionChangedEventHandler(Widget_Change);
-            tabControl.SelectionChanged += new SelectionChangedEventHandler(Widget_Change);
-
-            return true;
+            return false;
         }
-        
-        //public static bool AddWidgetAfterChangeHandler(string name, string action, FrameworkElement widget)
+
+        public static bool AddWidgetAfterChangeHandler(string name, string action, FrameworkElement widget)
+        {
+            if (widget is Navigator)
+            {
+                var nav = widget as WpfControlLibrary1.Navigator;
+                if (nav == null)
+                {
+                    return false;
+                }
+
+                s_NavigatorAfterChangeHandlers[name] = action;
+                nav.Navigator_buttonClicked -= new EventHandler(Navigator_AfterChange);
+                nav.Navigator_buttonClicked += new EventHandler(Navigator_AfterChange);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        //public static bool AddWidgetNavigatedHandler(string name, string action, FrameworkElement widget)
         //{
-        //    var textable = widget as TabItem;
-        //    if (textable == null)
+        //    var nav = widget as WpfControlLibrary1.Navigator;
+        //    if (nav == null)
         //    {
         //        return false;
         //    }
 
-        //    s_PostHandlers[name] = action;
-        //    textable.PreviewLostKeyboardFocus -= new KeyboardFocusChangedEventHandler(Widget_Post);
-        //    textable.PreviewLostKeyboardFocus += new KeyboardFocusChangedEventHandler(Widget_Post);
+        //    s_NavigatedHandlers[name] = action;
+        //    nav.Navigator_buttonClicked -= new EventHandler(Widget_Navigated);
+        //    nav.Navigator_buttonClicked += new EventHandler(Widget_Navigated);
 
         //    return true;
         //}
-
-        public static bool AddWidgetNavigatedHandler(string name, string action, FrameworkElement widget)
-        {
-            var nav = widget as WpfControlLibrary1.Navigator;
-            if (nav == null)
-            {
-                return false;
-            }
-
-            s_NavigatedHandlers[name] = action;
-            nav.Navigator_buttonClicked -= new EventHandler(Widget_Navigated);
-            nav.Navigator_buttonClicked += new EventHandler(Widget_Navigated);
-
-            return true;
-        }
 
         private static void ValueUpdated(string funcName, string widgetName, FrameworkElement widget, Variable newValue)
         {
@@ -1018,13 +1043,40 @@ namespace WpfCSCS
             }
         }
 
-       private static void Widget_Navigated(object sender, EventArgs e)
+        static bool skipAfterChange = true;
+        private static void Navigator_Change(object sender, EventArgs e)
         {
-            //if (skipPostEvent)
-            //{
-            //    skipPostEvent = false;
-            //    return;
-            //}
+            WpfControlLibrary1.Navigator widget = sender as WpfControlLibrary1.Navigator;
+            var widgetName = GetWidgetName(widget);
+            if (string.IsNullOrWhiteSpace(widgetName))
+            {
+                return;
+            }
+
+            string funcName;
+            if (s_NavigatorChangeHandlers.TryGetValue(widgetName, out funcName))
+            {
+                Control2Window.TryGetValue(widget, out Window win);
+                var result = Interpreter.Run(funcName, new Variable(widgetName), null,
+                    Variable.EmptyInstance, ChainFunction.GetScript(win));
+                
+                if (result.Type == Variable.VarType.NUMBER && !result.AsBool())
+                {
+                    skipAfterChange = true;
+                }
+                else
+                {
+                    skipAfterChange = false;
+                }
+            }
+        }
+        
+        private static void Navigator_AfterChange(object sender, EventArgs e)
+        {
+            if (skipAfterChange)
+            {
+                return;
+            }
 
             WpfControlLibrary1.Navigator widget = sender as WpfControlLibrary1.Navigator;
             var widgetName = GetWidgetName(widget);
@@ -1033,7 +1085,6 @@ namespace WpfCSCS
                 return;
             }
 
-            //lastObjWidgetName = ((Control)e.NewFocus).Name;
 
             var option = widget.buttonClicked;
             switch (option)
@@ -1055,18 +1106,11 @@ namespace WpfCSCS
             }
 
             string funcName;
-            if (s_NavigatedHandlers.TryGetValue(widgetName, out funcName))
+            if (s_NavigatorAfterChangeHandlers.TryGetValue(widgetName, out funcName))
             {
                 Control2Window.TryGetValue(widget, out Window win);
                 var result = Interpreter.Run(funcName, new Variable(widgetName), null,
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
-                
-                
-                if (result.Type == Variable.VarType.NUMBER && !result.AsBool())
-                {
-                    //e.Handled = true;
-                    //lastObjWidgetName = widgetName;
-                }
             }
         }
 
@@ -1240,10 +1284,10 @@ namespace WpfCSCS
                 string widgetPostAction = widgetName + "@Post";
 
 
-                string widgetNavigatedAction = widgetName + "@Navigated";
+                //string widgetNavigatedAction = widgetName + "@Navigated";
 
                 string widgetChangeAction = widgetName + "@Change";
-                //string widgetAfterChangeAction = widgetName + "@AfterChange";
+                string widgetAfterChangeAction = widgetName + "@AfterChange";
 
 
                 AddActionHandler(widgetName, clickAction, widget);
@@ -1263,9 +1307,9 @@ namespace WpfCSCS
                 AddWidgetPostHandler(widgetName, widgetPostAction, widget);
 
                 
-                AddWidgetNavigatedHandler(widgetName, widgetNavigatedAction, widget);
+                //AddWidgetNavigatedHandler(widgetName, widgetNavigatedAction, widget);
                 AddWidgetChangeHandler(widgetName, widgetChangeAction, widget);
-                //AddWidgetAfterChangeHandler(widgetName, widgetAfterChangeAction, widget);
+                AddWidgetAfterChangeHandler(widgetName, widgetAfterChangeAction, widget);
 
             }
 

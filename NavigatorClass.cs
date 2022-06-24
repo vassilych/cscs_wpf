@@ -36,8 +36,8 @@ namespace WpfCSCS
                 tableHndlNum = Utils.GetSafeInt(args, 1);
                 tableKey = Utils.GetSafeString(args, 2).ToLower(); // e.g. VEZM_RNALOGLIN
 
-                navigatorOfTable.Add(navigatorName, tableHndlNum);
-                navigatorKey.Add(navigatorName, tableKey);
+                navigatorOfTable[navigatorName] = tableHndlNum;
+                navigatorKey[navigatorName] = tableKey;
 
                 //new Btrieve.FINDVClass(tableHndlNum, operationType, tableKey, matchExactValue, forString, columnsToSelect, script, keyo).FINDV();
 

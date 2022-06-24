@@ -2,15 +2,24 @@
 
 DEFINE table_hndl type i;
 
-table_hndl = openv("invoiceLines");
+table_hndl = Openv("invoiceLines");
 if(flerr() != 0){
     MessageBox("flerrrr");
 }
 
 Navigator("navigator1", table_hndl, "@1");
 
+i = 0;
+function navigator1@change(){
+    i++;
+    if(i % 2 == 0){
+        return false;
+    }
+    else{
+        return true;
+    }
+}
 
-function navigator1@Navigated(){
-    //MessageBox("navigator1@Navigated");
-    MessageBox(price);
+function navigator1@AfterChange(){
+    MessageBox(RcnGet(table_hndl));
 }
