@@ -201,6 +201,9 @@ namespace WpfCSCS
         static Dictionary<string, string> s_PostHandlers = new Dictionary<string, string>();
 
         static Dictionary<string, string> s_NavigatedHandlers = new Dictionary<string, string>();
+=======
+        static Dictionary<string, string> s_ChangeHandlers = new Dictionary<string, string>();
+>>>>>>> Stashed changes
 
         static Dictionary<string, Variable> s_boundVariables = new Dictionary<string, Variable>();
         //static Dictionary<string, TabPage> s_tabPages           = new Dictionary<string, TabPage>();
@@ -687,6 +690,36 @@ namespace WpfCSCS
 
             return true;
         }
+        
+        public static bool AddWidgetChangeHandler(string name, string action, FrameworkElement widget)
+        {
+            var tabControl = widget as TabControl;
+            if (tabControl == null)
+            {
+                return false;
+            }
+
+            s_ChangeHandlers[name] = action;
+            //tabControl.SelectionChanged -= new SelectionChangedEventHandler(Widget_Change);
+            tabControl.SelectionChanged += new SelectionChangedEventHandler(Widget_Change);
+
+            return true;
+        }
+        
+        //public static bool AddWidgetAfterChangeHandler(string name, string action, FrameworkElement widget)
+        //{
+        //    var textable = widget as TabItem;
+        //    if (textable == null)
+        //    {
+        //        return false;
+        //    }
+
+        //    s_PostHandlers[name] = action;
+        //    textable.PreviewLostKeyboardFocus -= new KeyboardFocusChangedEventHandler(Widget_Post);
+        //    textable.PreviewLostKeyboardFocus += new KeyboardFocusChangedEventHandler(Widget_Post);
+
+        //    return true;
+        //}
 
         public static bool AddWidgetNavigatedHandler(string name, string action, FrameworkElement widget)
         {
@@ -959,6 +992,30 @@ namespace WpfCSCS
                 }
             }
         }
+        
+        private static void Widget_Change(object sender, SelectionChangedEventArgs e)
+        {
+            if (SetWidgetOptionsFunction.settingTabControlPosition)
+            {
+                return;
+            }
+
+            TabControl widget = sender as TabControl;
+            var widgetName = GetWidgetName(widget);
+            if (string.IsNullOrWhiteSpace(widgetName))
+            {
+                return;
+            }
+
+            string funcName;
+            if (s_ChangeHandlers.TryGetValue(widgetName, out funcName))
+            {
+                Control2Window.TryGetValue(widget, out Window win);
+                Interpreter.Run(funcName, new Variable(widgetName), null,
+                    Variable.EmptyInstance, ChainFunction.GetScript(win));
+                e.Handled = true;
+            }
+        }
 
        private static void Widget_Navigated(object sender, EventArgs e)
         {
@@ -1078,6 +1135,12 @@ namespace WpfCSCS
                 else if (child is TabControl)
                 {
                     var tabControl = child as TabControl;
+                    CacheControl(tabControl, win, controls);
+                    //foreach (var item in tabControl.Items)
+                    //{
+                    //    CacheControl(item as TabItem, win, controls);
+                    //}
+
                     var count = VisualTreeHelper.GetChildrenCount(tabControl);
                     for (int i = 0; i < count; i++)
                     {
@@ -1175,7 +1238,12 @@ namespace WpfCSCS
                 string widgetPreAction = widgetName + "@Pre";
                 string widgetPostAction = widgetName + "@Post";
 
+<<<<<<< Updated upstream
                 string widgetNavigatedAction = widgetName + "@Navigated";
+=======
+                string widgetChangeAction = widgetName + "@Change";
+                //string widgetAfterChangeAction = widgetName + "@AfterChange";
+>>>>>>> Stashed changes
 
                 AddActionHandler(widgetName, clickAction, widget);
                 AddPreActionHandler(widgetName, preClickAction, widget);
