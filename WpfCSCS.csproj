@@ -162,6 +162,7 @@
     <Compile Include="AdictionaryLocal\SY_INDEXES.cs" />
     <Compile Include="AdictionaryLocal\SY_TABLES.cs" />
     <Compile Include="Btrieve.cs" />
+    <Compile Include="NavigatorClass.cs" />
     <Compile Include="Reporting.cs" />
     <Compile Include="SpecialWindow.cs" />
     <Compile Include="App.xaml.cs">
@@ -263,6 +264,11 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\VS_PROJEKTI\WpfControlLibrary1\WpfControlLibrary1\WpfControlLibrary1.csproj">
+      <Project>{0287e015-ae17-4147-8c8b-149dbfa0f9de}</Project>
+      <Name>WpfControlLibrary1</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

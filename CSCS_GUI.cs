@@ -32,6 +32,7 @@ using System.Text.RegularExpressions;
 using System.Data;
 using DevExpress.XtraPrinting.Caching;
 using static WpfCSCS.Btrieve;
+using WpfControlLibrary1;
 
 namespace SplitAndMerge
 {
@@ -62,6 +63,8 @@ namespace SplitAndMerge
         public const string SCAN = "Scan";
 
         public const string FLERR = "Flerr";
+
+        public const string NAVIGATOR = "Navigator";
 
         public const string READ_XML_FILE = "readXmlFile";
         public const string READ_TAGCONTENT_FROM_XMLSTRING = "readTagContentFromXmlString";
@@ -197,6 +200,8 @@ namespace WpfCSCS
         static Dictionary<string, string> s_PreHandlers = new Dictionary<string, string>();
         static Dictionary<string, string> s_PostHandlers = new Dictionary<string, string>();
 
+        static Dictionary<string, string> s_NavigatedHandlers = new Dictionary<string, string>();
+
         static Dictionary<string, Variable> s_boundVariables = new Dictionary<string, Variable>();
         //static Dictionary<string, TabPage> s_tabPages           = new Dictionary<string, TabPage>();
         //static TabControl s_tabControl;
@@ -294,8 +299,8 @@ namespace WpfCSCS
             ParserFunction.AddAction(Constants.ASSIGNMENT, new MyAssignFunction());
             ParserFunction.AddAction(Constants.POINTER, new MyPointerFunction());
 
-            Constants.FUNCT_WITH_SPACE.Add(Constants.OPENV);
-            Constants.FUNCT_WITH_SPACE.Add(Constants.FINDV);
+            //Constants.FUNCT_WITH_SPACE.Add(Constants.OPENV);
+            //Constants.FUNCT_WITH_SPACE.Add(Constants.FINDV);
 
             Constants.FUNCT_WITH_SPACE.Add(Constants.DEFINE);
             Constants.FUNCT_WITH_SPACE.Add(Constants.DISPLAY_ARRAY);
@@ -683,6 +688,21 @@ namespace WpfCSCS
             return true;
         }
 
+        public static bool AddWidgetNavigatedHandler(string name, string action, FrameworkElement widget)
+        {
+            var nav = widget as WpfControlLibrary1.Navigator;
+            if (nav == null)
+            {
+                return false;
+            }
+
+            s_NavigatedHandlers[name] = action;
+            nav.Navigator_buttonClicked -= new EventHandler(Widget_Navigated);
+            nav.Navigator_buttonClicked += new EventHandler(Widget_Navigated);
+
+            return true;
+        }
+
         private static void ValueUpdated(string funcName, string widgetName, FrameworkElement widget, Variable newValue)
         {
             UpdateVariable(widget, newValue);
@@ -940,6 +960,58 @@ namespace WpfCSCS
             }
         }
 
+       private static void Widget_Navigated(object sender, EventArgs e)
+        {
+            //if (skipPostEvent)
+            //{
+            //    skipPostEvent = false;
+            //    return;
+            //}
+
+            WpfControlLibrary1.Navigator widget = sender as WpfControlLibrary1.Navigator;
+            var widgetName = GetWidgetName(widget);
+            if (string.IsNullOrWhiteSpace(widgetName))
+            {
+                return;
+            }
+
+            //lastObjWidgetName = ((Control)e.NewFocus).Name;
+
+            var option = widget.buttonClicked;
+            switch (option)
+            {
+                case NavigatorButton.First:
+                    NavigatorClass.NavigateFirst(widgetName);
+                    break;
+                case NavigatorButton.Last:
+                    NavigatorClass.NavigateLast(widgetName);
+                    break;
+                case NavigatorButton.Next:
+                    NavigatorClass.NavigateNext(widgetName);
+                    break;
+                case NavigatorButton.Previous:
+                    NavigatorClass.NavigatePrevious(widgetName);
+                    break;
+                default:
+                    return;
+            }
+
+            string funcName;
+            if (s_NavigatedHandlers.TryGetValue(widgetName, out funcName))
+            {
+                Control2Window.TryGetValue(widget, out Window win);
+                var result = Interpreter.Run(funcName, new Variable(widgetName), null,
+                    Variable.EmptyInstance, ChainFunction.GetScript(win));
+                
+                
+                if (result.Type == Variable.VarType.NUMBER && !result.AsBool())
+                {
+                    //e.Handled = true;
+                    //lastObjWidgetName = widgetName;
+                }
+            }
+        }
+
         public static FrameworkElement GetWidget(string name)
         {
             CacheControls(MainWindow);
@@ -1103,6 +1175,8 @@ namespace WpfCSCS
                 string widgetPreAction = widgetName + "@Pre";
                 string widgetPostAction = widgetName + "@Post";
 
+                string widgetNavigatedAction = widgetName + "@Navigated";
+
                 AddActionHandler(widgetName, clickAction, widget);
                 AddPreActionHandler(widgetName, preClickAction, widget);
                 AddPostActionHandler(widgetName, postClickAction, widget);
@@ -1118,6 +1192,8 @@ namespace WpfCSCS
                 //Pre, Post
                 AddWidgetPreHandler(widgetName, widgetPreAction, widget);
                 AddWidgetPostHandler(widgetName, widgetPostAction, widget);
+                
+                AddWidgetNavigatedHandler(widgetName, widgetNavigatedAction, widget);
             }
 
             //xaml DataContext property
@@ -1145,6 +1221,7 @@ namespace WpfCSCS
             Init();
             ReportFunction.Init();
             Btrieve.Init();
+            NavigatorClass.Init();
 
             if (encode)
             {

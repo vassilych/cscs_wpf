@@ -25,6 +25,8 @@ function mainMenuWindow_OnDisplay(){
     AddMenuItem("scriptsDC", "editDatabases2.cscs", "editDatabases2 - using DisplayArrFunc", "runScript");
 
     AddMenuItem("scriptsDC", "testScan1.cscs", "testScan1", "runScript");
+
+    AddMenuItem("scriptsDC", "testNavigator.cscs", "testNavigator", "runScript");
     
 }
 
