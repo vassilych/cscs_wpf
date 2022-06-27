@@ -24,8 +24,6 @@ namespace WpfCSCS
             int tableHndlNum;
             static string tableKey;
             
-            //static KeyClass KeyClass;
-
             static NavigatorButton navigatorButton;
 
             protected override Variable Evaluate(ParsingScript script)
@@ -34,12 +32,10 @@ namespace WpfCSCS
                 Utils.CheckArgs(args.Count, 3, m_name);
                 navigatorName = Utils.GetSafeString(args, 0);
                 tableHndlNum = Utils.GetSafeInt(args, 1);
-                tableKey = Utils.GetSafeString(args, 2).ToLower(); // e.g. VEZM_RNALOGLIN
+                tableKey = Utils.GetSafeString(args, 2).ToLower();
 
                 navigatorOfTable[navigatorName] = tableHndlNum;
                 navigatorKey[navigatorName] = tableKey;
-
-                //new Btrieve.FINDVClass(tableHndlNum, operationType, tableKey, matchExactValue, forString, columnsToSelect, script, keyo).FINDV();
 
                 return Variable.EmptyInstance;
             }

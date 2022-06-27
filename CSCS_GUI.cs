@@ -704,7 +704,6 @@ namespace WpfCSCS
                 }
 
                 s_ChangeHandlers[name] = action;
-                //tabControl.SelectionChanged -= new SelectionChangedEventHandler(Widget_Change);
                 tabControl.SelectionChanged += new SelectionChangedEventHandler(Widget_Change);
 
                 return true;
@@ -718,7 +717,6 @@ namespace WpfCSCS
                 }
 
                 s_NavigatorChangeHandlers[name] = action;
-                nav.Navigator_buttonClicked -= new EventHandler(Navigator_Change);
                 nav.Navigator_buttonClicked += new EventHandler(Navigator_Change);
 
                 return true;
@@ -746,21 +744,6 @@ namespace WpfCSCS
 
             return false;
         }
-
-        //public static bool AddWidgetNavigatedHandler(string name, string action, FrameworkElement widget)
-        //{
-        //    var nav = widget as WpfControlLibrary1.Navigator;
-        //    if (nav == null)
-        //    {
-        //        return false;
-        //    }
-
-        //    s_NavigatedHandlers[name] = action;
-        //    nav.Navigator_buttonClicked -= new EventHandler(Widget_Navigated);
-        //    nav.Navigator_buttonClicked += new EventHandler(Widget_Navigated);
-
-        //    return true;
-        //}
 
         private static void ValueUpdated(string funcName, string widgetName, FrameworkElement widget, Variable newValue)
         {
@@ -1307,7 +1290,7 @@ namespace WpfCSCS
                 AddWidgetPostHandler(widgetName, widgetPostAction, widget);
 
                 
-                //AddWidgetNavigatedHandler(widgetName, widgetNavigatedAction, widget);
+                //Navigator(Change and AfterChange) and TabControl(Change) events
                 AddWidgetChangeHandler(widgetName, widgetChangeAction, widget);
                 AddWidgetAfterChangeHandler(widgetName, widgetAfterChangeAction, widget);
 
