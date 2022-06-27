@@ -21,10 +21,49 @@ namespace WpfControlsLibrary
     }
     public partial class Navigator : UserControl
     {
+        RoutedCommand trapF5 = new RoutedCommand();
+        RoutedCommand trapF6 = new RoutedCommand();
+        RoutedCommand trapF7 = new RoutedCommand();
+        RoutedCommand trapF8 = new RoutedCommand();
         public Navigator()
         {
             InitializeComponent();
+
+            trapF5.InputGestures.Add(new KeyGesture(Key.F5));
+            trapF6.InputGestures.Add(new KeyGesture(Key.F6));
+            trapF7.InputGestures.Add(new KeyGesture(Key.F7));
+            trapF8.InputGestures.Add(new KeyGesture(Key.F8));
         }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            Window.GetWindow(this).CommandBindings.Add(new CommandBinding(trapF5, F5Handler));
+            Window.GetWindow(this).CommandBindings.Add(new CommandBinding(trapF6, F6Handler));
+            Window.GetWindow(this).CommandBindings.Add(new CommandBinding(trapF7, F7Handler));
+            Window.GetWindow(this).CommandBindings.Add(new CommandBinding(trapF8, F8Handler));
+        }
+
+        private void F5Handler(object sender, ExecutedRoutedEventArgs e)
+        {
+            NavigatorFirst();
+        }
+
+        private void F6Handler(object sender, ExecutedRoutedEventArgs e)
+        {
+            NavigatorLast();
+        }
+
+        private void F7Handler(object sender, ExecutedRoutedEventArgs e)
+        {
+            NavigatorPrevious();
+        }
+
+        private void F8Handler(object sender, ExecutedRoutedEventArgs e)
+        {
+            NavigatorNext();
+        }
+
+        
 
         public NavigatorButton buttonClicked;
 
@@ -32,30 +71,40 @@ namespace WpfControlsLibrary
 
         private void FirstButton_Click(object sender, RoutedEventArgs e)
         {
+            NavigatorFirst();
+        }
+        private void PreviousButton_Click(object sender, RoutedEventArgs e)
+        {
+            NavigatorPrevious();
+        }
+        private void NextButton_Click(object sender, RoutedEventArgs e)
+        {
+            NavigatorNext();
+        }
+        private void LastButton_Click(object sender, RoutedEventArgs e)
+        {
+            NavigatorLast();
+        }
+
+        private void NavigatorFirst()
+        {
             buttonClicked = NavigatorButton.First;
             Navigator_buttonClicked(this, EventArgs.Empty);
         }
-
-        private void PreviousButton_Click(object sender, RoutedEventArgs e)
+        private void NavigatorPrevious()
         {
             buttonClicked = NavigatorButton.Previous;
             Navigator_buttonClicked(this, EventArgs.Empty);
         }
-
-        private void NextButton_Click(object sender, RoutedEventArgs e)
+        private void NavigatorNext()
         {
             buttonClicked = NavigatorButton.Next;
             Navigator_buttonClicked(this, EventArgs.Empty);
         }
-
-        private void LastButton_Click(object sender, RoutedEventArgs e)
+        private void NavigatorLast()
         {
             buttonClicked = NavigatorButton.Last;
             Navigator_buttonClicked(this, EventArgs.Empty);
         }
-
-
-
-
     }
 }

@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:WpfControlsLibrary"
              mc:Ignorable="d" 
              d:DesignHeight="55" d:DesignWidth="300"
-             >
+             Loaded="UserControl_Loaded">
     <Grid>
         <Button Content="|&lt;--" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Height="55" Click="FirstButton_Click"/>
         <Button Content="&lt;-" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Height="55" Margin="75,0,0,0" Click="PreviousButton_Click"/>

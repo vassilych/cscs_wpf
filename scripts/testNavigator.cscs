@@ -23,3 +23,9 @@ function navigator1@change(){
 function navigator1@AfterChange(){
     MessageBox(RcnGet(table_hndl));
 }
+
+function btnX@clicked(){
+    MessageBox("X");
+    quit;
+}
+
