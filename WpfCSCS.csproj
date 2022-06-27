@@ -265,9 +265,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\VS_PROJEKTI\WpfControlLibrary1\WpfControlLibrary1\WpfControlLibrary1.csproj">
-      <Project>{0287e015-ae17-4147-8c8b-149dbfa0f9de}</Project>
-      <Name>WpfControlLibrary1</Name>
+    <ProjectReference Include="WpfControlsLibrary\WpfControlsLibrary.csproj">
+      <Project>{d44f63af-00f9-4085-8bc0-b7feb8eaa9ee}</Project>
+      <Name>WpfControlsLibrary</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

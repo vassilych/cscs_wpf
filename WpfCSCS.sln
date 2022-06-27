@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfCSCS", "WpfCSCS.csproj",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfControlLibrary1", "..\..\..\..\..\VS_PROJEKTI\WpfControlLibrary1\WpfControlLibrary1\WpfControlLibrary1.csproj", "{0287E015-AE17-4147-8C8B-149DBFA0F9DE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfControlsLibrary", "WpfControlsLibrary\WpfControlsLibrary.csproj", "{D44F63AF-00F9-4085-8BC0-B7FEB8EAA9EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{0287E015-AE17-4147-8C8B-149DBFA0F9DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0287E015-AE17-4147-8C8B-149DBFA0F9DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0287E015-AE17-4147-8C8B-149DBFA0F9DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D44F63AF-00F9-4085-8BC0-B7FEB8EAA9EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D44F63AF-00F9-4085-8BC0-B7FEB8EAA9EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D44F63AF-00F9-4085-8BC0-B7FEB8EAA9EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D44F63AF-00F9-4085-8BC0-B7FEB8EAA9EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

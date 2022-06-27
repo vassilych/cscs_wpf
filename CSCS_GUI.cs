@@ -32,7 +32,7 @@ using System.Text.RegularExpressions;
 using System.Data;
 using DevExpress.XtraPrinting.Caching;
 using static WpfCSCS.Btrieve;
-using WpfControlLibrary1;
+using WpfControlsLibrary;
 
 namespace SplitAndMerge
 {
@@ -710,7 +710,7 @@ namespace WpfCSCS
             }
             else if (widget is Navigator)
             {
-                var nav = widget as WpfControlLibrary1.Navigator;
+                var nav = widget as WpfControlsLibrary.Navigator;
                 if (nav == null)
                 {
                     return false;
@@ -729,7 +729,7 @@ namespace WpfCSCS
         {
             if (widget is Navigator)
             {
-                var nav = widget as WpfControlLibrary1.Navigator;
+                var nav = widget as WpfControlsLibrary.Navigator;
                 if (nav == null)
                 {
                     return false;
@@ -1029,7 +1029,7 @@ namespace WpfCSCS
         static bool skipAfterChange = true;
         private static void Navigator_Change(object sender, EventArgs e)
         {
-            WpfControlLibrary1.Navigator widget = sender as WpfControlLibrary1.Navigator;
+            WpfControlsLibrary.Navigator widget = sender as WpfControlsLibrary.Navigator;
             var widgetName = GetWidgetName(widget);
             if (string.IsNullOrWhiteSpace(widgetName))
             {
@@ -1061,7 +1061,7 @@ namespace WpfCSCS
                 return;
             }
 
-            WpfControlLibrary1.Navigator widget = sender as WpfControlLibrary1.Navigator;
+            WpfControlsLibrary.Navigator widget = sender as WpfControlsLibrary.Navigator;
             var widgetName = GetWidgetName(widget);
             if (string.IsNullOrWhiteSpace(widgetName))
             {
