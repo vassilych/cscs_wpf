@@ -32,6 +32,7 @@ using System.Text.RegularExpressions;
 using System.Data;
 using DevExpress.XtraPrinting.Caching;
 using static WpfCSCS.Btrieve;
+using WpfControlsLibrary;
 
 namespace SplitAndMerge
 {
@@ -62,6 +63,8 @@ namespace SplitAndMerge
         public const string SCAN = "Scan";
 
         public const string FLERR = "Flerr";
+
+        public const string NAVIGATOR = "Navigator";
 
         public const string READ_XML_FILE = "readXmlFile";
         public const string READ_TAGCONTENT_FROM_XMLSTRING = "readTagContentFromXmlString";
@@ -197,6 +200,13 @@ namespace WpfCSCS
         static Dictionary<string, string> s_PreHandlers = new Dictionary<string, string>();
         static Dictionary<string, string> s_PostHandlers = new Dictionary<string, string>();
 
+
+        static Dictionary<string, string> s_NavigatorChangeHandlers = new Dictionary<string, string>();
+        static Dictionary<string, string> s_NavigatorAfterChangeHandlers = new Dictionary<string, string>();
+
+        static Dictionary<string, string> s_ChangeHandlers = new Dictionary<string, string>();
+
+
         static Dictionary<string, Variable> s_boundVariables = new Dictionary<string, Variable>();
         //static Dictionary<string, TabPage> s_tabPages           = new Dictionary<string, TabPage>();
         //static TabControl s_tabControl;
@@ -294,8 +304,8 @@ namespace WpfCSCS
             ParserFunction.AddAction(Constants.ASSIGNMENT, new MyAssignFunction());
             ParserFunction.AddAction(Constants.POINTER, new MyPointerFunction());
 
-            Constants.FUNCT_WITH_SPACE.Add(Constants.OPENV);
-            Constants.FUNCT_WITH_SPACE.Add(Constants.FINDV);
+            //Constants.FUNCT_WITH_SPACE.Add(Constants.OPENV);
+            //Constants.FUNCT_WITH_SPACE.Add(Constants.FINDV);
 
             Constants.FUNCT_WITH_SPACE.Add(Constants.DEFINE);
             Constants.FUNCT_WITH_SPACE.Add(Constants.DISPLAY_ARRAY);
@@ -682,6 +692,58 @@ namespace WpfCSCS
 
             return true;
         }
+        
+        public static bool AddWidgetChangeHandler(string name, string action, FrameworkElement widget)
+        {
+            if(widget is TabControl)
+            {
+                var tabControl = widget as TabControl;
+                if (tabControl == null)
+                {
+                    return false;
+                }
+
+                s_ChangeHandlers[name] = action;
+                tabControl.SelectionChanged += new SelectionChangedEventHandler(Widget_Change);
+
+                return true;
+            }
+            else if (widget is Navigator)
+            {
+                var nav = widget as WpfControlsLibrary.Navigator;
+                if (nav == null)
+                {
+                    return false;
+                }
+
+                s_NavigatorChangeHandlers[name] = action;
+                nav.Navigator_buttonClicked += new EventHandler(Navigator_Change);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool AddWidgetAfterChangeHandler(string name, string action, FrameworkElement widget)
+        {
+            if (widget is Navigator)
+            {
+                var nav = widget as WpfControlsLibrary.Navigator;
+                if (nav == null)
+                {
+                    return false;
+                }
+
+                s_NavigatorAfterChangeHandlers[name] = action;
+                nav.Navigator_buttonClicked -= new EventHandler(Navigator_AfterChange);
+                nav.Navigator_buttonClicked += new EventHandler(Navigator_AfterChange);
+
+                return true;
+            }
+
+            return false;
+        }
 
         private static void ValueUpdated(string funcName, string widgetName, FrameworkElement widget, Variable newValue)
         {
@@ -939,6 +1001,101 @@ namespace WpfCSCS
                 }
             }
         }
+        
+        private static void Widget_Change(object sender, SelectionChangedEventArgs e)
+        {
+            if (SetWidgetOptionsFunction.settingTabControlPosition)
+            {
+                return;
+            }
+
+            TabControl widget = sender as TabControl;
+            var widgetName = GetWidgetName(widget);
+            if (string.IsNullOrWhiteSpace(widgetName))
+            {
+                return;
+            }
+
+            string funcName;
+            if (s_ChangeHandlers.TryGetValue(widgetName, out funcName))
+            {
+                Control2Window.TryGetValue(widget, out Window win);
+                Interpreter.Run(funcName, new Variable(widgetName), null,
+                    Variable.EmptyInstance, ChainFunction.GetScript(win));
+                e.Handled = true;
+            }
+        }
+
+        static bool skipAfterChange = true;
+        private static void Navigator_Change(object sender, EventArgs e)
+        {
+            WpfControlsLibrary.Navigator widget = sender as WpfControlsLibrary.Navigator;
+            var widgetName = GetWidgetName(widget);
+            if (string.IsNullOrWhiteSpace(widgetName))
+            {
+                return;
+            }
+
+            string funcName;
+            if (s_NavigatorChangeHandlers.TryGetValue(widgetName, out funcName))
+            {
+                Control2Window.TryGetValue(widget, out Window win);
+                var result = Interpreter.Run(funcName, new Variable(widgetName), null,
+                    Variable.EmptyInstance, ChainFunction.GetScript(win));
+                
+                if (result.Type == Variable.VarType.NUMBER && !result.AsBool())
+                {
+                    skipAfterChange = true;
+                }
+                else
+                {
+                    skipAfterChange = false;
+                }
+            }
+        }
+        
+        private static void Navigator_AfterChange(object sender, EventArgs e)
+        {
+            if (skipAfterChange)
+            {
+                return;
+            }
+
+            WpfControlsLibrary.Navigator widget = sender as WpfControlsLibrary.Navigator;
+            var widgetName = GetWidgetName(widget);
+            if (string.IsNullOrWhiteSpace(widgetName))
+            {
+                return;
+            }
+
+
+            var option = widget.buttonClicked;
+            switch (option)
+            {
+                case NavigatorButton.First:
+                    NavigatorClass.NavigateFirst(widgetName);
+                    break;
+                case NavigatorButton.Last:
+                    NavigatorClass.NavigateLast(widgetName);
+                    break;
+                case NavigatorButton.Next:
+                    NavigatorClass.NavigateNext(widgetName);
+                    break;
+                case NavigatorButton.Previous:
+                    NavigatorClass.NavigatePrevious(widgetName);
+                    break;
+                default:
+                    return;
+            }
+
+            string funcName;
+            if (s_NavigatorAfterChangeHandlers.TryGetValue(widgetName, out funcName))
+            {
+                Control2Window.TryGetValue(widget, out Window win);
+                var result = Interpreter.Run(funcName, new Variable(widgetName), null,
+                    Variable.EmptyInstance, ChainFunction.GetScript(win));
+            }
+        }
 
         public static FrameworkElement GetWidget(string name)
         {
@@ -1006,6 +1163,12 @@ namespace WpfCSCS
                 else if (child is TabControl)
                 {
                     var tabControl = child as TabControl;
+                    CacheControl(tabControl, win, controls);
+                    //foreach (var item in tabControl.Items)
+                    //{
+                    //    CacheControl(item as TabItem, win, controls);
+                    //}
+
                     var count = VisualTreeHelper.GetChildrenCount(tabControl);
                     for (int i = 0; i < count; i++)
                     {
@@ -1103,6 +1266,13 @@ namespace WpfCSCS
                 string widgetPreAction = widgetName + "@Pre";
                 string widgetPostAction = widgetName + "@Post";
 
+
+                //string widgetNavigatedAction = widgetName + "@Navigated";
+
+                string widgetChangeAction = widgetName + "@Change";
+                string widgetAfterChangeAction = widgetName + "@AfterChange";
+
+
                 AddActionHandler(widgetName, clickAction, widget);
                 AddPreActionHandler(widgetName, preClickAction, widget);
                 AddPostActionHandler(widgetName, postClickAction, widget);
@@ -1118,6 +1288,12 @@ namespace WpfCSCS
                 //Pre, Post
                 AddWidgetPreHandler(widgetName, widgetPreAction, widget);
                 AddWidgetPostHandler(widgetName, widgetPostAction, widget);
+
+                
+                //Navigator(Change and AfterChange) and TabControl(Change) events
+                AddWidgetChangeHandler(widgetName, widgetChangeAction, widget);
+                AddWidgetAfterChangeHandler(widgetName, widgetAfterChangeAction, widget);
+
             }
 
             //xaml DataContext property
@@ -1145,6 +1321,7 @@ namespace WpfCSCS
             Init();
             ReportFunction.Init();
             Btrieve.Init();
+            NavigatorClass.Init();
 
             if (encode)
             {
@@ -1882,6 +2059,8 @@ namespace WpfCSCS
 
     class SetWidgetOptionsFunction : ParserFunction
     {
+        public static bool settingTabControlPosition;
+
         Dictionary<string, Color> m_bgcolors = new Dictionary<string, Color>();
         Dictionary<string, Color> m_fgcolors = new Dictionary<string, Color>();
 
@@ -1934,6 +2113,16 @@ namespace WpfCSCS
                 else if (option == "clear")
                 {
                     ClearWidget(widgetName, dg);
+                }
+            }
+            if (widget is TabControl)
+            {
+                TabControl tc = widget as TabControl;
+                if (option == "position")
+                {
+                    settingTabControlPosition = true;
+                    tc.SelectedIndex = Utils.GetSafeInt(args, 2);
+                    settingTabControlPosition = false;
                 }
             }
 
