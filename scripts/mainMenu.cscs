@@ -26,8 +26,6 @@ function mainMenuWindow_OnDisplay(){
 
     AddMenuItem("scriptsDC", "testScan1.cscs", "testScan1", "runScript");
 
-    AddMenuItem("scriptsDC", "testNavigator.cscs", "testNavigator", "runScript");
-    
     AddMenuItem("scriptsDC", "tabControl.cscs", "tabControl", "runScript");
 
     AddMenuItem("scriptsDC", "testNavigator.cscs", "testNavigator", "runScript");

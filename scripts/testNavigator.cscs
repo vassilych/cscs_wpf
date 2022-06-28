@@ -1,4 +1,4 @@
-#WINFORM testNavigator.xaml;
+CreateWindow("../../scripts/testNavigator.xaml");
 
 DEFINE table_hndl type i;
 

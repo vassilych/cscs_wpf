@@ -2304,7 +2304,7 @@ WHERE ID = {thisOpenv.currentRow}
                     rowsAffected += rows;
                 }
 
-                SetFlerr(0, tableHndlNum); // 0 meanbs OK
+                SetFlerr(0, tableHndlNum); // 0 means OK
                 return Variable.EmptyInstance;
             }
         }

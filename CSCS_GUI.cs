@@ -304,9 +304,6 @@ namespace WpfCSCS
             ParserFunction.AddAction(Constants.ASSIGNMENT, new MyAssignFunction());
             ParserFunction.AddAction(Constants.POINTER, new MyPointerFunction());
 
-            //Constants.FUNCT_WITH_SPACE.Add(Constants.OPENV);
-            //Constants.FUNCT_WITH_SPACE.Add(Constants.FINDV);
-
             Constants.FUNCT_WITH_SPACE.Add(Constants.DEFINE);
             Constants.FUNCT_WITH_SPACE.Add(Constants.DISPLAY_ARRAY);
             Constants.FUNCT_WITH_SPACE.Add(Constants.DATA_GRID);
@@ -631,7 +628,7 @@ namespace WpfCSCS
             }
 
             s_textChangedHandlers[name] = action;
-            //2 puta
+            // x2
             textable.TextChanged -= new TextChangedEventHandler(Widget_TextChanged);
             textable.TextChanged += new TextChangedEventHandler(Widget_TextChanged);
 
@@ -661,7 +658,6 @@ namespace WpfCSCS
             return true;
         }
         
-        //Pre, Post
         public static bool AddWidgetPreHandler(string name, string action, FrameworkElement widget)
         {
             //var textable = widget as TextBoxBase;
@@ -1164,10 +1160,6 @@ namespace WpfCSCS
                 {
                     var tabControl = child as TabControl;
                     CacheControl(tabControl, win, controls);
-                    //foreach (var item in tabControl.Items)
-                    //{
-                    //    CacheControl(item as TabItem, win, controls);
-                    //}
 
                     var count = VisualTreeHelper.GetChildrenCount(tabControl);
                     for (int i = 0; i < count; i++)
@@ -1262,12 +1254,8 @@ namespace WpfCSCS
                 string selectionChangedAction = widgetName + "@SelectionChanged";
                 string dateChangedAction = widgetName + "@DateChanged";
 
-                //Pre, Post
                 string widgetPreAction = widgetName + "@Pre";
                 string widgetPostAction = widgetName + "@Post";
-
-
-                //string widgetNavigatedAction = widgetName + "@Navigated";
 
                 string widgetChangeAction = widgetName + "@Change";
                 string widgetAfterChangeAction = widgetName + "@AfterChange";
@@ -2807,7 +2795,7 @@ namespace WpfCSCS
                 }
                 else
                 {
-                    MessageBox.Show($"Ne postoji datoteka {NameOrPathOfXamlForm }! Gasim program.");
+                    MessageBox.Show($"The file {NameOrPathOfXamlForm } does not exist! Closing program.");
                     Environment.Exit(0);
                     return null;
                 }
@@ -2820,7 +2808,7 @@ namespace WpfCSCS
     {
         protected override Variable Evaluate(ParsingScript script)
         {
-            return null;
+            return Variable.EmptyInstance;
         }
     }
 
