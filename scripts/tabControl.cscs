@@ -1,4 +1,4 @@
-#WINFORM tabcontrol;
+CreateWindow("../../scripts/tabControl.xaml");
 
 i = 1;
 
