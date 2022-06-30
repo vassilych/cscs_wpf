@@ -75,6 +75,7 @@ namespace SplitAndMerge
 
         public const string DEFINE = "DEFINE";
         public const string DISPLAY_ARRAY = "DISPLAYARR";
+        public const string DISPLAYARRSETUP = "DISPLAYARRSETUP";
         public const string DATA_GRID = "DATA_GRID";
         public const string ADD_COLUMN = "NEWCOLUMN";
         public const string DELETE_COLUMN = "DELETECOLUMN";
@@ -237,6 +238,7 @@ namespace WpfCSCS
             ParserFunction.RegisterFunction(Constants.DEFINE, new VariableArgsFunction(true));
             ParserFunction.RegisterFunction(Constants.SET_OBJECT, new VariableArgsFunction(true));
             ParserFunction.RegisterFunction(Constants.DISPLAY_ARRAY, new VariableArgsFunction(true));
+            ParserFunction.RegisterFunction(Constants.DISPLAYARRSETUP, new VariableArgsFunction(false));
             ParserFunction.RegisterFunction(Constants.DATA_GRID, new VariableArgsFunction(true));
             ParserFunction.RegisterFunction(Constants.ADD_COLUMN, new VariableArgsFunction(true));
             ParserFunction.RegisterFunction(Constants.DELETE_COLUMN, new VariableArgsFunction(true));
@@ -1512,7 +1514,7 @@ namespace WpfCSCS
             var list = new ObservableCollection<Row>();
             for (int i = 0; i < rows; i++)
             {
-                var row = new Row();
+                var row = new Row(list.Count);
                 for (int j = 1; j < args.Count; j++)
                 {
                     var current = args[j].Tuple[i];
@@ -1542,7 +1544,7 @@ namespace WpfCSCS
             for (int i = 1; i < sqlResult.Tuple.Count; i++)
             {
                 var data = sqlResult.Tuple[i];
-                var row = new Row();
+                var row = new Row(list.Count);
                 for (int j = 0; j < dg.Columns.Count; j++)
                 {
                     //var column = dg.Columns[j] as DataGridTemplateColumn;
@@ -1566,6 +1568,13 @@ namespace WpfCSCS
         {
             int strIndex = 0;
             int boolIndex = 0;
+            public int RowNumber { get; set; }
+
+            public Row(int rowNumber)
+            {
+                RowNumber = rowNumber;
+            }
+
             public void AddCol(string str)
             {
                 switch(strIndex)
@@ -2897,6 +2906,18 @@ namespace WpfCSCS
         {
             var objectName = m_processFirstToken ? Utils.GetToken(script, new char[] { ' ', '}', ')', ';' }) : "";
             Name = Name.ToUpper();
+
+            if (Name == Constants.DISPLAYARRSETUP)
+            {
+                List<Variable> args = script.GetFunctionArgs();
+                Utils.CheckArgs(args.Count, 3, m_name);
+                var name = args[0].AsString();
+                var lineCounter = Utils.GetSafeString(args, 1);
+                var actualElems = Utils.GetSafeString(args, 2);
+                var maxElems = Utils.GetSafeInt(args, 3);
+                var result = DisplayArrSetup(script, name, lineCounter, actualElems, maxElems);
+                return result;
+            }
             GetParameters(script);
 
             if (Name == Constants.MSG)
@@ -2947,6 +2968,57 @@ namespace WpfCSCS
             }
 
             return new Variable(objectName);
+        }
+
+        static Variable DisplayArrSetup(ParsingScript script, string name, string lineCounterStr, string actualElemsStr, int maxElems)
+        {
+            if (!CSCS_GUI.DEFINES.TryGetValue(name, out DefineVariable gridVar))
+            {
+                throw new ArgumentException("Couldn't find variable [" + name + "]");
+            }
+            if (gridVar.DefType != "datagrid")
+            {
+                throw new ArgumentException("Variable of wrong type: [" + gridVar.DefType + "]");
+            }
+            if (!CSCS_GUI.WIDGETS.TryGetValue(name, out CSCS_GUI.WidgetData wd))
+            {
+                throw new ArgumentException("Couldn't find widget data for widget: [" + name + "]");
+            }
+
+            DataGrid dg = gridVar.Object as DataGrid;
+            Variable result = Variable.EmptyInstance;
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                wd.lineCounter = dg.SelectedIndex;
+                if (wd.lineCounter < 0)
+                {
+                    var selItems = dg.SelectedCells;
+                    if (selItems != null && selItems.Count > 0)
+                    {
+                        var item = selItems[0];
+                        var obj = item.Item as FillOutGridFunction.Row;
+                        wd.lineCounter = obj.RowNumber;
+                    }
+                }
+                var items = dg.ItemsSource as ObservableCollection<FillOutGridFunction.Row>;
+                while (items != null && items.Count > maxElems && maxElems > 0)
+                {
+                    items.RemoveAt(items.Count - 1);
+                }
+                result = new Variable(wd.lineCounter);
+
+                if (Utils.CheckLegalName(lineCounterStr, script, false))
+                {
+                    ParserFunction.AddGlobal(lineCounterStr, new GetVarFunction(new Variable(wd.lineCounter)), false);
+                }
+                if (Utils.CheckLegalName(actualElemsStr, script, false))
+                {
+                    ParserFunction.AddGlobal(actualElemsStr, new GetVarFunction(new Variable(items.Count)), false);
+                }
+
+            }));
+
+            return result;
         }
 
         public static Variable CreateVariable(ParsingScript script, string name, Variable value, Variable init,
