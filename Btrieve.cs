@@ -1,12 +1,17 @@
 ﻿using SplitAndMerge;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace WpfCSCS
 {
@@ -237,6 +242,8 @@ namespace WpfCSCS
             ParserFunction.RegisterFunction(Constants.FLERR, new FlerrFunction());
 
             ParserFunction.RegisterFunction(Constants.SCAN, new ScanStatement());
+            
+            ParserFunction.RegisterFunction(Constants.DISPLAY_TABLE_SETUP, new DisplayTableSetupFunction());
         }
 
         public static Dictionary<string, string> Databases { get; set; } = new Dictionary<string, string>(); // <SYCD_USERCODE, SYCD_DBASENAME>
@@ -392,7 +399,7 @@ namespace WpfCSCS
                             KeyClass = new KeyClass() { KeyName = "ID", Ascending = true, Unique = true, KeyNum = 0, KeyColumns = new Dictionary<string, string>() { { "ID", "" } } };
                         }
                     }
-                    else if (!thisOpenv.Keys.Any(p => p.KeyName == tableKey.ToUpper()))
+                    else if (!thisOpenv.Keys.Any(p => p.KeyName.ToUpper() == tableKey.ToUpper()))
                     {
                         // "Key does not exist for this table!"
                         SetFlerr(4, tableHndlNum);
@@ -400,7 +407,7 @@ namespace WpfCSCS
                     }
                     else
                     {
-                        KeyClass = thisOpenv.Keys.First(p => p.KeyName == tableKey.ToUpper());
+                        KeyClass = thisOpenv.Keys.First(p => p.KeyName.ToUpper() == tableKey.ToUpper());
                     }
                 }
                 else
@@ -567,7 +574,7 @@ order by {orderByString}
                                     var currentColumnName = reader.GetName(currentFieldNum);
                                     if (KeyClass.KeyColumns.Keys.Any(p => p.ToUpper() == currentColumnName.ToUpper()))
                                     {
-                                        KeyClass.KeyColumns[currentColumnName.ToUpper()] = reader[currentColumnName].ToString();
+                                        KeyClass.KeyColumns[currentColumnName] = reader[currentColumnName].ToString();
                                     }
 
                                     var loweredCurrentColumnName = currentColumnName.ToLower();
@@ -987,7 +994,7 @@ N'{paramsDeclaration}', ";
                                     var currentColumnName = reader.GetName(currentFieldNum);
                                     if (KeyClass.KeyColumns.Keys.Any(p => p.ToUpper() == currentColumnName.ToUpper()))
                                     {
-                                        KeyClass.KeyColumns[currentColumnName.ToUpper()] = reader[currentColumnName].ToString();
+                                        KeyClass.KeyColumns[currentColumnName] = reader[currentColumnName].ToString();
                                     }
 
 
@@ -1117,7 +1124,7 @@ order by {orderByString}
                                     var currentColumnName = reader.GetName(currentFieldNum);
                                     if (KeyClass.KeyColumns.Keys.Any(p => p.ToUpper() == currentColumnName.ToUpper()))
                                     {
-                                        KeyClass.KeyColumns[currentColumnName.ToUpper()] = reader[currentColumnName].ToString();
+                                        KeyClass.KeyColumns[currentColumnName] = reader[currentColumnName].ToString();
                                     }
 
                                     var loweredCurrentColumnName = currentColumnName.ToLower();
@@ -1259,7 +1266,7 @@ order by {orderByString}
                                         var currentColumnName = reader.GetName(currentFieldNum);
                                         if (KeyClass.KeyColumns.Keys.Any(p => p.ToUpper() == currentColumnName.ToUpper()))
                                         {
-                                            KeyClass.KeyColumns[currentColumnName.ToUpper()] = reader[currentColumnName].ToString();
+                                            KeyClass.KeyColumns[currentColumnName] = reader[currentColumnName].ToString();
                                         }
 
                                         var loweredCurrentColumnName = currentColumnName.ToLower();
@@ -1362,26 +1369,21 @@ order by {orderByString}
 
         public class ClrFunction : ParserFunction
         {
-            int tableHndlNum;
-            string operationType;
-
-            OpenvTable thisOpenv;
-
             protected override Variable Evaluate(ParsingScript script)
             {
                 List<Variable> args = script.GetFunctionArgs();
                 Utils.CheckArgs(args.Count, 2, m_name);
-                tableHndlNum = Utils.GetSafeInt(args, 0);
-                operationType = Utils.GetSafeString(args, 1).ToLower(); // B -> buffer and recordNumber(ID)(thisOpenv.currentRow) / R -> ONLY recordNumber
+                int tableHndlNum = Utils.GetSafeInt(args, 0);
+                string operationType = Utils.GetSafeString(args, 1).ToLower(); // B -> buffer and recordNumber(ID)(thisOpenv.currentRow) / R -> ONLY recordNumber
 
-                Clear();
+                Clear(tableHndlNum, operationType);
 
                 return Variable.EmptyInstance;
             }
 
-            private void Clear()
+            public void Clear(int tableHndlNum, string operationType)
             {
-                thisOpenv = Btrieve.OPENVs[tableHndlNum];
+                OpenvTable thisOpenv = Btrieve.OPENVs[tableHndlNum];
 
                 if (operationType == "b")
                 {
@@ -1430,12 +1432,12 @@ order by {orderByString}
                 tableHndlNum = Utils.GetSafeInt(args, 0);
                 idNum = Utils.GetSafeInt(args, 1); // ID of record to be filled into buffer
 
-                RcnSet();
+                RcnSet(tableHndlNum, idNum);
 
                 return Variable.EmptyInstance;
             }
 
-            private Variable RcnSet()
+            public Variable RcnSet(int tableHndlNum, int idNum)
             {
                 thisOpenv = Btrieve.OPENVs[tableHndlNum];
 
@@ -1594,39 +1596,40 @@ WHERE ID = {thisOpenv.currentRow}
 
         public class SaveFunction : ParserFunction
         {
-            int tableHndlNum;
-            bool noPrompt;
-            bool noClr;
-
-            OpenvTable thisOpenv;
-
             protected override Variable Evaluate(ParsingScript script)
             {
                 List<Variable> args = script.GetFunctionArgs();
                 Utils.CheckArgs(args.Count, 2, m_name);
-                tableHndlNum = Utils.GetSafeInt(args, 0);
-                noPrompt = Utils.GetSafeVariable(args, 1).AsBool(); // true -> noPrompt, false -> prompt("are you sure...?")
-                noClr = Utils.GetSafeVariable(args, 2, new Variable(false)).AsBool(); //
+                int tableHndlNum = Utils.GetSafeInt(args, 0);
+                bool noPrompt = Utils.GetSafeVariable(args, 1).AsBool(); // true -> noPrompt, false -> prompt("are you sure...?")
+                bool noClr = Utils.GetSafeVariable(args, 2, new Variable(false)).AsBool(); //
 
-                thisOpenv = Btrieve.OPENVs[tableHndlNum];
+                OpenvTable thisOpenv = Btrieve.OPENVs[tableHndlNum];
 
+                Save(noPrompt, thisOpenv, tableHndlNum, noClr);
+
+                return Variable.EmptyInstance;
+            }
+
+            public void Save(bool noPrompt, OpenvTable thisOpenv, int tableHndlNum, bool noClr)
+            {
                 bool clear = false;
 
                 if (!noPrompt)
                 {
                     if (MessageBoxResult.No == MessageBox.Show("Are you sure you want to save the current record?", "Caution", MessageBoxButton.YesNo, MessageBoxImage.Warning))
                     {
-                        return Variable.EmptyInstance;
+                        return;
                     }
                 }
                 if (thisOpenv.currentRow > 0)
                 {
-                    if (UpdateCurrentRecord())
+                    if (UpdateCurrentRecord(thisOpenv, tableHndlNum))
                         clear = true;
                 }
                 else
                 {
-                    if (InsertNewRecord())
+                    if (InsertNewRecord(thisOpenv, tableHndlNum))
                         clear = true;
                 }
 
@@ -1639,11 +1642,9 @@ WHERE ID = {thisOpenv.currentRow}
                     thisOpenv.currentRow = 0;
                     Btrieve.OPENVs[tableHndlNum] = thisOpenv;
                 }
-
-                return Variable.EmptyInstance;
             }
 
-            private bool InsertNewRecord()
+            private bool InsertNewRecord(OpenvTable thisOpenv, int tableHndlNum)
             {
                 StringBuilder valuesStringBuilder = new StringBuilder();
 
@@ -1662,6 +1663,14 @@ WHERE ID = {thisOpenv.currentRow}
                         }
 
                         valuesStringBuilder.Append("\'\'" + bufferVarAsString + "\'\'");
+                    }
+                    else if (bufferVar.DefType == "n")
+                    {
+                        valuesStringBuilder.Append(bufferVar.AsString().Replace(',', '.'));
+                    }
+                    else if (bufferVar.DefType == "l")
+                    {
+                        valuesStringBuilder.Append(bufferVar.AsDouble().ToString());
                     }
                     else
                     {
@@ -1693,7 +1702,7 @@ VALUES ({valuesStringBuilder})
                 }
             }
 
-            private bool UpdateCurrentRecord()
+            private bool UpdateCurrentRecord(OpenvTable thisOpenv, int tableHndlNum)
             {
                 StringBuilder setStringBuilder = new StringBuilder();
 
@@ -1713,6 +1722,14 @@ VALUES ({valuesStringBuilder})
                         }
 
                         setStringBuilder.Append("\'\'" + bufferVarAsString + "\'\'");
+                    }
+                    else if (bufferVar.DefType == "n")
+                    {
+                        setStringBuilder.Append(bufferVar.AsString().Replace(',', '.'));
+                    }
+                    else if (bufferVar.DefType == "l")
+                    {
+                        setStringBuilder.Append(bufferVar.AsDouble().ToString());
                     }
                     else
                     {
@@ -2307,6 +2324,469 @@ WHERE ID = {thisOpenv.currentRow}
                 SetFlerr(0, tableHndlNum); // 0 meanbs OK
                 return Variable.EmptyInstance;
             }
+        }
+
+
+        public class DisplayTableSetupFunction : ParserFunction
+        {
+            //class row
+            //{
+            //    public object[] rowObject { get; set; }
+            //}
+            public static ObservableCollection<object[]> rows { get; set; }
+
+            string gridName;
+            int tableHndlNum;
+            string tableKey;
+
+            string startString;
+            string whileString;
+            
+            string forString;
+
+            //ParsingScript forString;
+
+            OpenvTable thisOpenv;
+            KeyClass KeyClass;
+
+            ParsingScript Script;
+
+
+            DataTable gridSource;
+            Dictionary<string, string> tagsAndHeaders;
+            Dictionary<string, Type> tagsAndTypes;
+
+            DataGrid dg;
+            protected override Variable Evaluate(ParsingScript script)
+            {
+                Script = script;
+                List<Variable> args = script.GetFunctionArgs();
+                Utils.CheckArgs(args.Count, 3, m_name);
+
+                gridName = Utils.GetSafeString(args, 0);
+                tableHndlNum = Utils.GetSafeInt(args, 1);
+                tableKey = Utils.GetSafeString(args, 2);
+
+                startString = Utils.GetSafeString(args, 3);
+                whileString = Utils.GetSafeString(args, 4).ToLower(); //
+                forString = Utils.GetSafeString(args, 5).ToLower(); // 
+                //forString = script.GetTempScript(args[5].ToString()); // 
+                //...
+
+                //------------------------------------------------------------------------
+
+                thisOpenv = Btrieve.OPENVs[tableHndlNum];
+
+                if (!string.IsNullOrEmpty(tableKey))
+                {
+                    if (tableKey.StartsWith("@") && int.TryParse(tableKey.TrimStart('@'), out int keyNum))
+                    {
+                        if (keyNum > 0)
+                        {
+                            var kljuceviTable = CSCS_GUI.Adictionary.SY_INDEXESList.Where(p => p.SYKI_SCHEMA == CSCS_GUI.Adictionary.SY_TABLESList.First(r => r.SYCT_NAME.ToUpper() == thisOpenv.tableName.ToUpper()).SYCT_SCHEMA).OrderBy(s => s.SYKI_KEYNUM).ToArray();
+
+                            KeyClass = thisOpenv.Keys.First(p => p.KeyName == kljuceviTable.Where(r => r.SYKI_KEYNUM == keyNum).First().SYKI_KEYNAME);
+                        }
+                        else
+                        {
+                            KeyClass = new KeyClass() { KeyName = "ID", Ascending = true, Unique = true, KeyNum = 0, KeyColumns = new Dictionary<string, string>() { { "ID", "" } } };
+                        }
+                    }
+                    else if (!thisOpenv.Keys.Any(p => p.KeyName.ToUpper() == tableKey.ToUpper()))
+                    {
+                        // "Key does not exist for this table!"
+                        SetFlerr(4, tableHndlNum);
+                        return Variable.EmptyInstance;
+                    }
+                    else
+                    {
+                        KeyClass = thisOpenv.Keys.First(p => p.KeyName.ToUpper() == tableKey.ToUpper());
+                    }
+                }
+                else
+                {
+                    KeyClass = thisOpenv.CurrentKey;
+                }
+
+                //------------------------------------------------------
+
+                dg = CSCS_GUI.GetWidget(gridName) as DataGrid;
+                if (dg == null)
+                {
+                    return Variable.EmptyInstance;
+                }
+
+                tagsAndTypes = new Dictionary<string, Type>();
+                tagsAndHeaders = new Dictionary<string, string>();
+
+                var columns = dg.Columns;
+                for( int i = 0; i < columns.Count; i++)
+                {
+                    var column = dg.Columns.ElementAt(i);
+                    
+                    if (column is DataGridTemplateColumn)
+                    {
+                        var dgtc = column as DataGridTemplateColumn;
+
+                        var cell = dgtc.CellTemplate.LoadContent();
+                        if(cell is TextBox)
+                        {
+                            
+                            var tb = cell as TextBox;
+                            if (tb.Tag != null)
+                            {
+                                tagsAndTypes.Add(tb.Tag.ToString(), typeof(string));
+                                tagsAndHeaders.Add(tb.Tag.ToString(), dgtc.Header.ToString());
+                            }
+                        } else if(cell is CheckBox)
+                        {
+                            var cb = cell as CheckBox;
+                            if (cb.Tag != null)
+                            {
+                                tagsAndTypes.Add(cb.Tag.ToString(), typeof(bool));
+                                tagsAndHeaders.Add(cb.Tag.ToString(), dgtc.Header.ToString());
+                            }
+                        }
+                    }
+                }
+
+                gridSource = new DataTable();
+                var idColumn = new DataColumn();
+                idColumn.DataType = System.Type.GetType("System.Int32");
+                idColumn.ColumnName = "ID";
+                idColumn.Caption = "ID";
+                idColumn.ReadOnly = true;
+                gridSource.Columns.Add(idColumn);
+
+                foreach (var item in tagsAndTypes)
+                {
+                    var newColumn = new DataColumn();
+                    newColumn.ColumnName = item.Key;
+                    newColumn.DataType = item.Value;
+                    var field = CSCS_GUI.Adictionary.SY_FIELDSList.Where(p => p.SYTD_SCHEMA.ToLower() == thisOpenv.tableName.ToLower() && p.SYTD_FIELD == item.Key).FirstOrDefault();
+                    if(field != null)
+                    {
+                        switch (field.SYTD_TYPE)
+                        {
+                            case "B":
+                            case "I":
+                            case "R":
+                                newColumn.DataType = typeof(int);
+                                break;
+                            case "N":
+                                newColumn.DataType = typeof(double);
+                                break;
+                            case "A":
+                                newColumn.DataType = typeof(string);
+                                break;
+                            case "L":
+                                newColumn.DataType = typeof(bool);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
+                    
+                    newColumn.Caption = tagsAndHeaders[item.Key];
+                    gridSource.Columns.Add(newColumn);
+                }
+
+
+
+                StringBuilder selectSb = new StringBuilder();
+                selectSb.Append("ID, ");
+
+                foreach (var column in tagsAndTypes.Keys)
+                {
+                    selectSb.Append(column + ", ");
+                }
+                selectSb.Remove(selectSb.Length - 2, 2);
+
+                //---------------------------------------------------------------------------
+
+                fillDataTable();
+
+                //---------------------------------------------------------------------------
+
+                dg.Items.Clear();
+                dg.Columns.Clear();
+
+                dg.AutoGenerateColumns = true;
+                dg.AutoGeneratingColumn += DataGrid_OnAutoGeneratingColumn;
+
+                dg.SelectionMode = DataGridSelectionMode.Single;
+                dg.SelectionUnit = DataGridSelectionUnit.CellOrRowHeader;
+
+                dg.ItemsSource = gridSource.AsDataView();
+                //dg.ItemsSource = gridSource.DefaultView;
+
+                //dg.SelectionChanged += Dg_SelectionChanged;
+                dg.CellEditEnding += Dg_CellEditEnding;
+                dg.PreparingCellForEdit += Dg_PreparingCellForEdit;
+
+                dg.RowEditEnding += Dg_RowEditEnding;
+
+                //-------------------------------------------------------------------------------
+
+                return Variable.EmptyInstance;
+            }
+
+            private void fillDataTable()
+            {
+                if (!string.IsNullOrEmpty(startString))
+                {
+                    // if has start string
+                    new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, startString).FINDV();
+                }
+                else
+                {
+                    // doesn't have start string
+                    string currentStart = "";
+
+                    if (KeyClass.KeyNum != 0)
+                    {
+                        var segmentsOrdered = CSCS_GUI.Adictionary.SY_INDEXESList.Where(p => p.SYKI_KEYNAME == KeyClass.KeyName).OrderBy(p => p.SYKI_SEGNUM).Select(p => p.SYKI_FIELD).ToArray();
+
+                        for (int i = 0; i < segmentsOrdered.Count(); i++)
+                        {
+                            if (CSCS_GUI.DEFINES.TryGetValue(segmentsOrdered[i].ToLower(), out DefineVariable bufferVar))
+                            {
+                                currentStart += bufferVar.AsString();
+                                currentStart += "|";
+                            }
+                        }
+                        currentStart = currentStart.TrimEnd('|');
+                    }
+                    else
+                    {
+                        // key @0
+                        currentStart = thisOpenv.currentRow.ToString();
+                    }
+
+                    new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, currentStart).FINDV();
+                }
+
+                //---------------------------------------------------------------------------
+
+                gridSource.Rows.Clear();
+
+                bool whileIsSet = false;
+                if (!string.IsNullOrEmpty(whileString))
+                    whileIsSet = true;
+
+                bool forIsSet = false;
+                if (!string.IsNullOrEmpty(forString))
+                    forIsSet = true;
+
+                while (!whileIsSet || Script.GetTempScript(whileString).Execute(new char[] { '"' }, 0).AsBool())
+                {
+                    if (forIsSet && !Script.GetTempScript(forString).Execute(new char[] { '"' }, 0).AsBool())
+                    {
+                        new Btrieve.FINDVClass(tableHndlNum, "n").FINDV();
+                        continue;
+                    }
+
+                    var currentRow = gridSource.NewRow();
+
+                    currentRow["ID"] = thisOpenv.currentRow;
+
+                    foreach (var column in tagsAndTypes)
+                    {
+                        if (CSCS_GUI.DEFINES.TryGetValue(column.Key.ToLower(), out DefineVariable defVar))
+                        {
+                            currentRow[column.Key] = defVar.AsString();
+                        }
+                    }
+                    gridSource.Rows.Add(currentRow);
+
+
+                    new Btrieve.FINDVClass(tableHndlNum, "n").FINDV();
+                    if (LastFlerrsOfFnums[tableHndlNum] == 3)
+                    {
+                        SetFlerr(0, tableHndlNum);
+                        break;
+                    }
+                }
+            }
+
+            //private void Dg_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            //{
+
+            //}
+
+            private void DataGrid_OnAutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
+            {
+                if (e.PropertyName == "ID")
+                {
+                    e.Column.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    e.Column.Header = tagsAndHeaders[e.Column.Header.ToString()];
+                }
+            }
+
+            string cellTextBeforeEdit = null;
+            bool? cellCheckedBeforeEdit;
+            bool cellsChanged = false;
+
+            private void Dg_PreparingCellForEdit(object sender, DataGridPreparingCellForEditEventArgs e)
+            {
+
+                if (e.EditingElement is TextBox)
+                {
+                    var editedTextbox = e.EditingElement as TextBox;
+                    if (editedTextbox != null)
+                        cellTextBeforeEdit = editedTextbox.Text;
+                }
+                else if(e.EditingElement is CheckBox)
+                {
+                    var editedCheckBox = e.EditingElement as CheckBox;
+                    if (editedCheckBox != null)
+                        cellCheckedBeforeEdit = !editedCheckBox.IsChecked;
+                }
+            }
+
+            private void Dg_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+            {
+                if (e.EditingElement is TextBox)
+                {
+                    var editedTextbox = e.EditingElement as TextBox;
+                    if (editedTextbox != null)
+                    {
+                        var afterEdit = editedTextbox.Text;
+                        if (cellTextBeforeEdit != afterEdit)
+                            cellsChanged = true;
+                    }
+                }
+                else if (e.EditingElement is CheckBox)
+                {
+                    var editedCheckBox = e.EditingElement as CheckBox;
+                    if (editedCheckBox != null)
+                    {
+                        var afterEdit = editedCheckBox.IsChecked;
+                        if (cellCheckedBeforeEdit != afterEdit)
+                            cellsChanged = true;
+                    }
+                }
+            }
+
+            private void Dg_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+            {
+                if (!cellsChanged)
+                {
+                    return;
+                }
+
+                var rowIndex = e.Row.GetIndex();
+
+                (sender as DataGrid).RowEditEnding -= Dg_RowEditEnding;
+                if (MessageBox.Show("Do you want to save the row?", "Caution", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                {
+                    (sender as DataGrid).CommitEdit();
+
+                    var rowItemArray = gridSource.Rows[rowIndex].ItemArray;
+
+                    SaveRow(rowItemArray);
+                }
+                else
+                {
+                    (sender as DataGrid).CancelEdit();
+                    (sender as DataGrid).SelectedIndex = 3;
+                }
+                (sender as DataGrid).RowEditEnding += Dg_RowEditEnding;
+
+                cellsChanged = false;
+            }
+
+            private void SaveRow(object[] rowItemArray)
+            {
+                bool redisplay = false;
+
+                if(rowItemArray[0] is int)
+                {
+                    //UPDATE sql
+                    //fill buffer with current row
+                    new RcnSetFunction().RcnSet(tableHndlNum, (int)rowItemArray[0]);
+                }
+                else
+                {
+                    //INSERT sql
+                    rowItemArray[0] = 0;
+                    new ClrFunction().Clear(tableHndlNum, "b");
+                    redisplay = true;
+                }
+
+                
+
+                int i = 1;
+
+                dynamic newVariableInit = null;
+                foreach (var item in tagsAndTypes)
+                {
+                    switch (CSCS_GUI.DEFINES[item.Key.ToLower()].Type)
+                    {
+                        case Variable.VarType.NONE:
+                            break;
+                        case Variable.VarType.UNDEFINED:
+                            break;
+                        case Variable.VarType.NUMBER:
+                            if (rowItemArray[i] is bool)
+                            {
+                                rowItemArray[i] = Utils.ConvertToDouble(rowItemArray[i]);
+                            }
+                            newVariableInit = double.Parse(rowItemArray[i].ToString().Replace('.', ','), System.Globalization.NumberStyles.AllowDecimalPoint);
+                            break;
+                        case Variable.VarType.STRING:
+                            break;
+                        case Variable.VarType.ARRAY:
+                            break;
+                        case Variable.VarType.ARRAY_NUM:
+                            break;
+                        case Variable.VarType.ARRAY_STR:
+                            break;
+                        case Variable.VarType.MAP_NUM:
+                            break;
+                        case Variable.VarType.MAP_STR:
+                            break;
+                        case Variable.VarType.BYTE_ARRAY:
+                            break;
+                        case Variable.VarType.QUIT:
+                            break;
+                        case Variable.VarType.BREAK:
+                            break;
+                        case Variable.VarType.CONTINUE:
+                            break;
+                        case Variable.VarType.OBJECT:
+                            break;
+                        case Variable.VarType.ENUM:
+                            break;
+                        case Variable.VarType.VARIABLE:
+                            break;
+                        case Variable.VarType.DATETIME:
+                            break;
+                        case Variable.VarType.CUSTOM:
+                            break;
+                        case Variable.VarType.POINTER:
+                            break;
+                        default:
+                            break;
+                    }
+                    CSCS_GUI.DEFINES[item.Key.ToLower()].InitVariable(new Variable(newVariableInit));
+                    CSCS_GUI.OnVariableChange(item.Key.ToLower(), new Variable(rowItemArray[i]), true);
+                    i++;
+                }
+
+                new SaveFunction().Save(true, thisOpenv, tableHndlNum, false);
+
+                if (redisplay)
+                {
+                    //dg.Items.Clear();
+                    fillDataTable();
+                }
+            }
+
         }
 
     }

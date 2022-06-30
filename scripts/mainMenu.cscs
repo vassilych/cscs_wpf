@@ -26,6 +26,8 @@ function mainMenuWindow_OnDisplay(){
 
     AddMenuItem("scriptsDC", "testScan1.cscs", "testScan1", "runScript");
     
+    AddMenuItem("scriptsDC", "testDisplayTableSetup.cscs", "testDisplayTableSetup", "runScript");
+    
 }
 
 

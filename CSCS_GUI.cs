@@ -60,6 +60,8 @@ namespace SplitAndMerge
         public const string WRTA = "Wrta";
 
         public const string SCAN = "Scan";
+        
+        public const string DISPLAY_TABLE_SETUP = "DisplayTableSetup";
 
         public const string FLERR = "Flerr";
 
