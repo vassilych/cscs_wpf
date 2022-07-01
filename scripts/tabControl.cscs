@@ -1,0 +1,11 @@
+CreateWindow("../../scripts/tabControl.xaml");
+
+i = 1;
+
+function tabControl@change(s, l){
+    //MessageBox("change");
+    if(i%3 == 0){
+        setwidgetoptions("tabControl", "position", 0);
+    }
+    i++;
+}

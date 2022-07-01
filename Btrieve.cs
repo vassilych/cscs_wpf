@@ -390,7 +390,7 @@ namespace WpfCSCS
                         if (keyNum > 0)
                         {
                             // for optimization
-                            var kljuceviTable = CSCS_GUI.Adictionary.SY_INDEXESList.Where(p => p.SYKI_SCHEMA == CSCS_GUI.Adictionary.SY_TABLESList.First(r => r.SYCT_NAME == thisOpenv.tableName.ToUpper()).SYCT_SCHEMA).OrderBy(s => s.SYKI_KEYNUM);
+                            var kljuceviTable = CSCS_GUI.Adictionary.SY_INDEXESList.Where(p => p.SYKI_SCHEMA == CSCS_GUI.Adictionary.SY_TABLESList.First(r => r.SYCT_NAME.ToUpper() == thisOpenv.tableName.ToUpper()).SYCT_SCHEMA).OrderBy(s => s.SYKI_KEYNUM);
 
                             KeyClass = thisOpenv.Keys.First(p => p.KeyName == kljuceviTable.Where(r => r.SYKI_KEYNUM == keyNum).First().SYKI_KEYNAME);
                         }
@@ -2321,7 +2321,7 @@ WHERE ID = {thisOpenv.currentRow}
                     rowsAffected += rows;
                 }
 
-                SetFlerr(0, tableHndlNum); // 0 meanbs OK
+                SetFlerr(0, tableHndlNum); // 0 means OK
                 return Variable.EmptyInstance;
             }
         }

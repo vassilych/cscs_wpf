@@ -1,0 +1,16 @@
+﻿<UserControl x:Class="WpfControlsLibrary.Navigator"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WpfControlsLibrary"
+             mc:Ignorable="d" 
+             d:DesignHeight="55" d:DesignWidth="300"
+             Loaded="UserControl_Loaded">
+    <Grid>
+        <Button Content="|&lt;--" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Height="55" Click="FirstButton_Click"/>
+        <Button Content="&lt;-" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Height="55" Margin="75,0,0,0" Click="PreviousButton_Click"/>
+        <Button Content="-&gt;" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Height="55" Margin="150,0,0,0" Click="NextButton_Click"/>
+        <Button Content="--&gt;|" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Height="55" Margin="225,0,0,0" Click="LastButton_Click"/>
+    </Grid>
+</UserControl>
