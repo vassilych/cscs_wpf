@@ -75,7 +75,8 @@ namespace SplitAndMerge
 
         public const string DEFINE = "DEFINE";
         public const string DISPLAY_ARRAY = "DISPLAYARR";
-        public const string DISPLAYARRSETUP = "DISPLAYARRSETUP";
+        public const string DISPLAY_ARR_SETUP = "DISPLAYARRSETUP";
+        public const string DISPLAY_ARR_REFRESH = "DISPLAYARRREFRESH";
         public const string DATA_GRID = "DATA_GRID";
         public const string ADD_COLUMN = "NEWCOLUMN";
         public const string DELETE_COLUMN = "DELETECOLUMN";
@@ -238,7 +239,8 @@ namespace WpfCSCS
             ParserFunction.RegisterFunction(Constants.DEFINE, new VariableArgsFunction(true));
             ParserFunction.RegisterFunction(Constants.SET_OBJECT, new VariableArgsFunction(true));
             ParserFunction.RegisterFunction(Constants.DISPLAY_ARRAY, new VariableArgsFunction(true));
-            ParserFunction.RegisterFunction(Constants.DISPLAYARRSETUP, new VariableArgsFunction(false));
+            ParserFunction.RegisterFunction(Constants.DISPLAY_ARR_SETUP, new VariableArgsFunction(false));
+            ParserFunction.RegisterFunction(Constants.DISPLAY_ARR_REFRESH, new VariableArgsFunction(false));
             ParserFunction.RegisterFunction(Constants.DATA_GRID, new VariableArgsFunction(true));
             ParserFunction.RegisterFunction(Constants.ADD_COLUMN, new VariableArgsFunction(true));
             ParserFunction.RegisterFunction(Constants.DELETE_COLUMN, new VariableArgsFunction(true));
@@ -2907,16 +2909,24 @@ namespace WpfCSCS
             var objectName = m_processFirstToken ? Utils.GetToken(script, new char[] { ' ', '}', ')', ';' }) : "";
             Name = Name.ToUpper();
 
-            if (Name == Constants.DISPLAYARRSETUP)
+            if (Name == Constants.DISPLAY_ARR_SETUP)
             {
                 List<Variable> args = script.GetFunctionArgs();
                 Utils.CheckArgs(args.Count, 3, m_name);
                 var name = args[0].AsString();
                 var lineCounter = Utils.GetSafeString(args, 1);
                 var actualElems = Utils.GetSafeString(args, 2);
-                var maxElems = Utils.GetSafeInt(args, 3);
+                var maxElems = Utils.GetSafeString(args, 3);
                 var result = DisplayArrSetup(script, name, lineCounter, actualElems, maxElems);
                 return result;
+            }
+            if (Name == Constants.DISPLAY_ARR_REFRESH)
+            {
+                List<Variable> args = script.GetFunctionArgs();
+                Utils.CheckArgs(args.Count,1, m_name);
+                var name = args[0].AsString();
+                DisplayArrRefresh(name);
+                return Variable.EmptyInstance;
             }
             GetParameters(script);
 
@@ -2970,9 +2980,50 @@ namespace WpfCSCS
             return new Variable(objectName);
         }
 
-        static Variable DisplayArrSetup(ParsingScript script, string name, string lineCounterStr, string actualElemsStr, int maxElems)
+        static void AdjustGridSelection(DataGrid dg, CSCS_GUI.WidgetData wd)
         {
-            if (!CSCS_GUI.DEFINES.TryGetValue(name, out DefineVariable gridVar))
+            wd.lineCounter = ParserFunction.GetVariableValue(wd.lineCounterName).AsInt();
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                dg.SelectionUnit = DataGridSelectionUnit.CellOrRowHeader;
+                var rowList = dg.ItemsSource as ObservableCollection<FillOutGridFunction.Row>;
+                if (wd.lineCounter < 0 || wd.lineCounter >= rowList.Count)
+                {
+                    dg.SelectedIndex = -1;
+                    dg.SelectedItem = null;
+                    dg.UnselectAll();
+                    dg.UnselectAllCells();
+                }
+                else
+                {
+                    dg.SelectedIndex = wd.lineCounter;
+                    object item = rowList[dg.SelectedIndex];
+                    dg.SelectedItem = item;
+                    dg.ScrollIntoView(item);
+                    DataGridRow row = (DataGridRow)dg.ItemContainerGenerator.ContainerFromIndex(dg.SelectedIndex);
+                    row.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+                }
+            }));
+        }
+
+        static void AdjustmaxElems(DataGrid dg, CSCS_GUI.WidgetData wd)
+        {
+            var maxElems = ParserFunction.GetVariableValue(wd.maxElemsName).AsInt();
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                var items = dg.ItemsSource as ObservableCollection<FillOutGridFunction.Row>;
+                while (items != null && items.Count > maxElems && maxElems >= 0)
+                {
+                    items.RemoveAt(items.Count - 1);
+                }
+                dg.Items.Refresh();
+                dg.UpdateLayout();
+            }));
+        }
+
+        static void GetDatagridData(string name, out DefineVariable gridVar, out CSCS_GUI.WidgetData wd)
+        {
+            if (!CSCS_GUI.DEFINES.TryGetValue(name, out gridVar))
             {
                 throw new ArgumentException("Couldn't find variable [" + name + "]");
             }
@@ -2980,12 +3031,28 @@ namespace WpfCSCS
             {
                 throw new ArgumentException("Variable of wrong type: [" + gridVar.DefType + "]");
             }
-            if (!CSCS_GUI.WIDGETS.TryGetValue(name, out CSCS_GUI.WidgetData wd))
+            if (!CSCS_GUI.WIDGETS.TryGetValue(name, out wd))
             {
                 throw new ArgumentException("Couldn't find widget data for widget: [" + name + "]");
             }
+        }
+
+        static void DisplayArrRefresh(string name)
+        {
+            GetDatagridData(name, out DefineVariable gridVar, out CSCS_GUI.WidgetData wd);
+            DataGrid dg = gridVar.Object as DataGrid;
+            AdjustmaxElems(dg, wd);
+            AdjustGridSelection(dg, wd);
+        }
+
+        static Variable DisplayArrSetup(ParsingScript script, string name, string lineCounterStr, string actualElemsStr, string maxElemsStr)
+        {
+            GetDatagridData(name, out DefineVariable gridVar, out CSCS_GUI.WidgetData wd);
+            lineCounterStr = lineCounterStr.ToLower();
+            actualElemsStr = actualElemsStr.ToLower();
 
             DataGrid dg = gridVar.Object as DataGrid;
+            wd.widget = dg;
             Variable result = Variable.EmptyInstance;
             Application.Current.Dispatcher.Invoke(new Action(() =>
             {
@@ -3001,23 +3068,34 @@ namespace WpfCSCS
                     }
                 }
                 var items = dg.ItemsSource as ObservableCollection<FillOutGridFunction.Row>;
-                while (items != null && items.Count > maxElems && maxElems > 0)
-                {
-                    items.RemoveAt(items.Count - 1);
-                }
-                result = new Variable(wd.lineCounter);
-
-                if (Utils.CheckLegalName(lineCounterStr, script, false))
-                {
-                    ParserFunction.AddGlobal(lineCounterStr, new GetVarFunction(new Variable(wd.lineCounter)), false);
-                }
-                if (Utils.CheckLegalName(actualElemsStr, script, false))
-                {
-                    ParserFunction.AddGlobal(actualElemsStr, new GetVarFunction(new Variable(items.Count)), false);
-                }
-
+                wd.actualElems = items.Count;
             }));
 
+            if (Utils.CheckLegalName(lineCounterStr, script, false))
+            {
+                wd.lineCounterName = lineCounterStr;
+                wd.lineCounterVar = new Variable(wd.lineCounter);
+                ParserFunction.AddGlobal(lineCounterStr, new GetVarFunction(wd.lineCounterVar), false);
+                CSCS_GUI.DEFINES[lineCounterStr] = new DefineVariable(name, "lineCounter", gridVar.Object, true);
+            }
+            if (Utils.CheckLegalName(actualElemsStr, script, false))
+            {
+                wd.actualElemsName = actualElemsStr;
+                wd.actualElemsVar = new Variable(wd.actualElems);
+                ParserFunction.AddGlobal(actualElemsStr, new GetVarFunction(wd.actualElemsVar), false);
+                CSCS_GUI.DEFINES[actualElemsStr] = new DefineVariable(name, "actualElems", gridVar.Object, true);
+            }
+            if (Utils.CheckLegalName(maxElemsStr, script, false))
+            {
+                var maxElemsVar = ParserFunction.GetVariableValue(maxElemsStr);
+                wd.maxElems = maxElemsVar == null ? -1 : maxElemsVar.AsInt();
+                wd.maxElemsName = maxElemsStr;
+                wd.maxElemsVar = new Variable(wd.maxElems);
+                ParserFunction.AddGlobal(maxElemsStr, new GetVarFunction(wd.maxElemsVar), false);
+                CSCS_GUI.DEFINES[maxElemsStr] = new DefineVariable(name, "maxElems", gridVar.Object, true);
+            }
+
+            result = new Variable(wd.lineCounter);
             return result;
         }
 
@@ -3047,19 +3125,7 @@ namespace WpfCSCS
 
         static DefineVariable DataGrid(ParsingScript script, string name, bool addrow, bool insertrow, bool deleterow, string action)
         {
-            if (!CSCS_GUI.DEFINES.TryGetValue(name, out DefineVariable gridVar))
-            {
-                throw new ArgumentException("Couldn't find variable [" + name + "]");
-            }
-            if (gridVar.DefType != "datagrid")
-            {
-                throw new ArgumentException("Variable of wrong type: [" + gridVar.DefType + "]");
-            }
-            if (!CSCS_GUI.WIDGETS.TryGetValue(name, out CSCS_GUI.WidgetData wd))
-            {
-                throw new ArgumentException("Couldn't find widget data for widget: [" + name + "]");
-            }
-
+            GetDatagridData(name, out DefineVariable gridVar, out CSCS_GUI.WidgetData wd);
             DataGrid dg = gridVar.Object as DataGrid;
             wd.lineCounter = dg.SelectedIndex;
             var where = wd.lineCounter >= 0 ? wd.lineCounter : 0;
@@ -4211,14 +4277,19 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 return m_string;
             }
 
+            string result = "";
             try
             {
-                return base.AsString(isList, sameLine, maxCount);
+                Application.Current.Dispatcher.Invoke(new Action(() =>
+                {
+                    result = base.AsString(isList, sameLine, maxCount);
+                }));
+                return result;
             }
             catch(Exception exc)
             {
                 Console.WriteLine(exc);
-                return "";
+                return result;
             }
         }
 
@@ -4435,17 +4506,22 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                         }
                     }
                 }
-                else if (defVar.DefType == "linecounter")
+               /* else if (defVar.DefType == "linecounter")
                 {
                     var dg = defVar.Object as DataGrid;
-                    dg.SelectedIndex = varValue.AsInt();
-                    var rowList = dg.ItemsSource as List<ExpandoObject>;
-                    object item = rowList[dg.SelectedIndex];
-                    dg.SelectedItem = item;
-                    dg.ScrollIntoView(item);
-                    DataGridRow row = (DataGridRow)dg.ItemContainerGenerator.ContainerFromIndex(dg.SelectedIndex);
-                    row.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
-                }
+                    Application.Current.Dispatcher.Invoke(new Action(() =>
+                    {
+                        dg.SelectionUnit = DataGridSelectionUnit.CellOrRowHeader;
+                        dg.SelectedIndex = varValue.AsInt();
+                        var rowList = dg.ItemsSource as ObservableCollection<FillOutGridFunction.Row>;
+                        object item = rowList[dg.SelectedIndex];
+                        dg.SelectedItem = item;
+                        dg.ScrollIntoView(item);
+                        DataGridRow row = (DataGridRow)dg.ItemContainerGenerator.ContainerFromIndex(dg.SelectedIndex);
+                        row.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+                    }));
+
+                }*/
                 else if (defVar.DefType == "maxelems")
                 {
                     var dg = defVar.Object as DataGrid;
