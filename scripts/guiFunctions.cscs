@@ -397,14 +397,14 @@ function buttonReload@Clicked(sender, load) {
   SurnamesArray = { "Mayer", "Zappa", "Fogerty", "Perez"};
   EmployedArray = { true, false, false, true};
 
-  FillOutGrid("gridNew", NamesArray, SurnamesArray, EmployedArray);
+  FillOutGrid("gridNewContext", NamesArray, SurnamesArray, EmployedArray);
 }
 function buttonReloadFromDB@Clicked(sender, load) {
   if (!refresh) {
     return;
   }
 
-  FillOutGridFromDB("gridNew", "USERS");
+  FillOutGridFromDB("gridNewContext", "USERS");
 }
 function checkVat@Clicked(sender, load) {
   if (!refresh) {
