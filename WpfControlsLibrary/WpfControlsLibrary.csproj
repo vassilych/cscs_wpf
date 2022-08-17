@@ -64,6 +64,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="TextBoxDoubleConverter.cs" />
+    <Compile Include="DateEditer.cs" />
+    <Compile Include="TimeEditer.cs" />
+    <Compile Include="TextBoxIntConverter.cs" />
+    <Compile Include="DateEditerConverter.cs" />
+    <Compile Include="TimeEditerConverter.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
