@@ -1,0 +1,15 @@
+CreateWindow("../../scripts/testDisplayTableSetup2.xaml");
+
+DEFINE table_hndl type i;
+
+table_hndl = openv("invoiceLines", "DB1");
+if(flerr() != 0){
+    MessageBox("flerr = " + Flerr());
+    exit;
+}
+
+
+//// switch commented and uncommented for checkbox filter
+
+//DisplayTableSetup("grid1", table_hndl, "InvoiceLine_invoiceLineNumber", "1|1", "invoiceNumber < 40", "bitcolumn = 0");
+DisplayTableSetup("grid1", table_hndl, "InvoiceLine_invoiceLineNumber", "1|1", "invoiceNumber < 40", "");

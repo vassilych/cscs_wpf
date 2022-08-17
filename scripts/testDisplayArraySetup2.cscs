@@ -1,0 +1,75 @@
+CreateWindow("../../scripts/testDisplayArraySetup.xaml");
+
+DEFINE Array1 type d size 8 array 6;
+DEFINE Array2 type n size 10 array 6;
+DEFINE Array3 type i size 10 array 6;
+DEFINE Array4 type t size 5 array 6;
+DEFINE Array5 type l array 6;
+DEFINE lineCntr, actElems, maxRows type i;
+
+actElems = 4;
+maxRows = 6;
+
+Array1[0] = "12/12/12";
+Array1[1] = "12/12/12";
+Array1[2] = "12/12/12";
+
+Array2[0] = 4;
+Array2[1] = 5;
+Array2[2] = 6;
+
+Array3[0] = 7;
+Array3[1] = 8;
+Array3[2] = 9;
+
+// /*
+// Array4[0] = "19:25:00";
+// Array4[1] = "09:30:00";
+// Array4[2] = "23:59:00";
+// */
+
+Array4[0] = "19:25";
+Array4[1] = "09:30";
+Array4[2] = "23:59";
+
+Array5[0] = true;
+Array5[1] = false;
+Array5[2] = true;
+
+DisplayArraySetup("grid1", "lineCntr", "actElems", "maxRows");
+
+function btn1@clicked(){
+    
+    MessageBox(Array1[lineCntr]);
+    MessageBox(Array2[lineCntr]);
+    MessageBox(Array3[lineCntr]);
+    MessageBox(Array4[lineCntr]);
+    MessageBox(Array5[lineCntr]);
+
+    lineCntr = 1;
+    DisplayArrayRefresh("grid1");
+}
+
+i = 2;
+function btn2@clicked(){
+    if(i%2 == 0){
+        SetWidgetOptions("grid1", "EditMode");
+    }
+    else{
+        SetWidgetOptions("grid1", "SelectMode");   
+    }
+
+    i++;
+}
+
+function tb2@header(){
+    MessageBox("fffffffffffffff");
+}
+
+function grid1@Move(s, l){
+    MessageBox("move-d");
+}
+
+function grid1@Select(s, l){
+    MessageBox("select-ed");
+}
