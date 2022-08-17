@@ -3267,9 +3267,15 @@ order by {orderBySB}
                             }
                             else if (DateTime.TryParse(rowItemArray[i].ToString(), out DateTime newDateTime))
                             {
-                                //newVariableInit = newDateTime;
-                                //newVariableInit = rowItemArray[i].ToString();
-                                newVariableInit = ((DateTime)rowItemArray[i]).ToString("dd/MM/yy");
+                                switch (timeAndDateEditerTagsAndSizes[item.Key])
+                                {
+                                    case 10:
+                                        newVariableInit = ((DateTime)rowItemArray[i]).ToString("dd/MM/yyyy");
+                                        break;
+                                    case 8:
+                                        newVariableInit = ((DateTime)rowItemArray[i]).ToString("dd/MM/yy");
+                                        break;
+                                }
                             }
                             break;
                         case Variable.VarType.CUSTOM:
