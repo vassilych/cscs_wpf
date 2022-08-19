@@ -2706,7 +2706,7 @@ WHERE ID = {thisOpenv.currentRow}
                 dg.AutoGeneratingColumn += DataGrid_OnAutoGeneratingColumn;
 
                 dg.SelectionMode = DataGridSelectionMode.Single;
-                dg.SelectionUnit = DataGridSelectionUnit.CellOrRowHeader;
+                dg.SelectionUnit = DataGridSelectionUnit.FullRow;
 
                 dg.ItemsSource = gridSource.AsDataView();
                 //dg.ItemsSource = gridSource.DefaultView;
@@ -3149,6 +3149,33 @@ order by {orderBySB}
                 {
                     lastRowIndex = currentRowIndex;
                     rowBeforeEdit = currentItemArray;
+
+                    var currRow = (dg.CurrentItem as DataRowView).Row;
+                    for (int i = 1; i < currRow.Table.Columns.Count; i++)
+                    {
+                        if(currentItemArray[i] is DateTime)
+                        {
+                            var currentItemAsDateTime = currentItemArray[i] as DateTime?;
+                            string initForDefine = "";
+                            switch (timeAndDateEditerTagsAndSizes[currRow.Table.Columns[i].ColumnName])
+                            {
+                                case 10:
+                                    initForDefine = currentItemAsDateTime.Value.ToString("dd/MM/yyyy");
+                                    break;
+                                case 8:
+                                    initForDefine = currentItemAsDateTime.Value.ToString("dd/MM/yy");
+                                    break;
+                            }
+
+                            CSCS_GUI.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable(initForDefine));
+                            CSCS_GUI.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable(initForDefine), true);
+                        }
+                        else
+                        {
+                            CSCS_GUI.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable(currentItemArray[i]));
+                            CSCS_GUI.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable(currentItemArray[i]), true);
+                        }
+                    }
                 }
 
                 dg.BeginEdit();

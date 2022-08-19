@@ -88,5 +88,12 @@
             </DataGrid.Columns>
         </DataGrid>
 
+        <TextBox Name="tb1" DataContext="invoiceNumber" HorizontalAlignment="Left" Height="23" Margin="30,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+        <TextBox Name="tb2" DataContext="invoiceLineNumber" HorizontalAlignment="Left" Height="23" Margin="160,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+        <TextBox Name="tb3" DataContext="productNumber" HorizontalAlignment="Left" Height="23" Margin="290,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+        <TextBox Name="tb4" DataContext="amount" HorizontalAlignment="Left" Height="23" Margin="420,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+
+        <Button Content="E/S" Name="btnES" HorizontalAlignment="Left" Margin="1290,440,0,0" VerticalAlignment="Top" Width="75"/>
+
     </Grid>
 </Window>
