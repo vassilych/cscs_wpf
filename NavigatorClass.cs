@@ -12,7 +12,7 @@ namespace WpfCSCS
     {
         public static void Init()
         {
-            ParserFunction.RegisterFunction(Constants.NAVIGATOR, new NavigatorFunction()); 
+            Interpreter.Instance.RegisterFunction(Constants.NAVIGATOR, new NavigatorFunction()); 
         }
 
         public static Dictionary<string, int> navigatorOfTable = new Dictionary<string, int>();

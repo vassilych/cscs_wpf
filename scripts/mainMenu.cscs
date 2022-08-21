@@ -32,5 +32,5 @@ function mainMenuWindow_OnDisplay(){
     
 }
 
-
+StartDebugger();
 

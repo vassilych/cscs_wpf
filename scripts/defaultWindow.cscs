@@ -16,6 +16,7 @@ function exit@Clicked(sender, load) {
   exit();
 }
 
-win = CreateWindow("../../scripts/DefaultWindow.xaml");
+//win = CreateWindow("../../scripts/DefaultWindow.xaml");
+win = CreateWindow("../../scripts/Sample.xaml");
 UnsetMainWindow(win);
 //InitFile = "C:\Users\vassi\Documents\GitHub\cscs_wpf\scripts\start.cscs";

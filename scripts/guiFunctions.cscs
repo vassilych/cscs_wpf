@@ -644,7 +644,7 @@ csfunction csharpCode(sender, load) {
     var widget = CSCS_GUI.GetWidget(widgetName);
     SetTextWidgetFunction.SetText(widget, text);
 
-    ParserFunction.AddGlobal("counter", new GetVarFunction(new Variable(m_counter)));
+    Interpreter.Instance.AddGlobal("counter", new GetVarFunction(new Variable(m_counter)));
 
     Variable cscsVariable = Utils.GetVariable("cscsVariable");
     Console.WriteLine("cscsVariable=" + cscsVariable.AsString());

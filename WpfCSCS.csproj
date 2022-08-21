@@ -162,6 +162,8 @@
     <Compile Include="AdictionaryLocal\SY_INDEXES.cs" />
     <Compile Include="AdictionaryLocal\SY_TABLES.cs" />
     <Compile Include="Btrieve.cs" />
+    <Compile Include="CSCS\Functions.SQL.cs" />
+    <Compile Include="CSCS\ICscsModule.cs" />
     <Compile Include="NavigatorClass.cs" />
     <Compile Include="Reporting.cs" />
     <Compile Include="SpecialWindow.cs" />
@@ -178,7 +180,6 @@
     <Compile Include="CSCS\Functions.Flow.cs" />
     <Compile Include="CSCS\Functions.Math.cs" />
     <Compile Include="CSCS\Functions.OS.cs" />
-    <Compile Include="CSCS\Functions.SQL.cs" />
     <Compile Include="CSCS\Functions.Standalone.cs" />
     <Compile Include="CSCS\Functions.Utils.cs" />
     <Compile Include="CSCS\Interpreter.cs" />

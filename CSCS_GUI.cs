@@ -228,85 +228,85 @@ namespace WpfCSCS
             Interpreter.Instance.OnOutput += Print;
             ParserFunction.OnVariableChange += OnVariableChange;
 
-            ParserFunction.RegisterFunction("#MAINMENU", new MAINMENUcommand());
-            ParserFunction.RegisterFunction("#WINFORM", new WINFORMcommand(true));
+            Interpreter.Instance.RegisterFunction("#MAINMENU", new MAINMENUcommand());
+            Interpreter.Instance.RegisterFunction("#WINFORM", new WINFORMcommand(true));
 
-            ParserFunction.RegisterFunction(Constants.READ_XML_FILE, new ReadXmlFileFunction());
-            ParserFunction.RegisterFunction(Constants.READ_TAGCONTENT_FROM_XMLSTRING,
+            Interpreter.Instance.RegisterFunction(Constants.READ_XML_FILE, new ReadXmlFileFunction());
+            Interpreter.Instance.RegisterFunction(Constants.READ_TAGCONTENT_FROM_XMLSTRING,
                 new ReadTagContentFromXmlStringFunction());
 
-            ParserFunction.RegisterFunction(Constants.MSG, new VariableArgsFunction(true));
-            ParserFunction.RegisterFunction(Constants.DEFINE, new VariableArgsFunction(true));
-            ParserFunction.RegisterFunction(Constants.SET_OBJECT, new VariableArgsFunction(true));
-            ParserFunction.RegisterFunction(Constants.DISPLAY_ARRAY, new VariableArgsFunction(true));
-            ParserFunction.RegisterFunction(Constants.DISPLAY_ARR_SETUP, new VariableArgsFunction(false));
-            ParserFunction.RegisterFunction(Constants.DISPLAY_ARR_REFRESH, new VariableArgsFunction(false));
-            ParserFunction.RegisterFunction(Constants.DATA_GRID, new VariableArgsFunction(true));
-            ParserFunction.RegisterFunction(Constants.ADD_COLUMN, new VariableArgsFunction(true));
-            ParserFunction.RegisterFunction(Constants.DELETE_COLUMN, new VariableArgsFunction(true));
-            ParserFunction.RegisterFunction(Constants.SHIFT_COLUMN, new VariableArgsFunction(true));
+            Interpreter.Instance.RegisterFunction(Constants.MSG, new VariableArgsFunction(true));
+            Interpreter.Instance.RegisterFunction(Constants.DEFINE, new VariableArgsFunction(true));
+            Interpreter.Instance.RegisterFunction(Constants.SET_OBJECT, new VariableArgsFunction(true));
+            Interpreter.Instance.RegisterFunction(Constants.DISPLAY_ARRAY, new VariableArgsFunction(true));
+            Interpreter.Instance.RegisterFunction(Constants.DISPLAY_ARR_SETUP, new VariableArgsFunction(false));
+            Interpreter.Instance.RegisterFunction(Constants.DISPLAY_ARR_REFRESH, new VariableArgsFunction(false));
+            Interpreter.Instance.RegisterFunction(Constants.DATA_GRID, new VariableArgsFunction(true));
+            Interpreter.Instance.RegisterFunction(Constants.ADD_COLUMN, new VariableArgsFunction(true));
+            Interpreter.Instance.RegisterFunction(Constants.DELETE_COLUMN, new VariableArgsFunction(true));
+            Interpreter.Instance.RegisterFunction(Constants.SHIFT_COLUMN, new VariableArgsFunction(true));
 
-            ParserFunction.RegisterFunction(Constants.CHAIN, new ChainFunction(false));
-            ParserFunction.RegisterFunction(Constants.PARAM, new ChainFunction(true));
-            ParserFunction.RegisterFunction(Constants.QUIT, new QuitStatement());
+            Interpreter.Instance.RegisterFunction(Constants.CHAIN, new ChainFunction(false));
+            Interpreter.Instance.RegisterFunction(Constants.PARAM, new ChainFunction(true));
+            Interpreter.Instance.RegisterFunction(Constants.QUIT, new QuitStatement());
 
-            ParserFunction.RegisterFunction(Constants.WITH, new ConstantsFunction());
-            ParserFunction.RegisterFunction(Constants.NEWRUNTIME, new ConstantsFunction());
+            Interpreter.Instance.RegisterFunction(Constants.WITH, new ConstantsFunction());
+            Interpreter.Instance.RegisterFunction(Constants.NEWRUNTIME, new ConstantsFunction());
 
-            ParserFunction.RegisterFunction(Constants.SET_FOCUS, new SetFocusFunction());
-            ParserFunction.RegisterFunction(Constants.LAST_OBJ, new LastObjFunction());
-            ParserFunction.RegisterFunction(Constants.LAST_OBJ_CLICKED, new LastObjClickedFunction());
+            Interpreter.Instance.RegisterFunction(Constants.SET_FOCUS, new SetFocusFunction());
+            Interpreter.Instance.RegisterFunction(Constants.LAST_OBJ, new LastObjFunction());
+            Interpreter.Instance.RegisterFunction(Constants.LAST_OBJ_CLICKED, new LastObjClickedFunction());
 
-            ParserFunction.RegisterFunction("OpenFile", new OpenFileFunction(false));
-            ParserFunction.RegisterFunction("OpenFileContents", new OpenFileFunction(true));
-            ParserFunction.RegisterFunction("SaveFile", new SaveFileFunction());
+            Interpreter.Instance.RegisterFunction("OpenFile", new OpenFileFunction(false));
+            Interpreter.Instance.RegisterFunction("OpenFileContents", new OpenFileFunction(true));
+            Interpreter.Instance.RegisterFunction("SaveFile", new SaveFileFunction());
 
-            ParserFunction.RegisterFunction("ShowWidget", new ShowHideWidgetFunction(true));
-            ParserFunction.RegisterFunction("HideWidget", new ShowHideWidgetFunction(false));
+            Interpreter.Instance.RegisterFunction("ShowWidget", new ShowHideWidgetFunction(true));
+            Interpreter.Instance.RegisterFunction("HideWidget", new ShowHideWidgetFunction(false));
 
-            ParserFunction.RegisterFunction("GetText", new GetTextWidgetFunction());
-            ParserFunction.RegisterFunction("SetText", new SetTextWidgetFunction());
-            ParserFunction.RegisterFunction("AddWidgetData", new AddWidgetDataFunction());
-            ParserFunction.RegisterFunction("SetWidgetOptions", new SetWidgetOptionsFunction());
-            ParserFunction.RegisterFunction("GetSelected", new GetSelectedFunction());
-            ParserFunction.RegisterFunction("SetBackgroundColor", new SetColorFunction(true));
-            ParserFunction.RegisterFunction("SetForegroundColor", new SetColorFunction(false));
-            ParserFunction.RegisterFunction("SetImage", new SetImageFunction());
+            Interpreter.Instance.RegisterFunction("GetText", new GetTextWidgetFunction());
+            Interpreter.Instance.RegisterFunction("SetText", new SetTextWidgetFunction());
+            Interpreter.Instance.RegisterFunction("AddWidgetData", new AddWidgetDataFunction());
+            Interpreter.Instance.RegisterFunction("SetWidgetOptions", new SetWidgetOptionsFunction());
+            Interpreter.Instance.RegisterFunction("GetSelected", new GetSelectedFunction());
+            Interpreter.Instance.RegisterFunction("SetBackgroundColor", new SetColorFunction(true));
+            Interpreter.Instance.RegisterFunction("SetForegroundColor", new SetColorFunction(false));
+            Interpreter.Instance.RegisterFunction("SetImage", new SetImageFunction());
 
-            ParserFunction.RegisterFunction("DisplayArrFunc", new DisplayArrFuncFunction());
+            Interpreter.Instance.RegisterFunction("DisplayArrFunc", new DisplayArrFuncFunction());
 
-            ParserFunction.RegisterFunction("FillOutGrid", new FillOutGridFunction());
-            ParserFunction.RegisterFunction("FillOutGridFromDB", new FillOutGridFunction(true));
-            ParserFunction.RegisterFunction("BindSQL", new BindSQLFunction());
-            ParserFunction.RegisterFunction("MessageBox", new MessageBoxFunction());
-            ParserFunction.RegisterFunction("SendToPrinter", new PrintFunction());
+            Interpreter.Instance.RegisterFunction("FillOutGrid", new FillOutGridFunction());
+            Interpreter.Instance.RegisterFunction("FillOutGridFromDB", new FillOutGridFunction(true));
+            Interpreter.Instance.RegisterFunction("BindSQL", new BindSQLFunction());
+            Interpreter.Instance.RegisterFunction("MessageBox", new MessageBoxFunction());
+            Interpreter.Instance.RegisterFunction("SendToPrinter", new PrintFunction());
 
-            ParserFunction.RegisterFunction("AddMenuItem", new AddMenuEntryFunction(false));
-            ParserFunction.RegisterFunction("AddMenuSeparator", new AddMenuEntryFunction(true));
-            ParserFunction.RegisterFunction("RemoveMenu", new RemoveMenuFunction());
+            Interpreter.Instance.RegisterFunction("AddMenuItem", new AddMenuEntryFunction(false));
+            Interpreter.Instance.RegisterFunction("AddMenuSeparator", new AddMenuEntryFunction(true));
+            Interpreter.Instance.RegisterFunction("RemoveMenu", new RemoveMenuFunction());
 
-            ParserFunction.RegisterFunction("RunOnMain", new RunOnMainFunction());
-            ParserFunction.RegisterFunction("RunExec", new RunExecFunction());
-            ParserFunction.RegisterFunction("RunScript", new RunScriptFunction());
+            Interpreter.Instance.RegisterFunction("RunOnMain", new RunOnMainFunction());
+            Interpreter.Instance.RegisterFunction("RunExec", new RunExecFunction());
+            Interpreter.Instance.RegisterFunction("RunScript", new RunScriptFunction());
 
-            ParserFunction.RegisterFunction("CheckVATNumber", new CheckVATFunction());
-            ParserFunction.RegisterFunction("GetVATName", new CheckVATFunction(CheckVATFunction.MODE.NAME));
-            ParserFunction.RegisterFunction("GetVATAddress", new CheckVATFunction(CheckVATFunction.MODE.ADDRESS));
+            Interpreter.Instance.RegisterFunction("CheckVATNumber", new CheckVATFunction());
+            Interpreter.Instance.RegisterFunction("GetVATName", new CheckVATFunction(CheckVATFunction.MODE.NAME));
+            Interpreter.Instance.RegisterFunction("GetVATAddress", new CheckVATFunction(CheckVATFunction.MODE.ADDRESS));
 
-            ParserFunction.RegisterFunction("CreateWindow", new NewWindowFunction(NewWindowFunction.MODE.NEW));
-            ParserFunction.RegisterFunction("CloseWindow", new NewWindowFunction(NewWindowFunction.MODE.DELETE));
-            ParserFunction.RegisterFunction("ShowWindow", new NewWindowFunction(NewWindowFunction.MODE.SHOW));
-            ParserFunction.RegisterFunction("HideWindow", new NewWindowFunction(NewWindowFunction.MODE.HIDE));
-            ParserFunction.RegisterFunction("NextWindow", new NewWindowFunction(NewWindowFunction.MODE.NEXT));
-            ParserFunction.RegisterFunction("ModalWindow", new NewWindowFunction(NewWindowFunction.MODE.MODAL));
-            ParserFunction.RegisterFunction("SetMainWindow", new NewWindowFunction(NewWindowFunction.MODE.SET_MAIN));
-            ParserFunction.RegisterFunction("UnsetMainWindow", new NewWindowFunction(NewWindowFunction.MODE.UNSET_MAIN));
-            ParserFunction.RegisterFunction("FillWidget", new FillWidgetFunction());
+            Interpreter.Instance.RegisterFunction("CreateWindow", new NewWindowFunction(NewWindowFunction.MODE.NEW));
+            Interpreter.Instance.RegisterFunction("CloseWindow", new NewWindowFunction(NewWindowFunction.MODE.DELETE));
+            Interpreter.Instance.RegisterFunction("ShowWindow", new NewWindowFunction(NewWindowFunction.MODE.SHOW));
+            Interpreter.Instance.RegisterFunction("HideWindow", new NewWindowFunction(NewWindowFunction.MODE.HIDE));
+            Interpreter.Instance.RegisterFunction("NextWindow", new NewWindowFunction(NewWindowFunction.MODE.NEXT));
+            Interpreter.Instance.RegisterFunction("ModalWindow", new NewWindowFunction(NewWindowFunction.MODE.MODAL));
+            Interpreter.Instance.RegisterFunction("SetMainWindow", new NewWindowFunction(NewWindowFunction.MODE.SET_MAIN));
+            Interpreter.Instance.RegisterFunction("UnsetMainWindow", new NewWindowFunction(NewWindowFunction.MODE.UNSET_MAIN));
+            Interpreter.Instance.RegisterFunction("FillWidget", new FillWidgetFunction());
 
-            ParserFunction.RegisterFunction("AsyncCall", new AsyncCallFunction());
+            Interpreter.Instance.RegisterFunction("AsyncCall", new AsyncCallFunction());
 
-            ParserFunction.AddAction(Constants.ASSIGNMENT, new MyAssignFunction());
-            ParserFunction.AddAction(Constants.POINTER, new MyPointerFunction());
+            Interpreter.Instance.AddAction(Constants.ASSIGNMENT, new MyAssignFunction());
+            Interpreter.Instance.AddAction(Constants.POINTER, new MyPointerFunction());
 
             Constants.FUNCT_WITH_SPACE.Add(Constants.DEFINE);
             Constants.FUNCT_WITH_SPACE.Add(Constants.DISPLAY_ARRAY);
@@ -433,7 +433,7 @@ namespace WpfCSCS
             }
 
             ChangingBoundVariable = true;
-            ParserFunction.AddGlobalOrLocalVariable(widgetName,
+            Interpreter.Instance.AddGlobalOrLocalVariable(widgetName,
                                         new GetVarFunction(newValue));
             ChangingBoundVariable = false;
         }
@@ -454,7 +454,7 @@ namespace WpfCSCS
 
         public static Variable RunScript(string funcName, Window win, Variable arg1, Variable arg2 = null)
         {
-            CustomFunction customFunction = ParserFunction.GetFunction(funcName) as CustomFunction;
+            CustomFunction customFunction = Interpreter.Instance.GetFunction(funcName) as CustomFunction;
             if (customFunction != null)
             {
                 List<Variable> args = new List<Variable>();
@@ -474,7 +474,7 @@ namespace WpfCSCS
                         }
                     }
                 }
-                return Interpreter.Run(customFunction, args, script);
+                return Interpreter.Instance.Run(customFunction, args, script);
             }
             return Variable.EmptyInstance;
         }
@@ -483,7 +483,7 @@ namespace WpfCSCS
         {
             var text = GetTextWidgetFunction.GetText(widget);
             Variable baseValue = new Variable(text);
-            ParserFunction.AddGlobal(name, new GetVarFunction(baseValue), false /* not native */);
+            Interpreter.Instance.AddGlobal(name, new GetVarFunction(baseValue), false /* not native */);
 
             var current = new Variable(widget);
             if (widget is DataGrid)
@@ -516,7 +516,7 @@ namespace WpfCSCS
                             wd.colTypes.Add(WidgetData.COL_TYPE.STRING);
 
                             //var array = new DefineVariable(new List<Variable>());
-                            ParserFunction.AddGlobal(headerStr, new GetVarFunction(headerVar), false /* not native */);
+                            Interpreter.Instance.AddGlobal(headerStr, new GetVarFunction(headerVar), false /* not native */);
                         }
                     }
                 }
@@ -821,7 +821,7 @@ namespace WpfCSCS
             {
                 var arg = GetTextWidgetFunction.GetText(widget);
                 Control2Window.TryGetValue(widget, out Window win);
-                Interpreter.Run(funcName, new Variable(widgetName), new Variable(arg), Variable.EmptyInstance, ChainFunction.GetScript(win));
+                Interpreter.Instance.Run(funcName, new Variable(widgetName), new Variable(arg), Variable.EmptyInstance, ChainFunction.GetScript(win));
             }
         }
 
@@ -839,7 +839,7 @@ namespace WpfCSCS
             {
                 var arg = GetTextWidgetFunction.GetText(widget);
                 Control2Window.TryGetValue(widget, out Window win);
-                Interpreter.Run(funcName, new Variable(widgetName), new Variable(arg),
+                Interpreter.Instance.Run(funcName, new Variable(widgetName), new Variable(arg),
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
             }
         }
@@ -857,7 +857,7 @@ namespace WpfCSCS
             if (s_keyDownHandlers.TryGetValue(widgetName, out funcName))
             {
                 Control2Window.TryGetValue(widget, out Window win);
-                Interpreter.Run(funcName, new Variable(widgetName),
+                Interpreter.Instance.Run(funcName, new Variable(widgetName),
                     new Variable(((char)e.Key).ToString()),
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
             }
@@ -875,7 +875,7 @@ namespace WpfCSCS
             if (s_keyUpHandlers.TryGetValue(widgetName, out funcName))
             {
                 Control2Window.TryGetValue(widget, out Window win);
-                Interpreter.Run(funcName, new Variable(widgetName),
+                Interpreter.Instance.Run(funcName, new Variable(widgetName),
                     new Variable(((char)e.Key).ToString()),
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
             }
@@ -897,7 +897,7 @@ namespace WpfCSCS
             if (s_textChangedHandlers.TryGetValue(widgetName, out funcName))
             {
                 Control2Window.TryGetValue(widget, out Window win);
-                Interpreter.Run(funcName, new Variable(widgetName), text,
+                Interpreter.Instance.Run(funcName, new Variable(widgetName), text,
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
             }
         }
@@ -910,7 +910,7 @@ namespace WpfCSCS
             {
                 var item = e.AddedItems.Count > 0 ? e.AddedItems[0].ToString() : e.RemovedItems.Count > 0 ? e.RemovedItems[0].ToString() : "";
                 Control2Window.TryGetValue(widget, out Window win);
-                Interpreter.Run(funcName, new Variable(widgetName), new Variable(item),
+                Interpreter.Instance.Run(funcName, new Variable(widgetName), new Variable(item),
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
             }
         }
@@ -927,7 +927,7 @@ namespace WpfCSCS
             if (s_mouseHoverHandlers.TryGetValue(widgetName, out string funcName))
             {
                 Control2Window.TryGetValue(widget, out Window win);
-                Interpreter.Run(funcName, new Variable(widgetName), new Variable(e.ToString()),
+                Interpreter.Instance.Run(funcName, new Variable(widgetName), new Variable(e.ToString()),
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
             }
         }
@@ -953,7 +953,7 @@ namespace WpfCSCS
             if (s_PreHandlers.TryGetValue(widgetName, out funcName))
             {
                 Control2Window.TryGetValue(widget, out Window win);
-                var result = Interpreter.Run(funcName, new Variable(widgetName), null,
+                var result = Interpreter.Instance.Run(funcName, new Variable(widgetName), null,
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
                 if (result.Type == Variable.VarType.NUMBER && !result.AsBool()) // if script returned false
                 {
@@ -992,7 +992,7 @@ namespace WpfCSCS
             if (s_PostHandlers.TryGetValue(widgetName, out funcName))
             {
                 Control2Window.TryGetValue(widget, out Window win);
-                var result = Interpreter.Run(funcName, new Variable(widgetName), null,
+                var result = Interpreter.Instance.Run(funcName, new Variable(widgetName), null,
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
                 if (result.Type == Variable.VarType.NUMBER && !result.AsBool())
                 {
@@ -1020,7 +1020,7 @@ namespace WpfCSCS
             if (s_ChangeHandlers.TryGetValue(widgetName, out funcName))
             {
                 Control2Window.TryGetValue(widget, out Window win);
-                Interpreter.Run(funcName, new Variable(widgetName), null,
+                Interpreter.Instance.Run(funcName, new Variable(widgetName), null,
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
                 e.Handled = true;
             }
@@ -1040,7 +1040,7 @@ namespace WpfCSCS
             if (s_NavigatorChangeHandlers.TryGetValue(widgetName, out funcName))
             {
                 Control2Window.TryGetValue(widget, out Window win);
-                var result = Interpreter.Run(funcName, new Variable(widgetName), null,
+                var result = Interpreter.Instance.Run(funcName, new Variable(widgetName), null,
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
                 
                 if (result.Type == Variable.VarType.NUMBER && !result.AsBool())
@@ -1092,7 +1092,7 @@ namespace WpfCSCS
             if (s_NavigatorAfterChangeHandlers.TryGetValue(widgetName, out funcName))
             {
                 Control2Window.TryGetValue(widget, out Window win);
-                var result = Interpreter.Run(funcName, new Variable(widgetName), null,
+                var result = Interpreter.Instance.Run(funcName, new Variable(widgetName), null,
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
             }
         }
@@ -1334,8 +1334,8 @@ namespace WpfCSCS
             {
                 Console.WriteLine("Exception: " + exc.Message);
                 Console.WriteLine(exc.StackTrace);
-                ParserFunction.InvalidateStacksAfterLevel(0);
-                var onException = CustomFunction.Run(Constants.ON_EXCEPTION, new Variable("Global Scope"),
+                Interpreter.Instance.InvalidateStacksAfterLevel(0);
+                var onException = CustomFunction.Run(Interpreter.Instance, Constants.ON_EXCEPTION, new Variable("Global Scope"),
                                   new Variable(exc.Message), Variable.EmptyInstance);
                 if (onException == null)
                 {
@@ -1510,7 +1510,7 @@ namespace WpfCSCS
             int maxElems = -1;
             if (wd != null && !string.IsNullOrWhiteSpace(wd.maxElemsName))
             {
-                var maxVar = ParserFunction.GetVariableValue(wd.maxElemsName);
+                var maxVar = Interpreter.Instance.GetVariableValue(wd.maxElemsName);
                 maxElems = maxVar == null ? -1 : maxVar.AsInt();
             }
 
@@ -1551,7 +1551,7 @@ namespace WpfCSCS
                 wd.actualElemsVar = new Variable(wd.actualElems);
                 if (!string.IsNullOrWhiteSpace(wd.actualElemsName))
                 {
-                    ParserFunction.AddGlobal(wd.actualElemsName, new GetVarFunction(wd.actualElemsVar), false);
+                    Interpreter.Instance.AddGlobal(wd.actualElemsName, new GetVarFunction(wd.actualElemsVar), false);
                 }
             }
 
@@ -1721,7 +1721,7 @@ namespace WpfCSCS
         {
             string funcName = Utils.GetToken(script, Constants.NEXT_OR_END_ARRAY);
 
-            ParserFunction func = ParserFunction.GetFunction(funcName);
+            ParserFunction func = Interpreter.Instance.GetFunction(funcName);
             Utils.CheckNotNull(funcName, func, script);
 
             Variable result = Variable.EmptyInstance;
@@ -1761,7 +1761,7 @@ namespace WpfCSCS
         public static Variable RunOnMainThread(ParserFunction func, string argsStr)
         {
             Variable result = Variable.EmptyInstance;
-            ParsingScript tempScript = new ParsingScript(argsStr);
+            ParsingScript tempScript = new ParsingScript(Interpreter.Instance, argsStr);
             Application.Current.Dispatcher.Invoke(new Action(() =>
             {
                 result = func.GetValue(tempScript);
@@ -2157,7 +2157,7 @@ namespace WpfCSCS
                     foreach (var entry in wd.headers)
                     {
                         entry.Value.Tuple.Clear();
-                        ParserFunction.AddGlobal(entry.Key, new GetVarFunction(entry.Value), false);
+                        Interpreter.Instance.AddGlobal(entry.Key, new GetVarFunction(entry.Value), false);
                     }
                 }
 
@@ -2517,7 +2517,7 @@ namespace WpfCSCS
             {
                 newMenuItem.Click += (sender, eventArgs) =>
                 {
-                    Interpreter.Run(menuAction, new Variable(menuName), new Variable(eventArgs.Source.ToString()));
+                    Interpreter.Instance.Run(menuAction, new Variable(menuName), new Variable(eventArgs.Source.ToString()));
                 };
             }
 
@@ -2690,7 +2690,7 @@ namespace WpfCSCS
                 {
                     var func = new GetVarFunction(parameters[i]);
                     func.Name = argsArray[i];
-                    //ParserFunction.AddGlobalOrLocalVariable(argsArray[i], func, script, true);
+                    //Interpreter.Instance.AddGlobalOrLocalVariable(argsArray[i], func, script, true);
                     script.StackLevel.Variables[argsArray[i]] = func;
 
                     //msg += func.Name + "=[" + parameters[i].AsString() + "] ";
@@ -2755,7 +2755,7 @@ namespace WpfCSCS
             }
 
             ParsingScript chainScript = tempScript.GetIncludeFileScript(chainName);
-            chainScript.StackLevel = ParserFunction.AddStackLevel(chainScript.Filename);
+            chainScript.StackLevel = Interpreter.Instance.AddStackLevel(chainScript.Filename);
             chainScript.CurrentModule = chainName;
             chainScript.ParentScript = script;
 
@@ -2869,7 +2869,7 @@ namespace WpfCSCS
                             new Variable(Utils.GetToken(script, separator));
                 if (script.Prev != '"' && !string.IsNullOrWhiteSpace(value.String))
                 {
-                    var existing = ParserFunction.GetVariableValue(value.String, script);
+                    var existing = Interpreter.Instance.GetVariableValue(value.String, script);
                     value = existing == null ? value : existing;
                 }
                 m_parameters[labelName] = value;
@@ -3001,7 +3001,7 @@ namespace WpfCSCS
 
         static void AdjustGridSelection(DataGrid dg, CSCS_GUI.WidgetData wd)
         {
-            wd.lineCounter = ParserFunction.GetVariableValue(wd.lineCounterName).AsInt();
+            wd.lineCounter = Interpreter.Instance.GetVariableValue(wd.lineCounterName).AsInt();
             Application.Current.Dispatcher.Invoke(new Action(() =>
             {
                 var rowList = dg.ItemsSource as ObservableCollection<FillOutGridFunction.Row>;
@@ -3026,7 +3026,7 @@ namespace WpfCSCS
 
         static void AdjustmaxElems(DataGrid dg, CSCS_GUI.WidgetData wd)
         {
-            var maxElems = ParserFunction.GetVariableValue(wd.maxElemsName).AsInt();
+            var maxElems = Interpreter.Instance.GetVariableValue(wd.maxElemsName).AsInt();
             Application.Current.Dispatcher.Invoke(new Action(() =>
             {
                 var items = dg.ItemsSource as ObservableCollection<FillOutGridFunction.Row>;
@@ -3066,7 +3066,7 @@ namespace WpfCSCS
             }));
             if (!string.IsNullOrWhiteSpace(wd.lineCounterName))
             {
-                ParserFunction.AddGlobal(wd.lineCounterName, new GetVarFunction(wd.lineCounterVar), false);
+                Interpreter.Instance.AddGlobal(wd.lineCounterName, new GetVarFunction(wd.lineCounterVar), false);
             }
             return wd.lineCounter;
         }
@@ -3124,16 +3124,16 @@ namespace WpfCSCS
             {
                 wd.actualElemsName = actualElemsStr;
                 wd.actualElemsVar = new Variable(wd.actualElems);
-                ParserFunction.AddGlobal(actualElemsStr, new GetVarFunction(wd.actualElemsVar), false);
+                Interpreter.Instance.AddGlobal(actualElemsStr, new GetVarFunction(wd.actualElemsVar), false);
                 CSCS_GUI.DEFINES[actualElemsStr] = new DefineVariable(name, "actualElems", gridVar.Object, true);
             }
             if (Utils.CheckLegalName(maxElemsStr, script, false))
             {
-                var maxElemsVar = ParserFunction.GetVariableValue(maxElemsStr);
+                var maxElemsVar = Interpreter.Instance.GetVariableValue(maxElemsStr);
                 wd.maxElems = maxElemsVar == null ? -1 : maxElemsVar.AsInt();
                 wd.maxElemsName = maxElemsStr;
                 wd.maxElemsVar = new Variable(wd.maxElems);
-                ParserFunction.AddGlobal(maxElemsStr, new GetVarFunction(wd.maxElemsVar), false);
+                Interpreter.Instance.AddGlobal(maxElemsStr, new GetVarFunction(wd.maxElemsVar), false);
                 CSCS_GUI.DEFINES[maxElemsStr] = new DefineVariable(name, "maxElems", gridVar.Object, true);
             }
             AdjustmaxElems(dg, wd);
@@ -3151,7 +3151,7 @@ namespace WpfCSCS
             };
             dg.AddingNewItem += (s, e) =>
             {
-                var max = ParserFunction.GetVariableValue(maxElemsStr, script);
+                var max = Interpreter.Instance.GetVariableValue(maxElemsStr, script);
                 if (max != null)
                 {
                 }
@@ -3272,25 +3272,25 @@ namespace WpfCSCS
             CSCS_GUI.DEFINES[maxElems] = new DefineVariable(name, "maxElems", gridVar.Object, true);
             CSCS_GUI.DEFINES[actualElems] = new DefineVariable(name, "actualElems", gridVar.Object, true);
 
-            var max = ParserFunction.GetVariableValue(maxElems, script);
+            var max = Interpreter.Instance.GetVariableValue(maxElems, script);
             int maxValue = max == null ? 0 : max.AsInt();
 
             if (Utils.CheckLegalName(lineCounter, script, false))
             {
-                ParserFunction.AddGlobal(lineCounter, new GetVarFunction(new Variable(dg.SelectedIndex)), false);
+                Interpreter.Instance.AddGlobal(lineCounter, new GetVarFunction(new Variable(dg.SelectedIndex)), false);
             }
             if (Utils.CheckLegalName(actualElems, script, false))
             {
-                ParserFunction.AddGlobal(actualElems, new GetVarFunction(new Variable(rowList == null ? 0 : rowList.Count)), false);
+                Interpreter.Instance.AddGlobal(actualElems, new GetVarFunction(new Variable(rowList == null ? 0 : rowList.Count)), false);
             }
             if (Utils.CheckLegalName(maxElems, script, false))
             {
-                ParserFunction.AddGlobal(maxElems, new GetVarFunction(new Variable(maxValue)), false);
+                Interpreter.Instance.AddGlobal(maxElems, new GetVarFunction(new Variable(maxValue)), false);
             }
 
             dg.SelectionChanged += (s, e) =>
             {
-                ParserFunction.AddGlobal(lineCounter, new GetVarFunction(new Variable(dg.SelectedIndex)), false);
+                Interpreter.Instance.AddGlobal(lineCounter, new GetVarFunction(new Variable(dg.SelectedIndex)), false);
                 var funcName = name + "@Move";
                 if (dg.SelectedIndex >= 0)
                 {
@@ -3307,7 +3307,7 @@ namespace WpfCSCS
 
             dg.AddingNewItem += (s, e) =>
             {
-                max = ParserFunction.GetVariableValue(maxElems, script);
+                max = Interpreter.Instance.GetVariableValue(maxElems, script);
                 if (max != null)
                 {
                 }
@@ -3384,7 +3384,7 @@ namespace WpfCSCS
             wd.headers[headerStr] = headerVar;
             wd.headerNames.Add(headerStr);
             wd.colTypes.Add(CSCS_GUI.WidgetData.COL_TYPE.STRING);
-            ParserFunction.AddGlobal(headerStr, new GetVarFunction(headerVar), false);
+            Interpreter.Instance.AddGlobal(headerStr, new GetVarFunction(headerVar), false);
 
             var rowList = dg.ItemsSource as List<ExpandoObject>;
             for (int i = 0; i < rowList.Count; i++)
@@ -3429,8 +3429,8 @@ namespace WpfCSCS
             wd.colTypes[from]    = colType2;
             wd.colTypes[to]      = colType1;
 
-            var array1 = ParserFunction.GetVariableValue(binding1);
-            var array2 = ParserFunction.GetVariableValue(binding2);
+            var array1 = Interpreter.Instance.GetVariableValue(binding1);
+            var array2 = Interpreter.Instance.GetVariableValue(binding2);
             var max = array1 == null || array1 == null || array1.Tuple == null || array2.Tuple == null ? 0 :
                 Math.Min(array1.Tuple.Count, array2.Tuple.Count);
 
@@ -3523,7 +3523,7 @@ namespace WpfCSCS
             script.CurrentModule = "";
             if (script.StackLevel != null)
             {
-                ParserFunction.PopLocalVariables(script.StackLevel.Id);
+                Interpreter.Instance.PopLocalVariables(script.StackLevel.Id);
                 script.StackLevel = null;
             }
 
@@ -3688,7 +3688,7 @@ namespace WpfCSCS
             }
             DataGrid dg = wd.widget as DataGrid;
 
-            var data = ParserFunction.GetVariableValue(headerName);
+            var data = Interpreter.Instance.GetVariableValue(headerName);
             if (!CSCS_GUI.DEFINES.TryGetValue(headerName, out DefineVariable defVar) || data == null)
             {
                 return 0;
@@ -3744,7 +3744,7 @@ namespace WpfCSCS
             if (CSCS_GUI.DEFINES.TryGetValue(wd.actualElemsName, out DefineVariable actualElems))
             {
                 actualElems.Value = wd.actualElems = rowList.Count;// dg.Items.Count;
-                ParserFunction.AddGlobal(wd.actualElemsName, new GetVarFunction(actualElems), false);
+                Interpreter.Instance.AddGlobal(wd.actualElemsName, new GetVarFunction(actualElems), false);
                 if (CSCS_GUI.DEFINES.TryGetValue(wd.lineCounterName, out DefineVariable lineCounter) &&
                     dg.SelectedIndex < 0)
                 {
@@ -3754,7 +3754,7 @@ namespace WpfCSCS
                     }
                     lineCounter.Value = wd.lineCounter;
                     dg.SelectedIndex = wd.lineCounter;
-                    ParserFunction.AddGlobal(wd.lineCounterName, new GetVarFunction(lineCounter), false);
+                    Interpreter.Instance.AddGlobal(wd.lineCounterName, new GetVarFunction(lineCounter), false);
                 }
             }
         }
@@ -3810,7 +3810,7 @@ namespace WpfCSCS
                     Variable cellValue = wd.colTypes[colNb] == CSCS_GUI.WidgetData.COL_TYPE.STRING ||
                         v is string ? new Variable(v.ToString()) : new Variable((double)v);
 
-                    var headerData = ParserFunction.GetVariableValue(colStr);
+                    var headerData = Interpreter.Instance.GetVariableValue(colStr);
                     headerData.SetAsArray();
                     while (headerData.Tuple.Count <= rowNb)
                     {
@@ -3851,7 +3851,7 @@ namespace WpfCSCS
             string country = Utils.GetSafeString(args, 1, "HR");
             /*string callBack = Utils.GetSafeString(args, 2);
 
-            CustomFunction callbackFunction = ParserFunction.GetFunction(callBack, null) as CustomFunction;
+            CustomFunction callbackFunction = Interpreter.Instance.GetFunction(callBack, null) as CustomFunction;
             if (callbackFunction == null)
             {
                 throw new ArgumentException("Error: Couldn't find function [" + callBack + "]");
@@ -4189,11 +4189,11 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
             {
                 if (Local)
                 {
-                    ParserFunction.AddLocalVariable(new GetVarFunction(this), Name);
+                    Interpreter.Instance.AddLocalVariable(new GetVarFunction(this), Name);
                 }
                 else
                 {
-                    ParserFunction.AddGlobalOrLocalVariable(Name, new GetVarFunction(this), script);
+                    Interpreter.Instance.AddGlobalOrLocalVariable(Name, new GetVarFunction(this), script);
                 }
                 //InitFromExisting(Name);
                 CSCS_GUI.DEFINES[Name] = this;
@@ -4207,7 +4207,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
         {
             if (!CSCS_GUI.DEFINES.TryGetValue(name, out DefineVariable existing))
             {
-                var existingVar = ParserFunction.GetVariableValue(name);
+                var existingVar = Interpreter.Instance.GetVariableValue(name);
                 if (existingVar != null && existingVar.Tuple != null)
                 {
                     this.Tuple = existingVar.Tuple;
@@ -4426,10 +4426,10 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
             }
 
             defVar.Pointer = args[0];
-            var existing = ParserFunction.GetVariableValue(defVar.Pointer, script);
+            var existing = Interpreter.Instance.GetVariableValue(defVar.Pointer, script);
             if (existing != null)
             {
-                ParserFunction.AddGlobalOrLocalVariable(Constants.POINTER_REF + m_name,
+                Interpreter.Instance.AddGlobalOrLocalVariable(Constants.POINTER_REF + m_name,
                                new GetVarFunction(existing));
             }
             return defVar;
@@ -4444,6 +4444,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
 
         protected override Variable Evaluate(ParsingScript script)
         {
+            InterpreterInstance = script.InterpreterInstance;
             DefineVariable defVar = IsDefinedVariable(script);
             if (defVar != null)
             {
@@ -4455,6 +4456,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
 
         protected override async Task<Variable> EvaluateAsync(ParsingScript script)
         {
+            InterpreterInstance = script.InterpreterInstance;
             DefineVariable defVar = IsDefinedVariable(script);
             if (defVar != null)
             {
@@ -4523,9 +4525,9 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 if (CSCS_GUI.DEFINES.TryGetValue(defVar.Pointer, out DefineVariable refValue))
                 {
                     refValue.InitVariable(varValue, script, false);
-                    ParserFunction.AddGlobalOrLocalVariable(m_originalName,
+                    Interpreter.Instance.AddGlobalOrLocalVariable(m_originalName,
                             new GetVarFunction(refValue));
-                    ParserFunction.AddGlobalOrLocalVariable(defVar.Pointer,
+                    Interpreter.Instance.AddGlobalOrLocalVariable(defVar.Pointer,
                             new GetVarFunction(varValue));
                     return refValue;
                 }
@@ -4608,7 +4610,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                             CSCS_GUI.DEFINES.TryGetValue(wd.actualElemsName, out DefineVariable actualElems))
                         {
                             actualElems.Value = wd.maxElems;
-                            ParserFunction.AddGlobal(wd.actualElemsName, new GetVarFunction(actualElems), false);
+                            Interpreter.Instance.AddGlobal(wd.actualElemsName, new GetVarFunction(actualElems), false);
                         }
                     }
                     var rowList = dg.ItemsSource == null ? new List<ExpandoObject>() : 
@@ -4630,7 +4632,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
 
             if (/*defVar.Object == null &&*/ defVar.Tuple == null)
             {
-                ParserFunction.AddGlobalOrLocalVariable(m_name, new GetVarFunction(varValue));
+                Interpreter.Instance.AddGlobalOrLocalVariable(m_name, new GetVarFunction(varValue));
             }
             return defVar;
         }
@@ -4701,12 +4703,12 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
 
             List<Variable> args = script.GetFunctionArgs();
 
-            CustomFunction newThreadFunction = ParserFunction.GetFunction(funcName) as CustomFunction;
+            CustomFunction newThreadFunction = Interpreter.Instance.GetFunction(funcName) as CustomFunction;
             if (newThreadFunction == null)
             {
                 throw new ArgumentException("Error: Couldn't find function [" + funcName + "]");
             }
-            CustomFunction callbackFunction = ParserFunction.GetFunction(callback) as CustomFunction;
+            CustomFunction callbackFunction = Interpreter.Instance.GetFunction(callback) as CustomFunction;
             if (callbackFunction == null)
             {
                 throw new ArgumentException("Error: Couldn't find function [" + callback + "]");
@@ -4718,7 +4720,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
 
         static void ThreadProc(CustomFunction newThreadFunction, CustomFunction callbackFunction, List<Variable> args)
         {
-            Variable result = Interpreter.Run(newThreadFunction, args);
+            Variable result = Interpreter.Instance.Run(newThreadFunction, args);
 
             var resultArgs = new List<Variable>() {
                 new Variable(newThreadFunction.Name), result

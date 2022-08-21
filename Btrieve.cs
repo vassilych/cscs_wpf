@@ -217,26 +217,26 @@ namespace WpfCSCS
     {
         public static void Init()
         {
-            ParserFunction.RegisterFunction(Constants.OPENV, new OpenvFunction());
-            ParserFunction.RegisterFunction(Constants.FINDV, new FindvFunction());
-            ParserFunction.RegisterFunction(Constants.CLOSEV, new ClosevFunction());
+            Interpreter.Instance.RegisterFunction(Constants.OPENV, new OpenvFunction());
+            Interpreter.Instance.RegisterFunction(Constants.FINDV, new FindvFunction());
+            Interpreter.Instance.RegisterFunction(Constants.CLOSEV, new ClosevFunction());
 
-            ParserFunction.RegisterFunction(Constants.REPL, new ReplFunction());
+            Interpreter.Instance.RegisterFunction(Constants.REPL, new ReplFunction());
 
-            ParserFunction.RegisterFunction(Constants.CLR, new ClrFunction());
-            ParserFunction.RegisterFunction(Constants.RCNGET, new RcnGetFunction());
-            ParserFunction.RegisterFunction(Constants.RCNSET, new RcnSetFunction());
+            Interpreter.Instance.RegisterFunction(Constants.CLR, new ClrFunction());
+            Interpreter.Instance.RegisterFunction(Constants.RCNGET, new RcnGetFunction());
+            Interpreter.Instance.RegisterFunction(Constants.RCNSET, new RcnSetFunction());
 
-            ParserFunction.RegisterFunction(Constants.ACTIVE, new ActiveFunction());
-            ParserFunction.RegisterFunction(Constants.DEL, new DelFunction());
-            ParserFunction.RegisterFunction(Constants.SAVE, new SaveFunction());
+            Interpreter.Instance.RegisterFunction(Constants.ACTIVE, new ActiveFunction());
+            Interpreter.Instance.RegisterFunction(Constants.DEL, new DelFunction());
+            Interpreter.Instance.RegisterFunction(Constants.SAVE, new SaveFunction());
 
-            ParserFunction.RegisterFunction(Constants.RDA, new RDAFunction());
-            ParserFunction.RegisterFunction(Constants.WRTA, new WRTAFunction());
+            Interpreter.Instance.RegisterFunction(Constants.RDA, new RDAFunction());
+            Interpreter.Instance.RegisterFunction(Constants.WRTA, new WRTAFunction());
 
-            ParserFunction.RegisterFunction(Constants.FLERR, new FlerrFunction());
+            Interpreter.Instance.RegisterFunction(Constants.FLERR, new FlerrFunction());
 
-            ParserFunction.RegisterFunction(Constants.SCAN, new ScanStatement());
+            Interpreter.Instance.RegisterFunction(Constants.SCAN, new ScanStatement());
         }
 
         public static Dictionary<string, string> Databases { get; set; } = new Dictionary<string, string>(); // <SYCD_USERCODE, SYCD_DBASENAME>
