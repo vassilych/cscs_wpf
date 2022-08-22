@@ -6,13 +6,13 @@
         xmlns:wcl="clr-namespace:WpfControlsLibrary;assembly=WpfControlsLibrary"
         mc:Ignorable="d"
         Title="Datagrid1" Height="500" Width="1400">
-    
+
     <Grid>
         <DataGrid 
         Name="grid1" 
         HorizontalAlignment="Left" Height="412" Margin="21,13,0,0" VerticalAlignment="Top" Width="1350" AutoGenerateColumns="False">
             <DataGrid.Columns>
-                
+
                 <DataGridTemplateColumn Header="Invoice Number">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -94,6 +94,8 @@
         <TextBox Name="tb4" DataContext="amount" HorizontalAlignment="Left" Height="23" Margin="420,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
 
         <Button Content="E/S" Name="btnES" HorizontalAlignment="Left" Margin="1290,440,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button Content="Add Row" Name="btnAdd" HorizontalAlignment="Left" Margin="925,440,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button Content="Delete Row" Name="btnDel" HorizontalAlignment="Left" Margin="1020,440,0,0" VerticalAlignment="Top" Width="75"/>
 
     </Grid>
 </Window>

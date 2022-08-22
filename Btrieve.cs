@@ -2504,6 +2504,7 @@ WHERE ID = {thisOpenv.currentRow}
 
 
         static Dictionary<string, DataTable> gridsDataTables = new Dictionary<string, DataTable>(); // <gridName, DataTable>
+        static Dictionary<string, OpenvTable> gridsOpenvs = new Dictionary<string, OpenvTable>(); // <gridName, OpenvTable>
 
         public class DisplayTableSetupFunction : ParserFunction
         {
@@ -2547,6 +2548,8 @@ WHERE ID = {thisOpenv.currentRow}
                 //------------------------------------------------------------------------
 
                 thisOpenv = Btrieve.OPENVs[tableHndlNum];
+
+                gridsOpenvs[gridName.ToLower()] = thisOpenv;
 
                 if (!string.IsNullOrEmpty(tableKey))
                 {
@@ -3207,7 +3210,7 @@ order by {orderBySB}
                         }
                     }
                 }
-                catch
+                catch(Exception ex)
                 {
 
                 }
@@ -4213,10 +4216,10 @@ order by {orderBySB}
                                 break;
                             case "deleterow":
 
-                                //if (deleteFromDB(gridsDataTables[gridName].Rows[dg.SelectedIndex].ItemArray[0].ToString()))
-                                //{
-                                //    gridsDataTables[gridName].Rows.RemoveAt(dg.SelectedIndex);
-                                //}
+                                if (deleteFromDB(gridsDataTables[gridName].Rows[dg.SelectedIndex].ItemArray[0].ToString(), gridsOpenvs[gridName]))
+                                {
+                                    gridsDataTables[gridName].Rows.RemoveAt(dg.SelectedIndex);
+                                }
                                 break;
                             default:
                                 break;
@@ -4227,31 +4230,26 @@ order by {orderBySB}
                 return Variable.EmptyInstance;
             }
 
-            private bool deleteFromDB(string rowId, string tableName)
+            private bool deleteFromDB(string rowId, OpenvTable thisOpenv)
             {
-                //                try
-                //                {
-                //                    var query =
-                //$@"EXECUTE sp_executesql N'
-                //DELETE FROM 
-                //{tableName}
-                //from {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
-                //with (nolock)
-                //{whereSB}
-                //order by {orderBySB}
-                //'";
+                try
+                {
+                    var query =
+$@"EXECUTE sp_executesql N'
+DELETE FROM {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
+where ID = {rowId}
+'";
 
-                //                    using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
-                //                    {
-                //                        var ret = cmd.ExecuteNonQuery();
-
-                //                    }
-                //                }
-                //                catch (Exception ex)
-                //                {
-                //                    return false;
-                //                }
-                return false;
+                    using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+                    {
+                        var ret = cmd.ExecuteNonQuery();
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
             }
 
 

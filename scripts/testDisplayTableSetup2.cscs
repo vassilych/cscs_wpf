@@ -16,7 +16,7 @@ DisplayTableSetup("grid1", table_hndl, "InvoiceLine_invoiceLineNumber", "1|1", "
 
 i = 2;
 function btnES@Clicked(){
-if(i%2 == 0){
+    if(i%2 == 0){
         SetWidgetOptions("grid1", "EditMode");
     }
     else{
@@ -26,4 +26,15 @@ if(i%2 == 0){
     i++;
 }
 
-DataGrid("grid1", "AddRow");
+function btnAdd@clicked(){
+    SetWidgetOptions("grid1", "EditMode");
+    DataGrid("grid1", "AddRow");
+}
+
+function btnDel@clicked(){
+    // SetWidgetOptions("grid1", "EditMode");
+    // DataGrid("grid1", "AddRow");
+    MessageBox("btnDel@clicked");
+    DataGrid("grid1", "DeleteRow");
+}
+
