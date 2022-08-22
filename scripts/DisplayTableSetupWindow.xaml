@@ -1,0 +1,86 @@
+<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        
+        mc:Ignorable="d"
+        Title="Datagrid1" Height="450" Width="800">
+    <Grid>
+        <DataGrid Name="grid1" HorizontalAlignment="Left" Height="212" Margin="21,13,0,0" VerticalAlignment="Top" Width="654" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+             
+                <!-- <DataGridTemplateColumn Header="Invoice Number">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox ToolTip="{Binding DataContext, RelativeSource={RelativeSource Self}}" Tag="invoiceNumber"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn> -->
+                
+                <DataGridTemplateColumn Header="Invoice Number">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Tag="invoiceNumber"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Header="Invoice Line Number">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Tag="invoiceLineNumber"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Header="Product Number">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Tag="productNumber"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Header="Količina">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Tag="amount"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Header="Price">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Tag="price"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Header="Bit Column">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox Tag="bitcolumn"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+            </DataGrid.Columns>
+        </DataGrid>
+        
+        <Button Content="Setup" Name="setupBtn" HorizontalAlignment="Left" Margin="80,265,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button Content="End" Name="endBtn" HorizontalAlignment="Left" Margin="200,265,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button Content="Top" Name="topBtn" HorizontalAlignment="Left" Margin="305,265,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button Content="Up" Name="upBtn" HorizontalAlignment="Left" Margin="80,320,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button Content="Down" Name="downBtn" HorizontalAlignment="Left" Margin="200,320,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button Content="GotoCurrent" Name="gotoCurrentBtn" HorizontalAlignment="Left" Margin="305,320,0,0" VerticalAlignment="Top" Width="75"/>
+        <Label Content="Max rows:" HorizontalAlignment="Left" Margin="482,254,0,0" VerticalAlignment="Top"/>
+        <Label Content="Current row:" HorizontalAlignment="Left" Margin="472,294,0,0" VerticalAlignment="Top"/>
+        <Label Content="Active rows:" HorizontalAlignment="Left" Margin="475,335,0,0" VerticalAlignment="Top"/>
+        <TextBox DataContext="maxRows" HorizontalAlignment="Left" Height="23" Margin="560,260,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
+        <TextBox DataContext="lineCntr" HorizontalAlignment="Left" Height="23" Margin="560,297,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
+        <TextBox DataContext="activeRows" HorizontalAlignment="Left" Height="23" Margin="560,337,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
+
+    </Grid>
+</Window>

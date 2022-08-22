@@ -61,6 +61,12 @@ namespace SplitAndMerge
         public const string WRTA = "Wrta";
 
         public const string SCAN = "Scan";
+        
+        public const string DISPLAY_TABLE_SETUP = "DisplayTableSetup";
+        public const string DISPLAY_ARRAY_SETUP = "DisplayArraySetup";
+        public const string DISPLAY_ARRAY_REFRESH = "DisplayArrayRefresh";
+
+        public const string DATAGRID = "DataGrid";
 
         public const string FLERR = "Flerr";
 
@@ -207,7 +213,9 @@ namespace WpfCSCS
         static Dictionary<string, string> s_NavigatorAfterChangeHandlers = new Dictionary<string, string>();
 
         static Dictionary<string, string> s_ChangeHandlers = new Dictionary<string, string>();
-
+        
+        static Dictionary<string, string> s_MoveHandlers = new Dictionary<string, string>();
+        static Dictionary<string, string> s_SelectHandlers = new Dictionary<string, string>();
 
         static Dictionary<string, Variable> s_boundVariables = new Dictionary<string, Variable>();
         //static Dictionary<string, TabPage> s_tabPages           = new Dictionary<string, TabPage>();
@@ -744,6 +752,46 @@ namespace WpfCSCS
 
             return false;
         }
+        
+        public static bool AddWidgetMoveHandler(string name, string action, FrameworkElement widget)
+        {
+            if (widget is DataGrid)
+            {
+                var dg = widget as DataGrid;
+                if (dg == null)
+                {
+                    return false;
+                }
+
+                s_MoveHandlers[name] = action;
+                dg.SelectionChanged -= new SelectionChangedEventHandler(DataGrid_Move);
+                dg.SelectionChanged += new SelectionChangedEventHandler(DataGrid_Move);
+
+                return true;
+            }
+
+            return false;
+        }
+        
+        public static bool AddWidgetSelectHandler(string name, string action, FrameworkElement widget)
+        {
+            if (widget is DataGrid)
+            {
+                var dg = widget as DataGrid;
+                if (dg == null)
+                {
+                    return false;
+                }
+
+                s_SelectHandlers[name] = action;
+                dg.MouseDoubleClick -= new MouseButtonEventHandler(DataGrid_Select);
+                dg.MouseDoubleClick += new MouseButtonEventHandler(DataGrid_Select);
+
+                return true;
+            }
+
+            return false;
+        }
 
         private static void ValueUpdated(string funcName, string widgetName, FrameworkElement widget, Variable newValue)
         {
@@ -1096,7 +1144,49 @@ namespace WpfCSCS
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
             }
         }
+        
+        private static void DataGrid_Move(object sender, SelectionChangedEventArgs e)
+        {
+            DataGrid widget = sender as DataGrid;
+            var widgetName = GetWidgetName(widget);
+            if (string.IsNullOrWhiteSpace(widgetName))
+            {
+                return;
+            }
 
+            string funcName;
+            if (s_MoveHandlers.TryGetValue(widgetName, out funcName))
+            {
+                Control2Window.TryGetValue(widget, out Window win);
+                var result = Interpreter.Run(funcName, new Variable(widgetName), null,
+                    Variable.EmptyInstance, ChainFunction.GetScript(win));
+            }
+        }
+        
+        private static void DataGrid_Select(object sender, MouseButtonEventArgs e)
+        {
+            DataGrid widget = sender as DataGrid;
+            var widgetName = GetWidgetName(widget);
+            if (string.IsNullOrWhiteSpace(widgetName))
+            {
+                return;
+            }
+
+            //if dataGrid is in Edit mode this event is disabled
+            if(widget.IsReadOnly == false)
+            {
+                return;
+            }
+
+            string funcName;
+            if (s_SelectHandlers.TryGetValue(widgetName, out funcName))
+            {
+                Control2Window.TryGetValue(widget, out Window win);
+                var result = Interpreter.Run(funcName, new Variable(widgetName), null,
+                    Variable.EmptyInstance, ChainFunction.GetScript(win));
+            }
+        }
+        
         public static FrameworkElement GetWidget(string name)
         {
             CacheControls(MainWindow);
@@ -1263,6 +1353,9 @@ namespace WpfCSCS
 
                 string widgetChangeAction = widgetName + "@Change";
                 string widgetAfterChangeAction = widgetName + "@AfterChange";
+                
+                string widgetMoveAction = widgetName + "@Move";
+                string widgetSelectAction = widgetName + "@Select";
 
 
                 AddActionHandler(widgetName, clickAction, widget);
@@ -1281,11 +1374,13 @@ namespace WpfCSCS
                 AddWidgetPreHandler(widgetName, widgetPreAction, widget);
                 AddWidgetPostHandler(widgetName, widgetPostAction, widget);
 
-                
                 //Navigator(Change and AfterChange) and TabControl(Change) events
                 AddWidgetChangeHandler(widgetName, widgetChangeAction, widget);
                 AddWidgetAfterChangeHandler(widgetName, widgetAfterChangeAction, widget);
 
+                //Grid(Move and Select)
+                AddWidgetMoveHandler(widgetName, widgetMoveAction, widget);
+                AddWidgetSelectHandler(widgetName, widgetSelectAction, widget);
             }
 
             //xaml DataContext property
@@ -1937,7 +2032,7 @@ namespace WpfCSCS
             else if (widget is DatePicker && !string.IsNullOrWhiteSpace(text))
             {
                 var datePicker = widget as DatePicker;
-                var format = text.Length == 10 ? "yyyy/MM/dd" : text.Length == 8 ? "hh:mm:ss" :
+                var format = text.Length == 10 ? "dd/MM/yyyy" : text.Length == 8 ? "hh:mm:ss" :
                              text.Length == 12 ? "hh:mm:ss.fff" : "yyyy/MM/dd hh:mm:ss";
                 dispatcher.Invoke(new Action(() =>
                 {
@@ -2131,6 +2226,14 @@ namespace WpfCSCS
                 else if (option == "clear")
                 {
                     ClearWidget(widgetName, dg);
+                }
+                else if (option == "editmode")
+                {
+                    dg.IsReadOnly = false;
+                }
+                else if (option == "selectmode")
+                {
+                    dg.IsReadOnly = true;
                 }
             }
             if (widget is TabControl)
@@ -4180,7 +4283,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 Type = VarType.ARRAY;
                 if (arrayIndex >= 0)
                 {
-                    Tuple[arrayIndex] = init;
+                    Tuple[arrayIndex] = init.Clone();
                 }
             }
 
