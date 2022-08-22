@@ -8,13 +8,37 @@ using System.Threading.Tasks;
 
 namespace SplitAndMerge
 {
-    class CSCS_SQL
+    public class CscsSqlModule : ICscsModule
     {
-        internal static string ConnectionString { get; set; }
+        public ICscsModuleInstance CreateInstance(Interpreter interpreter)
+        {
+            return new CscsSqlModuleInstance(interpreter);
+        }
 
-        public static SqlConnection SqlServerConnection = new SqlConnection();
-        
-        internal static void CheckConnectionString(ParsingScript script = null, string funcName = "")
+        public void Terminate()
+        {
+        }
+    }
+
+    class SQLQueryObj
+    {
+        public string Table { get; set; }
+        public string Query { get; set; }
+        public SqlConnection Connection { get; set; }
+        public SqlCommand Command { get; set; }
+        public SqlDataReader DataReader { get; set; }
+        public int CurrentRow { get; set; }
+        public int TotalRows { get; set; } = -1;
+        public Dictionary<string, SqlDbType> Columns { get; set; }
+    }
+
+    public class CscsSqlModuleInstance : ICscsModuleInstance
+    {
+        internal string ConnectionString { get; set; }
+        internal SQLQueryFunction SQLQueryFunction { get; }
+        internal SQLSPFunction SQLSPFunction { get; }
+
+        internal void CheckConnectionString(ParsingScript script = null, string funcName = "")
         {
             if (string.IsNullOrWhiteSpace(ConnectionString))
             {
@@ -23,71 +47,71 @@ namespace SplitAndMerge
             }
         }
 
-        public static void Init()
+        public CscsSqlModuleInstance(Interpreter interpreter)
         {
-            Interpreter.Instance.RegisterFunction("SQLConnectionString", new SQLConnectionStringFunction());
-            Interpreter.Instance.RegisterFunction("SQLTableColumns", new SQLColumnsFunction());
-            Interpreter.Instance.RegisterFunction("SQLQuery", new SQLQueryFunction());
-            Interpreter.Instance.RegisterFunction("SQLNonQuery", new SQLNonQueryFunction());
-            Interpreter.Instance.RegisterFunction("SQLInsert", new SQLInsertFunction());
+            interpreter.RegisterFunction("SQLConnectionString", new SQLConnectionStringFunction(this));
+            interpreter.RegisterFunction("SQLTableColumns", new SQLColumnsFunction(this));
+            SQLQueryFunction = new SQLQueryFunction(this);
+            interpreter.RegisterFunction("SQLQuery", SQLQueryFunction);
+            interpreter.RegisterFunction("SQLNonQuery", new SQLNonQueryFunction(this));
+            interpreter.RegisterFunction("SQLInsert", new SQLInsertFunction(this));
 
-            Interpreter.Instance.RegisterFunction("SQLCreateDB", new SQLDBOperationsFunction(SQLDBOperationsFunction.Mode.CREATE_DB));
-            Interpreter.Instance.RegisterFunction("SQLDropDB", new SQLDBOperationsFunction(SQLDBOperationsFunction.Mode.DROP_DB));
-            Interpreter.Instance.RegisterFunction("SQLDropTable", new SQLDBOperationsFunction(SQLDBOperationsFunction.Mode.DROP_TABLE));
-            Interpreter.Instance.RegisterFunction("SQLProcedure", new SQLSPFunction());
-            Interpreter.Instance.RegisterFunction("SQLDescribe", new SQLDescribe(SQLDescribe.Mode.SP_DESC));
-            Interpreter.Instance.RegisterFunction("SQLAllTables", new SQLDescribe(SQLDescribe.Mode.TABLES));
-            Interpreter.Instance.RegisterFunction("SQLAllProcedures", new SQLDescribe(SQLDescribe.Mode.PROCEDURES));
+            interpreter.RegisterFunction("SQLCreateDB", new SQLDBOperationsFunction(this, SQLDBOperationsFunction.Mode.CREATE_DB));
+            interpreter.RegisterFunction("SQLDropDB", new SQLDBOperationsFunction(this, SQLDBOperationsFunction.Mode.DROP_DB));
+            interpreter.RegisterFunction("SQLDropTable", new SQLDBOperationsFunction(this, SQLDBOperationsFunction.Mode.DROP_TABLE));
+            SQLSPFunction = new SQLSPFunction(this);
+            interpreter.RegisterFunction("SQLProcedure", SQLSPFunction);
+            interpreter.RegisterFunction("SQLDescribe", new SQLDescribe(this, SQLDescribe.Mode.SP_DESC));
+            interpreter.RegisterFunction("SQLAllTables", new SQLDescribe(this, SQLDescribe.Mode.TABLES));
+            interpreter.RegisterFunction("SQLAllProcedures", new SQLDescribe(this, SQLDescribe.Mode.PROCEDURES));
 
-            Interpreter.Instance.RegisterFunction("SQLCursorInit", new SQLCursorFunction(SQLCursorFunction.Mode.SETUP));
-            Interpreter.Instance.RegisterFunction("SQLCursorNext", new SQLCursorFunction(SQLCursorFunction.Mode.NEXT));
-            Interpreter.Instance.RegisterFunction("SQLCursorCurrentRow", new SQLCursorFunction(SQLCursorFunction.Mode.CURRENT_ROW));
-            Interpreter.Instance.RegisterFunction("SQLCursorTotal", new SQLCursorFunction(SQLCursorFunction.Mode.TOTAL));
-            Interpreter.Instance.RegisterFunction("SQLCursorClose", new SQLCursorFunction(SQLCursorFunction.Mode.CLOSE));
+            interpreter.RegisterFunction("SQLCursorInit", new SQLCursorFunction(this, SQLCursorFunction.Mode.SETUP));
+            interpreter.RegisterFunction("SQLCursorNext", new SQLCursorFunction(this, SQLCursorFunction.Mode.NEXT));
+            interpreter.RegisterFunction("SQLCursorCurrentRow", new SQLCursorFunction(this, SQLCursorFunction.Mode.CURRENT_ROW));
+            interpreter.RegisterFunction("SQLCursorTotal", new SQLCursorFunction(this, SQLCursorFunction.Mode.TOTAL));
+            interpreter.RegisterFunction("SQLCursorClose", new SQLCursorFunction(this, SQLCursorFunction.Mode.CLOSE));
         }
+
+        internal List<SQLQueryObj> s_queries = new List<SQLQueryObj>();
     }
 
     class SQLConnectionStringFunction : ParserFunction
     {
+        private CscsSqlModuleInstance _instance;
+
+        public SQLConnectionStringFunction(CscsSqlModuleInstance instance)
+        {
+            _instance = instance;
+        }
+
         protected override Variable Evaluate(ParsingScript script)
         {
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 1, m_name);
 
-            CSCS_SQL.ConnectionString = Utils.GetSafeString(args, 0);
+            _instance.ConnectionString = Utils.GetSafeString(args, 0);
             return Variable.EmptyInstance;
         }
     }
 
     class SQLCursorFunction : ParserFunction
     {
+        private CscsSqlModuleInstance _instance;
+
         internal enum Mode { SETUP, NEXT, CURRENT_ROW, TOTAL, CLOSE };
         Mode m_mode;
 
-        internal SQLCursorFunction(Mode mode)
+        internal SQLCursorFunction(CscsSqlModuleInstance instance, Mode mode)
         {
+            _instance = instance;
             m_mode = mode;
         }
-
-        class SQLQueryObj
-        {
-            public string Table { get; set; }
-            public string Query { get; set; }
-            public SqlConnection Connection { get; set; }
-            public SqlCommand Command { get; set; }
-            public SqlDataReader DataReader { get; set; }
-            public int CurrentRow { get; set; }
-            public int TotalRows { get; set; } = -1;
-            public Dictionary<string, SqlDbType> Columns { get; set; }
-        }
-
-        static List<SQLQueryObj> s_queries = new List<SQLQueryObj>();
 
         protected override Variable Evaluate(ParsingScript script)
         {
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 1, m_name);
-            CSCS_SQL.CheckConnectionString(script, m_name);
+            _instance.CheckConnectionString(script, m_name);
 
             if (m_mode == Mode.SETUP)
             {
@@ -124,25 +148,25 @@ namespace SplitAndMerge
             return Variable.EmptyInstance;
         }
 
-        static int ExecuteQuery(string query)
+        int ExecuteQuery(string query)
         {
             SQLQueryObj newQuery = new SQLQueryObj();
             newQuery.Query = GetSQLQuery(query);
-            newQuery.Connection = new SqlConnection(CSCS_SQL.ConnectionString);
+            newQuery.Connection = new SqlConnection(_instance.ConnectionString);
             newQuery.Connection.Open();
 
             newQuery.Command = new SqlCommand(newQuery.Query, newQuery.Connection);
             newQuery.DataReader = newQuery.Command.ExecuteReader();
 
             newQuery.Table = GetTableName(query);
-            newQuery.Columns = SQLQueryFunction.GetColumnData(newQuery.Table);
+            newQuery.Columns = _instance.SQLQueryFunction.GetColumnData(newQuery.Table);
 
-            s_queries.Add(newQuery);
+            _instance.s_queries.Add(newQuery);
 
-            return s_queries.Count - 1;// (int)count;
+            return _instance.s_queries.Count - 1;// (int)count;
         }
 
-        static int GetTotalRecords(int id)
+        int GetTotalRecords(int id)
         {
             SQLQueryObj obj = GetSQLObject(id);
             if (obj.TotalRows >= 0)
@@ -150,7 +174,7 @@ namespace SplitAndMerge
                 return obj.TotalRows;
             }
 
-            using (var sqlCon = new SqlConnection(CSCS_SQL.ConnectionString))
+            using (var sqlCon = new SqlConnection(_instance.ConnectionString))
             {
                 sqlCon.Open();
                 var com = sqlCon.CreateCommand();
@@ -162,7 +186,7 @@ namespace SplitAndMerge
             return obj.TotalRows;
         }
 
-        static Variable GetNextRecord(int id)
+        Variable GetNextRecord(int id)
         {
             SQLQueryObj obj = GetSQLObject(id);
             if (obj == null || !obj.DataReader.HasRows || !obj.DataReader.Read())
@@ -175,25 +199,25 @@ namespace SplitAndMerge
             {
                 var cell = obj.DataReader.GetValue(i);
                 var cellType = obj.DataReader.GetDataTypeName(i);
-                var variable = SQLQueryFunction.ConvertToVariable(cell, cellType);
+                var variable = _instance.SQLQueryFunction.ConvertToVariable(cell, cellType);
                 rowVar.AddVariable(variable);
             }
             obj.CurrentRow++;
             return rowVar;
         }
 
-        static void Close(int id)
+        void Close(int id)
         {
             SQLQueryObj obj = GetSQLObject(id);
             obj.DataReader.Dispose();
             obj.Command.Dispose();
             obj.Connection.Dispose();
-            s_queries[id] = null;
+            _instance.s_queries[id] = null;
         }
 
-        static SQLQueryObj GetSQLObject(int id, bool throwExc = true)
+        SQLQueryObj GetSQLObject(int id, bool throwExc = true)
         {
-            if (id < 0 || id >= s_queries.Count)
+            if (id < 0 || id >= _instance.s_queries.Count)
             {
                 if (!throwExc)
                 {
@@ -201,7 +225,7 @@ namespace SplitAndMerge
                 }
                 throw new ArgumentException("Invalid handle: " + id);
             }
-            SQLQueryObj obj = s_queries[id];
+            SQLQueryObj obj = _instance.s_queries[id];
 
             if (obj == null)
             {
@@ -214,7 +238,7 @@ namespace SplitAndMerge
             return obj;
         }
 
-        public static string GetTableName(string query)
+        public string GetTableName(string query)
         {
             query = query.ToUpper();
             int index1 = query.LastIndexOf(" FROM ");
@@ -229,7 +253,7 @@ namespace SplitAndMerge
             return tableName;
         }
 
-        public static string GetSQLQuery(string query)
+        public string GetSQLQuery(string query)
         {
             query = query.ToUpper();
             if (!query.Contains(' '))
@@ -238,7 +262,7 @@ namespace SplitAndMerge
             }
             return query;
         }
-        public static string GetCountQuery(string query)
+        public string GetCountQuery(string query)
         {
             query = query.ToUpper();
             int index1 = query.LastIndexOf(" FROM ");
@@ -251,19 +275,23 @@ namespace SplitAndMerge
 
     class SQLQueryFunction : ParserFunction
     {
-        static Dictionary<string, object> s_cache =
-            new Dictionary<string, object>();
+        CscsSqlModuleInstance _instance;
 
-        static Dictionary<string, Dictionary<string, SqlDbType>> s_columns =
-            new Dictionary<string, Dictionary<string, SqlDbType>>();
-        static List<KeyValuePair<string, SqlDbType>> s_colList =
-            new List<KeyValuePair<string, SqlDbType>>();
+        Dictionary<string, object> s_cache = new Dictionary<string, object>();
+
+        Dictionary<string, Dictionary<string, SqlDbType>> s_columns = new Dictionary<string, Dictionary<string, SqlDbType>>();
+        List<KeyValuePair<string, SqlDbType>> s_colList = new List<KeyValuePair<string, SqlDbType>>();
+        
+        public SQLQueryFunction(CscsSqlModuleInstance instance)
+        {
+            _instance = instance;
+        }
 
         protected override Variable Evaluate(ParsingScript script)
         {
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 1, m_name);
-            CSCS_SQL.CheckConnectionString(script, m_name);
+            _instance.CheckConnectionString(script, m_name);
 
             var query = Utils.GetSafeString(args, 0);
             var spArgs = Utils.GetSafeVariable(args, 1);
@@ -272,7 +300,7 @@ namespace SplitAndMerge
             return results;
         }
 
-        public static List<SqlParameter> GetParameters(Variable spArgs)
+        public List<SqlParameter> GetParameters(Variable spArgs)
         {
             if (spArgs == null || spArgs.Type != Variable.VarType.ARRAY || spArgs.Tuple.Count == 0)
             {
@@ -295,7 +323,7 @@ namespace SplitAndMerge
             return sp.Count == 0 ? null : sp;
         }
 
-        public static Dictionary<string, SqlDbType> GetColumnData(string tableName)
+        public Dictionary<string, SqlDbType> GetColumnData(string tableName)
         {
             Dictionary<string, SqlDbType> tableData = null;
             if (s_columns.TryGetValue(tableName, out tableData))
@@ -313,7 +341,7 @@ namespace SplitAndMerge
             return null;
         }
 
-        public static List<KeyValuePair<string, SqlDbType>> GetColumnUserData(string tableName)
+        public List<KeyValuePair<string, SqlDbType>> GetColumnUserData(string tableName)
         {
             List<KeyValuePair<string, SqlDbType>> result = null;
             if (s_cache.TryGetValue(tableName, out object tableData) &&
@@ -339,7 +367,7 @@ namespace SplitAndMerge
                 if (row.Type == Variable.VarType.ARRAY && row.Tuple.Count > 2)
                 {
                     var colName = row.Tuple[1].AsString();
-                    var colType = SQLQueryFunction.StringToSqlDbType(row.Tuple[2].AsString());
+                    var colType = _instance.SQLQueryFunction.StringToSqlDbType(row.Tuple[2].AsString());
                     result.Add(new KeyValuePair<string, SqlDbType>(colName, colType));
                 }
             }
@@ -348,13 +376,13 @@ namespace SplitAndMerge
             return result;
         }
 
-        public static Variable GetData(string query, string tableName = null,
+        public Variable GetData(string query, string tableName = null,
             List<SqlParameter> sp = null, bool addHeader = true)
         {
             Variable results = new Variable(Variable.VarType.ARRAY);
             DataTable table = new DataTable("results");
 
-            using (SqlConnection con = new SqlConnection(CSCS_SQL.ConnectionString))
+            using (SqlConnection con = new SqlConnection(_instance.ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
@@ -392,7 +420,7 @@ namespace SplitAndMerge
             return FillWithResults(table, results);
         }
 
-        public static Variable FillWithResults(DataTable table, Variable results = null)
+        public Variable FillWithResults(DataTable table, Variable results = null)
         {
             if (table.Rows == null || table.Rows.Count == 0)
             {
@@ -419,7 +447,7 @@ namespace SplitAndMerge
             return results;
         }
 
-        public static Variable ConvertToVariable(object item, string objType)
+        public Variable ConvertToVariable(object item, string objType)
         {
             objType = objType.ToLower();
             switch (objType)
@@ -450,7 +478,7 @@ namespace SplitAndMerge
                 case "text":
                 case "ntext":
                 case "string":
-                    return new Variable(item.ToString());
+                    return new Variable((string)item);
                 case "date":
                 case "time":
                 case "timestamp":
@@ -464,7 +492,7 @@ namespace SplitAndMerge
             }
         }
 
-        public static SqlDbType StringToSqlDbType(string strType)
+        public SqlDbType StringToSqlDbType(string strType)
         {
             switch (strType.ToLower())
             {
@@ -498,7 +526,7 @@ namespace SplitAndMerge
             }
         }
 
-        public static object SqlDbTypeToVariable(SqlDbType dbType, Variable var)
+        public object SqlDbTypeToVariable(SqlDbType dbType, Variable var)
         {
             switch (dbType)
             {
@@ -523,7 +551,7 @@ namespace SplitAndMerge
             return var.AsString();
         }
 
-        public static Type SqlDbTypeToType(SqlDbType dbType)
+        public Type SqlDbTypeToType(SqlDbType dbType)
         {
             switch (dbType)
             {
@@ -551,16 +579,23 @@ namespace SplitAndMerge
 
     class SQLInsertFunction : ParserFunction
     {
+        private CscsSqlModuleInstance _instance;
+
+        public SQLInsertFunction(CscsSqlModuleInstance instance)
+        {
+            _instance = instance;
+        }
+
         protected override Variable Evaluate(ParsingScript script)
         {
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 3, m_name);
-            CSCS_SQL.CheckConnectionString(script, m_name);
+            _instance.CheckConnectionString(script, m_name);
 
             var tableName = Utils.GetSafeString(args, 0).Trim();
             var colsStr = Utils.GetSafeString(args, 1).Trim();
 
-            var colData = SQLQueryFunction.GetColumnData(tableName);
+            var colData = _instance.SQLQueryFunction.GetColumnData(tableName);
             if (colData == null || colData.Count == 0)
             {
                 throw new ArgumentException("Error: table [" + tableName + "] doesn't exist.");
@@ -582,7 +617,7 @@ namespace SplitAndMerge
             bool oneEntry = valsVariable.Type == Variable.VarType.ARRAY && valsVariable.Tuple.Count >= 1 &&
                             valsVariable.Tuple[0].Type != Variable.VarType.ARRAY;
 
-            using (SqlConnection con = new SqlConnection(CSCS_SQL.ConnectionString))
+            using (SqlConnection con = new SqlConnection(_instance.ConnectionString))
             {
                 con.Open();
                 if (oneEntry)
@@ -606,7 +641,7 @@ namespace SplitAndMerge
             return new Variable(oneEntry ? 1 : valsVariable.Tuple.Count);
         }
 
-        static void InsertRow(SqlCommand cmd, Dictionary<string, SqlDbType> colData, Variable values, string[] cols)
+        void InsertRow(SqlCommand cmd, Dictionary<string, SqlDbType> colData, Variable values, string[] cols)
         {
             if (values.Type != Variable.VarType.ARRAY || values.Tuple.Count < cols.Length)
             {
@@ -618,7 +653,7 @@ namespace SplitAndMerge
                 var varName = "@" + cols[i];
                 var varType = colData[cols[i]];
                 cmd.Parameters.Add(varName, varType);
-                cmd.Parameters[varName].Value = SQLQueryFunction.SqlDbTypeToVariable(varType, values.Tuple[i]);
+                cmd.Parameters[varName].Value = _instance.SQLQueryFunction.SqlDbTypeToVariable(varType, values.Tuple[i]);
             }
 
             cmd.ExecuteNonQuery();
@@ -627,18 +662,25 @@ namespace SplitAndMerge
 
     class SQLNonQueryFunction : ParserFunction
     {
+        private CscsSqlModuleInstance _instance;
+
+        public SQLNonQueryFunction(CscsSqlModuleInstance instance)
+        {
+            _instance = instance;
+        }
+
         protected override Variable Evaluate(ParsingScript script)
         {
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 1, m_name);
-            CSCS_SQL.CheckConnectionString(script, m_name);
+            _instance.CheckConnectionString(script, m_name);
 
             var queryStatement = Utils.GetSafeString(args, 0);
             var spArgs = Utils.GetSafeVariable(args, 1);
-            var sp = SQLQueryFunction.GetParameters(spArgs);
+            var sp = _instance.SQLQueryFunction.GetParameters(spArgs);
 
             int result = 0;
-            using (SqlConnection con = new SqlConnection(CSCS_SQL.ConnectionString))
+            using (SqlConnection con = new SqlConnection(_instance.ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(queryStatement, con))
                 {
@@ -657,18 +699,21 @@ namespace SplitAndMerge
 
     class SQLDescribe : ParserFunction
     {
+        private CscsSqlModuleInstance _instance;
+
         internal enum Mode { SP_DESC, TABLES, PROCEDURES};
         Mode m_mode;
 
-        internal SQLDescribe(Mode mode = Mode.SP_DESC)
+        internal SQLDescribe(CscsSqlModuleInstance instance, Mode mode = Mode.SP_DESC)
         {
+            _instance = instance;
             m_mode = mode;
         }
 
         protected override Variable Evaluate(ParsingScript script)
         {
             List<Variable> args = script.GetFunctionArgs();
-            CSCS_SQL.CheckConnectionString(script, m_name);
+            _instance.CheckConnectionString(script, m_name);
 
             switch (m_mode)
             {
@@ -680,7 +725,7 @@ namespace SplitAndMerge
                     {
                         new KeyValuePair<string, object>("@objname", argName)
                     };
-                    var results = SQLSPFunction.ExecuteSP(spName, spParams);
+                    var results = _instance.SQLSPFunction.ExecuteSP(spName, spParams);
                     if (results.Type == Variable.VarType.ARRAY && results.Tuple.Count >= 1 &&
                         results.Tuple[0].Type == Variable.VarType.ARRAY && results.Tuple[0].Count >= 1)
                     {
@@ -690,17 +735,17 @@ namespace SplitAndMerge
                     }
                     return results;
                 case Mode.TABLES:
-                    return RemoveListEntries(SQLQueryFunction.GetData("SELECT name FROM sysobjects WHERE xtype = 'U'",
+                    return RemoveListEntries(_instance.SQLQueryFunction.GetData("SELECT name FROM sysobjects WHERE xtype = 'U'",
                         null, null, false));
                 case Mode.PROCEDURES:
-                    return RemoveListEntries(SQLQueryFunction.GetData("SELECT NAME from SYS.PROCEDURES",
+                    return RemoveListEntries(_instance.SQLQueryFunction.GetData("SELECT NAME from SYS.PROCEDURES",
                         null, null, false));
             }
 
             return Variable.EmptyInstance;
         }
 
-        static Variable RemoveListEntries(Variable v)
+        Variable RemoveListEntries(Variable v)
         {
             if (v.Type != Variable.VarType.ARRAY || v.Tuple.Count == 0)
             {
@@ -719,17 +764,24 @@ namespace SplitAndMerge
 
     class SQLSPFunction : ParserFunction
     {
+        private CscsSqlModuleInstance _instance;
+
+        public SQLSPFunction(CscsSqlModuleInstance instance)
+        {
+            _instance = instance;
+        }
+
         protected override Variable Evaluate(ParsingScript script)
         {
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 1, m_name);
-            CSCS_SQL.CheckConnectionString(script, m_name);
+            _instance.CheckConnectionString(script, m_name);
             var spName = Utils.GetSafeString(args, 0);
 
             return ExecuteSP(spName, null, args);
         }
 
-        public static Variable ExecuteSP(string spName, List<KeyValuePair<string,object>> spParams = null,
+        public Variable ExecuteSP(string spName, List<KeyValuePair<string,object>> spParams = null,
             List<Variable> args = null)
         {
             SqlCommand sqlcom = new SqlCommand(spName);
@@ -757,7 +809,7 @@ namespace SplitAndMerge
                         DataTable dt = new DataTable();
                         foreach (var entry in typeData)
                         {
-                            var type = SQLQueryFunction.SqlDbTypeToType((SqlDbType)entry.Value);
+                            var type = _instance.SQLQueryFunction.SqlDbTypeToType((SqlDbType)entry.Value);
                             dt.Columns.Add(new DataColumn(entry.Key, type));
                         }
                         for (int j = 0; j < arg.Tuple.Count; j++)
@@ -784,7 +836,7 @@ namespace SplitAndMerge
             }
 
             DataTable table = new DataTable("results");
-            using (SqlConnection con = new SqlConnection(CSCS_SQL.ConnectionString))
+            using (SqlConnection con = new SqlConnection(_instance.ConnectionString))
             {
                 sqlcom.Connection = con;
                 con.Open();
@@ -794,11 +846,11 @@ namespace SplitAndMerge
                 con.Close();
             }
 
-            Variable results = SQLQueryFunction.FillWithResults(table);
+            Variable results = _instance.SQLQueryFunction.FillWithResults(table);
             return results == null ? new Variable(result) : results;
         }
 
-        static List<KeyValuePair<string, object>> GetSPData(string spName)
+        List<KeyValuePair<string, object>> GetSPData(string spName)
         {
             var colTypes = new List<KeyValuePair<string, object>>();
             var existing = new HashSet<string>();
@@ -811,7 +863,7 @@ namespace SplitAndMerge
             List<SqlParameter> sp = new List<SqlParameter>();
             sp.Add(new SqlParameter("@0", spName));
 
-            var data = SQLQueryFunction.GetData(query, "", sp);
+            var data = _instance.SQLQueryFunction.GetData(query, "", sp);
             var str = data.AsString().ToLower();
             int start = str.IndexOf('@');
             while (start > 0)
@@ -831,12 +883,12 @@ namespace SplitAndMerge
                 var paramType = str.Substring(end1 + 1, end2 - end1).Trim();
                 try
                 {
-                    var sqlType = SQLQueryFunction.StringToSqlDbType(paramType);
+                    var sqlType = _instance.SQLQueryFunction.StringToSqlDbType(paramType);
                     colTypes.Add(new KeyValuePair<string, object>(paramName, sqlType));
                 }
                 catch (Exception)
                 {
-                    var colData = SQLQueryFunction.GetColumnUserData(paramType);
+                    var colData = _instance.SQLQueryFunction.GetColumnUserData(paramType);
                     colTypes.Add(new KeyValuePair<string, object>(paramName, colData));
                 }
                 start = str.IndexOf('@', end2 + 1);
@@ -847,11 +899,14 @@ namespace SplitAndMerge
 
     class SQLDBOperationsFunction : ParserFunction
     {
+        private CscsSqlModuleInstance _instance;
+
         internal enum Mode { DROP_DB, CREATE_DB, DROP_TABLE };
         Mode m_mode;
 
-        internal SQLDBOperationsFunction(Mode mode)
+        internal SQLDBOperationsFunction(CscsSqlModuleInstance instance, Mode mode)
         {
+            _instance = instance;
             m_mode = mode;
         }
 
@@ -859,7 +914,7 @@ namespace SplitAndMerge
         {
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 1, m_name);
-            CSCS_SQL.CheckConnectionString(script, m_name);
+            _instance.CheckConnectionString(script, m_name);
 
             var arg = Utils.GetSafeString(args, 0).Trim();
             string statement = "";
@@ -876,7 +931,7 @@ namespace SplitAndMerge
                     break;
             }
             int result = 0;
-            using (SqlConnection con = new SqlConnection(CSCS_SQL.ConnectionString))
+            using (SqlConnection con = new SqlConnection(_instance.ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(statement, con))
                 {
@@ -890,11 +945,18 @@ namespace SplitAndMerge
 
     class SQLColumnsFunction : ParserFunction
     {
+        private CscsSqlModuleInstance _instance;
+
+        public SQLColumnsFunction(CscsSqlModuleInstance instance)
+        {
+            _instance = instance;
+        }
+
         protected override Variable Evaluate(ParsingScript script)
         {
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 1, m_name);
-            CSCS_SQL.CheckConnectionString(script, m_name);
+            _instance.CheckConnectionString(script, m_name);
 
             var tableName = Utils.GetSafeString(args, 0);
             bool namesOnly = Utils.GetSafeInt(args, 1, 0) == 1;
@@ -902,9 +964,9 @@ namespace SplitAndMerge
             return GetColsData(tableName, namesOnly);
         }
 
-        public static Variable GetColsData(string tableName, bool namesOnly = false)
+        public Variable GetColsData(string tableName, bool namesOnly = false)
         {
-            var colData = SQLQueryFunction.GetColumnData(tableName);
+            var colData = _instance.SQLQueryFunction.GetColumnData(tableName);
 
             if (colData == null || colData.Count == 0)
             {

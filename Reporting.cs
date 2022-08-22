@@ -23,10 +23,10 @@ namespace WpfCSCS
     {
         public static void Init()
         {
-            ParserFunction.RegisterFunction(Constants.SETUP_REPORT, new ReportFunction(ReportOption.Setup));
-            ParserFunction.RegisterFunction(Constants.OUTPUT_REPORT, new ReportFunction(ReportOption.Output));
-            ParserFunction.RegisterFunction(Constants.UPDATE_REPORT, new ReportFunction(ReportOption.Update));
-            ParserFunction.RegisterFunction(Constants.PRINT_REPORT, new ReportFunction(ReportOption.Print));
+            Interpreter.Instance.RegisterFunction(Constants.SETUP_REPORT, new ReportFunction(ReportOption.Setup));
+            Interpreter.Instance.RegisterFunction(Constants.OUTPUT_REPORT, new ReportFunction(ReportOption.Output));
+            Interpreter.Instance.RegisterFunction(Constants.UPDATE_REPORT, new ReportFunction(ReportOption.Update));
+            Interpreter.Instance.RegisterFunction(Constants.PRINT_REPORT, new ReportFunction(ReportOption.Print));
         }
 
         ReportOption option;
