@@ -254,6 +254,8 @@ namespace WpfCSCS
 
             ParserFunction.RegisterFunction(Constants.DISPLAY_ARRAY_SETUP, new DisplayArraySetupFunction());
             ParserFunction.RegisterFunction(Constants.DISPLAY_ARRAY_REFRESH, new DisplayArrayRefreshFunction());
+
+            ParserFunction.RegisterFunction(Constants.DATAGRID, new DataGridFunction());
         }
 
         public static Dictionary<string, string> Databases { get; set; } = new Dictionary<string, string>(); // <SYCD_USERCODE, SYCD_DBASENAME>
@@ -924,12 +926,28 @@ order by {orderByString}
 
                 StringBuilder gStringBuilder = new StringBuilder();
 
+                gStringBuilder.Append("(");
+                
+
+                for (int i = 0; i < keySegmentsOrdered.Count; i++)
+                {
+                    gStringBuilder.Append(keySegmentsOrdered[i] + $" = " + $"@{i} AND ");
+
+                }
+                gStringBuilder.Remove(gStringBuilder.Length - 5, 5); // remove last " AND "
+                
+
+                gStringBuilder.Append(")");
+
+                gStringBuilder.Append(" OR ");
+
                 for (int j = keySegmentsOrdered.Count; j > 0; j--)
                 {
                     gStringBuilder.Append("(");
                     for (int i = 0; i < j; i++)
                     {
-                        gStringBuilder.Append(keySegmentsOrdered[i] + $" {(i + 1 == j ? " > " : " = ")} " + $"@{i} AND ");
+                        gStringBuilder.Append(keySegmentsOrdered[i] + $" {(i +1 == j ? " > " : " = ")} " + $"@{i} AND ");
+
                     }
                     gStringBuilder.Remove(gStringBuilder.Length - 5, 5); // remove last " AND "
                     gStringBuilder.Append(")");
@@ -2485,8 +2503,12 @@ WHERE ID = {thisOpenv.currentRow}
         }
 
 
+        static Dictionary<string, DataTable> gridsDataTables = new Dictionary<string, DataTable>(); // <gridName, DataTable>
+
         public class DisplayTableSetupFunction : ParserFunction
         {
+            string gridName;
+
             int tableHndlNum;
 
             string tableKey;
@@ -2501,7 +2523,7 @@ WHERE ID = {thisOpenv.currentRow}
 
             ParsingScript Script;
 
-            DataTable gridSource;
+            //DataTable gridSource;
             Dictionary<string, string> tagsAndHeaders;
             Dictionary<string, Type> tagsAndTypes;
             Dictionary<string, Type> newTagsAndTypes;
@@ -2514,7 +2536,7 @@ WHERE ID = {thisOpenv.currentRow}
                 List<Variable> args = script.GetFunctionArgs();
                 Utils.CheckArgs(args.Count, 3, m_name);
 
-                string gridName = Utils.GetSafeString(args, 0);
+                gridName = Utils.GetSafeString(args, 0);
                 tableHndlNum = Utils.GetSafeInt(args, 1);
                 tableKey = Utils.GetSafeString(args, 2);
 
@@ -2620,13 +2642,13 @@ WHERE ID = {thisOpenv.currentRow}
                     }
                 }
 
-                gridSource = new DataTable();
+                gridsDataTables[gridName] = new DataTable();
                 var idColumn = new DataColumn();
                 idColumn.DataType = System.Type.GetType("System.Int32");
                 idColumn.ColumnName = "ID";
                 idColumn.Caption = "ID";
                 idColumn.ReadOnly = true;
-                gridSource.Columns.Add(idColumn);
+                gridsDataTables[gridName].Columns.Add(idColumn);
 
                 newTagsAndTypes = new Dictionary<string, Type>();
                 foreach (var item in tagsAndTypes)
@@ -2679,7 +2701,7 @@ WHERE ID = {thisOpenv.currentRow}
 
 
                     newColumn.Caption = tagsAndHeaders[item.Key];
-                    gridSource.Columns.Add(newColumn);
+                    gridsDataTables[gridName].Columns.Add(newColumn);
                 }
 
 
@@ -2708,7 +2730,7 @@ WHERE ID = {thisOpenv.currentRow}
                 dg.SelectionMode = DataGridSelectionMode.Single;
                 dg.SelectionUnit = DataGridSelectionUnit.FullRow;
 
-                dg.ItemsSource = gridSource.AsDataView();
+                dg.ItemsSource = gridsDataTables[gridName].AsDataView();
                 //dg.ItemsSource = gridSource.DefaultView;
 
                 //dg.SelectionChanged += Dg_SelectionChanged;
@@ -2719,6 +2741,11 @@ WHERE ID = {thisOpenv.currentRow}
 
                 dg.SelectedCellsChanged += Dg_SelectedCellsChanged;
                 //-------------------------------------------------------------------------------
+
+                grids[gridName] = new DisplayArrayClass()
+                {
+                    dg = dg
+                };
 
                 fillDataTableQuery();
 
@@ -2762,7 +2789,7 @@ WHERE ID = {thisOpenv.currentRow}
 
                 //---------------------------------------------------------------------------
 
-                gridSource.Rows.Clear();
+                gridsDataTables[gridName].Rows.Clear();
 
                 bool whileIsSet = false;
                 if (!string.IsNullOrEmpty(whileString))
@@ -2780,7 +2807,7 @@ WHERE ID = {thisOpenv.currentRow}
                         continue;
                     }
 
-                    var currentRow = gridSource.NewRow();
+                    var currentRow = gridsDataTables[gridName].NewRow();
 
                     currentRow["ID"] = thisOpenv.currentRow;
 
@@ -2791,7 +2818,7 @@ WHERE ID = {thisOpenv.currentRow}
                             currentRow[column.Key] = defVar.AsString();
                         }
                     }
-                    gridSource.Rows.Add(currentRow);
+                    gridsDataTables[gridName].Rows.Add(currentRow);
 
 
                     new Btrieve.FINDVClass(tableHndlNum, "n").FINDV();
@@ -2893,8 +2920,8 @@ order by {orderBySB}
                             }
                             else
                             {
-                                gridSource.Rows.Clear();
-                                gridSource.Load(reader);
+                                gridsDataTables[gridName].Rows.Clear();
+                                gridsDataTables[gridName].Load(reader);
                             }
                         }
                     }
@@ -3142,40 +3169,47 @@ order by {orderBySB}
             {
                 var dg = (sender as DataGrid);
 
-                var currentItemArray = (dg.CurrentItem as DataRowView).Row.ItemArray;
-
-                var currentRowIndex = dg.Items.IndexOf(dg.CurrentItem);
-                if (currentRowIndex != lastRowIndex)
+                try
                 {
-                    lastRowIndex = currentRowIndex;
-                    rowBeforeEdit = currentItemArray;
+                    var currentItemArray = (dg.CurrentItem as DataRowView).Row.ItemArray;
 
-                    var currRow = (dg.CurrentItem as DataRowView).Row;
-                    for (int i = 1; i < currRow.Table.Columns.Count; i++)
+                    var currentRowIndex = dg.Items.IndexOf(dg.CurrentItem);
+                    if (currentRowIndex != lastRowIndex)
                     {
-                        if(currentItemArray[i] is DateTime)
-                        {
-                            var currentItemAsDateTime = currentItemArray[i] as DateTime?;
-                            string initForDefine = "";
-                            switch (timeAndDateEditerTagsAndSizes[currRow.Table.Columns[i].ColumnName])
-                            {
-                                case 10:
-                                    initForDefine = currentItemAsDateTime.Value.ToString("dd/MM/yyyy");
-                                    break;
-                                case 8:
-                                    initForDefine = currentItemAsDateTime.Value.ToString("dd/MM/yy");
-                                    break;
-                            }
+                        lastRowIndex = currentRowIndex;
+                        rowBeforeEdit = currentItemArray;
 
-                            CSCS_GUI.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable(initForDefine));
-                            CSCS_GUI.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable(initForDefine), true);
-                        }
-                        else
+                        var currRow = (dg.CurrentItem as DataRowView).Row;
+                        for (int i = 1; i < currRow.Table.Columns.Count; i++)
                         {
-                            CSCS_GUI.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable(currentItemArray[i]));
-                            CSCS_GUI.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable(currentItemArray[i]), true);
+                            if (currentItemArray[i] is DateTime)
+                            {
+                                var currentItemAsDateTime = currentItemArray[i] as DateTime?;
+                                string initForDefine = "";
+                                switch (timeAndDateEditerTagsAndSizes[currRow.Table.Columns[i].ColumnName])
+                                {
+                                    case 10:
+                                        initForDefine = currentItemAsDateTime.Value.ToString("dd/MM/yyyy");
+                                        break;
+                                    case 8:
+                                        initForDefine = currentItemAsDateTime.Value.ToString("dd/MM/yy");
+                                        break;
+                                }
+
+                                CSCS_GUI.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable(initForDefine));
+                                CSCS_GUI.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable(initForDefine), true);
+                            }
+                            else
+                            {
+                                CSCS_GUI.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable(currentItemArray[i]));
+                                CSCS_GUI.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable(currentItemArray[i]), true);
+                            }
                         }
                     }
+                }
+                catch
+                {
+
                 }
 
                 dg.BeginEdit();
@@ -3211,7 +3245,7 @@ order by {orderBySB}
                 {
                     (sender as DataGrid).CommitEdit();
 
-                    var rowItemArray = gridSource.Rows[rowIndex].ItemArray;
+                    var rowItemArray = gridsDataTables[gridName].Rows[rowIndex].ItemArray;
 
                     SaveRow(rowItemArray);
                 }
@@ -3238,6 +3272,7 @@ order by {orderBySB}
                 {
                     //INSERT sql
                     rowItemArray[0] = 0;
+                    thisOpenv.currentRow = 0;
                     new ClrFunction().Clear(tableHndlNum, "b");
                     redisplay = true;
                 }
@@ -4128,6 +4163,98 @@ order by {orderBySB}
 
                 return Variable.EmptyInstance;
             }
+        }
+
+        class DataGridFunction : ParserFunction
+        {
+            protected override Variable Evaluate(ParsingScript script)
+            {
+                List<Variable> args = script.GetFunctionArgs();
+                Utils.CheckArgs(args.Count, 2, m_name);
+
+                var gridName = Utils.GetSafeString(args, 0).ToLower();
+                var option = Utils.GetSafeString(args, 1).ToLower();
+
+                if (CSCS_GUI.Controls.TryGetValue(gridName, out FrameworkElement dgFe))
+                {
+                    if (dgFe is DataGrid)
+                    {
+                        DataGrid dg = dgFe as DataGrid;
+
+                        switch (option)
+                        {
+                            case "addrow":
+
+                                //----
+
+                                var newRow = gridsDataTables[gridName].NewRow();
+
+                                //newRow["ID"] = 0;
+
+                                //foreach(var col in grids[gridName].dg.Columns)
+                                //{
+                                //    col.
+                                //}
+
+                                //foreach (var column in tagsAndTypes)
+                                //{
+                                //    if (CSCS_GUI.DEFINES.TryGetValue(column.Key.ToLower(), out DefineVariable defVar))
+                                //    {
+                                //        newRow[column.Key] = defVar.AsString();
+                                //    }
+                                //}
+
+                                gridsDataTables[gridName].Rows.Add(newRow);
+
+                                //----
+                                //gridsDataTables[gridName].Rows.Add()
+                                //.Add(new object[dg.Columns.Count]);
+                                
+                                break;
+                            case "deleterow":
+
+                                //if (deleteFromDB(gridsDataTables[gridName].Rows[dg.SelectedIndex].ItemArray[0].ToString()))
+                                //{
+                                //    gridsDataTables[gridName].Rows.RemoveAt(dg.SelectedIndex);
+                                //}
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+
+                return Variable.EmptyInstance;
+            }
+
+            private bool deleteFromDB(string rowId, string tableName)
+            {
+                //                try
+                //                {
+                //                    var query =
+                //$@"EXECUTE sp_executesql N'
+                //DELETE FROM 
+                //{tableName}
+                //from {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
+                //with (nolock)
+                //{whereSB}
+                //order by {orderBySB}
+                //'";
+
+                //                    using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+                //                    {
+                //                        var ret = cmd.ExecuteNonQuery();
+
+                //                    }
+                //                }
+                //                catch (Exception ex)
+                //                {
+                //                    return false;
+                //                }
+                return false;
+            }
+
+
         }
 
     }

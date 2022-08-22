@@ -66,6 +66,8 @@ namespace SplitAndMerge
         public const string DISPLAY_ARRAY_SETUP = "DisplayArraySetup";
         public const string DISPLAY_ARRAY_REFRESH = "DisplayArrayRefresh";
 
+        public const string DATAGRID = "DataGrid";
+
         public const string FLERR = "Flerr";
 
         public const string NAVIGATOR = "Navigator";
