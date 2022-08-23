@@ -1931,18 +1931,8 @@ namespace SplitAndMerge
 
         public int GetSize()
         {
-            int size = 0;
-            if (Type == Variable.VarType.ARRAY) 
-            {
-                size = Tuple.Count;
-            }
-            else if (Type == Variable.VarType.STRING)
-            {
-                size = String.Length;
-            }            
+            int size = Type == Variable.VarType.ARRAY ? Tuple.Count : 0;
             return size;
-            //int size = Type == Variable.VarType.ARRAY ? Tuple.Count : 0;
-            //return size;
         }
 
         public int GetLength()
