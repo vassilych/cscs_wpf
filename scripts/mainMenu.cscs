@@ -13,22 +13,67 @@ function runScript(sender, load){
 function mainMenuWindow_OnDisplay(){
     
     RemoveMenu("mainMenuDC");
-    AddMenuItem("mainMenuDC", "scriptsDC", "Scripts");
+    AddMenuItem("mainMenuDC", "ScriptsDC", "Scripts");
 
 
-    AddMenuItem("scriptsDC", "defaultWindow.cscs", "Default window", "runScript");
-    AddMenuItem("scriptsDC", "start.cscs", "Sample", "runScript");
+    AddMenuItem("ScriptsDC", "defaultWindow.cscs", "Default window", "runScript");
+    AddMenuItem("ScriptsDC", "start.cscs", "Sample", "runScript");
     
-    AddMenuItem("scriptsDC", "script1.cscs", "script1", "runScript");
-    AddMenuItem("scriptsDC", "script2.cscs", "script2", "runScript");
-    AddMenuItem("scriptsDC", "editDatabases.cscs", "editDatabases - using FillOutGrid", "runScript");
-    AddMenuItem("scriptsDC", "editDatabases2.cscs", "editDatabases2 - using DisplayArrFunc", "runScript");
+    AddMenuItem("ScriptsDC", "script1.cscs", "script1", "runScript");
+    AddMenuItem("ScriptsDC", "script2.cscs", "script2", "runScript");
 
-    AddMenuItem("scriptsDC", "testScan1.cscs", "testScan1", "runScript");
+    //------------------------------------
 
-    AddMenuItem("scriptsDC", "tabControl.cscs", "tabControl", "runScript");
+    AddMenuSeparator("ScriptsDC");
+    AddMenuItem("ScriptsDC", "DataGridDC", "DataGrid");
+    
+    AddMenuSeparator("ScriptsDC");
+    AddMenuItem("ScriptsDC", "BtrieveDC", "Btrieve");
+    
+    AddMenuSeparator("ScriptsDC");
+    AddMenuItem("ScriptsDC", "ReportingDC", "Reporting");
+    
+    AddMenuSeparator("ScriptsDC");
+    AddMenuItem("ScriptsDC", "OtherDC", "Other");
+    
+    //------------------------------------
 
-    AddMenuItem("scriptsDC", "testNavigator.cscs", "testNavigator", "runScript");
+    AddMenuItem("DataGridDC", "testDisplayTableSetup.cscs", "testDisplayTableSetup", "runScript");
+    AddMenuItem("DataGridDC", "testDisplayArrSetup.cscs", "testDisplayArrSetup", "runScript");
+    AddMenuItem("DataGridDC", "testDisplayArraySetup.cscs", "testDisplayArraySetup", "runScript");
+    AddMenuItem("DataGridDC", "testDisplayArraySetupLotsOfData.cscs", "testDisplayArraySetupLotsOfData", "runScript");
+    AddMenuSeparator("DataGridDC");
+    AddMenuItem("DataGridDC", "testDisplayTableSetup2.cscs", "testDisplayTableSetup2", "runScript");
+    AddMenuItem("DataGridDC", "testDisplayArraySetup2.cscs", "testDisplayArraySetup2", "runScript");
+
+    //------------------------------------
+
+    AddMenuItem("BtrieveDC", "testScan1.cscs", "testScan1", "runScript");
+
+    //------------------------------------
+
+    AddMenuItem("ReportingDC", "TestReporting4_NKPRINV(L) - sa SCANom.cscs", "TestReporting4_NKPRINV(L) - sa SCANom", "runScript");
+    AddMenuItem("ReportingDC", "TestReporting4_NKPRINV(L).cscs", "TestReporting4_NKPRINV(L) - findv m i n", "runScript");
+
+    //------------------------------------
+
+    AddMenuItem("OtherDC", "editDatabases.cscs", "editDatabases - using FillOutGrid", "runScript");
+    AddMenuItem("OtherDC", "editDatabases2.cscs", "editDatabases2 - using DisplayArrFunc", "runScript");
+    AddMenuItem("OtherDC", "testDates.cscs", "testDates", "runScript");
+    AddMenuItem("OtherDC", "tabControl.cscs", "tabControl", "runScript");
+    AddMenuItem("OtherDC", "testNavigator.cscs", "testNavigator", "runScript");
+    AddMenuItem("OtherDC", "testcscs_a.cscs", "testcscs_a", "runScript");
+    AddMenuItem("OtherDC", "testcscs_b.cscs", "testcscs_b", "runScript");
+    AddMenuItem("OtherDC", "testVarInFunc.cscs", "testVarInFunc", "runScript");
+
+    //------------------------------------
+
+    
+    
+
+
+
+    
     
 }
 

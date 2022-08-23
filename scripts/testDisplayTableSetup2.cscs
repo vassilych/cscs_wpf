@@ -1,0 +1,40 @@
+CreateWindow("../../scripts/testDisplayTableSetup2.xaml");
+
+DEFINE table_hndl type i;
+
+table_hndl = openv("invoiceLines", "DB1");
+if(flerr() != 0){
+    MessageBox("flerr = " + Flerr());
+    exit;
+}
+
+
+//// switch commented and uncommented for checkbox filter
+
+//DisplayTableSetup("grid1", table_hndl, "InvoiceLine_invoiceLineNumber", "1|1", "invoiceNumber < 40", "bitcolumn = 0");
+DisplayTableSetup("grid1", table_hndl, "InvoiceLine_invoiceLineNumber", "1|1", "invoiceNumber < 40", "");
+
+i = 2;
+function btnES@Clicked(){
+    if(i%2 == 0){
+        SetWidgetOptions("grid1", "EditMode");
+    }
+    else{
+        SetWidgetOptions("grid1", "SelectMode");   
+    }
+
+    i++;
+}
+
+function btnAdd@clicked(){
+    SetWidgetOptions("grid1", "EditMode");
+    DataGrid("grid1", "AddRow");
+}
+
+function btnDel@clicked(){
+    // SetWidgetOptions("grid1", "EditMode");
+    // DataGrid("grid1", "AddRow");
+    MessageBox("btnDel@clicked");
+    DataGrid("grid1", "DeleteRow");
+}
+

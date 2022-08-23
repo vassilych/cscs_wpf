@@ -1,0 +1,11 @@
+CreateWindow("../../scripts/DisplayTableSetupWindow.xaml");
+
+DEFINE table_hndl type i;
+
+table_hndl = openv("invoiceLines");
+if(flerr() != 0){
+    MessageBox("flerr = " + Flerr());
+    exit;
+}
+
+DisplayTableSetup("grid1", table_hndl, "InvoiceLine_invoiceLineNumber", /*"2|1"*/, /*"invoiceNumber == 2"*/, /*"bitcolumn == true"*/);
