@@ -1158,7 +1158,7 @@ namespace WpfCSCS
             if (s_MoveHandlers.TryGetValue(widgetName, out funcName))
             {
                 Control2Window.TryGetValue(widget, out Window win);
-                var result = Interpreter.Run(funcName, new Variable(widgetName), null,
+                var result = Interpreter.Instance.Run(funcName, new Variable(widgetName), null,
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
             }
         }
@@ -1182,7 +1182,7 @@ namespace WpfCSCS
             if (s_SelectHandlers.TryGetValue(widgetName, out funcName))
             {
                 Control2Window.TryGetValue(widget, out Window win);
-                var result = Interpreter.Run(funcName, new Variable(widgetName), null,
+                var result = Interpreter.Instance.Run(funcName, new Variable(widgetName), null,
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
             }
         }

@@ -4004,7 +4004,7 @@ order by {orderBySB}
                 string funcName = widgetName + "@Header";
 
                 CSCS_GUI.Control2Window.TryGetValue(dgch, out Window win);
-                Interpreter.Run(funcName, new Variable(widgetName), null,
+                Interpreter.Instance.Run(funcName, new Variable(widgetName), null,
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
             }
 

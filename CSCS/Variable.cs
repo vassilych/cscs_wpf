@@ -1941,6 +1941,8 @@ namespace SplitAndMerge
                 size = String.Length;
             }            
             return size;
+            //int size = Type == Variable.VarType.ARRAY ? Tuple.Count : 0;
+            //return size;
         }
 
         public int GetLength()
