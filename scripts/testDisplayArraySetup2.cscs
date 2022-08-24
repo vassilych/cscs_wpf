@@ -1,4 +1,4 @@
-CreateWindow("../../scripts/testDisplayArraySetup.xaml");
+CreateWindow("../../scripts/testDisplayArraySetup2.xaml");
 
 DEFINE Array1 type d size 8 array 6;
 DEFINE Array2 type n size 10 array 6;
