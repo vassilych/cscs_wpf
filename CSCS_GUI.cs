@@ -312,6 +312,7 @@ namespace WpfCSCS
             Interpreter.Instance.RegisterFunction("FillWidget", new FillWidgetFunction());
 
             Interpreter.Instance.RegisterFunction("AsyncCall", new AsyncCallFunction());
+            Interpreter.Instance.RegisterFunction(Constants.QUIT, new WpfQuitCommand());
 
             Interpreter.Instance.AddAction(Constants.ASSIGNMENT, new MyAssignFunction());
             Interpreter.Instance.AddAction(Constants.POINTER, new MyPointerFunction());
@@ -4819,6 +4820,46 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
 
             ThreadPool.QueueUserWorkItem(unused => ThreadProc(newThreadFunction, callbackFunction, args));
             return Variable.EmptyInstance;
+        }
+
+        static void ThreadProc(CustomFunction newThreadFunction, CustomFunction callbackFunction, List<Variable> args)
+        {
+            Variable result = Interpreter.Instance.Run(newThreadFunction, args);
+
+            var resultArgs = new List<Variable>() {
+                new Variable(newThreadFunction.Name), result
+            };
+
+            RunOnMainFunction.RunOnMainThread(callbackFunction, resultArgs);
+        }
+    }
+
+    class WpfQuitCommand : ParserFunction, INumericFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+
+            foreach (var item in CSCS_GUI.DEFINES)
+            {
+                var defineVar = item.Value;
+
+                DataGrid dg = defineVar.Object as DataGrid;
+                if (dg != null)
+                {
+                    dg.IsEnabled = false;
+                }
+
+                var name = item.Key;
+                if (!CSCS_GUI.WIDGETS.TryGetValue(name, out WidgetData wd))
+                {
+                    continue;
+                }
+                var widget = wd.widget;
+                widget.IsEnabled = false;
+            }
+
+            return new Variable(0L);
         }
 
         static void ThreadProc(CustomFunction newThreadFunction, CustomFunction callbackFunction, List<Variable> args)
