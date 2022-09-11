@@ -1,5 +1,6 @@
 #MAINMENU;
 //#WINFORM not working
+Import("CSCS.Math");
 
 CreateWindow("../../scripts/mainMenuWindow.xaml");
 

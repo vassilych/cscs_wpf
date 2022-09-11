@@ -578,7 +578,7 @@ namespace SplitAndMerge
         {
             if (script == null)
             {
-                script = new ParsingScript(Interpreter.Instance, "");
+                script = new ParsingScript(script.InterpreterInstance, "");
             }
             varName = varName.ToLower();
 

@@ -4,17 +4,75 @@ using System.Linq;
 using static System.Math;
 using System.Threading.Tasks;
 
-namespace SplitAndMerge
+using SplitAndMerge;
+using System.Xml.Linq;
+
+namespace CSCSMath
 {
-    interface INumericFunction { }
-    interface IArrayFunction { }
-    interface IStringFunction { }
+    public class CscsMathModule : ICscsModule
+    {
+        public ICscsModuleInstance CreateInstance(Interpreter interpreter)
+        {
+            return new CscsMathModuleInstance(interpreter);
+        }
+
+        public void Terminate()
+        {
+        }
+    }
+
+    public class CscsMathModuleInstance : ICscsModuleInstance
+    {
+        public CscsMathModuleInstance(Interpreter interpreter)
+        {
+            interpreter.RegisterFunction(Constants.MATH_ABS, new AbsFunction());
+            interpreter.RegisterFunction(Constants.MATH_ACOS, new AcosFunction());
+            interpreter.RegisterFunction(Constants.MATH_ACOSH, new AcoshFunction());
+            interpreter.RegisterFunction(Constants.MATH_ASIN, new AsinFunction());
+            interpreter.RegisterFunction(Constants.MATH_ASINH, new AsinhFunction());
+            interpreter.RegisterFunction(Constants.MATH_ATAN, new TanFunction());
+            interpreter.RegisterFunction(Constants.MATH_ATAN2, new Atan2Function());
+            interpreter.RegisterFunction(Constants.MATH_ATANH, new AtanhFunction());
+            interpreter.RegisterFunction(Constants.MATH_CBRT, new CbrtFunction());
+            interpreter.RegisterFunction(Constants.MATH_CEIL, new CeilFunction());
+            interpreter.RegisterFunction(Constants.MATH_COS, new CosFunction());
+            interpreter.RegisterFunction(Constants.MATH_COSH, new CoshFunction());
+            interpreter.RegisterFunction(Constants.MATH_E, new EFunction());
+            interpreter.RegisterFunction(Constants.MATH_EXP, new ExpFunction());
+            interpreter.RegisterFunction(Constants.MATH_FLOOR, new FloorFunction());
+            interpreter.RegisterFunction(Constants.MATH_INFINITY, new InfinityFunction());
+            interpreter.RegisterFunction(Constants.MATH_ISFINITE, new IsFiniteFunction());
+            interpreter.RegisterFunction(Constants.MATH_ISNAN, new IsNaNFunction());
+            interpreter.RegisterFunction(Constants.MATH_LN2, new Ln2Function());
+            interpreter.RegisterFunction(Constants.MATH_LN10, new Ln10Function());
+            interpreter.RegisterFunction(Constants.MATH_LOG, new LogFunction());
+            interpreter.RegisterFunction(Constants.MATH_LOG2E, new Log2EFunction());
+            interpreter.RegisterFunction(Constants.MATH_LOG10E, new Log10EFunction());
+            interpreter.RegisterFunction(Constants.MATH_MIN, new MinFunction());
+            interpreter.RegisterFunction(Constants.MATH_MAX, new MaxFunction());
+            interpreter.RegisterFunction(Constants.MATH_NEG_INFINITY, new NegInfinityFunction());
+            interpreter.RegisterFunction(Constants.MATH_PI, new PiFunction());
+            interpreter.RegisterFunction(Constants.MATH_POW, new PowFunction());
+            interpreter.RegisterFunction(Constants.MATH_RANDOM, new GetRandomFunction(true));
+            interpreter.RegisterFunction(Constants.MATH_ROUND, new RoundFunction());
+            interpreter.RegisterFunction(Constants.MATH_SQRT, new SqrtFunction());
+            interpreter.RegisterFunction(Constants.MATH_SQRT1_2, new Sqrt1_2Function());
+            interpreter.RegisterFunction(Constants.MATH_SQRT2, new Sqrt2Function());
+            interpreter.RegisterFunction(Constants.MATH_SIGN, new SignFunction());
+            interpreter.RegisterFunction(Constants.MATH_SIN, new SinFunction());
+            interpreter.RegisterFunction(Constants.MATH_SINH, new SinhFunction());
+            interpreter.RegisterFunction(Constants.MATH_TAN, new TanFunction());
+            interpreter.RegisterFunction(Constants.MATH_TANH, new TanhFunction());
+            interpreter.RegisterFunction(Constants.MATH_TRUNC, new FloorFunction());
+        }
+    }
+
 
     class PiFunction : ParserFunction, INumericFunction
     {
         protected override Variable Evaluate(ParsingScript script)
         {
-            return new Variable(Math.PI);
+            return new Variable(System.Math.PI);
         }
         public override string Description()
         {
@@ -32,6 +90,65 @@ namespace SplitAndMerge
             return "Returns the number e (2.718281828...)";
         }
     }
+    class InfinityFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            return new Variable(double.PositiveInfinity);
+        }
+        public override string Description()
+        {
+            return "Returns mathematical C# PositiveInfinity.";
+        }
+    }
+    class NegInfinityFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            return new Variable(double.NegativeInfinity);
+        }
+        public override string Description()
+        {
+            return "Returns mathematical C# NegativeInfinity.";
+        }
+    }
+    class IsFiniteFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            Variable arg = args[0];
+
+            double value = arg.Value;
+            if (arg.Type != Variable.VarType.NUMBER &&
+               !double.TryParse(arg.String, out value))
+            {
+                value = double.PositiveInfinity;
+            }
+
+            return new Variable(!double.IsInfinity(value));
+        }
+        public override string Description()
+        {
+            return "Returns if the current expression is finite.";
+        }
+    }
+    class IsNaNFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            Variable arg = args[0];
+            return new Variable(arg.Type != Variable.VarType.NUMBER || double.IsNaN(arg.Value));
+        }
+        public override string Description()
+        {
+            return "Returns if the expression is not a number.";
+        }
+    }
+
     class Sqrt2Function : ParserFunction, INumericFunction
     {
         protected override Variable Evaluate(ParsingScript script)
@@ -47,7 +164,7 @@ namespace SplitAndMerge
     {
         protected override Variable Evaluate(ParsingScript script)
         {
-            return new Variable(Math.Sqrt(1/2));
+            return new Variable(Math.Sqrt(1 / 2));
         }
         public override string Description()
         {
@@ -80,7 +197,7 @@ namespace SplitAndMerge
     {
         protected override Variable Evaluate(ParsingScript script)
         {
-            return new Variable(Math.Log(Math.E, 2)) ;
+            return new Variable(Math.Log(Math.E, 2));
         }
         public override string Description()
         {
@@ -363,7 +480,7 @@ namespace SplitAndMerge
                 if (args[i].Value < result)
                 {
                     result = args[i].Value;
-                } 
+                }
             }
             return new Variable(result);
         }

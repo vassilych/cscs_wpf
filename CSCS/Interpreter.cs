@@ -25,17 +25,38 @@ namespace SplitAndMerge
 
         public TranslationManager Translation { get; private set; }
 
-        private static Interpreter instance;
+        private static Interpreter firstInstance;
+        private static Interpreter lastInstance;
         private static bool m_bHasBeenInitialized = false;
-        public static Interpreter Instance
+
+        public static Interpreter FirstInstance
         {
             get
             {
-                if (instance == null)
+                if (firstInstance == null)
                 {
-                    instance = new Interpreter();
+                    firstInstance = lastInstance;
+                    if (firstInstance == null)
+                    {
+                        firstInstance = lastInstance = new Interpreter();
+                    }
                 }
-                return instance;
+                return firstInstance;
+            }
+        }
+        public static Interpreter LastInstance
+        {
+            get
+            {
+                if (lastInstance == null)
+                {
+                    lastInstance = firstInstance;
+                    if (lastInstance == null)
+                    {
+                        firstInstance = lastInstance = new Interpreter();
+                    }
+                }
+                return lastInstance;
             }
         }
 
@@ -46,10 +67,11 @@ namespace SplitAndMerge
         public Interpreter()
         {
             Init();
-            if (instance == null)
+            if (firstInstance == null)
             {
-                instance = this;
+                firstInstance = this;
             }
+            lastInstance = this;
         }
 
         private int MAX_LOOPS;
@@ -111,7 +133,7 @@ namespace SplitAndMerge
                 new GetVarFunction(new Variable(Variable.VarType.ARRAY)));
 
             InitStandalone();
-            RegisterCompiledClass();
+
         }
 
         public void RegisterFunctions()
@@ -220,47 +242,6 @@ namespace SplitAndMerge
             RegisterFunction(Constants.ADD_DATA, new DataFunction(DataFunction.DataMode.ADD));
             RegisterFunction(Constants.COLLECT_DATA, new DataFunction(DataFunction.DataMode.SUBSCRIBE));
             RegisterFunction(Constants.GET_DATA, new DataFunction(DataFunction.DataMode.SEND));
-
-            // Math Functions
-            RegisterFunction(Constants.MATH_ABS, new AbsFunction());
-            RegisterFunction(Constants.MATH_ACOS, new AcosFunction());
-            RegisterFunction(Constants.MATH_ACOSH, new AcoshFunction());
-            RegisterFunction(Constants.MATH_ASIN, new AsinFunction());
-            RegisterFunction(Constants.MATH_ASINH, new AsinhFunction());
-            RegisterFunction(Constants.MATH_ATAN, new TanFunction());
-            RegisterFunction(Constants.MATH_ATAN2, new Atan2Function());
-            RegisterFunction(Constants.MATH_ATANH, new AtanhFunction());
-            RegisterFunction(Constants.MATH_CBRT, new CbrtFunction());
-            RegisterFunction(Constants.MATH_CEIL, new CeilFunction());
-            RegisterFunction(Constants.MATH_COS, new CosFunction());
-            RegisterFunction(Constants.MATH_COSH, new CoshFunction());
-            RegisterFunction(Constants.MATH_E, new EFunction());
-            RegisterFunction(Constants.MATH_EXP, new ExpFunction());
-            RegisterFunction(Constants.MATH_FLOOR, new FloorFunction());
-            RegisterFunction(Constants.MATH_INFINITY, new InfinityFunction());
-            RegisterFunction(Constants.MATH_ISFINITE, new IsFiniteFunction());
-            RegisterFunction(Constants.MATH_ISNAN, new IsNaNFunction());
-            RegisterFunction(Constants.MATH_LN2, new Ln2Function());
-            RegisterFunction(Constants.MATH_LN10, new Ln10Function());
-            RegisterFunction(Constants.MATH_LOG, new LogFunction());
-            RegisterFunction(Constants.MATH_LOG2E, new Log2EFunction());
-            RegisterFunction(Constants.MATH_LOG10E, new Log10EFunction());
-            RegisterFunction(Constants.MATH_MIN, new MinFunction());
-            RegisterFunction(Constants.MATH_MAX, new MaxFunction());
-            RegisterFunction(Constants.MATH_NEG_INFINITY, new NegInfinityFunction());
-            RegisterFunction(Constants.MATH_PI, new PiFunction());
-            RegisterFunction(Constants.MATH_POW, new PowFunction());
-            RegisterFunction(Constants.MATH_RANDOM, new GetRandomFunction(true));
-            RegisterFunction(Constants.MATH_ROUND, new RoundFunction());
-            RegisterFunction(Constants.MATH_SQRT, new SqrtFunction());
-            RegisterFunction(Constants.MATH_SQRT1_2, new Sqrt1_2Function());
-            RegisterFunction(Constants.MATH_SQRT2, new Sqrt2Function());
-            RegisterFunction(Constants.MATH_SIGN, new SignFunction());
-            RegisterFunction(Constants.MATH_SIN, new SinFunction());
-            RegisterFunction(Constants.MATH_SINH, new SinhFunction());
-            RegisterFunction(Constants.MATH_TAN, new TanFunction());
-            RegisterFunction(Constants.MATH_TANH, new TanhFunction());
-            RegisterFunction(Constants.MATH_TRUNC, new FloorFunction());
 
             RegisterFunction(Constants.CONSOLE_LOG, new PrintFunction());
 
@@ -426,6 +407,10 @@ namespace SplitAndMerge
             {
                 foreach (object item in ienum)
                 {
+                    // We're using IEnumerable, which is typeless.
+                    // But it may be important to make the correct type.
+                    // TODO: Determine what type this is supposed to be (not sure how right now)
+                    // and set the type in the Variable
                     Variable current = new Variable(item);
 
                     script.Pointer = startForCondition;
@@ -490,6 +475,10 @@ namespace SplitAndMerge
             {
                 foreach (object item in ienum)
                 {
+                    // We're using IEnumerable, which is typeless.
+                    // But it may be important to make the correct type.
+                    // TODO: Determine what type this is supposed to be (not sure how right now)
+                    // and set the type in the Variable
                     Variable current = new Variable(item);
                     script.Pointer = startForCondition;
                     AddGlobalOrLocalVariable(varName, new GetVarFunction(current));
@@ -1113,7 +1102,7 @@ namespace SplitAndMerge
             return result;
         }
 
-        private async Task<Variable> ProcessBlockAsync(ParsingScript script)
+        internal async Task<Variable> ProcessBlockAsync(ParsingScript script)
         {
             int blockStart = script.Pointer;
             Variable result = null;
@@ -2238,15 +2227,6 @@ namespace SplitAndMerge
             }
 
             return props;
-        }
-
-        private void RegisterCompiledClass()
-        {
-            RegisterClass("CompiledTest", new TestCompiledClass());
-            RegisterClass("CompiledTestAsync", new TestCompiledClassAsync());
-
-            RegisterFunction("TestObject",
-                new GetVarFunction(new Variable(new TestScriptObject())), true);
         }
 
         #endregion

@@ -125,43 +125,6 @@ namespace SplitAndMerge
             return "Returns a null value.";
         }
     }
-    class InfinityFunction : ParserFunction
-    {
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            return new Variable(double.PositiveInfinity);
-        }
-        public override string Description()
-        {
-            return "Returns mathematical C# PositiveInfinity.";
-        }
-    }
-    class NegInfinityFunction : ParserFunction
-    {
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            return new Variable(double.NegativeInfinity);
-        }
-        public override string Description()
-        {
-            return "Returns mathematical C# NegativeInfinity.";
-        }
-    }
-
-    class IsNaNFunction : ParserFunction
-    {
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            List<Variable> args = script.GetFunctionArgs();
-            Utils.CheckArgs(args.Count, 1, m_name);
-            Variable arg = args[0];
-            return new Variable(arg.Type != Variable.VarType.NUMBER || double.IsNaN(arg.Value));
-        }
-        public override string Description()
-        {
-            return "Returns if the expression is not a number.";
-        }
-    }
 
     class TypeOfFunction : ParserFunction
     {
@@ -212,29 +175,6 @@ namespace SplitAndMerge
         public override string Description()
         {
             return "Returns what type of a variable the expression is.";
-        }
-    }
-
-    class IsFiniteFunction : ParserFunction
-    {
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            List<Variable> args = script.GetFunctionArgs();
-            Utils.CheckArgs(args.Count, 1, m_name);
-            Variable arg = args[0];
-
-            double value = arg.Value;
-            if (arg.Type != Variable.VarType.NUMBER &&
-               !double.TryParse(arg.String, out value))
-            {
-                value = double.PositiveInfinity;
-            }
-
-            return new Variable(!double.IsInfinity(value));
-        }
-        public override string Description()
-        {
-            return "Returns if the current expression is finite.";
         }
     }
 
@@ -810,7 +750,7 @@ namespace SplitAndMerge
             if (t != null)
             {
                 object reflectedObj = CreateReflectedObj(t, args);
-                return new Variable(reflectedObj);
+                return new Variable(reflectedObj, t);
             }
 
             var c = InterpreterInstance.GetClass(className);
@@ -868,6 +808,13 @@ namespace SplitAndMerge
             className = Constants.ConvertName(className);
             script.MoveForwardIf(Constants.START_ARG);
             List<Variable> args = await script.GetFunctionArgsAsync();
+
+            Type t = TypeRefFunction.GetTypeAnywhere(className, true);
+            if (t != null)
+            {
+                object reflectedObj = CreateReflectedObj(t, args);
+                return new Variable(reflectedObj, t);
+            }
 
             var c = InterpreterInstance.GetClass(className);
 
@@ -2703,7 +2650,7 @@ namespace SplitAndMerge
             // TODO: Support Using to look in other namespaces
             if (t == null)
                 throw new ArgumentException($"Type [{typeName}] not found");
-            return new Variable(t);
+            return new Variable(t, typeof(Type));
         }
 
         public static Type GetTypeAnywhere(string typeName, bool ignoreCase = false)

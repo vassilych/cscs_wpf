@@ -164,6 +164,10 @@
     <Compile Include="Btrieve.cs" />
     <Compile Include="CSCS\Functions.SQL.cs" />
     <Compile Include="CSCS\ICscsModule.cs" />
+    <Compile Include="CSCS\InterpreterManager.cs" />
+    <Compile Include="CSCS\InterpreterManagerFunctions.cs" />
+    <Compile Include="CSCS\InterpreterManagerInstance.cs" />
+    <Compile Include="CSCS\InterpreterManagerModule.cs" />
     <Compile Include="NavigatorClass.cs" />
     <Compile Include="Reporting.cs" />
     <Compile Include="SpecialWindow.cs" />
@@ -178,7 +182,6 @@
     <Compile Include="CSCS\Debugger.cs" />
     <Compile Include="CSCS\DebuggerServer.cs" />
     <Compile Include="CSCS\Functions.Flow.cs" />
-    <Compile Include="CSCS\Functions.Math.cs" />
     <Compile Include="CSCS\Functions.OS.cs" />
     <Compile Include="CSCS\Functions.Standalone.cs" />
     <Compile Include="CSCS\Functions.Utils.cs" />

@@ -16,18 +16,23 @@ namespace CSCS.InterpreterManager
 
         int _nextId = 1;
 
-        public IEnumerable<ICscsModule> Modules { get; set; }
+        public List<ICscsModule> Modules { get; set; }
 
         public int NewInterpreter()
         {
             var interpreter = new Interpreter();
 
+
             foreach (var module in Modules)
+            {
                 module.CreateInstance(interpreter);
+            }
 
             var handler = OnInterpreterCreated;
             if (handler != null)
+            {
                 handler(interpreter, EventArgs.Empty);
+            }
 
             lock (Interpreters)
             {
@@ -89,6 +94,17 @@ namespace CSCS.InterpreterManager
         {
             lock (Interpreters)
                 return Interpreters.SingleOrDefault(x => x.Value == interpreter).Key;
+        }
+        public Interpreter GetInterpreter(int handle)
+        {
+            lock (Interpreters)
+                return Interpreters.SingleOrDefault(x => x.Key == handle).Value;
+        }
+
+        public void AddModule(ICscsModule module, Interpreter interpreter)
+        {
+            Modules.Add(module);
+            module.CreateInstance(interpreter);
         }
     }
 }

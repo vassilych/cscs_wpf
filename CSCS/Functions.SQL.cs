@@ -25,25 +25,25 @@ namespace SplitAndMerge
 
         public static void Init()
         {
-            Interpreter.Instance.RegisterFunction("SQLConnectionString", new SQLConnectionStringFunction());
-            Interpreter.Instance.RegisterFunction("SQLTableColumns", new SQLColumnsFunction());
-            Interpreter.Instance.RegisterFunction("SQLQuery", new SQLQueryFunction());
-            Interpreter.Instance.RegisterFunction("SQLNonQuery", new SQLNonQueryFunction());
-            Interpreter.Instance.RegisterFunction("SQLInsert", new SQLInsertFunction());
+            Interpreter.LastInstance.RegisterFunction("SQLConnectionString", new SQLConnectionStringFunction());
+            Interpreter.LastInstance.RegisterFunction("SQLTableColumns", new SQLColumnsFunction());
+            Interpreter.LastInstance.RegisterFunction("SQLQuery", new SQLQueryFunction());
+            Interpreter.LastInstance.RegisterFunction("SQLNonQuery", new SQLNonQueryFunction());
+            Interpreter.LastInstance.RegisterFunction("SQLInsert", new SQLInsertFunction());
 
-            Interpreter.Instance.RegisterFunction("SQLCreateDB", new SQLDBOperationsFunction(SQLDBOperationsFunction.Mode.CREATE_DB));
-            Interpreter.Instance.RegisterFunction("SQLDropDB", new SQLDBOperationsFunction(SQLDBOperationsFunction.Mode.DROP_DB));
-            Interpreter.Instance.RegisterFunction("SQLDropTable", new SQLDBOperationsFunction(SQLDBOperationsFunction.Mode.DROP_TABLE));
-            Interpreter.Instance.RegisterFunction("SQLProcedure", new SQLSPFunction());
-            Interpreter.Instance.RegisterFunction("SQLDescribe", new SQLDescribe(SQLDescribe.Mode.SP_DESC));
-            Interpreter.Instance.RegisterFunction("SQLAllTables", new SQLDescribe(SQLDescribe.Mode.TABLES));
-            Interpreter.Instance.RegisterFunction("SQLAllProcedures", new SQLDescribe(SQLDescribe.Mode.PROCEDURES));
+            Interpreter.LastInstance.RegisterFunction("SQLCreateDB", new SQLDBOperationsFunction(SQLDBOperationsFunction.Mode.CREATE_DB));
+            Interpreter.LastInstance.RegisterFunction("SQLDropDB", new SQLDBOperationsFunction(SQLDBOperationsFunction.Mode.DROP_DB));
+            Interpreter.LastInstance.RegisterFunction("SQLDropTable", new SQLDBOperationsFunction(SQLDBOperationsFunction.Mode.DROP_TABLE));
+            Interpreter.LastInstance.RegisterFunction("SQLProcedure", new SQLSPFunction());
+            Interpreter.LastInstance.RegisterFunction("SQLDescribe", new SQLDescribe(SQLDescribe.Mode.SP_DESC));
+            Interpreter.LastInstance.RegisterFunction("SQLAllTables", new SQLDescribe(SQLDescribe.Mode.TABLES));
+            Interpreter.LastInstance.RegisterFunction("SQLAllProcedures", new SQLDescribe(SQLDescribe.Mode.PROCEDURES));
 
-            Interpreter.Instance.RegisterFunction("SQLCursorInit", new SQLCursorFunction(SQLCursorFunction.Mode.SETUP));
-            Interpreter.Instance.RegisterFunction("SQLCursorNext", new SQLCursorFunction(SQLCursorFunction.Mode.NEXT));
-            Interpreter.Instance.RegisterFunction("SQLCursorCurrentRow", new SQLCursorFunction(SQLCursorFunction.Mode.CURRENT_ROW));
-            Interpreter.Instance.RegisterFunction("SQLCursorTotal", new SQLCursorFunction(SQLCursorFunction.Mode.TOTAL));
-            Interpreter.Instance.RegisterFunction("SQLCursorClose", new SQLCursorFunction(SQLCursorFunction.Mode.CLOSE));
+            Interpreter.LastInstance.RegisterFunction("SQLCursorInit", new SQLCursorFunction(SQLCursorFunction.Mode.SETUP));
+            Interpreter.LastInstance.RegisterFunction("SQLCursorNext", new SQLCursorFunction(SQLCursorFunction.Mode.NEXT));
+            Interpreter.LastInstance.RegisterFunction("SQLCursorCurrentRow", new SQLCursorFunction(SQLCursorFunction.Mode.CURRENT_ROW));
+            Interpreter.LastInstance.RegisterFunction("SQLCursorTotal", new SQLCursorFunction(SQLCursorFunction.Mode.TOTAL));
+            Interpreter.LastInstance.RegisterFunction("SQLCursorClose", new SQLCursorFunction(SQLCursorFunction.Mode.CLOSE));
         }
     }
 

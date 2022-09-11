@@ -123,7 +123,7 @@ namespace WpfCSCS
         }
         void ProcessScan(ParsingScript script, string forString)
         {
-            int MAX_LOOPS = Interpreter.Instance.ReadConfig("maxLoops", 256000);
+            int MAX_LOOPS = Interpreter.LastInstance.ReadConfig("maxLoops", 256000);
 
             string[] forTokens = forString.Split(Constants.END_STATEMENT);
             if (forTokens.Length != 7)
@@ -190,7 +190,7 @@ namespace WpfCSCS
                 }
 
                 script.Pointer = startForCondition;
-                Variable result = Interpreter.Instance.ProcessBlock(script);
+                Variable result = Interpreter.LastInstance.ProcessBlock(script);
 
                 if (limited)
                 {
@@ -219,7 +219,7 @@ namespace WpfCSCS
             Btrieve.SetFlerr(0, (int)tableHndlNum.Value);
 
             script.Pointer = startForCondition;
-            Interpreter.Instance.SkipBlock(script);
+            Interpreter.LastInstance.SkipBlock(script);
         }
     }
 
@@ -229,35 +229,35 @@ namespace WpfCSCS
     {
         public static void Init()
         {
-            Interpreter.Instance.RegisterFunction(Constants.OPENV, new OpenvFunction());
-            Interpreter.Instance.RegisterFunction(Constants.FINDV, new FindvFunction());
-            Interpreter.Instance.RegisterFunction(Constants.CLOSEV, new ClosevFunction());
+            Interpreter.LastInstance.RegisterFunction(Constants.OPENV, new OpenvFunction());
+            Interpreter.LastInstance.RegisterFunction(Constants.FINDV, new FindvFunction());
+            Interpreter.LastInstance.RegisterFunction(Constants.CLOSEV, new ClosevFunction());
 
-            Interpreter.Instance.RegisterFunction(Constants.REPL, new ReplFunction());
+            Interpreter.LastInstance.RegisterFunction(Constants.REPL, new ReplFunction());
 
-            Interpreter.Instance.RegisterFunction(Constants.CLR, new ClrFunction());
-            Interpreter.Instance.RegisterFunction(Constants.RCNGET, new RcnGetFunction());
-            Interpreter.Instance.RegisterFunction(Constants.RCNSET, new RcnSetFunction());
+            Interpreter.LastInstance.RegisterFunction(Constants.CLR, new ClrFunction());
+            Interpreter.LastInstance.RegisterFunction(Constants.RCNGET, new RcnGetFunction());
+            Interpreter.LastInstance.RegisterFunction(Constants.RCNSET, new RcnSetFunction());
 
-            Interpreter.Instance.RegisterFunction(Constants.ACTIVE, new ActiveFunction());
-            Interpreter.Instance.RegisterFunction(Constants.DEL, new DelFunction());
-            Interpreter.Instance.RegisterFunction(Constants.SAVE, new SaveFunction());
+            Interpreter.LastInstance.RegisterFunction(Constants.ACTIVE, new ActiveFunction());
+            Interpreter.LastInstance.RegisterFunction(Constants.DEL, new DelFunction());
+            Interpreter.LastInstance.RegisterFunction(Constants.SAVE, new SaveFunction());
 
-            Interpreter.Instance.RegisterFunction(Constants.RDA, new RDAFunction());
-            Interpreter.Instance.RegisterFunction(Constants.WRTA, new WRTAFunction());
+            Interpreter.LastInstance.RegisterFunction(Constants.RDA, new RDAFunction());
+            Interpreter.LastInstance.RegisterFunction(Constants.WRTA, new WRTAFunction());
 
-            Interpreter.Instance.RegisterFunction(Constants.FLERR, new FlerrFunction());
+            Interpreter.LastInstance.RegisterFunction(Constants.FLERR, new FlerrFunction());
 
-            Interpreter.Instance.RegisterFunction(Constants.SCAN, new ScanStatement());
+            Interpreter.LastInstance.RegisterFunction(Constants.SCAN, new ScanStatement());
 
-            Interpreter.Instance.RegisterFunction(Constants.DISPLAY_TABLE_SETUP, new DisplayTableSetupFunction());
+            Interpreter.LastInstance.RegisterFunction(Constants.DISPLAY_TABLE_SETUP, new DisplayTableSetupFunction());
 
-            Interpreter.Instance.RegisterFunction(Constants.DISPLAY_ARRAY_SETUP, new DisplayArraySetupFunction());
-            Interpreter.Instance.RegisterFunction(Constants.DISPLAY_ARRAY_REFRESH, new DisplayArrayRefreshFunction());
+            Interpreter.LastInstance.RegisterFunction(Constants.DISPLAY_ARRAY_SETUP, new DisplayArraySetupFunction());
+            Interpreter.LastInstance.RegisterFunction(Constants.DISPLAY_ARRAY_REFRESH, new DisplayArrayRefreshFunction());
 
-            Interpreter.Instance.RegisterFunction(Constants.DATAGRID, new DataGridFunction());
+            Interpreter.LastInstance.RegisterFunction(Constants.DATAGRID, new DataGridFunction());
 
-            Interpreter.Instance.RegisterFunction(Constants.SCAN, new ScanStatement());
+            Interpreter.LastInstance.RegisterFunction(Constants.SCAN, new ScanStatement());
         }
 
         public static Dictionary<string, string> Databases { get; set; } = new Dictionary<string, string>(); // <SYCD_USERCODE, SYCD_DBASENAME>
@@ -4004,7 +4004,7 @@ order by {orderBySB}
                 string funcName = widgetName + "@Header";
 
                 CSCS_GUI.Control2Window.TryGetValue(dgch, out Window win);
-                Interpreter.Instance.Run(funcName, new Variable(widgetName), null,
+                Interpreter.LastInstance.Run(funcName, new Variable(widgetName), null,
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
             }
 
