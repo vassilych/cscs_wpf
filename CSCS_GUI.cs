@@ -221,7 +221,9 @@ namespace WpfCSCS
         static Dictionary<string, Variable> s_boundVariables = new Dictionary<string, Variable>();
         //static Dictionary<string, TabPage> s_tabPages           = new Dictionary<string, TabPage>();
         //static TabControl s_tabControl;
- 
+
+        static InterpreterManagerModule s_interpreterManager = new InterpreterManagerModule();
+
         public static AdictionaryLocal.Adictionary Adictionary { get; set; } = new AdictionaryLocal.Adictionary();
 
         public static Dictionary<string, DefineVariable> DEFINES { get; set; } =
@@ -234,12 +236,11 @@ namespace WpfCSCS
 
         public static void Init()
         {
-            var interpreterManager = new InterpreterManagerModule();
-            interpreterManager.OnInterpreterCreated += InterpreterCreated;
-            interpreterManager.Modules = new List<ICscsModule>();
-            var interpreterId = interpreterManager.NewInterpreter();
-            interpreterManager.SetInterpreter(interpreterId);
-            interpreterManager.CreateInstance(Interpreter.LastInstance);
+            s_interpreterManager.OnInterpreterCreated += InterpreterCreated;
+            s_interpreterManager.Modules = new List<ICscsModule>();
+            var interpreterId = s_interpreterManager.NewInterpreter();
+            s_interpreterManager.SetInterpreter(interpreterId);
+            s_interpreterManager.CreateInstance(Interpreter.LastInstance);
 
             //Interpreter.LastInstance.OnOutput += Print;
             ParserFunction.OnVariableChange += OnVariableChange;
@@ -371,6 +372,7 @@ namespace WpfCSCS
             // execution. On error an exception will be thrown.
             if (sender is Interpreter interpreter)
             {
+                s_interpreterManager.CreateInstance(interpreter);
                 interpreter.OnOutput += Print;
             }
         }
