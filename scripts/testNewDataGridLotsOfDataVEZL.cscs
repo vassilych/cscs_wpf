@@ -1,0 +1,190 @@
+CreateWindow("../../scripts/testNewDataGridLotsOfDataVEZL.xaml");
+
+
+define veznibrojArray type A size 30 array 1000;
+define codeArray type A size 30 array 1000;
+define valueArray type A size 50 array 1000;
+
+define Q,MaxElement,Rownumber type I size 30;
+define actElems type I size 30;
+
+define Attachfield type A size 50;
+
+define tbNameDC, tbCodeDC, tbAttachDC type A size 20;
+
+define hndl type i;
+
+hndl = openv("nkmkvezl", "bd1");
+if(flerr() != 0){
+    MessageBox("flerr = " + flerr());
+}
+
+arrayPosition = 0;
+
+function buffer_to_array(){
+    veznibrojArray[arrayPosition] = VEZL_VEZNIBROJ;
+    codeArray[arrayPosition] = VEZL_CODE;
+    valueArray[arrayPosition] = VEZL_VALUE;  
+    arrayPosition++; 
+    
+    // printc("aksdhaksjd") 
+}
+
+findv(hndl, "f", "VEZL_VEZNIBROJ");
+buffer_to_array();
+
+for(int i = 1; i < 1000; i++){
+    findv(hndl, "n");
+    buffer_to_array();
+}
+
+
+
+//  MessageBox("Arrays filled. Starting grid filling...");
+    
+actElems = 1000;
+MaxElement = 1000;
+
+DisplayArraySetup("grid1", "Q", "actElems", "MaxElement");
+
+//MessageBox("Grid filled.");
+
+//MessageBox(Attach[2]);
+
+
+
+//------------------------------
+
+
+// function tb2@header(){
+//     MessageBox("fffffffffffffff");
+//     DataGrid("grid1", "aaa");
+// }
+
+
+
+// function grid1@Select(s, l){
+//     MessageBox("select-ed");
+// }
+
+//-----------------------------------
+
+function btnClose@clicked(){
+    MessageBox("Close Btn");
+}
+
+function btnAddRow@clicked(){
+    //MessageBox("Add Row Btn");
+    DataGrid("grid1", "AddRow");
+}
+
+function btnInsertRow@clicked(){
+    //MessageBox("Insert Row Btn");
+    DataGrid("grid1", "InsertRow");
+}
+
+function btnDeleteRow@clicked(){
+    //MessageBox("Delete Row Btn");
+    DataGrid("grid1", "DeleteRow");
+}
+
+function btnMoveToRow3@clicked(){
+    MessageBox("Move to Row 3 Btn");
+}
+
+//---------------------------------
+
+function grid1@Move(s, l){
+
+    // MessageBox("move-d");
+
+
+    move_line_in();
+    
+
+
+    // attachfield = attach[Q];
+
+    // SetWidgetOptions("numMaxRows", "Text", MaxElement);
+}
+
+function move_line_in(){
+    tbNameDC = veznibrojArray[q];
+    tbCodeDC = codeArray[q];
+    tbAttachDC = valueArray[q];
+}
+
+function move_line_out(){
+    veznibrojArray[q] = tbNameDC;
+    codeArray[q] = tbCodeDC;
+    valueArray[q] = tbAttachDC;
+}
+
+//--------------------------------
+
+function btnAdd@clicked(){
+    dataGrid("grid1", "AddRow");
+}
+
+function btnSave@clicked(){
+    move_line_out();
+    //MessageBox(NameArray[q]);
+    DisplayArray("Grid1", "updateCurrent");
+}
+
+//----------------------------
+
+
+function btn1@clicked(){
+//-------------------------------
+    //MessageBox(NameArray[q] + ", " + CodeArray[q] + ", " + Attach[q]);
+//--------------------------------
+    
+//------------------------------------------------------------------
+    MessageBox("lineCntr = " + q + ", actElems = " + actElems);
+    
+    q = 3;
+    DisplayArrayRefresh("grid1");
+
+    MessageBox("selected row with index 3.");
+
+    MessageBox("TRC = " + TRC(hndl));
+}
+
+//--------------------------------
+
+function btnRFT@clicked(){
+    DisplayArray("grid1", "RedisplayFromTop");
+}
+
+function btnRFE@clicked(){
+    DisplayArray("Grid1", "RedisplayFromEnd");
+}
+
+//--------------------------------
+
+function btnRA@clicked(){
+
+    veznibrojArray[0] = "lalalal";
+    codeArray[0] = "lalalll";
+    valueArray[0] = "lalalalla";
+
+    veznibrojArray[1] = "lalalal";
+    codeArray[1] = "lalalll";
+    valueArray[1] = "lalalalla";
+
+    veznibrojArray[2] = "lalalal";
+    codeArray[2] = "lalalll";
+    valueArray[2] = "lalalalla";
+
+    DisplayArray("grid1", "redisplayActive");
+    
+    MessageBox("First three rows updated, whole grid redisplayed.");
+}
+
+function btnUC@clicked(){
+    move_line_out();
+    DisplayArray("Grid1", "updateCurrent");
+}
+
+//----------------------------

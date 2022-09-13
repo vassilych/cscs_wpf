@@ -1,0 +1,89 @@
+<Window 
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:wcl="clr-namespace:WpfControlsLibrary;assembly=WpfControlsLibrary"
+        mc:Ignorable="d"
+        Title="Window1" Height="450" Width="800">
+    <Grid>
+        <DataGrid
+            
+            IsReadOnly="True" Name="Grid1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="792" AutoGenerateColumns="False" Margin="0,144,0,93" AreRowDetailsFrozen="True" Height="182">
+           
+           <DataGrid.Resources>
+                <Style TargetType="{x:Type DataGridCell}">
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="#CCDAFF" />
+                            <Setter Property="Foreground" Value="Black"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.Resources>
+            
+            <DataGrid.Columns>
+
+                <DataGridTemplateColumn Header="Invnm">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Name="tb0" Tag="invnmarray"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Pcode" >
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Name="tb1" Tag="pcodearray" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Loc">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Name="tb2" Tag="locarray"  />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Pqty">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Name="tb3" Tag="pqtyarray"  />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Pext">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Name="tb4" Tag="pextarray"  />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Button Name="btn1"  Content="btn1" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+
+        <Label Content="Customer name " HorizontalAlignment="Left" Margin="441,0,0,0" VerticalAlignment="Top"/>
+        <TextBox Name="tb3nkpr_gl_cusnme" DataContext="nkpr_gl_cusnme" HorizontalAlignment="Left" Height="23" Margin="441,21,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="324" RenderTransformOrigin="0.762,0.522"/>
+
+        <Label Content="Numbers of record:" HorizontalAlignment="Left" Margin="53,3,0,0" VerticalAlignment="Top"/>
+        <Label Content="Invoice:" HorizontalAlignment="Left" Margin="169,3,0,0" VerticalAlignment="Top" RenderTransformOrigin="1.375,0.577"/>
+        <Label Content="Customer code" HorizontalAlignment="Left" Margin="308,0,0,393" Height="26" VerticalAlignment="Bottom"/>
+        <TextBox Name="tbrec_max" DataContext="rec_max" HorizontalAlignment="Left" Height="23" Margin="57,21,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="107" RenderTransformOrigin="1.975,-13.391"/>
+        <TextBox Name="tbnkpr_gl_brotp" DataContext="nkpr_gl_brotp" HorizontalAlignment="Left" Height="23" Margin="171,21,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="101" RenderTransformOrigin="2.638,-12.957"/>
+        <TextBox Name="tbnkpr_gl_cuscod" DataContext="nkpr_gl_cuscod" HorizontalAlignment="Left" Height="23" Margin="308,21,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="111"/>
+        <Button Content="Save Row" Name="btnSave" HorizontalAlignment="Left" Margin="480,345,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button Content="Add new row" Name="btnAdd" HorizontalAlignment="Left" Margin="365,345,0,0" VerticalAlignment="Top" Width="100"/>
+        <Button Content="Redisplay Active" Name="btnRA" HorizontalAlignment="Left" Margin="670,340,0,0" VerticalAlignment="Top" Width="115"/>
+        <wcl:DateEditer Margin="284,92,0,0" Height="25" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+        <wcl:DateEditer Margin="53,92,0,0" Height="25" VerticalAlignment="Top" HorizontalAlignment="Left" />
+        <TextBox x:Name="tbnkpr_gl_nokam" DataContext="nkpr_gl_nokam" HorizontalAlignment="Left" Height="23" Margin="186,92,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="80"/>
+        <Label Content="Datum DVO" HorizontalAlignment="Left" Margin="53,61,0,0" VerticalAlignment="Top" Width="84"/>
+        <Label Content="Rok plaćanja" HorizontalAlignment="Left" Margin="284,61,0,0" VerticalAlignment="Top" Width="84"/>
+        <wcl:Navigator Name="navigator1" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="3" />
+
+    </Grid>
+</Window>

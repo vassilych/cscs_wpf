@@ -1,0 +1,35 @@
+CreateWindow("../../scripts/TestSqlW.xaml");
+
+
+define nkprglot_hndl,nkprlnot_hndl type i ;
+define rec_max,rec_cntr type r ;
+define fld_ptr type f;
+define width_h type i;
+// define file_nme dup loc_file_name  ;
+
+nkprlnot_hndl = openv("nkprlnot","BD1");
+nkprglot_hndl = openv("nkprglot","BD1");
+rec_max = trc(nkprlnot_hndl); 
+
+function whileFilter(){
+    if(nkpr_gl_brotp != nkpr_ln_invnm){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+
+//DisplayTableSetup("Grid1",nkprlnot_hndl, "nkpr_ln_invnm", "nkpr_gl_brotp", "nkpr_gl_brotp == nkpr_ln_invnm");
+
+DisplayTableSetup("Grid1",nkprlnot_hndl, "nkpr_ln_numln", "nkpr_gl_brotp|0", "nkpr_gl_brotp == nkpr_ln_invnm");
+
+//DisplayTableSetup("Grid1",nkprlnot_hndl, "nkpr_ln_invnm", nkpr_gl_brotp, "whilefilter()");
+
+navigator("navigator1",nkprglot_hndl,"nkpr_gl_brotp");
+
+function navigator1@afterchange(){
+    //DisplayTableSetup("Grid1",nkprlnot_hndl, "nkpr_ln_invnm", nkpr_gl_brotp, "nkpr_gl_brotp == nkpr_ln_invnm");
+    DisplayTable("grid1", "RedisplayActive");
+}

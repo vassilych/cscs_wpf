@@ -1,8 +1,10 @@
 #MAINMENU;
 //#WINFORM not working
-Import("CSCS.Math");
+
+define mainMenuDC type a;
 
 CreateWindow("../../scripts/mainMenuWindow.xaml");
+
 
 
 function runScript(sender, load){
@@ -46,6 +48,17 @@ function mainMenuWindow_OnDisplay(){
     AddMenuSeparator("DataGridDC");
     AddMenuItem("DataGridDC", "testDisplayTableSetup2.cscs", "testDisplayTableSetup2", "runScript");
     AddMenuItem("DataGridDC", "testDisplayArraySetup2.cscs", "testDisplayArraySetup2", "runScript");
+    AddMenuSeparator("DataGridDC");
+    AddMenuItem("DataGridDC", "listmExample.cscs", "listmExample", "runScript");
+    AddMenuItem("DataGridDC", "testNewDataGrid.cscs", "testNewDataGrid", "runScript");
+    AddMenuItem("DataGridDC", "testNewDataGridLotsOfData.cscs", "testNewDataGridLotsOfData", "runScript");
+    AddMenuItem("DataGridDC", "testNewDataGridLotsOfDataVEZL.cscs", "testNewDataGridLotsOfDataVEZL", "runScript");
+    AddMenuSeparator("DataGridDC");
+    AddMenuItem("DataGridDC", "TestSqlW.cscs", "TestSqlW", "runScript");
+    AddMenuItem("DataGridDC", "TestSqlArrayW.cscs", "TestSqlArrayW", "runScript");
+    
+
+
 
     //------------------------------------
 
@@ -66,6 +79,7 @@ function mainMenuWindow_OnDisplay(){
     AddMenuItem("OtherDC", "testcscs_a.cscs", "testcscs_a", "runScript");
     AddMenuItem("OtherDC", "testcscs_b.cscs", "testcscs_b", "runScript");
     AddMenuItem("OtherDC", "testVarInFunc.cscs", "testVarInFunc", "runScript");
+    AddMenuItem("OtherDC", "test.cscs", "test", "runScript");
 
     //------------------------------------
 

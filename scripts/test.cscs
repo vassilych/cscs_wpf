@@ -1,0 +1,9 @@
+define asd type i;
+
+define hndl type i;
+
+hndl = openv("NKMKVEZL", "BD1");
+
+rcnset(hndl, 1);
+
+exit;

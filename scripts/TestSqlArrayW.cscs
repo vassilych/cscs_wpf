@@ -1,0 +1,50 @@
+define nkprglot_hndl,nkprlnot_hndl type i ;
+define rec_max,rec_cntr type r ;
+define fld_ptr type f;
+define width_h type i;
+define invnmarray, pcodearray,locarray, pqtyarray, pextarray type a array 20;
+define line_cntr, active_elements, max_elements type i;
+
+define i type i;
+// define win1 type a;
+
+nkprlnot_hndl = openv("nkprlnot","BD1");
+nkprglot_hndl = openv("nkprglot","BD1");
+
+function TestSqlArrayW_onStart(sender, load){
+    MessageBox("Loaded");
+}
+
+
+CreateWindow("../../scripts/TestSqlArrayW.xaml");
+
+
+
+rec_max = trc(nkprlnot_hndl); 
+
+active_elements = 0;
+max_elements = 20;
+
+navigator("navigator1",nkprglot_hndl,"nkpr_gl_brotp");
+DisplayArraySetup("Grid1","line_cntr","active_elements","max_elements");
+
+function navigator1@afterchange(){
+    i = 0;
+    active_elements = 0;
+    scan(nkprlnot_hndl;"nkpr_ln_invnm";nkpr_gl_brotp;nkpr_gl_brotp == nkpr_ln_invnm;"";"";""){
+
+        invnmarray[i] = NKPR_LN_INVNM;
+        pcodearray[i] = NKPR_LN_PCODE;
+        locarray[i] = NKPR_LN_LOC;
+        pqtyarray[i] = NKPR_LN_PQTY;
+        pextarray[i] = NKPR_LN_PEXT;
+
+        //active_elements++; // with this line "DisplayArray" is not working
+        active_elements = active_elements + 1;// with this line "DisplayArray" IS not working
+        //MessageBox("active_elements = " + active_elements);
+
+        i++;
+    }
+    //MessageBox("active_elements = " + active_elements);
+    DisplayArray("grid1","redisplayactive");
+}

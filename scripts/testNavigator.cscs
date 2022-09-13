@@ -2,7 +2,7 @@ CreateWindow("../../scripts/testNavigator.xaml");
 
 DEFINE table_hndl type i;
 
-table_hndl = Openv("invoiceLines");
+table_hndl = Openv("invoiceLines", "DB1");
 if(flerr() != 0){
     MessageBox("flerrrr");
 }
