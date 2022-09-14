@@ -1,0 +1,113 @@
+CreateWindow("../../scripts/listmExample.xaml");
+
+
+define NameArray type A size 30 array 100;
+define CodeArray type A size 3 array 100;
+define Attach type A size 5 array 100;
+
+define Q,MaxElement,Rownumber type I size 3;
+define actElems type I size 3;
+
+define Attachfield type A size 5;
+
+
+
+// DEFINE Array1 type d size 8 array 6;
+// DEFINE Array2 type n size 10 array 6;
+// DEFINE Array3 type i size 10 array 6;
+// DEFINE Array4 type t size 5 array 6;
+// DEFINE Array5 type l array 6;
+// DEFINE lineCntr, actElems, maxRows type i;
+
+NameArray[0] = "name #0";
+NameArray[1] = "name #1";
+NameArray[2] = "name #2";
+NameArray[3] = "name #3";
+NameArray[4] = "name #4";
+NameArray[5] = "name #5";
+NameArray[6] = "name #6";
+NameArray[7] = "name #7";
+NameArray[8] = "name #8";
+NameArray[9] = "name #9";
+
+CodeArray[0] = '0';
+CodeArray[1] = '1';
+CodeArray[2] = '2';
+CodeArray[3] = '3';
+CodeArray[4] = '4';
+CodeArray[5] = '5';
+CodeArray[6] = '6';
+CodeArray[7] = '7';
+CodeArray[8] = '8';
+CodeArray[9] = '9';   
+//-----------------------
+CodeArray[10] = '10';
+CodeArray[11] = '11';
+CodeArray[12] = '12';
+CodeArray[13] = '13';
+CodeArray[14] = '14';
+CodeArray[15] = '15';
+CodeArray[16] = '16';
+CodeArray[17] = '17';
+CodeArray[18] = '18';
+
+Attach[0] = "Zero";
+Attach[1] = "One";
+Attach[2] = "Two";
+Attach[3] = "Three";
+Attach[4] = "Four";
+Attach[5] = "Five";
+Attach[6] = "Six";
+Attach[7] = "Seven";
+Attach[8] = "Eight";
+Attach[9] = "Nine";
+
+actElems = 19;
+MaxElement = 100;
+
+DisplayArraySetup("grid1", "Q", "actElems", "MaxElement");
+
+//------------------------------
+
+
+function tb2@header(){
+    MessageBox("fffffffffffffff");
+    DataGrid("grid1", "aaa");
+}
+
+
+
+// function grid1@Select(s, l){
+//     MessageBox("select-ed");
+// }
+
+//-----------------------------------
+
+function btnClose@clicked(){
+    MessageBox("Close Btn");
+}
+
+function btnAddRow@clicked(){
+    MessageBox("Add Row Btn");
+    DataGrid("grid1", "AddRow");
+}
+
+function btnInsertRow@clicked(){
+    MessageBox("Insert Row Btn");
+}
+
+function btnDeleteRow@clicked(){
+    MessageBox("Delete Row Btn");
+}
+
+function btnMoveToRow3@clicked(){
+    MessageBox("Move to Row 3 Btn");
+}
+
+//---------------------------------
+
+function grid1@Move(s, l){
+    attachfield = attach[Q];
+
+    SetWidgetOptions("numMaxRows", "Text", MaxElement);
+}

@@ -146,7 +146,7 @@ namespace WpfCSCS
             int cycles = 0;
             bool stillValid = true;
 
-            new Btrieve.FINDVClass((int)tableHndlNum.Value, "g", keyName.String, startString.String, forExpression.String).FINDV();
+            new Btrieve.FINDVClass((int)tableHndlNum.Value, "g", keyName.String, startString.AsString(), forExpression.String).FINDV();
 
             var scopeString = scope.String.ToLower();
             bool limited = false;
@@ -246,6 +246,8 @@ namespace WpfCSCS
             Interpreter.LastInstance.RegisterFunction(Constants.RDA, new RDAFunction());
             Interpreter.LastInstance.RegisterFunction(Constants.WRTA, new WRTAFunction());
 
+            Interpreter.LastInstance.RegisterFunction(Constants.TRC, new TRCFunction());
+
             Interpreter.LastInstance.RegisterFunction(Constants.FLERR, new FlerrFunction());
 
             Interpreter.LastInstance.RegisterFunction(Constants.SCAN, new ScanStatement());
@@ -254,6 +256,9 @@ namespace WpfCSCS
 
             Interpreter.LastInstance.RegisterFunction(Constants.DISPLAY_ARRAY_SETUP, new DisplayArraySetupFunction());
             Interpreter.LastInstance.RegisterFunction(Constants.DISPLAY_ARRAY_REFRESH, new DisplayArrayRefreshFunction());
+
+            Interpreter.LastInstance.RegisterFunction(Constants.DISPLAYARRAY, new DisplayArrayFunction());
+            Interpreter.LastInstance.RegisterFunction(Constants.DISPLAYTABLE, new DisplayTableFunction());
 
             Interpreter.LastInstance.RegisterFunction(Constants.DATAGRID, new DataGridFunction());
 
@@ -2285,6 +2290,46 @@ WHERE ID = {thisOpenv.currentRow}
             }
         }
 
+        public class TRCFunction : ParserFunction
+        {
+            OpenvTable thisOpenv;
+
+            protected override Variable Evaluate(ParsingScript script)
+            {
+                List<Variable> args = script.GetFunctionArgs();
+                Utils.CheckArgs(args.Count, 1, m_name);
+
+                int tableHndlNum = Utils.GetSafeInt(args, 0);
+
+                thisOpenv = Btrieve.OPENVs[tableHndlNum];
+
+                int numOfRecords;
+                try
+                {
+                    var query =
+$@"EXECUTE sp_executesql N'
+SELECT COUNT(*) as numOfRows FROM {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
+'";
+
+                    using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+                    {
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                return new Variable((int)reader["numOfRows"]);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                }
+
+                return Variable.EmptyInstance;
+            }
+        }
+
         public class ReplFunction : ParserFunction
         {
             int tableHndlNum;
@@ -2516,10 +2561,10 @@ WHERE ID = {thisOpenv.currentRow}
 
             string tableKey;
 
-            string startString;
-            string whileString;
+            //string startString;
+            //string whileString;
 
-            string forString;
+            //string forString;
 
             OpenvTable thisOpenv;
             KeyClass KeyClass;
@@ -2539,13 +2584,18 @@ WHERE ID = {thisOpenv.currentRow}
                 List<Variable> args = script.GetFunctionArgs();
                 Utils.CheckArgs(args.Count, 3, m_name);
 
-                gridName = Utils.GetSafeString(args, 0);
+                gridName = Utils.GetSafeString(args, 0).ToLower();
                 tableHndlNum = Utils.GetSafeInt(args, 1);
                 tableKey = Utils.GetSafeString(args, 2);
 
-                startString = Utils.GetSafeString(args, 3);
-                whileString = Utils.GetSafeString(args, 4).ToLower();
-                forString = Utils.GetSafeString(args, 5).ToLower();
+                //startString = Utils.GetSafeString(args, 3);
+                //whileString = Utils.GetSafeString(args, 4).ToLower();
+                //forString = Utils.GetSafeString(args, 5).ToLower();
+
+                gridsTableClass[gridName] = new DisplayTableClass();
+                gridsTableClass[gridName].startString = script.GetTempScript(args[3].AsString()); //Utils.GetSafeString(args, 3);
+                gridsTableClass[gridName].whileString = script.GetTempScript(args[4].AsString()); //Utils.GetSafeString(args, 4).ToLower();
+                gridsTableClass[gridName].forString = Utils.GetSafeString(args, 5).ToLower();
 
                 //------------------------------------------------------------------------
 
@@ -2592,8 +2642,13 @@ WHERE ID = {thisOpenv.currentRow}
                     return Variable.EmptyInstance;
                 }
 
-                tagsAndTypes = new Dictionary<string, Type>();
-                tagsAndHeaders = new Dictionary<string, string>();
+                //tagsAndTypes = new Dictionary<string, Type>();
+                //tagsAndHeaders = new Dictionary<string, string>();
+
+                if (tagsAndTypes == null)
+                    tagsAndTypes = new Dictionary<string, Type>();
+                if (tagsAndHeaders == null)
+                    tagsAndHeaders = new Dictionary<string, string>();
 
                 var columns = dg.Columns;
                 for (int i = 0; i < columns.Count; i++)
@@ -2711,22 +2766,22 @@ WHERE ID = {thisOpenv.currentRow}
 
 
 
-                StringBuilder selectSb = new StringBuilder();
-                selectSb.Append("ID, ");
+                //StringBuilder selectSb = new StringBuilder();
+                //selectSb.Append("ID, ");
 
-                foreach (var column in tagsAndTypes.Keys)
-                {
-                    selectSb.Append(column + ", ");
-                }
-                selectSb.Remove(selectSb.Length - 2, 2);
+                //foreach (var column in tagsAndTypes.Keys)
+                //{
+                //    selectSb.Append(column + ", ");
+                //}
+                //selectSb.Remove(selectSb.Length - 2, 2);
 
-                //---------------------------------------------------------------------------
+                ////---------------------------------------------------------------------------
 
-                //fillDataTable();
+                ////fillDataTable();
 
-                //---------------------------------------------------------------------------
+                ////---------------------------------------------------------------------------
 
-                dg.Items.Clear();
+                //dg.Items.Clear();
                 dg.Columns.Clear();
 
                 dg.AutoGenerateColumns = true;
@@ -2747,22 +2802,55 @@ WHERE ID = {thisOpenv.currentRow}
                 dg.SelectedCellsChanged += Dg_SelectedCellsChanged;
                 //-------------------------------------------------------------------------------
 
-                grids[gridName] = new DisplayArrayClass()
-                {
-                    dg = dg
-                };
+                //grids[gridName] = new DisplayArrayClass()
+                //{
+                //    dg = dg
+                //};
+                gridsTableClass[gridName].dg = dg;
+                gridsTableClass[gridName].tableOrArray = "table";
+                gridsTableClass[gridName].tags = tagsAndHeaders.Keys.ToList();
+                gridsTableClass[gridName].tableHndlNum = tableHndlNum;
+                gridsTableClass[gridName].tableKey = tableKey;
+                gridsTableClass[gridName].tagsAndTypes = tagsAndTypes;
+                gridsTableClass[gridName].KeyClass = KeyClass;
+                gridsTableClass[gridName].Script = Script;
 
-                fillDataTableQuery();
+                fillDataTable(gridName);
 
                 return Variable.EmptyInstance;
             }
 
-            private void fillDataTable()
+            public void fillDataTable(string gridName)
             {
-                if (!string.IsNullOrEmpty(startString))
+                gridsDataTables[gridName].Rows.Clear();
+
+                var startString = gridsTableClass[gridName].startString;
+                var tableHndlNum = gridsTableClass[gridName].tableHndlNum;
+                var tableKey = gridsTableClass[gridName].tableKey;
+                var KeyClass = gridsTableClass[gridName].KeyClass;
+                var thisOpenv = OPENVs[gridsTableClass[gridName].tableHndlNum];
+
+                var whileString = gridsTableClass[gridName].whileString;
+                var forString = gridsTableClass[gridName].forString;
+
+                var Script = gridsTableClass[gridName].Script;
+
+                var tagsAndTypes = gridsTableClass[gridName].tagsAndTypes;
+
+                if (!string.IsNullOrEmpty(startString.String))
                 {
                     // if has start string
-                    new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, startString).FINDV();
+                    var startParts = startString.String.Split('|');
+                    var startStringResult = "";
+                    foreach (var startPart in startParts)
+                    {
+                        var part = Script.GetTempScript(startPart).Execute(null, 0).AsString();
+                        startStringResult += part;
+                        startStringResult += "|";
+                    }
+                    startStringResult = startStringResult.Remove(startStringResult.Length - 1, 1);
+
+                    new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, startStringResult).FINDV();
                 }
                 else
                 {
@@ -2797,14 +2885,14 @@ WHERE ID = {thisOpenv.currentRow}
                 gridsDataTables[gridName].Rows.Clear();
 
                 bool whileIsSet = false;
-                if (!string.IsNullOrEmpty(whileString))
+                if (!string.IsNullOrEmpty(whileString.String))
                     whileIsSet = true;
 
                 bool forIsSet = false;
                 if (!string.IsNullOrEmpty(forString))
                     forIsSet = true;
 
-                while (!whileIsSet || Script.GetTempScript(whileString).Execute(new char[] { '"' }, 0).AsBool())
+                while (!whileIsSet || Script.GetTempScript(whileString.String).Execute(new char[] { '"' }, 0).AsBool())
                 {
                     if (forIsSet && !Script.GetTempScript(forString).Execute(new char[] { '"' }, 0).AsBool())
                     {
@@ -2835,103 +2923,103 @@ WHERE ID = {thisOpenv.currentRow}
                 }
             }
 
-            private void fillDataTableQuery()
-            {
-                int startId = 1;
+            //            private void fillDataTableQuery()
+            //            {
+            //                int startId = 1;
 
-                if (!string.IsNullOrEmpty(startString))
-                {
-                    // if has start string
-                    new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, startString).FINDV();
-                    startId = new RcnGetFunction().RcnGet(thisOpenv).AsInt();
-                }
+            //                if (!string.IsNullOrEmpty(startString))
+            //                {
+            //                    // if has start string
+            //                    new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, startString).FINDV();
+            //                    startId = new RcnGetFunction().RcnGet(thisOpenv).AsInt();
+            //                }
 
-                StringBuilder columnsSB = new StringBuilder();
-                columnsSB.Append("ID, ");
-                foreach (var columnName in tagsAndTypes.Keys)
-                {
-                    columnsSB.Append(columnName + ", ");
-                }
-                columnsSB.Remove(columnsSB.Length - 2, 2); // removes last ", "
+            //                StringBuilder columnsSB = new StringBuilder();
+            //                columnsSB.Append("ID, ");
+            //                foreach (var columnName in tagsAndTypes.Keys)
+            //                {
+            //                    columnsSB.Append(columnName + ", ");
+            //                }
+            //                columnsSB.Remove(columnsSB.Length - 2, 2); // removes last ", "
 
-                StringBuilder whereSB = new StringBuilder();
-                if (!string.IsNullOrEmpty(whileString) || !string.IsNullOrEmpty(forString))
-                {
-                    whereSB.Append("WHERE (");
-                }
-                if (!string.IsNullOrEmpty(whileString))
-                {
-                    whereSB.Append(whileString);
-                }
-                if (!string.IsNullOrEmpty(whileString) && !string.IsNullOrEmpty(forString))
-                {
-                    whereSB.Append(") AND (");
-                }
-                if (!string.IsNullOrEmpty(forString))
-                {
-                    whereSB.Append(forString);
-                }
-                if (!string.IsNullOrEmpty(whileString) || !string.IsNullOrEmpty(whileString))
-                {
-                    whereSB.Append(")");
-                }
-                if (startId > 1)
-                {
-                    if (string.IsNullOrEmpty(whereSB.ToString()))
-                    {
-                        whereSB.Append("WHERE (");
-                    }
-                    else
-                    {
-                        whereSB.Append("AND (");
-                    }
-                    whereSB.Append("ID >= " + startId);
-                    whereSB.Append(")");
-                }
+            //                StringBuilder whereSB = new StringBuilder();
+            //                if (!string.IsNullOrEmpty(whileString) || !string.IsNullOrEmpty(forString))
+            //                {
+            //                    whereSB.Append("WHERE (");
+            //                }
+            //                if (!string.IsNullOrEmpty(whileString))
+            //                {
+            //                    whereSB.Append(whileString);
+            //                }
+            //                if (!string.IsNullOrEmpty(whileString) && !string.IsNullOrEmpty(forString))
+            //                {
+            //                    whereSB.Append(") AND (");
+            //                }
+            //                if (!string.IsNullOrEmpty(forString))
+            //                {
+            //                    whereSB.Append(forString);
+            //                }
+            //                if (!string.IsNullOrEmpty(whileString) || !string.IsNullOrEmpty(whileString))
+            //                {
+            //                    whereSB.Append(")");
+            //                }
+            //                if (startId > 1)
+            //                {
+            //                    if (string.IsNullOrEmpty(whereSB.ToString()))
+            //                    {
+            //                        whereSB.Append("WHERE (");
+            //                    }
+            //                    else
+            //                    {
+            //                        whereSB.Append("AND (");
+            //                    }
+            //                    whereSB.Append("ID >= " + startId);
+            //                    whereSB.Append(")");
+            //                }
 
-                StringBuilder orderBySB = new StringBuilder();
-                foreach (var keyColumn in KeyClass.KeyColumns)
-                {
-                    orderBySB.Append(keyColumn.Key + ", ");
-                }
-                if (!KeyClass.Unique)
-                {
-                    orderBySB.Append("ID, ");
-                }
-                orderBySB.Remove(orderBySB.Length - 2, 2); // removes last ", "
+            //                StringBuilder orderBySB = new StringBuilder();
+            //                foreach (var keyColumn in KeyClass.KeyColumns)
+            //                {
+            //                    orderBySB.Append(keyColumn.Key + ", ");
+            //                }
+            //                if (!KeyClass.Unique)
+            //                {
+            //                    orderBySB.Append("ID, ");
+            //                }
+            //                orderBySB.Remove(orderBySB.Length - 2, 2); // removes last ", "
 
 
-                var query =
-$@"EXECUTE sp_executesql N'
-select 
-{columnsSB}
-from {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
-with (nolock)
-{whereSB}
-order by {orderBySB}
-'";
+            //                var query =
+            //$@"EXECUTE sp_executesql N'
+            //select 
+            //{columnsSB}
+            //from {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
+            //with (nolock)
+            //{whereSB}
+            //order by {orderBySB}
+            //'";
 
-                using (SqlConnection con = new SqlConnection(CSCS_SQL.ConnectionString))
-                {
-                    using (SqlCommand cmd = new SqlCommand(query, con))
-                    {
-                        con.Open();
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            if (!reader.HasRows)
-                            {
-                                SetFlerr(3, tableHndlNum);
-                                return;
-                            }
-                            else
-                            {
-                                gridsDataTables[gridName].Rows.Clear();
-                                gridsDataTables[gridName].Load(reader);
-                            }
-                        }
-                    }
-                }
-            }
+            //                using (SqlConnection con = new SqlConnection(CSCS_SQL.ConnectionString))
+            //                {
+            //                    using (SqlCommand cmd = new SqlCommand(query, con))
+            //                    {
+            //                        con.Open();
+            //                        using (SqlDataReader reader = cmd.ExecuteReader())
+            //                        {
+            //                            if (!reader.HasRows)
+            //                            {
+            //                                SetFlerr(3, tableHndlNum);
+            //                                return;
+            //                            }
+            //                            else
+            //                            {
+            //                                gridsDataTables[gridName].Rows.Clear();
+            //                                gridsDataTables[gridName].Load(reader);
+            //                            }
+            //                        }
+            //                    }
+            //                }
+            //            }
 
 
             private void DataGrid_OnAutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
@@ -3167,24 +3255,38 @@ order by {orderBySB}
             }
 
             int lastRowIndex = -1;
-            object[] rowBeforeEdit;
+            object[] rowBeforeEdit/* = new object[] { }*/;
             object[] rowAfterEdit;
+            public static bool dataGridUpdated = false;
 
             private void Dg_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
             {
                 var dg = (sender as DataGrid);
 
+                if (dg.Items.Count <= 0)
+                    return;
+
                 try
                 {
-                    var currentItemArray = (dg.CurrentItem as DataRowView).Row.ItemArray;
-
-                    var currentRowIndex = dg.Items.IndexOf(dg.CurrentItem);
-                    if (currentRowIndex != lastRowIndex)
+                    if (dg.SelectedIndex < 0)
                     {
+                        if (dg.Items.Count > 0)
+                        {
+                            dg.SelectedIndex = 0;
+                            var asdk = dg.Items[0];
+                        }
+                    }
+                    var currentItemArray = (dg.SelectedItem as DataRowView).Row.ItemArray;
+
+                    var currentRowIndex = dg.SelectedIndex;//dg.Items.IndexOf(dg.SelectedItem);
+                    if (currentRowIndex != lastRowIndex || dataGridUpdated)
+                    {
+                        dataGridUpdated = false;
+
                         lastRowIndex = currentRowIndex;
                         rowBeforeEdit = currentItemArray;
 
-                        var currRow = (dg.CurrentItem as DataRowView).Row;
+                        var currRow = (dg.SelectedItem as DataRowView).Row;
                         for (int i = 1; i < currRow.Table.Columns.Count; i++)
                         {
                             if (currentItemArray[i] is DateTime)
@@ -3212,7 +3314,7 @@ order by {orderBySB}
                         }
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
 
                 }
@@ -3362,7 +3464,7 @@ order by {orderBySB}
                 if (redisplay)
                 {
                     //dg.Items.Clear();
-                    fillDataTableQuery();
+                    fillDataTable(gridName);
                 }
             }
 
@@ -3373,13 +3475,85 @@ order by {orderBySB}
             public DataGrid dg;
             public string lineCntrVarName;
             public string actCntrVarName;
+            public string maxElemsVarName;
+            public List<string> tags;
+            public Dictionary<string, Type> tagsAndTypes;
+            public Dictionary<string, Type> newTagsAndTypes;
+            public string tableOrArray;
+
+
         }
 
-        static Dictionary<string, DisplayArrayClass> grids = new Dictionary<string, DisplayArrayClass>();
+        class DisplayTableClass
+        {
+            public DataGrid dg;
+            public string lineCntrVarName;
+            public string actCntrVarName;
+            public string maxElemsVarName;
+            public List<string> tags;
+            public Dictionary<string, Type> tagsAndTypes;
+            public Dictionary<string, Type> newTagsAndTypes;
+            public string tableOrArray;
+
+            public int tableHndlNum;
+
+            public ParsingScript startString;
+            public ParsingScript whileString;
+            public string forString;
+            public string tableKey;
+
+            public KeyClass KeyClass;
+
+            public ParsingScript Script;
+        }
+
+        static Dictionary<string, DisplayArrayClass> gridsArrayClass = new Dictionary<string, DisplayArrayClass>();
+        static Dictionary<string, DisplayTableClass> gridsTableClass = new Dictionary<string, DisplayTableClass>();
         //static Dictionary<string, int> gridsLineCounters = new Dictionary<string, int>();
+
+
+
+
+        //static Dictionary<string, DisplayArrayClass> grids = new Dictionary<string, DisplayArrayClass>();
+        ////static Dictionary<string, int> gridsLineCounters = new Dictionary<string, int>();
 
         class DisplayArraySetupFunction : ParserFunction
         {
+            private int _selectedIndex;
+            public int selectedIndex
+            {
+                get { return _selectedIndex; }
+                set
+                {
+
+                    _selectedIndex = value;
+
+                    if (gridsArrayClass.TryGetValue(gridName, out DisplayArrayClass dac))
+                    {
+                        // updates lineCntr variable
+                        if (CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar))
+                        {
+                            defVar.Value = value;
+                        }
+                    }
+
+                    // gridName@move event
+                    var widgetName = CSCS_GUI.GetWidgetName(dg);
+                    if (string.IsNullOrWhiteSpace(widgetName))
+                    {
+                        return;
+                    }
+
+                    string funcName;
+                    if (CSCS_GUI.s_MoveHandlers.TryGetValue(widgetName, out funcName))
+                    {
+                        CSCS_GUI.Control2Window.TryGetValue(dg, out Window win);
+                        var result = Interpreter.LastInstance.Run(funcName, new Variable(widgetName), null,
+                            Variable.EmptyInstance, ChainFunction.GetScript(win));
+                    }
+                }
+            }
+
             int tableHndlNum;
 
             string tableKey;
@@ -3392,10 +3566,12 @@ order by {orderBySB}
 
             ParsingScript Script;
 
-            DataTable gridSource;
+            //DataTable gridSource;
+            string gridName;
+
             Dictionary<string, string> tagsAndHeaders;
-            Dictionary<string, Type> tagsAndTypes;
-            Dictionary<string, Type> newTagsAndTypes;
+            //Dictionary<string, Type> tagsAndTypes;
+            //Dictionary<string, Type> newTagsAndTypes;
             Dictionary<string, int> timeAndDateEditerTagsAndSizes = new Dictionary<string, int>();
             Dictionary<string, string> tagsAndNames = new Dictionary<string, string>();
 
@@ -3406,10 +3582,18 @@ order by {orderBySB}
                 List<Variable> args = script.GetFunctionArgs();
                 Utils.CheckArgs(args.Count, 4, m_name);
 
-                string gridName = Utils.GetSafeString(args, 0);
+                gridName = Utils.GetSafeString(args, 0).ToLower();
                 lineCntrVarName = Utils.GetSafeString(args, 1);
                 actCntrVarName = Utils.GetSafeString(args, 2);
                 string maxRowsVarName = Utils.GetSafeString(args, 3);
+
+                //------------------------------------------------------------------------
+
+                gridsArrayClass[gridName] = new DisplayArrayClass();
+
+                gridsArrayClass[gridName].lineCntrVarName = lineCntrVarName;
+                gridsArrayClass[gridName].actCntrVarName = actCntrVarName;
+                gridsArrayClass[gridName].maxElemsVarName = maxRowsVarName;
 
                 //------------------------------------------------------------------------
 
@@ -3445,7 +3629,7 @@ order by {orderBySB}
                     return Variable.EmptyInstance;
                 }
 
-                tagsAndTypes = new Dictionary<string, Type>();
+                gridsArrayClass[gridName].tagsAndTypes = new Dictionary<string, Type>();
                 tagsAndHeaders = new Dictionary<string, string>();
 
                 var columns = dg.Columns;
@@ -3463,7 +3647,7 @@ order by {orderBySB}
                             var te = cell as TimeEditer;
                             if (te.Tag != null)
                             {
-                                tagsAndTypes.Add(te.Tag.ToString(), typeof(TimeSpan));
+                                gridsArrayClass[gridName].tagsAndTypes.Add(te.Tag.ToString(), typeof(TimeSpan));
                                 tagsAndHeaders.Add(te.Tag.ToString(), dgtc.Header.ToString());
                                 timeAndDateEditerTagsAndSizes[te.Tag.ToString()] = te.DisplaySize;
                                 tagsAndNames[te.Tag.ToString()] = te.Name;
@@ -3474,7 +3658,7 @@ order by {orderBySB}
                             var de = cell as DateEditer;
                             if (de.Tag != null)
                             {
-                                tagsAndTypes.Add(de.Tag.ToString(), typeof(DateTime));
+                                gridsArrayClass[gridName].tagsAndTypes.Add(de.Tag.ToString(), typeof(DateTime));
                                 tagsAndHeaders.Add(de.Tag.ToString(), dgtc.Header.ToString());
                                 timeAndDateEditerTagsAndSizes[de.Tag.ToString()] = de.DisplaySize;
                                 tagsAndNames[de.Tag.ToString()] = de.Name;
@@ -3485,7 +3669,7 @@ order by {orderBySB}
                             var cb = cell as CheckBox;
                             if (cb.Tag != null)
                             {
-                                tagsAndTypes.Add(cb.Tag.ToString(), typeof(bool));
+                                gridsArrayClass[gridName].tagsAndTypes.Add(cb.Tag.ToString(), typeof(bool));
                                 tagsAndHeaders.Add(cb.Tag.ToString(), dgtc.Header.ToString());
                                 tagsAndNames[cb.Tag.ToString()] = cb.Name;
                             }
@@ -3495,7 +3679,7 @@ order by {orderBySB}
                             var tb = cell as TextBox;
                             if (tb.Tag != null)
                             {
-                                tagsAndTypes.Add(tb.Tag.ToString(), typeof(string));
+                                gridsArrayClass[gridName].tagsAndTypes.Add(tb.Tag.ToString(), typeof(string));
                                 tagsAndHeaders.Add(tb.Tag.ToString(), dgtc.Header.ToString());
                                 tagsAndNames[tb.Tag.ToString()] = tb.Name;
                             }
@@ -3503,10 +3687,10 @@ order by {orderBySB}
                     }
                 }
 
-                gridSource = new DataTable();
+                gridsDataTables[gridName] = new DataTable();
 
-                newTagsAndTypes = new Dictionary<string, Type>();
-                foreach (var item in tagsAndTypes)
+                gridsArrayClass[gridName].newTagsAndTypes = new Dictionary<string, Type>();
+                foreach (var item in gridsArrayClass[gridName].tagsAndTypes)
                 {
                     var newColumn = new DataColumn();
                     newColumn.ColumnName = item.Key;
@@ -3521,32 +3705,32 @@ order by {orderBySB}
                             case "R":
                                 newColumn.DataType = typeof(int);
                                 //tagsAndTypes[item.Key] = typeof(int);
-                                newTagsAndTypes[item.Key] = typeof(int);
+                                gridsArrayClass[gridName].newTagsAndTypes[item.Key] = typeof(int);
                                 break;
                             case "N":
                                 newColumn.DataType = typeof(double);
                                 //tagsAndTypes[item.Key] = typeof(double);
-                                newTagsAndTypes[item.Key] = typeof(double);
+                                gridsArrayClass[gridName].newTagsAndTypes[item.Key] = typeof(double);
                                 break;
                             case "A":
                                 newColumn.DataType = typeof(string);
                                 //tagsAndTypes[item.Key] = typeof(string);
-                                newTagsAndTypes[item.Key] = typeof(string);
+                                gridsArrayClass[gridName].newTagsAndTypes[item.Key] = typeof(string);
                                 break;
                             case "L":
                                 newColumn.DataType = typeof(bool);
                                 //tagsAndTypes[item.Key] = typeof(bool);
-                                newTagsAndTypes[item.Key] = typeof(bool);
+                                gridsArrayClass[gridName].newTagsAndTypes[item.Key] = typeof(bool);
                                 break;
                             case "D":
                                 newColumn.DataType = typeof(DateTime);
                                 //tagsAndTypes[item.Key] = typeof(DateTime);
-                                newTagsAndTypes[item.Key] = typeof(DateTime);
+                                gridsArrayClass[gridName].newTagsAndTypes[item.Key] = typeof(DateTime);
                                 break;
                             case "T":
                                 newColumn.DataType = typeof(TimeSpan);
                                 //tagsAndTypes[item.Key] = typeof(TimeSpan);
-                                newTagsAndTypes[item.Key] = typeof(TimeSpan);
+                                gridsArrayClass[gridName].newTagsAndTypes[item.Key] = typeof(TimeSpan);
                                 break;
                             default:
                                 break;
@@ -3554,7 +3738,7 @@ order by {orderBySB}
                     }
 
                     newColumn.Caption = tagsAndHeaders[item.Key];
-                    gridSource.Columns.Add(newColumn);
+                    gridsDataTables[gridName].Columns.Add(newColumn);
                 }
 
                 //---------------------------------------------------------------------------
@@ -3586,29 +3770,45 @@ order by {orderBySB}
 
                 dg.AutoGeneratedColumns += Dg_AutoGeneratedColumns;
 
-                dg.ItemsSource = gridSource.AsDataView();
+                dg.ItemsSource = gridsDataTables[gridName].AsDataView();
+
+                //dg.IsKeyboardFocusWithinChanged += Dg_IsKeyboardFocusWithinChanged;
+
+                //dg.SelectedCellsChanged += Dg_SelectedCellsChanged1;
+
+                dg.DataContext = this;
+                Binding bind = new Binding("selectedIndex");
+                bind.Mode = BindingMode.OneWayToSource;
+                bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+                dg.SetBinding(DataGrid.SelectedIndexProperty, bind);
                 //-------------------------------------------------------------------------------
 
-                //fillDataTableQuery();
-                fillDataTable();
+                fillDataTable(gridName);
 
-                grids[gridName] = new DisplayArrayClass()
-                {
-                    dg = dg,
-                    lineCntrVarName = lineCntrVarName,
-                    actCntrVarName = actCntrVarName
-                };
+                gridsArrayClass[gridName].dg = dg;
+                gridsArrayClass[gridName].tags = tagsAndHeaders.Keys.ToList();
+                gridsArrayClass[gridName].tableOrArray = "array";
 
                 return Variable.EmptyInstance;
             }
 
-            private void fillDataTable()
+            //private void Dg_SelectedCellsChanged1(object sender, SelectedCellsChangedEventArgs e)
+            //{
+            //    Debug.WriteLine("Selected Cells Changed");
+            //}
+
+            //private void Dg_IsKeyboardFocusWithinChanged(object sender, DependencyPropertyChangedEventArgs e)
+            //{
+            //   Debug.WriteLine("Dg_IsKeyboardFocusWithinChanged");
+            //}
+
+            public void fillDataTable(string gridName)
             {
                 int lastArrayCount = 0;
-                for (int i = 0; i < tagsAndTypes.Count; i++)
+                for (int i = 0; i < gridsArrayClass[gridName].tagsAndTypes.Count; i++)
                 {
                     var thisArrCount = 0;
-                    var arrName = tagsAndTypes.Keys.ToArray()[i];
+                    var arrName = gridsArrayClass[gridName].tagsAndTypes.Keys.ToArray()[i];
                     if (CSCS_GUI.DEFINES.TryGetValue(arrName.ToLower(), out DefineVariable defineVariable))
                     {
                         if (defineVariable.Type == Variable.VarType.ARRAY)
@@ -3628,11 +3828,21 @@ order by {orderBySB}
                     lastArrayCount = thisArrCount;
                 }
 
-                for (int i = 0; i < maxRows && i < lastArrayCount && i < actCntr; i++)
+                if (!CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable maxrows))
                 {
-                    var currentRow = gridSource.NewRow();
+                    return;
+                }
 
-                    foreach (var column in newTagsAndTypes)
+                if (!CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable actelems))
+                {
+                    return;
+                }
+
+                for (int i = 0; i < (int)maxrows.Value && i < lastArrayCount && i < (int)actelems.Value; i++)
+                {
+                    var currentRow = gridsDataTables[gridName].NewRow();
+
+                    foreach (var column in gridsArrayClass[gridName].newTagsAndTypes)
                     {
                         if (CSCS_GUI.DEFINES.TryGetValue(column.Key.ToLower(), out DefineVariable defVar))
                         {
@@ -3682,7 +3892,7 @@ order by {orderBySB}
                             }
                         }
                     }
-                    gridSource.Rows.Add(currentRow);
+                    gridsDataTables[gridName].Rows.Add(currentRow);
                 }
             }
 
@@ -3891,7 +4101,7 @@ order by {orderBySB}
 
                     FrameworkElementFactory checkBoxFactory = new FrameworkElementFactory(typeof(CheckBox));
                     checkBoxFactory.SetBinding(CheckBox.IsCheckedProperty, bind);
-                    
+
                     ////////bind Focusable to DataGrid's IsReadOnly
                     //////checkBoxFactory.SetBinding(CheckBox.FocusableProperty, dataGridsIsReadOnlyPropertyBind);
 
@@ -3901,8 +4111,8 @@ order by {orderBySB}
                     checkBoxFactory.SetValue(CheckBox.FocusableProperty, false);
                     checkBoxFactory.SetValue(CheckBox.HorizontalAlignmentProperty, HorizontalAlignment.Center);
                     checkBoxFactory.SetValue(CheckBox.NameProperty, tagsAndNames[tag]);
-                    
-                    
+
+
                     FrameworkElementFactory checkBoxEditingFactory = new FrameworkElementFactory(typeof(CheckBox));
                     checkBoxEditingFactory.SetBinding(CheckBox.IsCheckedProperty, bind);
 
@@ -3918,7 +4128,7 @@ order by {orderBySB}
 
                     DataTemplate checkBoxTemplate = new DataTemplate();
                     checkBoxTemplate.VisualTree = checkBoxFactory;
-                    
+
                     DataTemplate checkBoxEditingTemplate = new DataTemplate();
                     checkBoxEditingTemplate.VisualTree = checkBoxEditingFactory;
 
@@ -3938,7 +4148,7 @@ order by {orderBySB}
             private void checkBoxClick(object sender, RoutedEventArgs e)
             {
                 DependencyObject current = (e.Source as FrameworkElement);
-                
+
                 while (current != null)
                 {
                     if (current.GetType() == typeof(DataGrid))
@@ -3961,7 +4171,7 @@ order by {orderBySB}
                     current = VisualTreeHelper.GetParent(current);
                 }
             }
-            
+
             //private void checkboxChecked(object sender, RoutedEventArgs e)
             //{
             //    DependencyObject current = (e.Source as FrameworkElement);
@@ -4070,7 +4280,7 @@ order by {orderBySB}
                 {
                     (sender as DataGrid).CommitEdit();
 
-                    var rowItemArray = gridSource.Rows[rowIndex].ItemArray;
+                    var rowItemArray = gridsDataTables[gridName].Rows[rowIndex].ItemArray;
 
                     SaveRow(rowIndex, rowItemArray);
                 }
@@ -4094,15 +4304,15 @@ order by {orderBySB}
 
             private void SaveRow(int rowIndex, object[] rowNewItemArray)
             {
-                for (int i = 0; i < tagsAndTypes.Count; i++)
+                for (int i = 0; i < gridsArrayClass[gridName].tagsAndTypes.Count; i++)
                 {
-                    var arrName = newTagsAndTypes.Keys.ToArray()[i];
+                    var arrName = gridsArrayClass[gridName].newTagsAndTypes.Keys.ToArray()[i];
                     if (CSCS_GUI.DEFINES.TryGetValue(arrName.ToLower(), out DefineVariable defineVariable))
                     {
                         if (defineVariable.Type == Variable.VarType.ARRAY)
                         {
                             dynamic newDynamicVar;
-                            switch (newTagsAndTypes.ElementAt(i).Value.Name)
+                            switch (gridsArrayClass[gridName].newTagsAndTypes.ElementAt(i).Value.Name)
                             {
                                 case "String":
                                     newDynamicVar = (string)rowNewItemArray[i];
@@ -4126,7 +4336,7 @@ order by {orderBySB}
                                     break;
                                 case "TimeSpan":
                                     newDynamicVar = "";
-                                    var size = timeAndDateEditerTagsAndSizes[newTagsAndTypes.ElementAt(i).Key];
+                                    var size = timeAndDateEditerTagsAndSizes[gridsArrayClass[gridName].newTagsAndTypes.ElementAt(i).Key];
                                     if (size == 5)
                                     {
                                         newDynamicVar = ((TimeSpan)rowNewItemArray[i]).ToString("hh\\:mm");
@@ -4161,10 +4371,188 @@ order by {orderBySB}
 
                 var gridName = Utils.GetSafeString(args, 0);
 
-                if (CSCS_GUI.DEFINES.TryGetValue(grids[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar))
+                if (CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar))
                 {
-                    grids[gridName].dg.SelectedIndex = (int)defVar.Value;
+                    gridsArrayClass[gridName].dg.SelectedIndex = (int)defVar.Value;
+                    gridsArrayClass[gridName].dg.ScrollIntoView(gridsArrayClass[gridName].dg.SelectedItem);
                 }
+
+                return Variable.EmptyInstance;
+            }
+        }
+
+        class DisplayArrayFunction : ParserFunction
+        {
+            protected override Variable Evaluate(ParsingScript script)
+            {
+                List<Variable> args = script.GetFunctionArgs();
+                Utils.CheckArgs(args.Count, 2, m_name);
+
+                var gridName = Utils.GetSafeString(args, 0).ToLower();
+                var option = Utils.GetSafeString(args, 1).ToLower();
+
+                DataGrid dg = null;
+
+                if (CSCS_GUI.Controls.TryGetValue(gridName, out FrameworkElement dgFe))
+                {
+                    if (dgFe is DataGrid)
+                    {
+                        dg = dgFe as DataGrid;
+                    }
+                    else
+                    {
+                        return Variable.EmptyInstance;
+                    }
+                }
+
+                switch (option)
+                {
+                    case "updatecurrent":
+
+                        if (CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable lineCntrDefVar))
+                        {
+                            var itemArray = gridsDataTables[gridName].Rows[(int)lineCntrDefVar.Value].ItemArray;
+                            for (int i = 0; i < itemArray.Length; i++)
+                            {
+
+                                if (CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].tags[i].ToLower(), out DefineVariable defVar))
+                                {
+                                    itemArray[i] = defVar.Tuple[(int)lineCntrDefVar.Value].AsString();
+                                }
+                            }
+
+                            gridsDataTables[gridName].Rows[(int)lineCntrDefVar.Value].ItemArray = itemArray;
+                        }
+
+                        break;
+
+                    case "redisplayfromtop":
+
+                        dg.ScrollIntoView(dg.Items.GetItemAt(0));
+                        dg.SelectedIndex = 0;
+
+                        break;
+
+                    case "redisplayfromend":
+
+                        dg.ScrollIntoView(dg.Items.GetItemAt(dg.Items.Count - 1));
+                        dg.SelectedIndex = dg.Items.Count - 1;
+
+                        break;
+
+                    case "redisplayactive":
+
+                        var currentIndex = dg.SelectedIndex;
+
+                        gridsDataTables[gridName].Rows.Clear();
+                        new DisplayArraySetupFunction().fillDataTable(gridName);
+
+
+                        if (currentIndex < 0 || currentIndex > dg.Items.Count - 1)
+                        {
+                            currentIndex = 0;
+                        }
+                        if (dg.Items.Count > 0)
+                        {
+                            dg.ScrollIntoView(dg.Items.GetItemAt(currentIndex));
+                            dg.SelectedIndex = currentIndex;
+                        }
+
+                        break;
+
+                    default:
+                        break;
+                }
+
+
+                return Variable.EmptyInstance;
+            }
+        }
+
+        class DisplayTableFunction : ParserFunction
+        {
+            protected override Variable Evaluate(ParsingScript script)
+            {
+                List<Variable> args = script.GetFunctionArgs();
+                Utils.CheckArgs(args.Count, 2, m_name);
+
+                var gridName = Utils.GetSafeString(args, 0).ToLower();
+                var option = Utils.GetSafeString(args, 1).ToLower();
+
+                DataGrid dg = null;
+
+                if (CSCS_GUI.Controls.TryGetValue(gridName, out FrameworkElement dgFe))
+                {
+                    if (dgFe is DataGrid)
+                    {
+                        dg = dgFe as DataGrid;
+                    }
+                    else
+                    {
+                        return Variable.EmptyInstance;
+                    }
+                }
+
+                switch (option)
+                {
+                    case "updatecurrent":
+
+                        if (CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable lineCntrDefVar))
+                        {
+                            var itemArray = gridsDataTables[gridName].Rows[(int)lineCntrDefVar.Value].ItemArray;
+                            for (int i = 0; i < itemArray.Length; i++)
+                            {
+
+                                if (CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].tags[i].ToLower(), out DefineVariable defVar))
+                                {
+                                    itemArray[i] = defVar.Tuple[(int)lineCntrDefVar.Value].AsString();
+                                }
+                            }
+
+                            gridsDataTables[gridName].Rows[(int)lineCntrDefVar.Value].ItemArray = itemArray;
+                        }
+
+                        break;
+
+                    case "redisplayfromtop":
+
+                        dg.ScrollIntoView(dg.Items.GetItemAt(0));
+                        dg.SelectedIndex = 0;
+
+                        break;
+
+                    case "redisplayfromend":
+
+                        dg.ScrollIntoView(dg.Items.GetItemAt(dg.Items.Count - 1));
+                        dg.SelectedIndex = dg.Items.Count - 1;
+
+                        break;
+
+                    case "redisplayactive":
+
+                        var currentIndex = dg.SelectedIndex;
+
+                        gridsDataTables[gridName].Rows.Clear();
+                        new DisplayTableSetupFunction().fillDataTable(gridName);
+
+                        DisplayTableSetupFunction.dataGridUpdated = true;
+
+                        if (currentIndex < 0 || currentIndex > dg.Items.Count - 1)
+                        {
+                            currentIndex = 0;
+                        }
+                        if (dg.Items.Count > 0)
+                        {
+                            dg.ScrollIntoView(dg.Items.GetItemAt(currentIndex));
+                            dg.SelectedIndex = currentIndex;
+                        }
+
+                        break;
+
+                    default:
+                        break;
+                }
+
 
                 return Variable.EmptyInstance;
             }
@@ -4190,38 +4578,191 @@ order by {orderBySB}
                         {
                             case "addrow":
 
-                                //----
+                                if (gridsArrayClass[gridName].tableOrArray == "table")
+                                {
+                                    //
+                                }
+                                else if (gridsArrayClass[gridName].tableOrArray == "array")
+                                {
+                                    var currentRowCount = dg.Items.Count;
 
-                                var newRow = gridsDataTables[gridName].NewRow();
+                                    // check for max length
+                                    if (CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable defVar))
+                                    {
+                                        if (currentRowCount + 1 > defVar.Value)
+                                        {
+                                            MessageBox.Show("Maximum elements reached.");
+                                            return Variable.EmptyInstance;
+                                        }
+                                    }
 
-                                //newRow["ID"] = 0;
+                                    // add new array item
+                                    foreach (var item in gridsArrayClass[gridName].tags)
+                                    {
+                                        var tagToLower = item.ToLower();
 
-                                //foreach(var col in grids[gridName].dg.Columns)
-                                //{
-                                //    col.
-                                //}
+                                        if (CSCS_GUI.DEFINES.TryGetValue(tagToLower, out DefineVariable defVar2))
+                                        {
+                                            if (defVar2.Tuple.Count > currentRowCount)
+                                            {
+                                                defVar2.Tuple[currentRowCount] = new Variable();
+                                            }
+                                            else
+                                            {
+                                                defVar2.Tuple.Add(new Variable());
+                                            }
+                                        }
+                                    }
 
-                                //foreach (var column in tagsAndTypes)
-                                //{
-                                //    if (CSCS_GUI.DEFINES.TryGetValue(column.Key.ToLower(), out DefineVariable defVar))
-                                //    {
-                                //        newRow[column.Key] = defVar.AsString();
-                                //    }
-                                //}
 
-                                gridsDataTables[gridName].Rows.Add(newRow);
+                                    // fill linCntr with new element index
+                                    if (CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar3))
+                                    {
+                                        defVar3.InitVariable(new Variable(currentRowCount));
+                                    }
 
-                                //----
-                                //gridsDataTables[gridName].Rows.Add()
-                                //.Add(new object[dg.Columns.Count]);
-                                
+                                    // increment active elements variable
+                                    if (CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar4))
+                                    {
+                                        defVar4.InitVariable(new Variable(defVar4.Value + 1));
+                                    }
+
+                                    // add new grid row
+                                    var newRow = gridsDataTables[gridName].NewRow();
+                                    gridsDataTables[gridName].Rows.Add(newRow);
+
+                                    dg.ScrollIntoView(dg.Items.GetItemAt(dg.Items.Count - 1));
+                                    dg.SelectedIndex = dg.Items.Count - 1;
+                                }
+
                                 break;
+
                             case "deleterow":
 
-                                if (deleteFromDB(gridsDataTables[gridName].Rows[dg.SelectedIndex].ItemArray[0].ToString(), gridsOpenvs[gridName]))
+                                if (gridsArrayClass[gridName].tableOrArray == "table")
                                 {
-                                    gridsDataTables[gridName].Rows.RemoveAt(dg.SelectedIndex);
+                                    if (deleteFromDB(gridsDataTables[gridName].Rows[dg.SelectedIndex].ItemArray[0].ToString(), gridsOpenvs[gridName]))
+                                    {
+                                        gridsDataTables[gridName].Rows.RemoveAt(dg.SelectedIndex);
+                                    }
                                 }
+                                else if (gridsArrayClass[gridName].tableOrArray == "array")
+                                {
+                                    if (deleteFromArrays(dg.SelectedIndex, gridsArrayClass[gridName]))
+                                    {
+                                        var indexToDelete = dg.SelectedIndex;
+                                        gridsDataTables[gridName].Rows.RemoveAt(indexToDelete);
+                                        if (dg.Items.Count <= indexToDelete)
+                                        {
+                                            dg.SelectedIndex = indexToDelete - 1;
+                                            if (dg.SelectedItem != null)
+                                                dg.ScrollIntoView(dg.SelectedItem);
+                                            else
+                                            {// ...deleted the last item remained
+                                                //add first item do DataTable
+                                                var newRow2 = gridsDataTables[gridName].NewRow();
+                                                gridsDataTables[gridName].Rows.Add(newRow2);
+
+                                                // add new array item
+                                                foreach (var item in gridsArrayClass[gridName].tags)
+                                                {
+                                                    var tagToLower = item.ToLower();
+
+                                                    if (CSCS_GUI.DEFINES.TryGetValue(tagToLower, out DefineVariable defVar2))
+                                                    {
+                                                        defVar2.Tuple[0] = new Variable() { };
+                                                    }
+                                                }
+
+                                                dg.SelectedIndex = 0;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            dg.SelectedIndex = indexToDelete;
+                                            dg.ScrollIntoView(dg.SelectedItem);
+                                        }
+
+                                        // decrement active elements variable
+                                        if (CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar5))
+                                        {
+                                            if ((int)defVar5.Value > 1)
+                                            {
+                                                defVar5.InitVariable(new Variable(defVar5.Value - 1));
+                                            }
+                                        }
+                                    }
+                                }
+
+                                break;
+
+                            case "insertrow":
+
+                                if (gridsArrayClass[gridName].tableOrArray == "table")
+                                {
+                                    //
+                                }
+                                else if (gridsArrayClass[gridName].tableOrArray == "array")
+                                {
+                                    // check for max length
+                                    if (CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable defVar6))
+                                    {
+                                        if (dg.Items.Count + 1 > defVar6.Value)
+                                        {
+                                            MessageBox.Show("Maximum elements reached.");
+                                            return Variable.EmptyInstance;
+                                        }
+                                    }
+
+                                    if (gridsArrayClass[gridName].tableOrArray == "array")
+                                    {
+                                        if (insertIntoArrays(dg.SelectedIndex + 1, gridsArrayClass[gridName]))
+                                        {
+                                            gridsDataTables[gridName].Rows.InsertAt(gridsDataTables[gridName].NewRow(), dg.SelectedIndex + 1);
+
+                                            // increment active elements variable
+                                            if (CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar7))
+                                            {
+                                                defVar7.InitVariable(new Variable(defVar7.Value + 1));
+                                            }
+
+                                            dg.SelectedIndex++;
+                                            dg.ScrollIntoView(dg.SelectedItem);
+                                        }
+                                    }
+                                }
+
+                                break;
+
+                            case "aaa": // (test) counts visible rows in datagrid
+
+                                uint VisibleRows = 0;
+
+                                int cnt = 0;
+                                foreach (var Item in dg.Items)
+                                {
+                                    var Row = (DataGridRow)dg.ItemContainerGenerator.ContainerFromItem(Item);
+
+                                    if (Row != null)
+                                    {
+                                        if (IsUserVisible(Row, dg))
+                                        {
+                                            cnt++;
+                                            Debug.WriteLine("Red " + (Row.Item as DataRowView).Row.ItemArray[1].ToString());
+                                        }
+                                    }
+
+                                    //if (Row != null)
+                                    //{
+                                    //    if (Row.TransformToVisual(dg).Transform(new Point(0, 0)).Y + Row.ActualHeight >= dg.ActualHeight)
+                                    //    {
+                                    //        break;
+                                    //    }
+
+                                    //    VisibleRows++;
+                                    //}
+                                }
+
                                 break;
                             default:
                                 break;
@@ -4230,6 +4771,52 @@ order by {orderBySB}
                 }
 
                 return Variable.EmptyInstance;
+            }
+
+            private bool insertIntoArrays(int index, DisplayArrayClass dac)
+            {
+                try
+                {
+                    foreach (var arrayName in dac.tags)
+                    {
+                        if (CSCS_GUI.DEFINES.TryGetValue(arrayName.ToLower(), out DefineVariable defVar))
+                        {
+                            defVar.Tuple.Insert(index, new Variable());
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
+            }
+
+            private bool deleteFromArrays(int index, DisplayArrayClass dac)
+            {
+                try
+                {
+                    foreach (var arrayName in dac.tags)
+                    {
+                        if (CSCS_GUI.DEFINES.TryGetValue(arrayName.ToLower(), out DefineVariable defVar))
+                        {
+                            defVar.Tuple.RemoveAt(index);
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
             }
 
             private bool deleteFromDB(string rowId, OpenvTable thisOpenv)
@@ -4254,7 +4841,14 @@ where ID = {rowId}
                 }
             }
 
-
+            private bool IsUserVisible(FrameworkElement element, FrameworkElement container)
+            {
+                if (!element.IsVisible)
+                    return false;
+                Rect bounds = element.TransformToAncestor(container).TransformBounds(new Rect(0.0, 0.0, element.ActualWidth, element.ActualHeight));
+                Rect rect = new Rect(0.0, 0.0, container.ActualWidth, container.ActualHeight);
+                return rect.Contains(bounds.TopLeft) || rect.Contains(bounds.BottomRight);
+            }
         }
 
     }

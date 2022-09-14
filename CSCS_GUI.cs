@@ -61,11 +61,15 @@ namespace SplitAndMerge
         public const string RDA = "Rda";
         public const string WRTA = "Wrta";
 
+        public const string TRC = "Trc";
+
         public const string SCAN = "Scan";
         
         public const string DISPLAY_TABLE_SETUP = "DisplayTableSetup";
         public const string DISPLAY_ARRAY_SETUP = "DisplayArraySetup";
         public const string DISPLAY_ARRAY_REFRESH = "DisplayArrayRefresh";
+        public const string DISPLAYARRAY = "DisplayArray";
+        public const string DISPLAYTABLE = "DisplayTable";
 
         public const string DATAGRID = "DataGrid";
 
@@ -215,7 +219,7 @@ namespace WpfCSCS
 
         static Dictionary<string, string> s_ChangeHandlers = new Dictionary<string, string>();
         
-        static Dictionary<string, string> s_MoveHandlers = new Dictionary<string, string>();
+        public static Dictionary<string, string> s_MoveHandlers = new Dictionary<string, string>();
         static Dictionary<string, string> s_SelectHandlers = new Dictionary<string, string>();
 
         static Dictionary<string, Variable> s_boundVariables = new Dictionary<string, Variable>();
@@ -785,8 +789,8 @@ namespace WpfCSCS
                 }
 
                 s_MoveHandlers[name] = action;
-                dg.SelectionChanged -= new SelectionChangedEventHandler(DataGrid_Move);
-                dg.SelectionChanged += new SelectionChangedEventHandler(DataGrid_Move);
+                //dg.SelectionChanged -= new SelectionChangedEventHandler(DataGrid_Move);
+                //dg.SelectionChanged += new SelectionChangedEventHandler(DataGrid_Move);
 
                 return true;
             }
@@ -2265,6 +2269,14 @@ namespace WpfCSCS
                     settingTabControlPosition = true;
                     tc.SelectedIndex = Utils.GetSafeInt(args, 2);
                     settingTabControlPosition = false;
+                }
+            }
+            else if (widget is TextBox)
+            {
+                TextBox tb = widget as TextBox;
+                if (option == "text")
+                {
+                    tb.Text = Utils.GetSafeString(args, 2);
                 }
             }
 
