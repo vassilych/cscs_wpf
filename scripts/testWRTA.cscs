@@ -1,0 +1,50 @@
+DEFINE idArray, customerNumberArray type i array 10;
+DEFINE customerNameArray type a size 50 array 10;
+
+DEFINE recaArray type i array 10;
+DEFINE cntr type i;
+
+//---------------
+
+// idArray[0] = 1;
+// idArray[1] = 2;
+// idArray[2] = 3;
+
+customerNumberArray[0] = 5;
+customerNumberArray[1] = 6;
+customerNumberArray[2] = 7;
+
+customerNameArray[0] = "Marko Marko2";
+customerNameArray[1] = "Enzo Enzo2";
+customerNameArray[2] = "Janko Janko2";
+
+//---------------
+
+recaArray[0] = 1;
+recaArray[1] = 2;
+recaArray[2] = 3;
+
+//---------------
+
+DEFINE hndl, cntr type i;
+
+cntr = 0;
+
+hndl = openv("customers", "DB1");
+
+//WRTA("customerNumberArray|customerNameArray", "customerNumber, customerName", hndl, "", 3, "", "cntr");
+
+fromArray = {"customerNumberArray", "customerNameArray"};
+toArray = {"customerNumber", "customerName"};
+
+
+
+function funkcija(){
+    MessageBox(customerNumberArray[cntr]);
+    if(customerNumberArray[cntr] == 6){return true;}else{return false;}
+}
+
+
+
+WRTA(fromArray, toArray, hndl, "recaArray", 3, "customerNumberArray[cntr] == 6", "cntr");
+

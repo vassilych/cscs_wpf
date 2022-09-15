@@ -2165,8 +2165,10 @@ WHERE ID = {thisOpenv.currentRow}
         //not fully implemented
         public class WRTAFunction : ParserFunction
         {
-            ParsingScript from;
-            string to;
+            Variable from;
+            //string from;
+            //string to;
+            Variable to;
             int tableHndlNum;
 
             string tableKey;
@@ -2175,7 +2177,7 @@ WHERE ID = {thisOpenv.currentRow}
 
             string cntrNameString;
 
-
+            int arrayIndex = 0;
 
             OpenvTable thisOpenv;
             KeyClass KeyClass;
@@ -2186,18 +2188,21 @@ WHERE ID = {thisOpenv.currentRow}
 
             int rowNumber = 0; //
 
+            string recaArrayName;
+
             protected override Variable Evaluate(ParsingScript script)
             {
                 Script = script;
                 List<Variable> args = script.GetFunctionArgs();
                 Utils.CheckArgs(args.Count, 6, m_name);
 
-                from = script.GetTempScript(args[0].ToString()); // cols from DB
-                to = Utils.GetSafeString(args, 1); // arrays to fill
+                from = script.GetTempScript(args[0].ToString()).Execute(); // array names
+                //from = Utils.GetSafeString(args, 0); // array names
+                to = script.GetTempScript(args[1].ToString()).Execute(); // DB table columns to fill
 
                 tableHndlNum = Utils.GetSafeInt(args, 2);
 
-                var recaArrayName = Utils.GetSafeString(args, 3);
+                recaArrayName = Utils.GetSafeString(args, 3);
                 var maxa = Utils.GetSafeInt(args, 4);
 
                 forString = script.GetTempScript(args[5].ToString()); // 
@@ -2221,19 +2226,40 @@ WHERE ID = {thisOpenv.currentRow}
 
                 while (true)
                 {
-                    if (forIsSet && !script.GetTempScript(forString.String).Execute(new char[] { '"' }, 0).AsBool())
-                    {
-                        new Btrieve.FINDVClass(tableHndlNum, "n").FINDV();
-                        continue;
-                    }
-
                     if (limited && selectLimitCounter == 0)
                     {
                         SetFlerr(0, tableHndlNum);
                         break;
                     }
 
-                    if (RDA())
+                    if (forIsSet && !script.GetTempScript(forString.String).Execute(new char[] { '"' }, 0).AsBool())
+                    {
+                        //new Btrieve.FINDVClass(tableHndlNum, "n").FINDV();
+
+                        arrayIndex++;
+
+                        rowsAffected++;
+                        rowNumber++;
+
+                        var current1 = CSCS_GUI.DEFINES[cntrNameString];
+                        current1.InitVariable(new Variable(rowsAffected));
+
+                        if (limited)
+                        {
+                            selectLimitCounter--;
+                            if (selectLimitCounter == 0)
+                            {
+                                SetFlerr(0, tableHndlNum);
+                                break;
+                            }
+                        }
+
+                        continue;
+                    }
+
+                    
+
+                    if (WRTA())
                     {
                         rowsAffected++;
                         rowNumber++;
@@ -2249,44 +2275,128 @@ WHERE ID = {thisOpenv.currentRow}
                         }
                     }
 
-                    new Btrieve.FINDVClass(tableHndlNum, "n").FINDV();
-                    if (LastFlerrsOfFnums[tableHndlNum] == 3)
-                    {
-                        SetFlerr(0, tableHndlNum);
-                        break;
-                    }
+                    arrayIndex++;
+
+                    var current = CSCS_GUI.DEFINES[cntrNameString];
+                    current.InitVariable(new Variable(rowsAffected));
+
+                    //new Btrieve.FINDVClass(tableHndlNum, "n").FINDV();
+                    //if (LastFlerrsOfFnums[tableHndlNum] == 3)
+                    //{
+                    //    SetFlerr(0, tableHndlNum);
+                    //    break;
+                    //}
                 }
 
-                var current = CSCS_GUI.DEFINES[cntrNameString];
-                current.InitVariable(new Variable(rowsAffected));
+                
 
                 return Variable.EmptyInstance;
             }
 
-            private bool RDA()
+            private bool WRTA()
             {
-                var fromSplitted = from.String.Split('|');
+                if (string.IsNullOrEmpty(recaArrayName))
+                {//RECA NIJE postavljen -> INSERT all
 
-                List<Variable> executed = new List<Variable>();
+                    string columnsString = "";
+                    string valuesString = "";
 
-                foreach (var item in fromSplitted)
-                {
-                    executed.Add(Script.GetTempScript(item).Execute(null, 0));
-                }
-
-                to = to.Replace(" ", "");
-                var toSplitted = to.Split(',');
-
-                for (int i = 0; i < toSplitted.Length; i++)
-                {
-                    var arrayName = toSplitted[i].ToLower();
-                    if (CSCS_GUI.DEFINES[arrayName].Array > 1)
+                    foreach (var arrayName in from.Tuple)
                     {
-                        CSCS_GUI.DEFINES[arrayName].Tuple[rowNumber] = executed.ElementAt(i).Clone();
+                        if (CSCS_GUI.DEFINES.TryGetValue(arrayName.AsString(), out DefineVariable fromDefVar))
+                        {
+                            if (fromDefVar.Type == Variable.VarType.ARRAY)
+                            {
+                                bool notANumber = fromDefVar.Tuple[arrayIndex].Type != Variable.VarType.NUMBER;
+
+                                valuesString += notANumber ? "\'\'" : "";
+                                valuesString += fromDefVar.Tuple[arrayIndex];
+                                valuesString += notANumber ? "\'\'" : "";
+                                valuesString += ", ";
+                            }
+                        }
+                    }
+                    valuesString = valuesString.Substring(0, valuesString.Length - 2);
+
+                    foreach (var columnName in to.Tuple)
+                    {
+                        columnsString += columnName.AsString();
+                        columnsString += ", ";
+                    }
+                    columnsString = columnsString.Substring(0, columnsString.Length - 2);
+
+
+                    var query =
+$@"EXECUTE sp_executesql N'
+INSERT INTO {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
+({columnsString})
+VALUES
+({valuesString})
+'";
+
+                    using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+                    {
+                        var reader = cmd.ExecuteNonQuery();
+                        return true;
                     }
                 }
+                else if(CSCS_GUI.DEFINES.TryGetValue(recaArrayName.ToLower(), out DefineVariable recaArrayDefVar))
+                {//reca JE POSTAVLJEN --> UPDATE
 
-                return true;
+                    List<string> columns = new List<string>();
+                    List<string> values = new List<string>();
+
+                    foreach (var arrayName in from.Tuple)
+                    {
+                        if (CSCS_GUI.DEFINES.TryGetValue(arrayName.AsString(), out DefineVariable fromDefVar))
+                        {
+                            if (fromDefVar.Type == Variable.VarType.ARRAY)
+                            {
+                                bool notANumber = fromDefVar.Tuple[arrayIndex].Type != Variable.VarType.NUMBER;
+                                var valueString = "";
+                                valueString += notANumber ? "\'\'" : "";
+                                valueString += fromDefVar.Tuple[arrayIndex];
+                                valueString += notANumber ? "\'\'" : "";
+                                values.Add(valueString);
+                            }
+                        }
+                    }
+
+                    foreach (var columnName in to.Tuple)
+                    {
+                        string columnString = columnName.AsString();
+                        columns.Add(columnString);
+                    }
+
+                    string columnsEqualsValuesString = "";
+
+                    for(int i = 0; i< columns.Count; i++)
+                    {
+                        columnsEqualsValuesString += columns[i] + " = " + values[i] + ", ";
+                    }
+                    columnsEqualsValuesString = columnsEqualsValuesString.Substring(0, columnsEqualsValuesString.Length - 2);
+
+                    string currentId = recaArrayDefVar.Tuple[arrayIndex].AsString();
+
+                    
+
+
+                    var query =
+$@"EXECUTE sp_executesql N'
+UPDATE {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
+SET {columnsEqualsValuesString}
+WHERE id = {currentId}
+'";
+
+                    using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+                    {
+                        var reader = cmd.ExecuteNonQuery();
+                        return true;
+                    }
+                } 
+                    
+
+                return false;
             }
         }
 

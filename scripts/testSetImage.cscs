@@ -1,0 +1,6 @@
+CreateWindow("../../scripts/Window1.xaml");
+
+data = OpenFile();
+  SetImage("btn1", data);
+//   SetImage("label1", data);
+//   SetImage("imageWidget", data);
