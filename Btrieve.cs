@@ -2210,6 +2210,12 @@ WHERE ID = {thisOpenv.currentRow}
 
                 thisOpenv = Btrieve.OPENVs[tableHndlNum];
 
+                if(from.Tuple.Count != to.Tuple.Count)
+                {
+                    MessageBox.Show("Error: Array count and table column count is not the same.");
+                    return Variable.EmptyInstance;
+                }
+
                 bool limited = false;
                 int selectLimit = 0;
                 int selectLimitCounter = 0;
@@ -2220,9 +2226,14 @@ WHERE ID = {thisOpenv.currentRow}
                     selectLimitCounter = selectLimit;
                 }
 
+                ParsingScript tmpScript = null;
                 bool forIsSet = false;
                 if (!string.IsNullOrEmpty(forString.String))
+                {
                     forIsSet = true;
+                    string data = Utils.ConvertToScript(InterpreterInstance, forString.String, out _);
+                    tmpScript = script.GetTempScript(data);
+                }
 
                 while (true)
                 {
@@ -2232,34 +2243,36 @@ WHERE ID = {thisOpenv.currentRow}
                         break;
                     }
 
-                    if (forIsSet && !script.GetTempScript(forString.String).Execute(new char[] { '"' }, 0).AsBool())
+
+                    if (forIsSet /*&& !script.GetTempScript(forString.String).Execute(new char[] { '"' }, 0).AsBool()*/)
                     {
-                        //new Btrieve.FINDVClass(tableHndlNum, "n").FINDV();
-
-                        arrayIndex++;
-
-                        rowsAffected++;
-                        rowNumber++;
-
-                        var current1 = CSCS_GUI.DEFINES[cntrNameString];
-                        current1.InitVariable(new Variable(rowsAffected));
-
-                        if (limited)
+                        var res = tmpScript.Execute(new char[] { '"' }, 0);
+                        var boolRes = res.AsBool();
+                        if (!boolRes) 
                         {
-                            selectLimitCounter--;
-                            if (selectLimitCounter == 0)
-                            {
-                                SetFlerr(0, tableHndlNum);
-                                break;
-                            }
-                        }
+                            arrayIndex++;
 
-                        continue;
+                            rowsAffected++;
+                            rowNumber++;
+
+                            var current1 = CSCS_GUI.DEFINES[cntrNameString];
+                            current1.InitVariable(new Variable(rowsAffected));
+
+                            if (limited)
+                            {
+                                selectLimitCounter--;
+                                if (selectLimitCounter == 0)
+                                {
+                                    SetFlerr(0, tableHndlNum);
+                                    break;
+                                }
+                            }
+
+                            continue;
+                        }
                     }
 
-                    
-
-                    if (WRTA())
+                    if (WRTA(script))
                     {
                         rowsAffected++;
                         rowNumber++;
@@ -2279,13 +2292,6 @@ WHERE ID = {thisOpenv.currentRow}
 
                     var current = CSCS_GUI.DEFINES[cntrNameString];
                     current.InitVariable(new Variable(rowsAffected));
-
-                    //new Btrieve.FINDVClass(tableHndlNum, "n").FINDV();
-                    //if (LastFlerrsOfFnums[tableHndlNum] == 3)
-                    //{
-                    //    SetFlerr(0, tableHndlNum);
-                    //    break;
-                    //}
                 }
 
                 
@@ -2293,27 +2299,155 @@ WHERE ID = {thisOpenv.currentRow}
                 return Variable.EmptyInstance;
             }
 
-            private bool WRTA()
+            private bool WRTA(ParsingScript script)
             {
-                if (string.IsNullOrEmpty(recaArrayName))
-                {//RECA NIJE postavljen -> INSERT all
+                bool shouldInsert = false;
+                bool shouldUpdate = false;
+
+                DefineVariable recaArrayDefVar;
+
+                string currentId = null;
+
+                if (CSCS_GUI.DEFINES.TryGetValue(recaArrayName.ToLower(), out recaArrayDefVar))
+                {
+                    currentId = recaArrayDefVar.Tuple[arrayIndex].AsString();
+                    var query =
+$@"EXECUTE sp_executesql N'
+SELECT COUNT(*) FROM {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
+WHERE id = {currentId}
+'";
+
+                    using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+                    {
+                        var reader = cmd.ExecuteReader();
+                        if (reader.Read())
+                        {
+                            if((int)reader[0] > 0)
+                            {
+                                //update -> jer id postoji
+                                //reca JE POSTAVLJEN --> UPDATE
+                                shouldUpdate = true;
+                                reader.Close();
+                            }
+                            else
+                            {
+                                //insert -> jer id NE postoji
+                                shouldInsert = true;
+                                reader.Close();
+                            }
+                        }
+                    }
+                }
+                if (shouldUpdate)
+                {
+                    List<string> columns = new List<string>();
+                    List<string> values = new List<string>();
+
+                    foreach (var fromItem in from.Tuple)
+                    {
+                        if (fromItem.Type == Variable.VarType.ARRAY)
+                        {
+                            bool notANumber = fromItem.Tuple[arrayIndex].Type != Variable.VarType.NUMBER;
+
+                            var valueString = "";
+                            valueString += notANumber ? "\'\'" : "";
+                            valueString += fromItem.Tuple[arrayIndex];
+                            valueString += notANumber ? "\'\'" : "";
+                            values.Add(valueString);
+                        }
+                        else if (fromItem.Type == Variable.VarType.STRING)
+                        {
+                            var evaluated = fromItem.AsString();
+
+                            string data = Utils.ConvertToScript(InterpreterInstance, evaluated, out _);
+                            var tmpScript = script.GetTempScript(data);
+                            var res = tmpScript.Execute();
+
+                            var valueString = "";
+                            valueString += res.Type == Variable.VarType.NUMBER ? res.AsString() : "\'\'" + res.AsString() + "\'\'";
+                            values.Add(valueString);
+                        }
+                        else if (fromItem.Type == Variable.VarType.NUMBER)
+                        {
+                            var evaluated = fromItem.AsString();
+
+                            var valueString = "";
+                            valueString += fromItem.Value;
+                            values.Add(valueString);
+                        }
+                    }
+
+                    foreach (var columnName in to.Tuple)
+                    {
+                        string columnString = columnName.AsString();
+                        columns.Add(columnString);
+                    }
+
+                    string columnsEqualsValuesString = "";
+
+                    for (int i = 0; i < columns.Count; i++)
+                    {
+                        columnsEqualsValuesString += columns[i] + " = " + values[i] + ", ";
+                    }
+                    columnsEqualsValuesString = columnsEqualsValuesString.Substring(0, columnsEqualsValuesString.Length - 2);
+
+
+                    var query =
+$@"EXECUTE sp_executesql N'
+UPDATE {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
+SET {columnsEqualsValuesString}
+WHERE id = {currentId}
+'";
+
+                    using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+                    {
+                        try
+                        {
+                            var reader = cmd.ExecuteNonQuery();
+                            
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message + "\n" + "ID = " + currentId);
+                        }
+                        return true;
+                    }
+                }
+
+                if (string.IsNullOrEmpty(recaArrayName) || shouldInsert)
+                {//RECA NIJE postavljen -> INSERT all ... ILI jedan red iz reca nema tog id-a u bazi
 
                     string columnsString = "";
                     string valuesString = "";
 
-                    foreach (var arrayName in from.Tuple)
+                    foreach (var fromItem in from.Tuple)
                     {
-                        if (CSCS_GUI.DEFINES.TryGetValue(arrayName.AsString(), out DefineVariable fromDefVar))
+                        if(fromItem.Type == Variable.VarType.ARRAY)
                         {
-                            if (fromDefVar.Type == Variable.VarType.ARRAY)
-                            {
-                                bool notANumber = fromDefVar.Tuple[arrayIndex].Type != Variable.VarType.NUMBER;
+                            bool notANumber = fromItem.Tuple[arrayIndex].Type != Variable.VarType.NUMBER;
 
-                                valuesString += notANumber ? "\'\'" : "";
-                                valuesString += fromDefVar.Tuple[arrayIndex];
-                                valuesString += notANumber ? "\'\'" : "";
-                                valuesString += ", ";
-                            }
+                            valuesString += notANumber ? "\'\'" : "";
+                            valuesString += fromItem.Tuple[arrayIndex];
+                            valuesString += notANumber ? "\'\'" : "";
+                            valuesString += ", ";
+                        }
+                        else if (fromItem.Type == Variable.VarType.STRING)
+                        {
+                            var evaluated = fromItem.AsString();
+
+                            string data = Utils.ConvertToScript(InterpreterInstance, evaluated, out _);
+                            var tmpScript = script.GetTempScript(data);
+                            var res = tmpScript.Execute();
+
+                            valuesString += res.Type == Variable.VarType.NUMBER ? res.AsString() : "\'\'" + res.AsString() + "\'\'";
+                            valuesString += ", ";
+                        }
+                        else if (fromItem.Type == Variable.VarType.NUMBER)
+                        {
+                            var evaluated = fromItem.AsString();
+
+                            valuesString += fromItem.Value;
+                            valuesString += ", ";
                         }
                     }
                     valuesString = valuesString.Substring(0, valuesString.Length - 2);
@@ -2336,67 +2470,19 @@ VALUES
 
                     using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
                     {
-                        var reader = cmd.ExecuteNonQuery();
+                        try
+                        {
+                            var reader = cmd.ExecuteNonQuery();
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message);
+                        }
                         return true;
                     }
                 }
-                else if(CSCS_GUI.DEFINES.TryGetValue(recaArrayName.ToLower(), out DefineVariable recaArrayDefVar))
-                {//reca JE POSTAVLJEN --> UPDATE
-
-                    List<string> columns = new List<string>();
-                    List<string> values = new List<string>();
-
-                    foreach (var arrayName in from.Tuple)
-                    {
-                        if (CSCS_GUI.DEFINES.TryGetValue(arrayName.AsString(), out DefineVariable fromDefVar))
-                        {
-                            if (fromDefVar.Type == Variable.VarType.ARRAY)
-                            {
-                                bool notANumber = fromDefVar.Tuple[arrayIndex].Type != Variable.VarType.NUMBER;
-                                var valueString = "";
-                                valueString += notANumber ? "\'\'" : "";
-                                valueString += fromDefVar.Tuple[arrayIndex];
-                                valueString += notANumber ? "\'\'" : "";
-                                values.Add(valueString);
-                            }
-                        }
-                    }
-
-                    foreach (var columnName in to.Tuple)
-                    {
-                        string columnString = columnName.AsString();
-                        columns.Add(columnString);
-                    }
-
-                    string columnsEqualsValuesString = "";
-
-                    for(int i = 0; i< columns.Count; i++)
-                    {
-                        columnsEqualsValuesString += columns[i] + " = " + values[i] + ", ";
-                    }
-                    columnsEqualsValuesString = columnsEqualsValuesString.Substring(0, columnsEqualsValuesString.Length - 2);
-
-                    string currentId = recaArrayDefVar.Tuple[arrayIndex].AsString();
-
                     
-
-
-                    var query =
-$@"EXECUTE sp_executesql N'
-UPDATE {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
-SET {columnsEqualsValuesString}
-WHERE id = {currentId}
-'";
-
-                    using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
-                    {
-                        var reader = cmd.ExecuteNonQuery();
-                        return true;
-                    }
-                } 
-                    
-
-                return false;
+                return true;
             }
         }
 
