@@ -2324,14 +2324,14 @@ WHERE id = {currentId}
                         {
                             if((int)reader[0] > 0)
                             {
-                                //update -> jer id postoji
-                                //reca JE POSTAVLJEN --> UPDATE
+                                //update -> because id EXISTS
+                                //RECA IS set --> UPDATE
                                 shouldUpdate = true;
                                 reader.Close();
                             }
                             else
                             {
-                                //insert -> jer id NE postoji
+                                //insert -> id DOESN'T exist
                                 shouldInsert = true;
                                 reader.Close();
                             }
@@ -2415,7 +2415,7 @@ WHERE id = {currentId}
                 }
 
                 if (string.IsNullOrEmpty(recaArrayName) || shouldInsert)
-                {//RECA NIJE postavljen -> INSERT all ... ILI jedan red iz reca nema tog id-a u bazi
+                {//RECA ISN'T set -> INSERT all ... OR id from RECAS array DOESN't EXIST in database table
 
                     string columnsString = "";
                     string valuesString = "";
