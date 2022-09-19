@@ -65,6 +65,7 @@ function mainMenuWindow_OnDisplay(){
     AddMenuItem("BtrieveDC", "testScan1.cscs", "testScan1", "runScript");
     AddMenuSeparator("BtrieveDC");
     AddMenuItem("BtrieveDC", "testWRTA.cscs", "testWRTA", "runScript");
+    AddMenuItem("BtrieveDC", "testWRTALotsOfData.cscs", "testWRTALotsOfData", "runScript");
 
     //------------------------------------
 

@@ -2012,7 +2012,7 @@ WHERE ID = {thisOpenv.currentRow}
                             KeyClass = new KeyClass() { KeyName = "ID", Ascending = true, Unique = true, KeyNum = 0, KeyColumns = new Dictionary<string, string>() { { "ID", "" } } };
                         }
                     }
-                    else if (!thisOpenv.Keys.Any(p => p.KeyName == tableKey.ToUpper()) /* or the key with this number does not exist */)
+                    else if (!thisOpenv.Keys.Any(p => p.KeyName.ToUpper() == tableKey.ToUpper()) /* or the key with this number does not exist */)
                     {
                         // "Key does not exist for this table!"
                         SetFlerr(4, tableHndlNum);
@@ -2020,7 +2020,7 @@ WHERE ID = {thisOpenv.currentRow}
                     }
                     else
                     {
-                        KeyClass = thisOpenv.Keys.First(p => p.KeyName == tableKey.ToUpper());
+                        KeyClass = thisOpenv.Keys.First(p => p.KeyName.ToUpper() == tableKey.ToUpper());
                     }
                 }
                 else
@@ -2196,7 +2196,6 @@ WHERE ID = {thisOpenv.currentRow}
 
                 switch (CSCSType)
                 {
-
                     case Variable.VarType.NUMBER:
                         if (TASType != "N" && TASType != "I" && TASType != "R" && TASType != "B")
                             incompatible = true;
