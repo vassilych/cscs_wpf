@@ -45,7 +45,9 @@ hndl = openv("customers", "DB1");
 
 //fromArray = {"customerNumberArray", "customerNameArray"};
 //fromArray = {57, "'stringConstant'", variable, customerNameArray, "funkcija2()", "funkcija3()"};
-fromArray = {"cntr+68", "'stringConstant10'"};
+
+//fromArray = {"cntr+68", "'stringConstant10'"};
+fromArray = {"customerNumberArray", "'stringConstant10'"};
 toArray = {"customerNumber", "customerName"};
 
 function funkcija3(){

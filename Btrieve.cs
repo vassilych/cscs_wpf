@@ -2190,6 +2190,109 @@ WHERE ID = {thisOpenv.currentRow}
 
             string recaArrayName;
 
+            private bool areTypesCompatible(string TASType, Variable.VarType CSCSType)
+            {
+                bool incompatible = false;
+
+                switch (CSCSType)
+                {
+
+                    case Variable.VarType.NUMBER:
+                        if (TASType != "N" && TASType != "I" && TASType != "R" && TASType != "B")
+                            incompatible = true;
+                        break;
+
+                    case Variable.VarType.STRING:
+                        if (TASType != "A")
+                            incompatible = true;
+                        break;
+
+                    case Variable.VarType.DATETIME:
+                        if (TASType != "D" && TASType != "T")
+                            incompatible = true;
+                        break;
+
+                    default:
+                        return false;
+                }
+
+                if (incompatible)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+
+            private bool checkCompatibility()
+            {
+                var adictDB = CSCS_GUI.Adictionary.SY_DATABASESList.Where(p => p.SYCD_USERCODE.ToLower() == thisOpenv.databaseName).FirstOrDefault();
+                if(adictDB != null)
+                {
+                    var adictTable = CSCS_GUI.Adictionary.SY_TABLESList.Where(p => p.SYCT_USERCODE.ToLower() == adictDB.SYCD_USERCODE.ToLower() && thisOpenv.tableName == p.SYCT_NAME.ToLower()).FirstOrDefault();
+                    if(adictTable != null)
+                    {
+                        var adictFields = CSCS_GUI.Adictionary.SY_FIELDSList.Where(p=>p.SYTD_SCHEMA == adictTable.SYCT_SCHEMA).ToList();
+
+                        bool incompatible = false;
+                        for (int i = 0; i < to.Tuple.Count; i++) 
+                        {
+                            string currColumnType = null;
+                            Variable.VarType currArrayType;
+
+                            var currColumnName = to.Tuple[i].AsString();
+                            var adictField = adictFields.Where(p=>p.SYTD_FIELD.ToLower() == currColumnName).FirstOrDefault();
+                            if(adictField != null)
+                            {
+                                currColumnType = adictField.SYTD_TYPE;
+                            }
+
+                            
+
+                            string fromTypeData = Utils.ConvertToScript(InterpreterInstance, from.Tuple[i].AsString(), out _);
+                            var fromTmpScript = Script.GetTempScript(fromTypeData);
+                            var fromExecuted = fromTmpScript.Execute();
+                            currArrayType = fromExecuted.Type;
+
+                            switch (currArrayType)
+                            {
+                                
+                                case Variable.VarType.NUMBER:
+                                case Variable.VarType.STRING:
+                                case Variable.VarType.DATETIME:
+                                    if(!areTypesCompatible(currColumnType, currArrayType))
+                                    {
+                                        return false;
+                                    }
+                                    break;
+                                case Variable.VarType.ARRAY:
+                                    if (!areTypesCompatible(currColumnType, fromExecuted.Tuple[0].Type))
+                                    {
+                                        return false;
+                                    }
+                                    break;
+                                default:
+                                    return false;
+                            }
+                        }
+
+                        if (incompatible)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                        
+                    }
+                }
+                return false;
+
+            }
+
             protected override Variable Evaluate(ParsingScript script)
             {
                 Script = script;
@@ -2197,6 +2300,11 @@ WHERE ID = {thisOpenv.currentRow}
                 Utils.CheckArgs(args.Count, 6, m_name);
 
                 from = script.GetTempScript(args[0].ToString()).Execute(); // array names
+
+                //string data2 = Utils.ConvertToScript(InterpreterInstance, args[0].ToString(), out _);
+                //var fromTmpScript2 = script.GetTempScript(data2);
+                //var from2 = fromTmpScript2.Execute();
+
                 //from = Utils.GetSafeString(args, 0); // array names
                 to = script.GetTempScript(args[1].ToString()).Execute(); // DB table columns to fill
 
@@ -2210,9 +2318,17 @@ WHERE ID = {thisOpenv.currentRow}
 
                 thisOpenv = Btrieve.OPENVs[tableHndlNum];
 
+                //check from and to array count, must be the same
                 if(from.Tuple.Count != to.Tuple.Count)
                 {
                     MessageBox.Show("Error: Array count and table column count is not the same.");
+                    return Variable.EmptyInstance;
+                }
+
+                //check from and to data types compatibility
+                if (!checkCompatibility())
+                {
+                    MessageBox.Show("Error: \"from\" arrays\' and \"to\" columns\' doesn\'t match data types.");
                     return Variable.EmptyInstance;
                 }
 
