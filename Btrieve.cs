@@ -2012,7 +2012,7 @@ WHERE ID = {thisOpenv.currentRow}
                             KeyClass = new KeyClass() { KeyName = "ID", Ascending = true, Unique = true, KeyNum = 0, KeyColumns = new Dictionary<string, string>() { { "ID", "" } } };
                         }
                     }
-                    else if (!thisOpenv.Keys.Any(p => p.KeyName == tableKey.ToUpper()) /* or the key with this number does not exist */)
+                    else if (!thisOpenv.Keys.Any(p => p.KeyName.ToUpper() == tableKey.ToUpper()) /* or the key with this number does not exist */)
                     {
                         // "Key does not exist for this table!"
                         SetFlerr(4, tableHndlNum);
@@ -2020,7 +2020,7 @@ WHERE ID = {thisOpenv.currentRow}
                     }
                     else
                     {
-                        KeyClass = thisOpenv.Keys.First(p => p.KeyName == tableKey.ToUpper());
+                        KeyClass = thisOpenv.Keys.First(p => p.KeyName.ToUpper() == tableKey.ToUpper());
                     }
                 }
                 else
@@ -2165,8 +2165,10 @@ WHERE ID = {thisOpenv.currentRow}
         //not fully implemented
         public class WRTAFunction : ParserFunction
         {
-            ParsingScript from;
-            string to;
+            Variable from;
+            //string from;
+            //string to;
+            Variable to;
             int tableHndlNum;
 
             string tableKey;
@@ -2175,7 +2177,7 @@ WHERE ID = {thisOpenv.currentRow}
 
             string cntrNameString;
 
-
+            int arrayIndex = 0;
 
             OpenvTable thisOpenv;
             KeyClass KeyClass;
@@ -2186,24 +2188,148 @@ WHERE ID = {thisOpenv.currentRow}
 
             int rowNumber = 0; //
 
+            string recaArrayName;
+
+            private bool areTypesCompatible(string TASType, Variable.VarType CSCSType)
+            {
+                bool incompatible = false;
+
+                switch (CSCSType)
+                {
+                    case Variable.VarType.NUMBER:
+                        if (TASType != "N" && TASType != "I" && TASType != "R" && TASType != "B")
+                            incompatible = true;
+                        break;
+
+                    case Variable.VarType.STRING:
+                        if (TASType != "A")
+                            incompatible = true;
+                        break;
+
+                    case Variable.VarType.DATETIME:
+                        if (TASType != "D" && TASType != "T")
+                            incompatible = true;
+                        break;
+
+                    default:
+                        return false;
+                }
+
+                if (incompatible)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+
+            private bool checkCompatibility()
+            {
+                var adictDB = CSCS_GUI.Adictionary.SY_DATABASESList.Where(p => p.SYCD_USERCODE.ToLower() == thisOpenv.databaseName).FirstOrDefault();
+                if(adictDB != null)
+                {
+                    var adictTable = CSCS_GUI.Adictionary.SY_TABLESList.Where(p => p.SYCT_USERCODE.ToLower() == adictDB.SYCD_USERCODE.ToLower() && thisOpenv.tableName == p.SYCT_NAME.ToLower()).FirstOrDefault();
+                    if(adictTable != null)
+                    {
+                        var adictFields = CSCS_GUI.Adictionary.SY_FIELDSList.Where(p=>p.SYTD_SCHEMA == adictTable.SYCT_SCHEMA).ToList();
+
+                        bool incompatible = false;
+                        for (int i = 0; i < to.Tuple.Count; i++) 
+                        {
+                            string currColumnType = null;
+                            Variable.VarType currArrayType;
+
+                            var currColumnName = to.Tuple[i].AsString();
+                            var adictField = adictFields.Where(p=>p.SYTD_FIELD.ToLower() == currColumnName).FirstOrDefault();
+                            if(adictField != null)
+                            {
+                                currColumnType = adictField.SYTD_TYPE;
+                            }
+
+                            
+
+                            string fromTypeData = Utils.ConvertToScript(InterpreterInstance, from.Tuple[i].AsString(), out _);
+                            var fromTmpScript = Script.GetTempScript(fromTypeData);
+                            var fromExecuted = fromTmpScript.Execute();
+                            currArrayType = fromExecuted.Type;
+
+                            switch (currArrayType)
+                            {
+                                
+                                case Variable.VarType.NUMBER:
+                                case Variable.VarType.STRING:
+                                case Variable.VarType.DATETIME:
+                                    if(!areTypesCompatible(currColumnType, currArrayType))
+                                    {
+                                        return false;
+                                    }
+                                    break;
+                                case Variable.VarType.ARRAY:
+                                    if (!areTypesCompatible(currColumnType, fromExecuted.Tuple[0].Type))
+                                    {
+                                        return false;
+                                    }
+                                    break;
+                                default:
+                                    return false;
+                            }
+                        }
+
+                        if (incompatible)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                        
+                    }
+                }
+                return false;
+
+            }
+
             protected override Variable Evaluate(ParsingScript script)
             {
                 Script = script;
                 List<Variable> args = script.GetFunctionArgs();
                 Utils.CheckArgs(args.Count, 6, m_name);
 
-                from = script.GetTempScript(args[0].ToString()); // cols from DB
-                to = Utils.GetSafeString(args, 1); // arrays to fill
+                from = script.GetTempScript(args[0].ToString()).Execute(); // array names
+
+                //string data2 = Utils.ConvertToScript(InterpreterInstance, args[0].ToString(), out _);
+                //var fromTmpScript2 = script.GetTempScript(data2);
+                //var from2 = fromTmpScript2.Execute();
+
+                //from = Utils.GetSafeString(args, 0); // array names
+                to = script.GetTempScript(args[1].ToString()).Execute(); // DB table columns to fill
 
                 tableHndlNum = Utils.GetSafeInt(args, 2);
 
-                var recaArrayName = Utils.GetSafeString(args, 3);
+                recaArrayName = Utils.GetSafeString(args, 3);
                 var maxa = Utils.GetSafeInt(args, 4);
 
                 forString = script.GetTempScript(args[5].ToString()); // 
                 cntrNameString = Utils.GetSafeString(args, 6).ToLower(); //
 
                 thisOpenv = Btrieve.OPENVs[tableHndlNum];
+
+                //check from and to array count, must be the same
+                if(from.Tuple.Count != to.Tuple.Count)
+                {
+                    MessageBox.Show("Error: Array count and table column count is not the same.");
+                    return Variable.EmptyInstance;
+                }
+
+                //check from and to data types compatibility
+                if (!checkCompatibility())
+                {
+                    MessageBox.Show("Error: \"from\" arrays\' and \"to\" columns\' doesn\'t match data types.");
+                    return Variable.EmptyInstance;
+                }
 
                 bool limited = false;
                 int selectLimit = 0;
@@ -2215,25 +2341,53 @@ WHERE ID = {thisOpenv.currentRow}
                     selectLimitCounter = selectLimit;
                 }
 
+                ParsingScript tmpScript = null;
                 bool forIsSet = false;
                 if (!string.IsNullOrEmpty(forString.String))
+                {
                     forIsSet = true;
+                    string data = Utils.ConvertToScript(InterpreterInstance, forString.String, out _);
+                    tmpScript = script.GetTempScript(data);
+                }
 
                 while (true)
                 {
-                    if (forIsSet && !script.GetTempScript(forString.String).Execute(new char[] { '"' }, 0).AsBool())
-                    {
-                        new Btrieve.FINDVClass(tableHndlNum, "n").FINDV();
-                        continue;
-                    }
-
                     if (limited && selectLimitCounter == 0)
                     {
                         SetFlerr(0, tableHndlNum);
                         break;
                     }
 
-                    if (RDA())
+
+                    if (forIsSet /*&& !script.GetTempScript(forString.String).Execute(new char[] { '"' }, 0).AsBool()*/)
+                    {
+                        var res = tmpScript.Execute(new char[] { '"' }, 0);
+                        var boolRes = res.AsBool();
+                        if (!boolRes) 
+                        {
+                            arrayIndex++;
+
+                            rowsAffected++;
+                            rowNumber++;
+
+                            var current1 = CSCS_GUI.DEFINES[cntrNameString];
+                            current1.InitVariable(new Variable(rowsAffected));
+
+                            if (limited)
+                            {
+                                selectLimitCounter--;
+                                if (selectLimitCounter == 0)
+                                {
+                                    SetFlerr(0, tableHndlNum);
+                                    break;
+                                }
+                            }
+
+                            continue;
+                        }
+                    }
+
+                    if (WRTA(script))
                     {
                         rowsAffected++;
                         rowNumber++;
@@ -2249,43 +2403,200 @@ WHERE ID = {thisOpenv.currentRow}
                         }
                     }
 
-                    new Btrieve.FINDVClass(tableHndlNum, "n").FINDV();
-                    if (LastFlerrsOfFnums[tableHndlNum] == 3)
-                    {
-                        SetFlerr(0, tableHndlNum);
-                        break;
-                    }
+                    arrayIndex++;
+
+                    var current = CSCS_GUI.DEFINES[cntrNameString];
+                    current.InitVariable(new Variable(rowsAffected));
                 }
 
-                var current = CSCS_GUI.DEFINES[cntrNameString];
-                current.InitVariable(new Variable(rowsAffected));
+                
 
                 return Variable.EmptyInstance;
             }
 
-            private bool RDA()
+            private bool WRTA(ParsingScript script)
             {
-                var fromSplitted = from.String.Split('|');
+                bool shouldInsert = false;
+                bool shouldUpdate = false;
 
-                List<Variable> executed = new List<Variable>();
+                DefineVariable recaArrayDefVar;
 
-                foreach (var item in fromSplitted)
+                string currentId = null;
+
+                if (CSCS_GUI.DEFINES.TryGetValue(recaArrayName.ToLower(), out recaArrayDefVar))
                 {
-                    executed.Add(Script.GetTempScript(item).Execute(null, 0));
-                }
+                    currentId = recaArrayDefVar.Tuple[arrayIndex].AsString();
+                    var query =
+$@"EXECUTE sp_executesql N'
+SELECT COUNT(*) FROM {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
+WHERE id = {currentId}
+'";
 
-                to = to.Replace(" ", "");
-                var toSplitted = to.Split(',');
-
-                for (int i = 0; i < toSplitted.Length; i++)
-                {
-                    var arrayName = toSplitted[i].ToLower();
-                    if (CSCS_GUI.DEFINES[arrayName].Array > 1)
+                    using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
                     {
-                        CSCS_GUI.DEFINES[arrayName].Tuple[rowNumber] = executed.ElementAt(i).Clone();
+                        var reader = cmd.ExecuteReader();
+                        if (reader.Read())
+                        {
+                            if((int)reader[0] > 0)
+                            {
+                                //update -> because id EXISTS
+                                //RECA IS set --> UPDATE
+                                shouldUpdate = true;
+                                reader.Close();
+                            }
+                            else
+                            {
+                                //insert -> id DOESN'T exist
+                                shouldInsert = true;
+                                reader.Close();
+                            }
+                        }
+                    }
+                }
+                if (shouldUpdate)
+                {
+                    List<string> columns = new List<string>();
+                    List<string> values = new List<string>();
+
+                    foreach (var fromItem in from.Tuple)
+                    {
+                        if (fromItem.Type == Variable.VarType.ARRAY)
+                        {
+                            bool notANumber = fromItem.Tuple[arrayIndex].Type != Variable.VarType.NUMBER;
+
+                            var valueString = "";
+                            valueString += notANumber ? "\'\'" : "";
+                            valueString += fromItem.Tuple[arrayIndex];
+                            valueString += notANumber ? "\'\'" : "";
+                            values.Add(valueString);
+                        }
+                        else if (fromItem.Type == Variable.VarType.STRING)
+                        {
+                            var evaluated = fromItem.AsString();
+
+                            string data = Utils.ConvertToScript(InterpreterInstance, evaluated, out _);
+                            var tmpScript = script.GetTempScript(data);
+                            var res = tmpScript.Execute();
+
+                            var valueString = "";
+                            valueString += res.Type == Variable.VarType.NUMBER ? res.AsString() : "\'\'" + res.AsString() + "\'\'";
+                            values.Add(valueString);
+                        }
+                        else if (fromItem.Type == Variable.VarType.NUMBER)
+                        {
+                            var evaluated = fromItem.AsString();
+
+                            var valueString = "";
+                            valueString += fromItem.Value;
+                            values.Add(valueString);
+                        }
+                    }
+
+                    foreach (var columnName in to.Tuple)
+                    {
+                        string columnString = columnName.AsString();
+                        columns.Add(columnString);
+                    }
+
+                    string columnsEqualsValuesString = "";
+
+                    for (int i = 0; i < columns.Count; i++)
+                    {
+                        columnsEqualsValuesString += columns[i] + " = " + values[i] + ", ";
+                    }
+                    columnsEqualsValuesString = columnsEqualsValuesString.Substring(0, columnsEqualsValuesString.Length - 2);
+
+
+                    var query =
+$@"EXECUTE sp_executesql N'
+UPDATE {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
+SET {columnsEqualsValuesString}
+WHERE id = {currentId}
+'";
+
+                    using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+                    {
+                        try
+                        {
+                            var reader = cmd.ExecuteNonQuery();
+                            
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message + "\n" + "ID = " + currentId);
+                        }
+                        return true;
                     }
                 }
 
+                if (string.IsNullOrEmpty(recaArrayName) || shouldInsert)
+                {//RECA ISN'T set -> INSERT all ... OR id from RECAS array DOESN't EXIST in database table
+
+                    string columnsString = "";
+                    string valuesString = "";
+
+                    foreach (var fromItem in from.Tuple)
+                    {
+                        if(fromItem.Type == Variable.VarType.ARRAY)
+                        {
+                            bool notANumber = fromItem.Tuple[arrayIndex].Type != Variable.VarType.NUMBER;
+
+                            valuesString += notANumber ? "\'\'" : "";
+                            valuesString += fromItem.Tuple[arrayIndex];
+                            valuesString += notANumber ? "\'\'" : "";
+                            valuesString += ", ";
+                        }
+                        else if (fromItem.Type == Variable.VarType.STRING)
+                        {
+                            var evaluated = fromItem.AsString();
+
+                            string data = Utils.ConvertToScript(InterpreterInstance, evaluated, out _);
+                            var tmpScript = script.GetTempScript(data);
+                            var res = tmpScript.Execute();
+
+                            valuesString += res.Type == Variable.VarType.NUMBER ? res.AsString() : "\'\'" + res.AsString() + "\'\'";
+                            valuesString += ", ";
+                        }
+                        else if (fromItem.Type == Variable.VarType.NUMBER)
+                        {
+                            var evaluated = fromItem.AsString();
+
+                            valuesString += fromItem.Value;
+                            valuesString += ", ";
+                        }
+                    }
+                    valuesString = valuesString.Substring(0, valuesString.Length - 2);
+
+                    foreach (var columnName in to.Tuple)
+                    {
+                        columnsString += columnName.AsString();
+                        columnsString += ", ";
+                    }
+                    columnsString = columnsString.Substring(0, columnsString.Length - 2);
+
+
+                    var query =
+$@"EXECUTE sp_executesql N'
+INSERT INTO {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
+({columnsString})
+VALUES
+({valuesString})
+'";
+
+                    using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+                    {
+                        try
+                        {
+                            var reader = cmd.ExecuteNonQuery();
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message);
+                        }
+                        return true;
+                    }
+                }
+                    
                 return true;
             }
         }

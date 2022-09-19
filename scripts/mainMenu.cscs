@@ -63,6 +63,9 @@ function mainMenuWindow_OnDisplay(){
     //------------------------------------
 
     AddMenuItem("BtrieveDC", "testScan1.cscs", "testScan1", "runScript");
+    AddMenuSeparator("BtrieveDC");
+    AddMenuItem("BtrieveDC", "testWRTA.cscs", "testWRTA", "runScript");
+    AddMenuItem("BtrieveDC", "testWRTALotsOfData.cscs", "testWRTALotsOfData", "runScript");
 
     //------------------------------------
 
@@ -80,6 +83,10 @@ function mainMenuWindow_OnDisplay(){
     AddMenuItem("OtherDC", "testcscs_b.cscs", "testcscs_b", "runScript");
     AddMenuItem("OtherDC", "testVarInFunc.cscs", "testVarInFunc", "runScript");
     AddMenuItem("OtherDC", "test.cscs", "test", "runScript");
+    AddMenuSeparator("OtherDC");
+    AddMenuItem("OtherDC", "testCHAIN.cscs", "testCHAIN", "runScript");
+    AddMenuSeparator("OtherDC");
+    AddMenuItem("OtherDC", "testSetImage.cscs", "testSetImage", "runScript");
 
     //------------------------------------
 

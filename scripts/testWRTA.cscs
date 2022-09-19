@@ -1,0 +1,76 @@
+DEFINE idArray, customerNumberArray type i array 10;
+DEFINE customerNameArray type a size 50 array 10;
+
+DEFINE recaArray type i array 10;
+DEFINE cntr type i;
+
+DEFINE variable type i;
+
+variable = 999;
+//---------------
+
+// idArray[0] = 1;
+// idArray[1] = 2;
+// idArray[2] = 3;
+
+customerNumberArray[0] = 8;
+customerNumberArray[1] = 9;
+customerNumberArray[2] = 10;
+
+customerNameArray[0] = "Marko Marko6";
+customerNameArray[1] = "Vassili Kaplan6";
+customerNameArray[2] = "Janko Janko6";
+
+//---------------
+
+recaArray[0] = 21;
+recaArray[1] = 22;
+recaArray[2] = 23;
+
+recaArray[3] = 24;
+recaArray[4] = 25;
+recaArray[5] = 30;
+
+recaArray[6] = 21;
+
+//---------------
+
+DEFINE hndl, cntr type i;
+
+cntr = 0;
+
+hndl = openv("customers", "DB1");
+
+//WRTA("customerNumberArray|customerNameArray", "customerNumber, customerName", hndl, "", 3, "", "cntr");
+
+//fromArray = {"customerNumberArray", "customerNameArray"};
+//fromArray = {57, "'stringConstant'", variable, customerNameArray, "funkcija2()", "funkcija3()"};
+
+//fromArray = {"cntr+68", "'stringConstant10'"};
+fromArray = {"customerNumberArray", "'stringConstant10'"};
+toArray = {"customerNumber", "customerName"};
+
+function funkcija3(){
+    MessageBox("FUnkcija 3");
+    return "stringConstantValue";
+}
+
+function funkcija2(){
+    MessageBox("FUnkcija 2");
+    return cntr;
+}
+
+function funkcija(){
+    MessageBox(customerNumberArray[cntr]);
+    if(customerNumberArray[cntr] == 6){return true;}else{return false;}
+}
+
+//MessageBox(customerNameArray.Size);
+
+
+WRTA(fromArray, toArray, hndl, "recaArray", 7, "", "cntr");
+
+//WRTA(fromArray, toArray, hndl, "recaArray", 3, "customerNumberArray[cntr] != 6", "cntr");
+//WRTA(fromArray, toArray, hndl, "", 3, "", "cntr");
+
+MessageBox(cntr);

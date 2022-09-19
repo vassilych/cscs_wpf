@@ -1,0 +1,14 @@
+MessageBox("chaining to script1.cscs");
+
+CHAIN "../../scripts/script1.cscs";
+
+MessageBox("chaining to script2.cscs");
+
+CHAIN "../../scripts/script2.cscs" WITH "argument1" "argument2" "argument3" "argument4";
+
+MessageBox("chaining to script3.cscs");
+
+CHAIN "WpfCSCS.exe" "../../scripts/script3.cscs" NEWRUNTIME WITH "myGrid" "bla1"+"bla2" "bla3"  "bla4";
+
+MessageBox("end");
+
