@@ -363,21 +363,35 @@ namespace SplitAndMerge
         }
     }
 
-    class ThreadFunction : ParserFunction, INumericFunction
+    public class ThreadFunction : ParserFunction, INumericFunction
     {
         protected override Variable Evaluate(ParsingScript script)
         {
             string body = script.TryPrev() == Constants.START_GROUP ?
                           Utils.GetBodyBetween(script, Constants.START_GROUP, Constants.END_GROUP) :
                           Utils.GetBodyBetween(script, Constants.START_ARG, Constants.END_ARG);
-            ThreadPool.QueueUserWorkItem(ThreadProc, body);
+            RunScript(body, script.InterpreterInstance);
             return Variable.EmptyInstance;
         }
 
-        void ThreadProc(Object stateInfo)
+        public void RunScript(string scriptBody, Interpreter interpreter, bool inNewThread = true)
+        {
+            InterpreterInstance = interpreter;
+            if (inNewThread)
+            {
+                ThreadPool.QueueUserWorkItem(RunScriptLocal, scriptBody);
+            }
+            else
+            {
+                RunScriptLocal(scriptBody);
+            }
+        }
+
+        void RunScriptLocal(Object stateInfo)
         {
             string body = (string)stateInfo;
             ParsingScript threadScript = NewParsingScript(body);
+            threadScript.SetInterpreter(InterpreterInstance);
             threadScript.ExecuteAll();
         }
     }
@@ -700,6 +714,8 @@ namespace SplitAndMerge
 #if __ANDROID__ == false && __IOS__ == false
     class CustomCompiledFunction : CustomFunction
     {
+        public bool ScriptInCSharp { get; set; }
+
         internal CustomCompiledFunction(string funcName,
                                         string body, string[] args,
                                         Precompiler precompiler,
@@ -737,8 +753,10 @@ namespace SplitAndMerge
 
             List<string> argsStr = new List<string>();
             List<double> argsNum = new List<double>();
+            List<int> argsInt = new List<int>();
             List<List<string>> argsArrStr = new List<List<string>>();
             List<List<double>> argsArrNum = new List<List<double>>();
+            List<List<int>> argsArrInt = new List<List<int>>();
             List<Dictionary<string, string>> argsMapStr = new List<Dictionary<string, string>>();
             List<Dictionary<string, double>> argsMapNum = new List<Dictionary<string, double>>();
             List<Variable> argsVar = new List<Variable>();
@@ -753,6 +771,10 @@ namespace SplitAndMerge
                 else if (typeVar.Type == Variable.VarType.NUMBER)
                 {
                     argsNum.Add(args[i].AsDouble());
+                }
+                else if (typeVar.Type == Variable.VarType.INT)
+                {
+                    argsInt.Add(args[i].AsInt());
                 }
                 else if (typeVar.Type == Variable.VarType.ARRAY_STR)
                 {
@@ -773,6 +795,16 @@ namespace SplitAndMerge
                         subArrayNum.Add(tuple[j].AsDouble());
                     }
                     argsArrNum.Add(subArrayNum);
+                }
+                else if (typeVar.Type == Variable.VarType.ARRAY_INT)
+                {
+                    List<int> subArrayInt = new List<int>();
+                    var tuple = args[i].Tuple;
+                    for (int j = 0; j < tuple.Count; j++)
+                    {
+                        subArrayInt.Add(tuple[j].AsInt());
+                    }
+                    argsArrInt.Add(subArrayInt);
                 }
                 else if (typeVar.Type == Variable.VarType.MAP_STR)
                 {
@@ -803,8 +835,8 @@ namespace SplitAndMerge
             }
 
             Variable result = Precompiler.AsyncMode ?
-                m_precompiler.RunAsync(InterpreterInstance, argsStr, argsNum, argsArrStr, argsArrNum, argsMapStr, argsMapNum, argsVar, false) :
-                m_precompiler.Run(InterpreterInstance, argsStr, argsNum, argsArrStr, argsArrNum, argsMapStr, argsMapNum, argsVar, false);
+                m_precompiler.RunAsync(InterpreterInstance, argsStr, argsNum, argsInt, argsArrStr, argsArrNum, argsArrInt, argsMapStr, argsMapNum, argsVar, false) :
+                m_precompiler.Run(InterpreterInstance, argsStr, argsNum, argsInt, argsArrStr, argsArrNum, argsArrInt, argsMapStr, argsMapNum, argsVar, false);
 
             InterpreterInstance.PopLocalVariables(m_stackLevel.Id);
 
