@@ -1,3 +1,15 @@
 MessageBox("script1.cscs");
 
+DEFINE array1 type a size 10 array 10;
+
+MessageBox("array1 = " + array1);
+
+function func(){
+    return "b";
+}
+
+array1 = {"a", func(), "c"};
+
+MessageBox("array1 = " + array1);
+
 quit;
