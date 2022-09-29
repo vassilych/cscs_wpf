@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9AC7CB43-B163-4BE5-9FA6-4AECC1F20598}</ProjectGuid>
+    <ProjectGuid>{6BA6B609-79AA-46DC-A9A5-1303CC8E2DF6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CSCS.Math</RootNamespace>
-    <AssemblyName>CSCS.Math</AssemblyName>
+    <RootNamespace>CSCS.Tests</RootNamespace>
+    <AssemblyName>CSCS.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -41,7 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Functions.Math.cs" />
+    <Compile Include="TestClasses.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
