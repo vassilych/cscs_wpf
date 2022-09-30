@@ -1,0 +1,45 @@
+
+
+DEFINE hndl type i;
+
+hndl = openv("invoiceLines", "DB1", "a");
+if(flerr()){
+    MessageBox("flerr = " + flerr());
+    exit;
+}
+
+MessageBox("start");
+
+i = 0;
+sum = 0;
+//scan(hndl; "InvoiceLine_invoiceLineNumber"; "3|2" /*"0|0"*/; true ; "invoiceLineNumber%2=0"  ; "n 100000"; "")
+//scan(hndl; "InvoiceLine_invoiceLineNumber"; "100|0" /*"0|0"*/; invoicenumber <= 100 ; "invoiceLineNumber%2=0"  ; ""; "")
+scan(hndl; "InvoiceLine_invoiceLineNumber"; "0|0" /*"0|0"*/; true ; ""  ; "n 100000"; "")
+{
+    i++;
+    if(flerr(hndl) != 0){
+        break;
+    }
+    
+    // if(invoiceNumber == 7){
+    //    MessageBox(invoiceNumber + ", " + invoiceLineNumber);
+    //     break;
+    // }
+    
+    // if(invoiceNumber == 6){
+    //     // MessageBox(invoiceNumber + ", " + invoiceLineNumber);
+    //      continue;
+    // }
+
+    //MessageBox(invoiceNumber + ", " + invoiceLineNumber);
+    
+    sum += amount;
+}
+if(flerr(hndl)){
+    MessageBox("flerr on SCAN = " + flerr(hndl));
+}
+
+MessageBox("End. " + i + " records read." + " Amount = " + sum);
+
+
+quit;

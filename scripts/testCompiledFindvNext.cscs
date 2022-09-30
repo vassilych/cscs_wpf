@@ -1,0 +1,40 @@
+
+
+//import("dllName.dll");
+
+//MessageBox("xxxxxxxxxxxxxxx");
+
+DEFINE hndl type i;
+
+hndl = openv("NKPRINVL", "BD1", "a");
+if(flerr()){
+    MessageBox("flerr = " + flerr());
+    exit;
+}
+
+
+
+MessageBox("start");
+
+
+
+cfunction callNext(int handle){
+    x = 100000;
+    findv(handle, "f", "nkpr_ln_invnm");
+    while(x > 0){
+        findv(handle, "n");
+        x--;
+        //MessageBox(NKPR_LN_INVNM);
+    }
+}
+callNext(hndl);
+
+start = pstime;
+
+end = pstime;
+
+MessageBox("Time: " + (end - start) + " ms.");
+//MessageBox("End. " + x + " records read.");
+
+
+quit;

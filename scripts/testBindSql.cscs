@@ -1,0 +1,26 @@
+CreateWindow("../../scripts/testBindSql.xaml");
+
+//SQLConnectionString("Data Source=localhost,1433;Initial Catalog=master;Database=database1;User Id=sa;Password=aura");
+
+MessageBox("start");
+
+BindSql("grid1", "invoiceLines");
+
+MessageBox("end");
+
+//------------------------------
+
+
+
+id = SqlCursorInit("SELECT * FROM database1.dbo.invoiceLines");
+
+count = SQLCursorTotal(id); 
+
+MessageBox("start Cursor, total = " + count);
+
+
+for(i = 0 ; i < count ; i++){
+    next = SQLCursorNext(id);
+}
+
+
