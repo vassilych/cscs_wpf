@@ -281,7 +281,7 @@ namespace SplitAndMerge
 
         Dictionary<string, Dictionary<string, SqlDbType>> s_columns = new Dictionary<string, Dictionary<string, SqlDbType>>();
         List<KeyValuePair<string, SqlDbType>> s_colList = new List<KeyValuePair<string, SqlDbType>>();
-        
+
         public SQLQueryFunction(CscsSqlModuleInstance instance)
         {
             _instance = instance;
@@ -701,7 +701,7 @@ namespace SplitAndMerge
     {
         private CscsSqlModuleInstance _instance;
 
-        internal enum Mode { SP_DESC, TABLES, PROCEDURES};
+        internal enum Mode { SP_DESC, TABLES, PROCEDURES };
         Mode m_mode;
 
         internal SQLDescribe(CscsSqlModuleInstance instance, Mode mode = Mode.SP_DESC)
@@ -781,7 +781,7 @@ namespace SplitAndMerge
             return ExecuteSP(spName, null, args);
         }
 
-        public Variable ExecuteSP(string spName, List<KeyValuePair<string,object>> spParams = null,
+        public Variable ExecuteSP(string spName, List<KeyValuePair<string, object>> spParams = null,
             List<Variable> args = null)
         {
             SqlCommand sqlcom = new SqlCommand(spName);

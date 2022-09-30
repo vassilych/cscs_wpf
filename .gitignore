@@ -12,3 +12,9 @@ packages/
 .vs/WpfCSCS/v17/.suo
 .vs/WpfCSCS/FileContentIndex/aecde625-ac7b-4bce-b730-d9a1ee894bbe.vsidx
 ourScripts/
+*.vsidx
+*.1
+*.v2
+*.vsidx
+*.vsidx
+*.v2
