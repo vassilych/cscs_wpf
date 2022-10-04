@@ -147,8 +147,8 @@ namespace SplitAndMerge
 
             compilerParams.TreatWarningsAsErrors = false;
             compilerParams.CompilerOptions = "/optimize";
-            //comparams.IncludeDebugInformation = true;ilerParams.CompilerOptions = "/debug";
-            //compilerP
+            //compilerParams.CompilerOptions = "/debug";
+            //compilerParams.IncludeDebugInformation = true;
             compilerParams.GenerateExecutable = false;
             compilerParams.GenerateInMemory = !string.IsNullOrWhiteSpace(outputDLL);
             if (!string.IsNullOrWhiteSpace(outputDLL))
