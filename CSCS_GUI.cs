@@ -34,6 +34,7 @@ using DevExpress.XtraPrinting.Caching;
 using static WpfCSCS.Btrieve;
 using WpfControlsLibrary;
 using CSCS.InterpreterManager;
+using DevExpress.Xpo.Logger;
 
 namespace SplitAndMerge
 {
@@ -156,6 +157,15 @@ namespace WpfCSCS
     {
         public static string lastObjWidgetName;
         public static string lastObjClickedWidgetName;
+
+        public class GUI_Interpreter : Interpreter
+        {
+            public GUI_Interpreter(CSCS_GUI gui)
+            {
+                CSCS_GUI = gui;
+            }
+            public CSCS_GUI CSCS_GUI { get; set; }
+        }
        
         public static Dispatcher Dispatcher { get; set; }
 
@@ -2072,7 +2082,7 @@ namespace WpfCSCS
         }
     }
 
-    class MessageBoxFunction : ParserFunction
+    public class MessageBoxFunction : ParserFunction
     {
         protected override Variable Evaluate(ParsingScript script)
         {
@@ -2084,6 +2094,13 @@ namespace WpfCSCS
             var answerType = Utils.GetSafeString(args, 2, "ok").ToLower();
             var messageType = Utils.GetSafeString(args, 3, "info").ToLower();
 
+            var ret = ShowMessageBox(message, caption, answerType, messageType);
+
+            return new Variable(ret);
+        }
+
+        public static string ShowMessageBox(string message, string caption = "Info", string answerType = "ok", string messageType = "info")
+        {
             MessageBoxButton buttons =
                 answerType == "ok" ? MessageBoxButton.OK :
                 answerType == "okcancel" ? MessageBoxButton.OKCancel :
@@ -2108,7 +2125,7 @@ namespace WpfCSCS
                       result == MessageBoxResult.Yes ? "Yes" :
                       result == MessageBoxResult.No ? "No" : "None";
 
-            return new Variable(ret);
+            return ret;
         }
     }
     class AddWidgetDataFunction : ParserFunction
