@@ -1,0 +1,77 @@
+
+/*
+DEFINE var1 type a;
+
+var1 = "lalala";
+
+dllfunction DoWork3() {
+    
+    //var1 = "hahaha";// The name 'var1' does not exist in the current context 
+
+    function function1(){
+        MessageBox("hahaha");
+    }                            //: Semicolon after method or accessor block is not valid 
+
+
+    return "";
+}
+
+// dllfunction DoWork4() {
+//     return "";
+// }
+
+// h1=ImportDll("DoWork1");
+// h2=ImportDll("DoWork2");
+
+// res1 = InvokeDLL(h1, "blah1", 0.1, 9);
+// res2 = InvokeDLL(h2, "blah2", 0.2, 19);
+
+// h3 = ImportDll("DoWork1");
+// 
+
+// res1 = InvokeDLL(h3);
+
+
+//h4=ImportDll("DoWork4");
+//res2 = InvokeDLL(h4);
+
+
+// MessageBox(res1 + res2);
+
+quit;
+*/
+
+DEFINE var1 type a;//string var1;
+
+var1 = "hahahah";
+
+MessageBox(var1);
+
+function klala(a, b){
+    return a+b;
+}
+
+/*
+
+*/
+
+dllfunction ShowMessageBox(msg, string caption = "Info", string answerType = "ok", string messageType = "info") {
+    var result = MessageBoxFunction.ShowMessageBox(msg, caption, answerType, messageType);
+    var x = CSCS_GUI.DEFINES['var1'];
+    MessageBoxFunction.ShowMessageBox(x.AsString(), caption, answerType, messageType);
+    return result;
+}
+dllfunction ShowQuestion(msg, string caption = "Question") {
+    var result = MessageBoxFunction.ShowMessageBox(msg, caption, "yesno", "question");
+    //MessageBox.Show("aksjdhkajsd");
+    return result;
+}
+
+h = ImportDll("ShowMessageBox");
+
+InvokeDLL(h, "ShowMessageBox", "Hi there");
+res = InvokeDLL(h, "ShowQuestion", "Do you want to quit?");
+
+MessageBox(res);
+
+exit;
