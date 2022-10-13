@@ -97,6 +97,12 @@ function mainMenuWindow_OnDisplay(){
     AddMenuItem("OtherDC", "testBindSql.cscs", "testBindSql", "runScript");
     AddMenuSeparator("OtherDC");
     AddMenuItem("OtherDC", "testDLLs.cscs", "testDLLs", "runScript");
+    AddMenuSeparator("OtherDC");
+    AddMenuItem("OtherDC", "testManyOPENVs.cscs", "testManyOPENVs", "runScript");
+    AddMenuSeparator("OtherDC");
+    AddMenuItem("OtherDC", "testInterpreters.cscs", "testInterpreters", "runScript");
+    AddMenuSeparator("OtherDC");
+    AddMenuItem("OtherDC", "testDllsNext.cscs", "testDllsNext", "runScript");
 
     //------------------------------------
 

@@ -1,0 +1,31 @@
+
+DEFINE hndl type i;
+
+hndl = openv("NKPRINV", "BD1", "a");
+
+findv(hndl, "f", "@1");
+
+MessageBox(NKPR_GL_INVDTE);
+
+// dllfunction findNext(int hndlNum) {
+//     new Btrieve.FINDVClass(hndlNum, "n").FINDV();
+//     return;
+// }
+
+
+h = ImportDll("findNext");
+
+i = 0;
+while(true){
+    //findNext(hndl);
+    findv(hndl, "n");
+    if(flerr() != 0){
+        break;
+    }else{
+        //MessageBox(NKPR_LN_INVNM);
+        i++;
+    }
+}
+MessageBox(i);
+
+exit;

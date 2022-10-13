@@ -1,5 +1,5 @@
 
-
+/*
 DEFINE var1 type a;
 
 var1 = "lalala";
@@ -39,3 +39,39 @@ dllfunction DoWork3() {
 // MessageBox(res1 + res2);
 
 quit;
+*/
+
+DEFINE var1 type a;//string var1;
+
+var1 = "hahahah";
+
+MessageBox(var1);
+
+function klala(a, b){
+    return a+b;
+}
+
+/*
+
+*/
+
+dllfunction ShowMessageBox(msg, string caption = "Info", string answerType = "ok", string messageType = "info") {
+    var result = MessageBoxFunction.ShowMessageBox(msg, caption, answerType, messageType);
+    var x = CSCS_GUI.DEFINES['var1'];
+    MessageBoxFunction.ShowMessageBox(x.AsString(), caption, answerType, messageType);
+    return result;
+}
+dllfunction ShowQuestion(msg, string caption = "Question") {
+    var result = MessageBoxFunction.ShowMessageBox(msg, caption, "yesno", "question");
+    //MessageBox.Show("aksjdhkajsd");
+    return result;
+}
+
+h = ImportDll("ShowMessageBox");
+
+InvokeDLL(h, "ShowMessageBox", "Hi there");
+res = InvokeDLL(h, "ShowQuestion", "Do you want to quit?");
+
+MessageBox(res);
+
+exit;

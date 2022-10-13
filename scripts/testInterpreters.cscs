@@ -1,0 +1,23 @@
+inter1 = GetInterpreterHandle();
+DEFINE var2 type a;
+var2 = "aaaaaaaaaa";
+MessageBox(var2);
+x = "First interpreter";
+MessageBox("interpreter1=" + inter1 + ", x=" + x); // 1, First interpreter
+
+hndlNum = NewInterpreter();
+MessageBox("hndlNum = " + hndlNum);
+SetInterpreter(2);
+inter2 = GetInterpreterHandle();
+var2 = "bbbbb";
+MessageBox(var2); // program crashes here
+x = "Second interpreter";
+print("interpreter2=" + inter2 + ", x=" + x); // 2, Second interpreter
+
+
+SetInterpreter(1);
+inter3 = GetInterpreterHandle();
+MessageBox("interpreter3=" + inter3 + ", x=" + x); // 1, First interpreter
+MessageBox(var2);
+
+exit;

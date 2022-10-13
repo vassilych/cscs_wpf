@@ -1410,37 +1410,27 @@ order by {orderByString}
                     var currentColumnName = lineItem.Key;
                     if (KeyClass.KeyColumns.Keys.Any(p => p.ToUpper() == currentColumnName.ToUpper()))
                     {
-                        //if (lineItem.Value.Type == typeof(DateTime))
-                        //{
-                        //    KeyClass.KeyColumns[currentColumnName] = ((DateTime)reader[currentColumnName]).ToString("yyyy-MM-dd");
-                        //}
-                        //else
-                        //{
-                            
-                        KeyClass.KeyColumns[currentColumnName] = lineItem.Value.ToString();
                         
-                        //}
+                        if (CSCS_GUI.DEFINES.TryGetValue(currentColumnName.ToLower(), out DefineVariable thisVar))
+                        {
+                            if(thisVar.DefType == "d")
+                            {
+                                KeyClass.KeyColumns[currentColumnName] = lineItem.Value.DateTime.ToString("yyyy-MM-dd");
+                            }
+                            else
+                            {
+                                KeyClass.KeyColumns[currentColumnName] = lineItem.Value.ToString();
+                            }
+                        }
+                        
+
                     }
 
-                    //if (true /*reader.GetFieldType(currentFieldNum) == typeof(DateTime)*/)
-                    //{
-                    //    DateTime fieldValue = (DateTime)reader[currentColumnName];
-                    //    var dateFormat = CSCS_GUI.DEFINES[currentColumnName].GetDateFormat();
-                    //    var newVar = new Variable(fieldValue.ToString(dateFormat));
-
-
-                    //    CSCS_GUI.DEFINES[currentColumnName].InitVariable(newVar);
-                    //    CSCS_GUI.OnVariableChange(currentColumnName, newVar, true);
-                    //}
-                    //else
-                    //{
 
                     string fieldValue = lineItem.Value.ToString();
 
                     CSCS_GUI.DEFINES[currentColumnName.ToLower()].InitVariable(new Variable(fieldValue).Clone());
                     CSCS_GUI.OnVariableChange(currentColumnName.ToLower(), new Variable(fieldValue), true);
-
-                    //}
 
                 }
             }
@@ -1583,11 +1573,12 @@ N'{paramsDeclaration}', ";
                                         if (reader.GetFieldType(currentFieldNum) == typeof(DateTime))
                                         {
                                             DateTime fieldValue = (DateTime)reader[currentColumnName];
-                                            var dateFormat = CSCS_GUI.DEFINES[loweredCurrentColumnName].GetDateFormat();
-                                            var newVar = new Variable(fieldValue.ToString(dateFormat));
+                                            //var dateFormat = CSCS_GUI.DEFINES[loweredCurrentColumnName].GetDateFormat();
+                                            //var newVar = new Variable(fieldValue.ToString(dateFormat));
 
                                             cacheLine.Add(currentColumnName, CSCS_GUI.DEFINES[loweredCurrentColumnName]);
-                                            cacheLine[currentColumnName].InitVariable(newVar);
+                                            cacheLine[currentColumnName].DateTime = fieldValue;
+                                            //cacheLine[currentColumnName].InitVariable(newVar);
                                             
                                             //CSCS_GUI.DEFINES[loweredCurrentColumnName].InitVariable(newVar);
                                             //CSCS_GUI.OnVariableChange(loweredCurrentColumnName, newVar, true);
