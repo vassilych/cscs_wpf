@@ -1323,6 +1323,15 @@ namespace WpfCSCS
                         }
                     }
                 }
+                else if (child is EnterBox)
+                {
+                    var enterBox = child as EnterBox;
+                    var enterBoxGrid = enterBox.Content as Grid;
+                    foreach (var item in enterBoxGrid.Children)
+                    {
+                        CacheEnterBoxChild(item as FrameworkElement, win, controls, enterBox);
+                    }
+                }
                 else
                 {
                     CacheControl(child as FrameworkElement, win, controls);
@@ -1361,6 +1370,62 @@ namespace WpfCSCS
                 }
             }
         }
+
+        public static void CacheEnterBoxChild(FrameworkElement widget, Window win = null, List<FrameworkElement> controls = null, EnterBox enterBox = null)
+        {
+            if (widget is EnterTextBox)
+            {
+                widget.Name = enterBox.FieldName;
+                widget.DataContext = enterBox.FieldName;
+
+                if (widget != null && !string.IsNullOrEmpty(enterBox.FieldName))
+                {
+                    Controls[enterBox.FieldName.ToString().ToLower()] = widget;
+                    controls?.Add(widget);
+                    if (win != null)
+                    {
+                        Control2Window[widget] = win;
+                    }
+                }
+                if (widget != null && enterBox.FieldName != null)
+                {
+                    Controls[enterBox.FieldName.ToString().ToLower()] = widget;
+
+                    if (controls != null && !controls.Contains(widget))
+                        controls.Add(widget);
+
+                    if (win != null)
+                    {
+                        Control2Window[widget] = win;
+                    }
+                }
+            }
+            else if (widget is Button)
+            {
+                widget.Name = enterBox.Name;
+
+                if (widget != null && !string.IsNullOrEmpty(enterBox.Name))
+                {
+                    Controls[enterBox.Name.ToString().ToLower()] = widget;
+                    controls?.Add(widget);
+                    if (win != null)
+                    {
+                        Control2Window[widget] = win;
+                    }
+                }
+                //if (widget != null && numBox.DataContext != null)
+                //{
+                //    Controls[numBox.DataContext.ToString().ToLower()] = widget;
+                //    controls?.Add(widget);
+                //    if (win != null)
+                //    {
+                //        Control2Window[widget] = win;
+                //    }
+                //}
+            }
+
+
+        }
         public static void RemoveControl(FrameworkElement widget)
         {
             widget.Visibility = Visibility.Hidden;
@@ -1369,60 +1434,95 @@ namespace WpfCSCS
 
         public static void AddWidgetActions(FrameworkElement widget)
         {
-            //xaml Name property
-            var widgetName = GetWidgetName(widget);
-            if (!string.IsNullOrWhiteSpace(widgetName))
+            if ((widget.Parent as FrameworkElement).Parent is EnterBox)
             {
-                string clickAction = widgetName + "@Clicked";
-                string preClickAction = widgetName + "@PreClicked";
-                string postClickAction = widgetName + "@PostClicked";
-                string keyDownAction = widgetName + "@KeyDown";
-                string keyUpAction = widgetName + "@KeyUp";
-                string textChangeAction = widgetName + "@TextChange";
-                string mouseHoverAction = widgetName + "@MouseHover";
-                string selectionChangedAction = widgetName + "@SelectionChanged";
-                string dateChangedAction = widgetName + "@DateChanged";
+                var EnterBox = (widget.Parent as FrameworkElement).Parent as EnterBox;
 
-                string widgetPreAction = widgetName + "@Pre";
-                string widgetPostAction = widgetName + "@Post";
+                if (widget is EnterTextBox)
+                {
+                    //events
+                    string textChangeAction = EnterBox.Name + "@TextChange";
+                    string widgetPreAction = EnterBox.Name + "@Pre";
+                    string widgetPostAction = EnterBox.Name + "@Post";
 
-                string widgetChangeAction = widgetName + "@Change";
-                string widgetAfterChangeAction = widgetName + "@AfterChange";
-                
-                string widgetMoveAction = widgetName + "@Move";
-                string widgetSelectAction = widgetName + "@Select";
+                    AddTextChangedHandler(EnterBox.FieldName, textChangeAction, widget);
+                    AddWidgetPreHandler(EnterBox.FieldName, widgetPreAction, widget);
+                    AddWidgetPostHandler(EnterBox.FieldName, widgetPostAction, widget);
 
+                    //binding
+                    var widgetBindingName = EnterBox.FieldName;
+                    if (!string.IsNullOrWhiteSpace(widgetBindingName))
+                    {
+                        AddBinding(widgetBindingName, widget);
+                    }
+                }
+                else if (widget is Button)
+                {
+                    //events
+                    string clickAction = EnterBox.Name + "@Clicked";
 
-                AddActionHandler(widgetName, clickAction, widget);
-                AddPreActionHandler(widgetName, preClickAction, widget);
-                AddPostActionHandler(widgetName, postClickAction, widget);
-                AddKeyDownHandler(widgetName, keyDownAction, widget);
-                AddKeyUpHandler(widgetName, keyUpAction, widget);
-
-                AddTextChangedHandler(widgetName, textChangeAction, widget);
-
-                AddSelectionChangedHandler(widgetName, selectionChangedAction, widget);
-                AddMouseHoverHandler(widgetName, mouseHoverAction, widget);
-                AddDateChangedHandler(widgetName, dateChangedAction, widget);
-
-                //Pre, Post
-                AddWidgetPreHandler(widgetName, widgetPreAction, widget);
-                AddWidgetPostHandler(widgetName, widgetPostAction, widget);
-
-                //Navigator(Change and AfterChange) and TabControl(Change) events
-                AddWidgetChangeHandler(widgetName, widgetChangeAction, widget);
-                AddWidgetAfterChangeHandler(widgetName, widgetAfterChangeAction, widget);
-
-                //Grid(Move and Select)
-                AddWidgetMoveHandler(widgetName, widgetMoveAction, widget);
-                AddWidgetSelectHandler(widgetName, widgetSelectAction, widget);
+                    //binding
+                    AddActionHandler(EnterBox.Name, clickAction, widget);
+                }
             }
-
-            //xaml DataContext property
-            var widgetBindingName = GetWidgetBindingName(widget);
-            if (!string.IsNullOrWhiteSpace(widgetBindingName))
+            else
             {
-                AddBinding(widgetBindingName, widget);
+
+                //xaml Name property
+                var widgetName = GetWidgetName(widget);
+                if (!string.IsNullOrWhiteSpace(widgetName))
+                {
+                    string clickAction = widgetName + "@Clicked";
+                    string preClickAction = widgetName + "@PreClicked";
+                    string postClickAction = widgetName + "@PostClicked";
+                    string keyDownAction = widgetName + "@KeyDown";
+                    string keyUpAction = widgetName + "@KeyUp";
+                    string textChangeAction = widgetName + "@TextChange";
+                    string mouseHoverAction = widgetName + "@MouseHover";
+                    string selectionChangedAction = widgetName + "@SelectionChanged";
+                    string dateChangedAction = widgetName + "@DateChanged";
+
+                    string widgetPreAction = widgetName + "@Pre";
+                    string widgetPostAction = widgetName + "@Post";
+
+                    string widgetChangeAction = widgetName + "@Change";
+                    string widgetAfterChangeAction = widgetName + "@AfterChange";
+
+                    string widgetMoveAction = widgetName + "@Move";
+                    string widgetSelectAction = widgetName + "@Select";
+
+
+                    AddActionHandler(widgetName, clickAction, widget);
+                    AddPreActionHandler(widgetName, preClickAction, widget);
+                    AddPostActionHandler(widgetName, postClickAction, widget);
+                    AddKeyDownHandler(widgetName, keyDownAction, widget);
+                    AddKeyUpHandler(widgetName, keyUpAction, widget);
+
+                    AddTextChangedHandler(widgetName, textChangeAction, widget);
+
+                    AddSelectionChangedHandler(widgetName, selectionChangedAction, widget);
+                    AddMouseHoverHandler(widgetName, mouseHoverAction, widget);
+                    AddDateChangedHandler(widgetName, dateChangedAction, widget);
+
+                    //Pre, Post
+                    AddWidgetPreHandler(widgetName, widgetPreAction, widget);
+                    AddWidgetPostHandler(widgetName, widgetPostAction, widget);
+
+                    //Navigator(Change and AfterChange) and TabControl(Change) events
+                    AddWidgetChangeHandler(widgetName, widgetChangeAction, widget);
+                    AddWidgetAfterChangeHandler(widgetName, widgetAfterChangeAction, widget);
+
+                    //Grid(Move and Select)
+                    AddWidgetMoveHandler(widgetName, widgetMoveAction, widget);
+                    AddWidgetSelectHandler(widgetName, widgetSelectAction, widget);
+                }
+
+                //xaml DataContext property
+                var widgetBindingName = GetWidgetBindingName(widget);
+                if (!string.IsNullOrWhiteSpace(widgetBindingName))
+                {
+                    AddBinding(widgetBindingName, widget);
+                }
             }
         }
 
