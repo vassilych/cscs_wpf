@@ -51,6 +51,10 @@
     <Compile Include="Navigator.xaml.cs">
       <DependentUpon>Navigator.xaml</DependentUpon>
     </Compile>
+    <Compile Include="NumericBox.xaml.cs">
+      <DependentUpon>NumericBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="NumericTextBox.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -81,6 +85,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Navigator.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="NumericBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
