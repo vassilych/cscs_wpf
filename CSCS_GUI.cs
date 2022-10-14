@@ -620,6 +620,19 @@ namespace WpfCSCS
         public static bool AddActionHandler(string name, string action, FrameworkElement widget)
         {
             var clickable = widget as ButtonBase;
+            if (widget is NumericBox)
+            {
+                var numericBoxsGrid = (widget as NumericBox).Content;
+                var gridChildren = (numericBoxsGrid as Grid).Children;
+                foreach (var item in gridChildren)
+                {
+                    if (item is ButtonBase)
+                    {
+                        clickable = item as ButtonBase;
+                    }
+                }
+            }
+            
             if (clickable == null)
             {
                 return false;
@@ -1323,6 +1336,15 @@ namespace WpfCSCS
                         }
                     }
                 }
+                else if (child is NumericBox)
+                {
+                    var numBox = child as NumericBox;
+                    var numBoxGrid = numBox.Content as Grid;
+                    foreach (var item in numBoxGrid.Children)
+                    {
+                        CacheNumericBoxChild(item as FrameworkElement, win, controls, numBox);
+                    }
+                }
                 else
                 {
                     CacheControl(child as FrameworkElement, win, controls);
@@ -1361,6 +1383,61 @@ namespace WpfCSCS
                 }
             }
         }
+        public static void CacheNumericBoxChild(FrameworkElement widget, Window win = null, List<FrameworkElement> controls = null, NumericBox numBox = null)
+        {
+            if(widget is NumericTextBox)
+            {
+                widget.Name = numBox.FieldName;
+                widget.DataContext = numBox.FieldName;
+
+                if (widget != null && !string.IsNullOrEmpty(numBox.FieldName))
+                {
+                    Controls[numBox.FieldName.ToString().ToLower()] = widget;
+                    controls?.Add(widget);
+                    if (win != null)
+                    {
+                        Control2Window[widget] = win;
+                    }
+                }
+                if (widget != null && numBox.FieldName != null)
+                {
+                    Controls[numBox.FieldName.ToString().ToLower()] = widget;
+                    
+                    if(controls != null && !controls.Contains(widget))
+                        controls.Add(widget);
+
+                    if (win != null)
+                    {
+                        Control2Window[widget] = win;
+                    }
+                }
+            }
+            else if(widget is Button)
+            {
+                widget.Name = numBox.Name;
+
+                if (widget != null && !string.IsNullOrEmpty(numBox.Name))
+                {
+                    Controls[numBox.Name.ToString().ToLower()] = widget;
+                    controls?.Add(widget);
+                    if (win != null)
+                    {
+                        Control2Window[widget] = win;
+                    }
+                }
+                //if (widget != null && numBox.DataContext != null)
+                //{
+                //    Controls[numBox.DataContext.ToString().ToLower()] = widget;
+                //    controls?.Add(widget);
+                //    if (win != null)
+                //    {
+                //        Control2Window[widget] = win;
+                //    }
+                //}
+            }
+
+            
+        }
         public static void RemoveControl(FrameworkElement widget)
         {
             widget.Visibility = Visibility.Hidden;
@@ -1369,60 +1446,99 @@ namespace WpfCSCS
 
         public static void AddWidgetActions(FrameworkElement widget)
         {
-            //xaml Name property
-            var widgetName = GetWidgetName(widget);
-            if (!string.IsNullOrWhiteSpace(widgetName))
+            if((widget.Parent as FrameworkElement).Parent is NumericBox)
             {
-                string clickAction = widgetName + "@Clicked";
-                string preClickAction = widgetName + "@PreClicked";
-                string postClickAction = widgetName + "@PostClicked";
-                string keyDownAction = widgetName + "@KeyDown";
-                string keyUpAction = widgetName + "@KeyUp";
-                string textChangeAction = widgetName + "@TextChange";
-                string mouseHoverAction = widgetName + "@MouseHover";
-                string selectionChangedAction = widgetName + "@SelectionChanged";
-                string dateChangedAction = widgetName + "@DateChanged";
+                var NumericBox = (widget.Parent as FrameworkElement).Parent as NumericBox;
 
-                string widgetPreAction = widgetName + "@Pre";
-                string widgetPostAction = widgetName + "@Post";
+                if(widget is NumericTextBox)
+                {
+                    //events
+                    string textChangeAction = NumericBox.Name + "@TextChange";
+                    string widgetPreAction = NumericBox.Name + "@Pre";
+                    string widgetPostAction = NumericBox.Name + "@Post";
 
-                string widgetChangeAction = widgetName + "@Change";
-                string widgetAfterChangeAction = widgetName + "@AfterChange";
-                
-                string widgetMoveAction = widgetName + "@Move";
-                string widgetSelectAction = widgetName + "@Select";
+                    AddTextChangedHandler(NumericBox.FieldName, textChangeAction, widget);
+                    AddWidgetPreHandler(NumericBox.FieldName, widgetPreAction, widget);
+                    AddWidgetPostHandler(NumericBox.FieldName, widgetPostAction, widget);
 
+                    //binding
+                    var widgetBindingName = NumericBox.FieldName;
+                    if (!string.IsNullOrWhiteSpace(widgetBindingName))
+                    {
+                        AddBinding(widgetBindingName, widget);
+                    }
+                }
+                else if(widget is Button)
+                {
+                    //events
+                    string clickAction = NumericBox.Name + "@Clicked";
 
-                AddActionHandler(widgetName, clickAction, widget);
-                AddPreActionHandler(widgetName, preClickAction, widget);
-                AddPostActionHandler(widgetName, postClickAction, widget);
-                AddKeyDownHandler(widgetName, keyDownAction, widget);
-                AddKeyUpHandler(widgetName, keyUpAction, widget);
-
-                AddTextChangedHandler(widgetName, textChangeAction, widget);
-
-                AddSelectionChangedHandler(widgetName, selectionChangedAction, widget);
-                AddMouseHoverHandler(widgetName, mouseHoverAction, widget);
-                AddDateChangedHandler(widgetName, dateChangedAction, widget);
-
-                //Pre, Post
-                AddWidgetPreHandler(widgetName, widgetPreAction, widget);
-                AddWidgetPostHandler(widgetName, widgetPostAction, widget);
-
-                //Navigator(Change and AfterChange) and TabControl(Change) events
-                AddWidgetChangeHandler(widgetName, widgetChangeAction, widget);
-                AddWidgetAfterChangeHandler(widgetName, widgetAfterChangeAction, widget);
-
-                //Grid(Move and Select)
-                AddWidgetMoveHandler(widgetName, widgetMoveAction, widget);
-                AddWidgetSelectHandler(widgetName, widgetSelectAction, widget);
+                    //binding
+                    AddActionHandler(NumericBox.Name, clickAction, widget);
+                }
             }
-
-            //xaml DataContext property
-            var widgetBindingName = GetWidgetBindingName(widget);
-            if (!string.IsNullOrWhiteSpace(widgetBindingName))
+            else
             {
-                AddBinding(widgetBindingName, widget);
+                //xaml Name property
+                var widgetName = GetWidgetName(widget);
+
+                if (!string.IsNullOrWhiteSpace(widgetName))
+                {
+                    string clickAction = widgetName + "@Clicked";
+                    string preClickAction = widgetName + "@PreClicked";
+                    string postClickAction = widgetName + "@PostClicked";
+                    string keyDownAction = widgetName + "@KeyDown";
+                    string keyUpAction = widgetName + "@KeyUp";
+                    string textChangeAction = widgetName + "@TextChange";
+                    string mouseHoverAction = widgetName + "@MouseHover";
+                    string selectionChangedAction = widgetName + "@SelectionChanged";
+                    string dateChangedAction = widgetName + "@DateChanged";
+
+                    //textBox
+                    string widgetPreAction = widgetName + "@Pre";
+                    string widgetPostAction = widgetName + "@Post";
+
+                    //tabs
+                    string widgetChangeAction = widgetName + "@Change";
+                    string widgetAfterChangeAction = widgetName + "@AfterChange";
+
+                    //dataGrid
+                    string widgetMoveAction = widgetName + "@Move";
+                    string widgetSelectAction = widgetName + "@Select";
+
+
+                    AddActionHandler(widgetName, clickAction, widget);
+                    AddPreActionHandler(widgetName, preClickAction, widget);
+                    AddPostActionHandler(widgetName, postClickAction, widget);
+                    AddKeyDownHandler(widgetName, keyDownAction, widget);
+                    AddKeyUpHandler(widgetName, keyUpAction, widget);
+
+                    AddTextChangedHandler(widgetName, textChangeAction, widget);
+
+                    AddSelectionChangedHandler(widgetName, selectionChangedAction, widget);
+                    AddMouseHoverHandler(widgetName, mouseHoverAction, widget);
+                    AddDateChangedHandler(widgetName, dateChangedAction, widget);
+
+                    //Pre, Post
+                    AddWidgetPreHandler(widgetName, widgetPreAction, widget);
+                    AddWidgetPostHandler(widgetName, widgetPostAction, widget);
+
+                    //Navigator(Change and AfterChange) and TabControl(Change) events
+                    AddWidgetChangeHandler(widgetName, widgetChangeAction, widget);
+                    AddWidgetAfterChangeHandler(widgetName, widgetAfterChangeAction, widget);
+
+                    //Grid(Move and Select)
+                    AddWidgetMoveHandler(widgetName, widgetMoveAction, widget);
+                    AddWidgetSelectHandler(widgetName, widgetSelectAction, widget);
+                }
+
+
+                //xaml DataContext property
+                var widgetBindingName = GetWidgetBindingName(widget);
+                if (!string.IsNullOrWhiteSpace(widgetBindingName))
+                {
+                    AddBinding(widgetBindingName, widget);
+                }
             }
         }
 
@@ -2045,6 +2161,14 @@ namespace WpfCSCS
                 dispatcher.Invoke(new Action(() =>
                 {
                     contentable.Content = text;
+                }));
+            }
+            else if (widget is NumericTextBox)
+            {
+                var numericTextBox = widget as NumericTextBox;
+                dispatcher.Invoke(new Action(() =>
+                {
+                    numericTextBox.Text = text;
                 }));
             }
             else if (widget is TextBox)
