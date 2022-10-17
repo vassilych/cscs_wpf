@@ -48,6 +48,10 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EnterBox.xaml.cs">
+      <DependentUpon>EnterBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="EnterTextBox.cs" />
     <Compile Include="Navigator.xaml.cs">
       <DependentUpon>Navigator.xaml</DependentUpon>
     </Compile>
@@ -84,6 +88,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="EnterBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Navigator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -1336,6 +1336,15 @@ namespace WpfCSCS
                         }
                     }
                 }
+                else if (child is EnterBox)
+                {
+                    var enterBox = child as EnterBox;
+                    var enterBoxGrid = enterBox.Content as Grid;
+                    foreach (var item in enterBoxGrid.Children)
+                    {
+                        CacheEnterBoxChild(item as FrameworkElement, win, controls, enterBox);
+                    }
+                }
                 else if (child is NumericBox)
                 {
                     var numBox = child as NumericBox;
@@ -1383,6 +1392,60 @@ namespace WpfCSCS
                 }
             }
         }
+
+        public static void CacheEnterBoxChild(FrameworkElement widget, Window win = null, List<FrameworkElement> controls = null, EnterBox enterBox = null)
+        {
+            if (widget is EnterTextBox)
+            {
+                widget.Name = enterBox.FieldName;
+                widget.DataContext = enterBox.FieldName;
+
+                if (widget != null && !string.IsNullOrEmpty(enterBox.FieldName))
+                {
+                    Controls[enterBox.FieldName.ToString().ToLower()] = widget;
+                    controls?.Add(widget);
+                    if (win != null)
+                    {
+                        Control2Window[widget] = win;
+                    }
+                }
+                if (widget != null && enterBox.FieldName != null)
+                {
+                    Controls[enterBox.FieldName.ToString().ToLower()] = widget;
+
+                    if (controls != null && !controls.Contains(widget))
+                    controls.Add(widget);
+
+                    if (win != null)
+                    {
+                        Control2Window[widget] = win;
+                    }
+                }
+            }
+            else if (widget is Button)
+            {
+                widget.Name = enterBox.Name;
+
+                if (widget != null && !string.IsNullOrEmpty(enterBox.Name))
+                {
+                    Controls[enterBox.Name.ToString().ToLower()] = widget;
+                    controls?.Add(widget);
+                    if (win != null)
+                    {
+                        Control2Window[widget] = win;
+                    }
+                }
+                //if (widget != null && numBox.DataContext != null)
+                //{
+                //    Controls[numBox.DataContext.ToString().ToLower()] = widget;
+                //    controls?.Add(widget);
+                //    if (win != null)
+                //    {
+                //        Control2Window[widget] = win;
+                //    }
+                //}
+            }
+
         public static void CacheNumericBoxChild(FrameworkElement widget, Window win = null, List<FrameworkElement> controls = null, NumericBox numBox = null)
         {
             if(widget is NumericTextBox)
@@ -1404,7 +1467,7 @@ namespace WpfCSCS
                     Controls[numBox.FieldName.ToString().ToLower()] = widget;
                     
                     if(controls != null && !controls.Contains(widget))
-                        controls.Add(widget);
+                    controls.Add(widget);
 
                     if (win != null)
                     {
@@ -1436,7 +1499,8 @@ namespace WpfCSCS
                 //}
             }
 
-            
+                   
+
         }
         public static void RemoveControl(FrameworkElement widget)
         {
@@ -1446,7 +1510,38 @@ namespace WpfCSCS
 
         public static void AddWidgetActions(FrameworkElement widget)
         {
-            if((widget.Parent as FrameworkElement).Parent is NumericBox)
+            if ((widget.Parent as FrameworkElement).Parent is EnterBox)
+            {
+                var EnterBox = (widget.Parent as FrameworkElement).Parent as EnterBox;
+
+                if (widget is EnterTextBox)
+                {
+                    //events
+                    string textChangeAction = EnterBox.Name + "@TextChange";
+                    string widgetPreAction = EnterBox.Name + "@Pre";
+                    string widgetPostAction = EnterBox.Name + "@Post";
+
+                    AddTextChangedHandler(EnterBox.FieldName, textChangeAction, widget);
+                    AddWidgetPreHandler(EnterBox.FieldName, widgetPreAction, widget);
+                    AddWidgetPostHandler(EnterBox.FieldName, widgetPostAction, widget);
+
+                    //binding
+                    var widgetBindingName = EnterBox.FieldName;
+                    if (!string.IsNullOrWhiteSpace(widgetBindingName))
+                    {
+                        AddBinding(widgetBindingName, widget);
+                    }
+                }
+                else if (widget is Button)
+                {
+                    //events
+                    string clickAction = EnterBox.Name + "@Clicked";
+
+                    //binding
+                    AddActionHandler(EnterBox.Name, clickAction, widget);
+                }
+            }
+            else if((widget.Parent as FrameworkElement).Parent is NumericBox)
             {
                 var NumericBox = (widget.Parent as FrameworkElement).Parent as NumericBox;
 
@@ -1507,11 +1602,13 @@ namespace WpfCSCS
                     string widgetSelectAction = widgetName + "@Select";
 
 
+
                     AddActionHandler(widgetName, clickAction, widget);
                     AddPreActionHandler(widgetName, preClickAction, widget);
                     AddPostActionHandler(widgetName, postClickAction, widget);
                     AddKeyDownHandler(widgetName, keyDownAction, widget);
                     AddKeyUpHandler(widgetName, keyUpAction, widget);
+
 
                     AddTextChangedHandler(widgetName, textChangeAction, widget);
 
@@ -1531,7 +1628,6 @@ namespace WpfCSCS
                     AddWidgetMoveHandler(widgetName, widgetMoveAction, widget);
                     AddWidgetSelectHandler(widgetName, widgetSelectAction, widget);
                 }
-
 
                 //xaml DataContext property
                 var widgetBindingName = GetWidgetBindingName(widget);

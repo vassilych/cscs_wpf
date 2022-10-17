@@ -101,8 +101,12 @@ function mainMenuWindow_OnDisplay(){
     AddMenuItem("OtherDC", "testManyOPENVs.cscs", "testManyOPENVs", "runScript");
     AddMenuSeparator("OtherDC");
     AddMenuItem("OtherDC", "testInterpreters.cscs", "testInterpreters", "runScript");
+    
     AddMenuSeparator("OtherDC");
     AddMenuItem("OtherDC", "testDllsNext.cscs", "testDllsNext", "runScript");
+    
+    AddMenuSeparator("OtherDC");
+    AddMenuItem("OtherDC", "enterBox.cscs", "enterBox", "runScript");
     AddMenuItem("OtherDC", "numericBox.cscs", "numericBox", "runScript");
 
     //------------------------------------
