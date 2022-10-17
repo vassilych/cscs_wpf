@@ -1,51 +1,41 @@
-
-DEFINE var2 type n size 9 dec 2;
-
-DEFINE varijabla type n size 9 dec 2;
-
-varijabla = 91919;
-
-var2 = 9999;
+DEFINE variable1 type n size 9 dec 2;
+variable1 = 91919;
 
 CreateWindow("../../scripts/numericBox.xaml");
 
-
-
+//NumericBox's Button
 function numbox1@clicked(){
-    MessageBox(varijabla + 2);
-    varijabla = 55555;
-    // MessageBox("var2 = " + var2);
-    // var2 = 12345;
+    MessageBox(variable1 + 2);
+    variable1 = 55555;
 }
 
+//entering NumericBox
+a = 2;
+function numbox1@pre(){
+    MessageBox("PRE");
+    a++;
+    if(a%2 == 0){
+        return false;
+    }
+    else{
+        return true;
+    }
+}
 
-// a = 2;
-// function numbox1@pre(){
-//     MessageBox("PRE");
-//     // a++;
-//     // if(a%2 == 0){
-//     //     return false;
-//     // }
-//     // else{
-//     //     return true;
-//     // }
-// }
+//when leaving NumericBox
+b = 2;
+function numbox1@post(){
+    MessageBox("POST");
+    b++;
+    if(b%2 == 0){
+        return false;
+    }
+    else{
+        return true;
+    }
+}
 
-
-// b = 2;
-// function numbox1@post(){
-//     MessageBox("POST");
-//     // b++;
-//     // if(b%2 == 0){
-//     //     return false;
-//     // }
-//     // else{
-//     //     return true;
-//     // }
-// }
-
-
-// function numbox1@TextChange(){
-//     MessageBox("textChanged");    
-// }
-
+//occurs when text changes
+function numbox1@TextChange(){
+    MessageBox("textChanged");    
+}

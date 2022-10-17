@@ -15,25 +15,14 @@
 
                                 HorizontalAlignment="Left" VerticalAlignment="Top"/>
         <wcl:EnterBox 
-                        
-
                         ButtonSize="150" 
-                        
-                        Size="8" 
-
-                        Text="lalalala"                 
-
+                        Size="8"
+                        Text="lalalala"
                         FieldName="varijabla"
-
                         Name="enterbox1"  
-
                         Height="60"  Width="400"
-
                         Margin="50,100,0,0"
                         HorizontalAlignment="Left" VerticalAlignment="Top"
-                        
                         FontSize="25"/>
-
-        
     </Grid>
 </Window>
