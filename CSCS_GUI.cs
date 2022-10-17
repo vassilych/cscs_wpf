@@ -1414,7 +1414,7 @@ namespace WpfCSCS
                     Controls[enterBox.FieldName.ToString().ToLower()] = widget;
 
                     if (controls != null && !controls.Contains(widget))
-                    controls.Add(widget);
+                        controls.Add(widget);
 
                     if (win != null)
                     {
@@ -1445,6 +1445,7 @@ namespace WpfCSCS
                 //    }
                 //}
             }
+        }
 
         public static void CacheNumericBoxChild(FrameworkElement widget, Window win = null, List<FrameworkElement> controls = null, NumericBox numBox = null)
         {
