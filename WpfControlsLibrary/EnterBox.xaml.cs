@@ -74,6 +74,19 @@ namespace WpfControlsLibrary
             }
         }
 
+        public static readonly DependencyProperty CaseProperty = DependencyProperty.Register("Case", typeof(string), typeof(EnterBox));
+        public string Case
+        {
+            get
+            {
+                return (string)base.GetValue(CaseProperty);
+            }
+            set
+            {
+                base.SetValue(CaseProperty, value);
+            }
+        }
+
         public EnterBox()
         {
             InitializeComponent();
@@ -85,6 +98,7 @@ namespace WpfControlsLibrary
         {
             enterBoxTextBox.Size = Size;
             enterBoxTextBox.Text = Text;
+            enterBoxTextBox.CharacterCasing = Case.ToLower() == "up"? CharacterCasing.Upper : (Case.ToLower() == "down"? CharacterCasing.Lower : CharacterCasing.Normal);
 
             enterBoxButton.Width = ButtonSize;
         }
