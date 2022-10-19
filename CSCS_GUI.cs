@@ -35,9 +35,110 @@ using static WpfCSCS.Btrieve;
 using WpfControlsLibrary;
 using CSCS.InterpreterManager;
 using DevExpress.Xpo.Logger;
+using WpfCSCS;
 
 namespace SplitAndMerge
 {
+    public class CscsGuiModule : ICscsModule
+    {
+        public ICscsModuleInstance CreateInstance(Interpreter interpreter)
+        {
+            return new CscsGuiModuleInstance(interpreter);
+        }
+
+        public void Terminate()
+        {
+        }
+    }
+
+    public class CscsGuiModuleInstance : ICscsModuleInstance
+    {
+        public CscsGuiModuleInstance(Interpreter interpreter)
+        {
+            interpreter.RegisterFunction("#MAINMENU", new MAINMENUcommand());
+            interpreter.RegisterFunction("#WINFORM", new WINFORMcommand(true));
+
+            interpreter.RegisterFunction(Constants.READ_XML_FILE, new ReadXmlFileFunction());
+            interpreter.RegisterFunction(Constants.READ_TAGCONTENT_FROM_XMLSTRING,
+                new ReadTagContentFromXmlStringFunction());
+
+            interpreter.RegisterFunction(Constants.MSG, new VariableArgsFunction(true));
+            interpreter.RegisterFunction(Constants.DEFINE, new VariableArgsFunction(true));
+            interpreter.RegisterFunction(Constants.SET_OBJECT, new VariableArgsFunction(true));
+            interpreter.RegisterFunction(Constants.DISPLAY_ARRAY, new VariableArgsFunction(true));
+            interpreter.RegisterFunction(Constants.DISPLAY_ARR_SETUP, new VariableArgsFunction(false));
+            interpreter.RegisterFunction(Constants.DISPLAY_ARR_REFRESH, new VariableArgsFunction(false));
+            interpreter.RegisterFunction(Constants.DATA_GRID, new VariableArgsFunction(true));
+            interpreter.RegisterFunction(Constants.ADD_COLUMN, new VariableArgsFunction(true));
+            interpreter.RegisterFunction(Constants.DELETE_COLUMN, new VariableArgsFunction(true));
+            interpreter.RegisterFunction(Constants.SHIFT_COLUMN, new VariableArgsFunction(true));
+
+            interpreter.RegisterFunction(Constants.CHAIN, new ChainFunction(false));
+            interpreter.RegisterFunction(Constants.PARAM, new ChainFunction(true));
+            interpreter.RegisterFunction(Constants.QUIT, new QuitStatement());
+
+            interpreter.RegisterFunction(Constants.WITH, new ConstantsFunction());
+            interpreter.RegisterFunction(Constants.NEWRUNTIME, new ConstantsFunction());
+
+            interpreter.RegisterFunction(Constants.SET_FOCUS, new SetFocusFunction());
+            interpreter.RegisterFunction(Constants.LAST_OBJ, new LastObjFunction());
+            interpreter.RegisterFunction(Constants.LAST_OBJ_CLICKED, new LastObjClickedFunction());
+
+            interpreter.RegisterFunction("OpenFile", new OpenFileFunction(false));
+            interpreter.RegisterFunction("OpenFileContents", new OpenFileFunction(true));
+            interpreter.RegisterFunction("SaveFile", new SaveFileFunction());
+
+            interpreter.RegisterFunction("ShowWidget", new ShowHideWidgetFunction(true));
+            interpreter.RegisterFunction("HideWidget", new ShowHideWidgetFunction(false));
+
+            interpreter.RegisterFunction("GetText", new GetTextWidgetFunction());
+            interpreter.RegisterFunction("SetText", new SetTextWidgetFunction());
+            interpreter.RegisterFunction("AddWidgetData", new AddWidgetDataFunction());
+            interpreter.RegisterFunction("SetWidgetOptions", new SetWidgetOptionsFunction());
+            interpreter.RegisterFunction("GetSelected", new GetSelectedFunction());
+            interpreter.RegisterFunction("SetBackgroundColor", new SetColorFunction(true));
+            interpreter.RegisterFunction("SetForegroundColor", new SetColorFunction(false));
+            interpreter.RegisterFunction("SetImage", new SetImageFunction());
+
+            interpreter.RegisterFunction("DisplayArrFunc", new DisplayArrFuncFunction());
+
+            interpreter.RegisterFunction("FillOutGrid", new FillOutGridFunction());
+            interpreter.RegisterFunction("FillOutGridFromDB", new FillOutGridFunction(true));
+            interpreter.RegisterFunction("BindSQL", new BindSQLFunction());
+            interpreter.RegisterFunction("MessageBox", new MessageBoxFunction());
+            interpreter.RegisterFunction("SendToPrinter", new PrintFunction());
+
+            interpreter.RegisterFunction("AddMenuItem", new AddMenuEntryFunction(false));
+            interpreter.RegisterFunction("AddMenuSeparator", new AddMenuEntryFunction(true));
+            interpreter.RegisterFunction("RemoveMenu", new RemoveMenuFunction());
+
+            interpreter.RegisterFunction("RunOnMain", new RunOnMainFunction());
+            interpreter.RegisterFunction("RunExec", new RunExecFunction());
+            interpreter.RegisterFunction("RunScript", new RunScriptFunction());
+
+            interpreter.RegisterFunction("CheckVATNumber", new CheckVATFunction());
+            interpreter.RegisterFunction("GetVATName", new CheckVATFunction(CheckVATFunction.MODE.NAME));
+            interpreter.RegisterFunction("GetVATAddress", new CheckVATFunction(CheckVATFunction.MODE.ADDRESS));
+
+            interpreter.RegisterFunction("CreateWindow", new NewWindowFunction(NewWindowFunction.MODE.NEW));
+            interpreter.RegisterFunction("CloseWindow", new NewWindowFunction(NewWindowFunction.MODE.DELETE));
+            interpreter.RegisterFunction("ShowWindow", new NewWindowFunction(NewWindowFunction.MODE.SHOW));
+            interpreter.RegisterFunction("HideWindow", new NewWindowFunction(NewWindowFunction.MODE.HIDE));
+            interpreter.RegisterFunction("NextWindow", new NewWindowFunction(NewWindowFunction.MODE.NEXT));
+            interpreter.RegisterFunction("ModalWindow", new NewWindowFunction(NewWindowFunction.MODE.MODAL));
+            interpreter.RegisterFunction("SetMainWindow", new NewWindowFunction(NewWindowFunction.MODE.SET_MAIN));
+            interpreter.RegisterFunction("UnsetMainWindow", new NewWindowFunction(NewWindowFunction.MODE.UNSET_MAIN));
+            interpreter.RegisterFunction("FillWidget", new FillWidgetFunction());
+
+            interpreter.RegisterFunction("AsyncCall", new AsyncCallFunction());
+            interpreter.RegisterFunction(Constants.QUIT, new WpfQuitCommand());
+
+            interpreter.AddAction(Constants.ASSIGNMENT, new MyAssignFunction());
+            interpreter.AddAction(Constants.POINTER, new MyPointerFunction());
+
+        }
+    }
+
     public partial class Constants
     {
         public const string SETUP_REPORT = "SetupReport";
@@ -48,13 +149,13 @@ namespace SplitAndMerge
         public const string OPENV = "Openv";
         public const string FINDV = "Findv";
         public const string CLOSEV = "Closev";
-        
+
         public const string REPL = "Repl";
-        
+
         public const string CLR = "Clr";
         public const string RCNGET = "RCNGet";
         public const string RCNSET = "RCNSet";
-        
+
         public const string ACTIVE = "Active";
         public const string DEL = "Del";
         public const string SAVE = "Save";
@@ -65,7 +166,7 @@ namespace SplitAndMerge
         public const string TRC = "Trc";
 
         public const string SCAN = "Scan";
-        
+
         public const string DISPLAY_TABLE_SETUP = "DisplayTableSetup";
         public const string DISPLAY_ARRAY_SETUP = "DisplayArraySetup";
         public const string DISPLAY_ARRAY_REFRESH = "DisplayArrayRefresh";
@@ -80,7 +181,7 @@ namespace SplitAndMerge
 
         public const string READ_XML_FILE = "readXmlFile";
         public const string READ_TAGCONTENT_FROM_XMLSTRING = "readTagContentFromXmlString";
-        
+
         public const string SET_FOCUS = "SetFocus";
         public const string LAST_OBJ = "LastObj";
         public const string LAST_OBJ_CLICKED = "LastObjClick";
@@ -166,7 +267,7 @@ namespace WpfCSCS
             }
             public CSCS_GUI CSCS_GUI { get; set; }
         }
-       
+
         public static Dispatcher Dispatcher { get; set; }
 
         public class WidgetData
@@ -228,7 +329,7 @@ namespace WpfCSCS
         static Dictionary<string, string> s_NavigatorAfterChangeHandlers = new Dictionary<string, string>();
 
         static Dictionary<string, string> s_ChangeHandlers = new Dictionary<string, string>();
-        
+
         public static Dictionary<string, string> s_MoveHandlers = new Dictionary<string, string>();
         static Dictionary<string, string> s_SelectHandlers = new Dictionary<string, string>();
 
@@ -248,97 +349,26 @@ namespace WpfCSCS
         public static Dictionary<string, Dictionary<string, bool>> s_varExists =
             new Dictionary<string, Dictionary<string, bool>>();
 
+
+        protected static List<ICscsModule> GetModuleList()
+        {
+            return new List<ICscsModule>
+            {
+                new CscsGuiModule(),
+                //new CscsMathModule(),
+                s_interpreterManager
+            };
+        }
         public static void Init()
         {
             s_interpreterManager.OnInterpreterCreated += InterpreterCreated;
-            s_interpreterManager.Modules = new List<ICscsModule>();
+            s_interpreterManager.Modules = GetModuleList();
             var interpreterId = s_interpreterManager.NewInterpreter();
             s_interpreterManager.SetInterpreter(interpreterId);
             s_interpreterManager.CreateInstance(Interpreter.LastInstance);
 
             //Interpreter.LastInstance.OnOutput += Print;
             ParserFunction.OnVariableChange += OnVariableChange;
-
-            Interpreter.LastInstance.RegisterFunction("#MAINMENU", new MAINMENUcommand());
-            Interpreter.LastInstance.RegisterFunction("#WINFORM", new WINFORMcommand(true));
-
-            Interpreter.LastInstance.RegisterFunction(Constants.READ_XML_FILE, new ReadXmlFileFunction());
-            Interpreter.LastInstance.RegisterFunction(Constants.READ_TAGCONTENT_FROM_XMLSTRING,
-                new ReadTagContentFromXmlStringFunction());
-
-            Interpreter.LastInstance.RegisterFunction(Constants.MSG, new VariableArgsFunction(true));
-            Interpreter.LastInstance.RegisterFunction(Constants.DEFINE, new VariableArgsFunction(true));
-            Interpreter.LastInstance.RegisterFunction(Constants.SET_OBJECT, new VariableArgsFunction(true));
-            Interpreter.LastInstance.RegisterFunction(Constants.DISPLAY_ARRAY, new VariableArgsFunction(true));
-            Interpreter.LastInstance.RegisterFunction(Constants.DISPLAY_ARR_SETUP, new VariableArgsFunction(false));
-            Interpreter.LastInstance.RegisterFunction(Constants.DISPLAY_ARR_REFRESH, new VariableArgsFunction(false));
-            Interpreter.LastInstance.RegisterFunction(Constants.DATA_GRID, new VariableArgsFunction(true));
-            Interpreter.LastInstance.RegisterFunction(Constants.ADD_COLUMN, new VariableArgsFunction(true));
-            Interpreter.LastInstance.RegisterFunction(Constants.DELETE_COLUMN, new VariableArgsFunction(true));
-            Interpreter.LastInstance.RegisterFunction(Constants.SHIFT_COLUMN, new VariableArgsFunction(true));
-
-            Interpreter.LastInstance.RegisterFunction(Constants.CHAIN, new ChainFunction(false));
-            Interpreter.LastInstance.RegisterFunction(Constants.PARAM, new ChainFunction(true));
-            Interpreter.LastInstance.RegisterFunction(Constants.QUIT, new QuitStatement());
-
-            Interpreter.LastInstance.RegisterFunction(Constants.WITH, new ConstantsFunction());
-            Interpreter.LastInstance.RegisterFunction(Constants.NEWRUNTIME, new ConstantsFunction());
-
-            Interpreter.LastInstance.RegisterFunction(Constants.SET_FOCUS, new SetFocusFunction());
-            Interpreter.LastInstance.RegisterFunction(Constants.LAST_OBJ, new LastObjFunction());
-            Interpreter.LastInstance.RegisterFunction(Constants.LAST_OBJ_CLICKED, new LastObjClickedFunction());
-
-            Interpreter.LastInstance.RegisterFunction("OpenFile", new OpenFileFunction(false));
-            Interpreter.LastInstance.RegisterFunction("OpenFileContents", new OpenFileFunction(true));
-            Interpreter.LastInstance.RegisterFunction("SaveFile", new SaveFileFunction());
-
-            Interpreter.LastInstance.RegisterFunction("ShowWidget", new ShowHideWidgetFunction(true));
-            Interpreter.LastInstance.RegisterFunction("HideWidget", new ShowHideWidgetFunction(false));
-
-            Interpreter.LastInstance.RegisterFunction("GetText", new GetTextWidgetFunction());
-            Interpreter.LastInstance.RegisterFunction("SetText", new SetTextWidgetFunction());
-            Interpreter.LastInstance.RegisterFunction("AddWidgetData", new AddWidgetDataFunction());
-            Interpreter.LastInstance.RegisterFunction("SetWidgetOptions", new SetWidgetOptionsFunction());
-            Interpreter.LastInstance.RegisterFunction("GetSelected", new GetSelectedFunction());
-            Interpreter.LastInstance.RegisterFunction("SetBackgroundColor", new SetColorFunction(true));
-            Interpreter.LastInstance.RegisterFunction("SetForegroundColor", new SetColorFunction(false));
-            Interpreter.LastInstance.RegisterFunction("SetImage", new SetImageFunction());
-
-            Interpreter.LastInstance.RegisterFunction("DisplayArrFunc", new DisplayArrFuncFunction());
-
-            Interpreter.LastInstance.RegisterFunction("FillOutGrid", new FillOutGridFunction());
-            Interpreter.LastInstance.RegisterFunction("FillOutGridFromDB", new FillOutGridFunction(true));
-            Interpreter.LastInstance.RegisterFunction("BindSQL", new BindSQLFunction());
-            Interpreter.LastInstance.RegisterFunction("MessageBox", new MessageBoxFunction());
-            Interpreter.LastInstance.RegisterFunction("SendToPrinter", new PrintFunction());
-
-            Interpreter.LastInstance.RegisterFunction("AddMenuItem", new AddMenuEntryFunction(false));
-            Interpreter.LastInstance.RegisterFunction("AddMenuSeparator", new AddMenuEntryFunction(true));
-            Interpreter.LastInstance.RegisterFunction("RemoveMenu", new RemoveMenuFunction());
-
-            Interpreter.LastInstance.RegisterFunction("RunOnMain", new RunOnMainFunction());
-            Interpreter.LastInstance.RegisterFunction("RunExec", new RunExecFunction());
-            Interpreter.LastInstance.RegisterFunction("RunScript", new RunScriptFunction());
-
-            Interpreter.LastInstance.RegisterFunction("CheckVATNumber", new CheckVATFunction());
-            Interpreter.LastInstance.RegisterFunction("GetVATName", new CheckVATFunction(CheckVATFunction.MODE.NAME));
-            Interpreter.LastInstance.RegisterFunction("GetVATAddress", new CheckVATFunction(CheckVATFunction.MODE.ADDRESS));
-
-            Interpreter.LastInstance.RegisterFunction("CreateWindow", new NewWindowFunction(NewWindowFunction.MODE.NEW));
-            Interpreter.LastInstance.RegisterFunction("CloseWindow", new NewWindowFunction(NewWindowFunction.MODE.DELETE));
-            Interpreter.LastInstance.RegisterFunction("ShowWindow", new NewWindowFunction(NewWindowFunction.MODE.SHOW));
-            Interpreter.LastInstance.RegisterFunction("HideWindow", new NewWindowFunction(NewWindowFunction.MODE.HIDE));
-            Interpreter.LastInstance.RegisterFunction("NextWindow", new NewWindowFunction(NewWindowFunction.MODE.NEXT));
-            Interpreter.LastInstance.RegisterFunction("ModalWindow", new NewWindowFunction(NewWindowFunction.MODE.MODAL));
-            Interpreter.LastInstance.RegisterFunction("SetMainWindow", new NewWindowFunction(NewWindowFunction.MODE.SET_MAIN));
-            Interpreter.LastInstance.RegisterFunction("UnsetMainWindow", new NewWindowFunction(NewWindowFunction.MODE.UNSET_MAIN));
-            Interpreter.LastInstance.RegisterFunction("FillWidget", new FillWidgetFunction());
-
-            Interpreter.LastInstance.RegisterFunction("AsyncCall", new AsyncCallFunction());
-            Interpreter.LastInstance.RegisterFunction(Constants.QUIT, new WpfQuitCommand());
-
-            Interpreter.LastInstance.AddAction(Constants.ASSIGNMENT, new MyAssignFunction());
-            Interpreter.LastInstance.AddAction(Constants.POINTER, new MyPointerFunction());
 
             Constants.FUNCT_WITH_SPACE.Add(Constants.DEFINE);
             Constants.FUNCT_WITH_SPACE.Add(Constants.DISPLAY_ARRAY);
@@ -592,7 +622,7 @@ namespace WpfCSCS
                     var casted = dg.Items.Cast<ExpandoObject>();
                     sortedCast = casted.ToList();
                 }
-                catch(Exception exc)
+                catch (Exception exc)
                 {
                     Console.WriteLine(exc);
                     var sorted = dg.Items.SourceCollection;
@@ -610,7 +640,7 @@ namespace WpfCSCS
             string dgName = dg.DataContext as string;
             var funcName = dgName + "@Add";
             var rowList = dg.ItemsSource as List<ExpandoObject>;
-            var currentSize = rowList == null ? 0 : rowList.Count; 
+            var currentSize = rowList == null ? 0 : rowList.Count;
             var res = CSCS_GUI.RunScript(funcName, dg.Parent as Window, new Variable(dgName), new Variable(currentSize));
             bool canAddRow = res == Variable.EmptyInstance || res.AsDouble() != 0;
 
@@ -632,7 +662,7 @@ namespace WpfCSCS
                     }
                 }
             }
-            
+
             if (clickable == null)
             {
                 return false;
@@ -717,7 +747,7 @@ namespace WpfCSCS
 
             return true;
         }
-        
+
         public static bool AddWidgetPreHandler(string name, string action, FrameworkElement widget)
         {
             //var textable = widget as TextBoxBase;
@@ -752,10 +782,10 @@ namespace WpfCSCS
 
             return true;
         }
-        
+
         public static bool AddWidgetChangeHandler(string name, string action, FrameworkElement widget)
         {
-            if(widget is TabControl)
+            if (widget is TabControl)
             {
                 var tabControl = widget as TabControl;
                 if (tabControl == null)
@@ -804,7 +834,7 @@ namespace WpfCSCS
 
             return false;
         }
-        
+
         public static bool AddWidgetMoveHandler(string name, string action, FrameworkElement widget)
         {
             if (widget is DataGrid)
@@ -824,7 +854,7 @@ namespace WpfCSCS
 
             return false;
         }
-        
+
         public static bool AddWidgetSelectHandler(string name, string action, FrameworkElement widget)
         {
             if (widget is DataGrid)
@@ -1119,14 +1149,14 @@ namespace WpfCSCS
                         var entBoxGrid = entBox.Content as Grid;
                         foreach (var item in entBoxGrid.Children)
                         {
-                            if(item is EnterTextBox)
+                            if (item is EnterTextBox)
                             {
                                 var entTB = item as EnterTextBox;
 
                                 if (lastFocusedWidgetName == entTB.Name)
                                 {
                                     lastFocusedWidgetName = widgetName;
-                                    
+
                                     var request = new TraversalRequest(FocusNavigationDirection.Next);
                                     request.Wrapped = true;
                                     btn.MoveFocus(request);
@@ -1174,7 +1204,7 @@ namespace WpfCSCS
                     }
                 }
             }
-            
+
             if ((Control)sender is EnterTextBox)
             {
                 var etb = sender as EnterTextBox;
@@ -1188,7 +1218,7 @@ namespace WpfCSCS
                         var entBoxGrid = entBox.Content as Grid;
                         foreach (var item in entBoxGrid.Children)
                         {
-                            if(item is Button)
+                            if (item is Button)
                             {
                                 var entBtn = item as Button;
 
@@ -1203,7 +1233,7 @@ namespace WpfCSCS
                     }
                 }
             }
-            
+
             if ((Control)sender is NumericTextBox)
             {
                 var ntb = sender as NumericTextBox;
@@ -1217,7 +1247,7 @@ namespace WpfCSCS
                         var numBoxGrid = numBox.Content as Grid;
                         foreach (var item in numBoxGrid.Children)
                         {
-                            if(item is Button)
+                            if (item is Button)
                             {
                                 var numBtn = item as Button;
 
@@ -1233,9 +1263,9 @@ namespace WpfCSCS
                 }
             }
 
-            
 
-            
+
+
 
             skipPostEvent = false;
 
@@ -1247,7 +1277,7 @@ namespace WpfCSCS
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
                 if (result.Type == Variable.VarType.NUMBER && !result.AsBool()) // if script returned false
                 {
-                    if(widget is EnterTextBox || widget is NumericTextBox)
+                    if (widget is EnterTextBox || widget is NumericTextBox)
                         shouldButtonClick = false;
                     skipPostEvent = true;
                     var widgetToFocusTo = CSCS_GUI.GetWidget(lastFocusedWidgetName);
@@ -1400,7 +1430,7 @@ namespace WpfCSCS
                 }
             }
         }
-        
+
         private static void Widget_Change(object sender, SelectionChangedEventArgs e)
         {
             if (SetWidgetOptionsFunction.settingTabControlPosition)
@@ -1441,7 +1471,7 @@ namespace WpfCSCS
                 Control2Window.TryGetValue(widget, out Window win);
                 var result = Interpreter.LastInstance.Run(funcName, new Variable(widgetName), null,
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
-                
+
                 if (result.Type == Variable.VarType.NUMBER && !result.AsBool())
                 {
                     skipAfterChange = true;
@@ -1452,7 +1482,7 @@ namespace WpfCSCS
                 }
             }
         }
-        
+
         private static void Navigator_AfterChange(object sender, EventArgs e)
         {
             if (skipAfterChange)
@@ -1495,7 +1525,7 @@ namespace WpfCSCS
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
             }
         }
-        
+
         private static void DataGrid_Move(object sender, SelectionChangedEventArgs e)
         {
             DataGrid widget = sender as DataGrid;
@@ -1513,7 +1543,7 @@ namespace WpfCSCS
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
             }
         }
-        
+
         private static void DataGrid_Select(object sender, MouseButtonEventArgs e)
         {
             DataGrid widget = sender as DataGrid;
@@ -1524,7 +1554,7 @@ namespace WpfCSCS
             }
 
             //if dataGrid is in Edit mode this event is disabled
-            if(widget.IsReadOnly == false)
+            if (widget.IsReadOnly == false)
             {
                 return;
             }
@@ -1537,7 +1567,7 @@ namespace WpfCSCS
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
             }
         }
-        
+
         public static FrameworkElement GetWidget(string name)
         {
             CacheControls(MainWindow);
@@ -1702,9 +1732,9 @@ namespace WpfCSCS
             {
                 widget.Name = enterBox.FieldName;
                 widget.DataContext = enterBox.FieldName;
-                if(DEFINES.TryGetValue(enterBox.FieldName.ToLower(), out DefineVariable defVar))
+                if (DEFINES.TryGetValue(enterBox.FieldName.ToLower(), out DefineVariable defVar))
                 {
-                    if(defVar.Size < enterBox.Size)
+                    if (defVar.Size < enterBox.Size)
                     {
                         enterBox.Size = defVar.Size;
                     }
@@ -1727,7 +1757,7 @@ namespace WpfCSCS
                 if (enterBox.KeyTraps != null)
                 {
                     var splitted = enterBox.KeyTraps.Split('|');
-                    for(int i = 0; i < splitted.Length; i += 2)
+                    for (int i = 0; i < splitted.Length; i += 2)
                     {
                         var keyFromXaml = splitted[i];
                         var funcName = splitted[i + 1];
@@ -1805,7 +1835,7 @@ namespace WpfCSCS
 
         private static void runFunctionHandler(object sender, ExecutedRoutedEventArgs e)
         {
-            if(sender is NumericTextBox)
+            if (sender is NumericTextBox)
             {
                 var thisTB = (sender as NumericTextBox);
                 var rc = (e.Command as RoutedCommand);
@@ -1837,12 +1867,12 @@ namespace WpfCSCS
                 Control2Window.TryGetValue(toRunWidget, out Window win);
                 RunScript(toRunFuncName, win, new Variable(toRunWidgetName), new Variable(toRunWidgetName));
             }
-            
+
         }
 
         public static void CacheNumericBoxChild(FrameworkElement widget, Window win = null, List<FrameworkElement> controls = null, NumericBox numBox = null)
         {
-            if(widget is NumericTextBox)
+            if (widget is NumericTextBox)
             {
                 widget.Name = numBox.FieldName;
                 widget.DataContext = numBox.FieldName;
@@ -1897,9 +1927,9 @@ namespace WpfCSCS
                 if (widget != null && numBox.FieldName != null)
                 {
                     Controls[numBox.FieldName.ToString().ToLower()] = widget;
-                    
-                    if(controls != null && !controls.Contains(widget))
-                    controls.Add(widget);
+
+                    if (controls != null && !controls.Contains(widget))
+                        controls.Add(widget);
 
                     if (win != null)
                     {
@@ -1907,7 +1937,7 @@ namespace WpfCSCS
                     }
                 }
             }
-            else if(widget is Button)
+            else if (widget is Button)
             {
                 widget.Name = numBox.Name;
 
@@ -1931,7 +1961,7 @@ namespace WpfCSCS
                 //}
             }
 
-                   
+
 
         }
         public static void RemoveControl(FrameworkElement widget)
@@ -1950,12 +1980,12 @@ namespace WpfCSCS
                 {
                     //events
                     string textChangeAction = EnterBox.Name + "@TextChange";
-                    
+
                     string widgetPreAction = EnterBox.Name + "@Pre";
                     string widgetPostAction = EnterBox.Name + "@Post";
 
                     AddTextChangedHandler(EnterBox.FieldName, textChangeAction, widget);
-                    
+
                     AddWidgetPreHandler(EnterBox.FieldName, widgetPreAction, widget);
                     AddWidgetPostHandler(EnterBox.FieldName, widgetPostAction, widget);
 
@@ -1980,11 +2010,11 @@ namespace WpfCSCS
                     AddWidgetPostHandler(EnterBox.Name, widgetPostAction, widget);
                 }
             }
-            else if((widget.Parent as FrameworkElement).Parent is NumericBox)
+            else if ((widget.Parent as FrameworkElement).Parent is NumericBox)
             {
                 var NumericBox = (widget.Parent as FrameworkElement).Parent as NumericBox;
 
-                if(widget is NumericTextBox)
+                if (widget is NumericTextBox)
                 {
                     //events
                     string textChangeAction = NumericBox.Name + "@TextChange";
@@ -2004,7 +2034,7 @@ namespace WpfCSCS
                         AddBinding(widgetBindingName, widget);
                     }
                 }
-                else if(widget is Button)
+                else if (widget is Button)
                 {
                     //events
                     string clickAction = NumericBox.Name + "@Clicked";
@@ -2212,10 +2242,10 @@ namespace WpfCSCS
                         var arrayToBindTo = tb.Tag.ToString().ToLower();
 
                         tags.Add(arrayToBindTo);
-                        
-                        if(DEFINES.TryGetValue(arrayToBindTo, out DefineVariable defVar))
+
+                        if (DEFINES.TryGetValue(arrayToBindTo, out DefineVariable defVar))
                         {
-                            if(defVar.Array > 0)
+                            if (defVar.Array > 0)
                             {
                                 cols.Add(defVar.Tuple);
                             }
@@ -2269,7 +2299,7 @@ namespace WpfCSCS
                 for (int j = 0; j < rowsOfGrids[gridName].Count; j++)
                 {
                     var array = DEFINES[arrayNames[i]];
-                    array.Tuple[j] = new Variable( rowsOfGrids[gridName][j][i]);
+                    array.Tuple[j] = new Variable(rowsOfGrids[gridName][j][i]);
                 }
             }
         }
@@ -2386,7 +2416,7 @@ namespace WpfCSCS
 
             public void AddCol(string str)
             {
-                switch(strIndex)
+                switch (strIndex)
                 {
                     case 0: S1 = str; break;
                     case 1: S2 = str; break;
@@ -3125,8 +3155,8 @@ namespace WpfCSCS
             return Variable.EmptyInstance;
         }
     }
-    
-    
+
+
 
     class LastObjFunction : ParserFunction
     {
@@ -3135,7 +3165,7 @@ namespace WpfCSCS
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 0, m_name);
 
-            if(string.IsNullOrEmpty(CSCS_GUI.lastObjWidgetName))
+            if (string.IsNullOrEmpty(CSCS_GUI.lastObjWidgetName))
             {
                 return Variable.EmptyInstance;
             }
@@ -3145,7 +3175,7 @@ namespace WpfCSCS
             }
         }
     }
-    
+
     class LastObjClickedFunction : ParserFunction
     {
         protected override Variable Evaluate(ParsingScript script)
@@ -3644,7 +3674,7 @@ namespace WpfCSCS
                 }
                 else
                 {
-                    MessageBox.Show($"The file {NameOrPathOfXamlForm } does not exist! Closing program.");
+                    MessageBox.Show($"The file {NameOrPathOfXamlForm} does not exist! Closing program.");
                     Environment.Exit(0);
                     return null;
                 }
@@ -3761,7 +3791,7 @@ namespace WpfCSCS
             if (Name == Constants.DISPLAY_ARR_REFRESH)
             {
                 List<Variable> args = script.GetFunctionArgs();
-                Utils.CheckArgs(args.Count,1, m_name);
+                Utils.CheckArgs(args.Count, 1, m_name);
                 var name = args[0].AsString();
                 DisplayArrRefresh(name);
                 return Variable.EmptyInstance;
@@ -3890,7 +3920,7 @@ namespace WpfCSCS
             return wd.lineCounter;
         }
 
-        public static DefineVariable  GetDatagridData(string name, out CSCS_GUI.WidgetData wd)
+        public static DefineVariable GetDatagridData(string name, out CSCS_GUI.WidgetData wd)
         {
             wd = null;
             if (!CSCS_GUI.DEFINES.TryGetValue(name, out DefineVariable gridVar))
@@ -3976,7 +4006,7 @@ namespace WpfCSCS
                 }
                 if (dg.ItemsSource != null)
                 {
-                   // dg.ItemsSource.re
+                    // dg.ItemsSource.re
                 }
             };
 
@@ -4238,15 +4268,15 @@ namespace WpfCSCS
             cols[from].DisplayIndex = to;
             cols[to].DisplayIndex = from;
 
-            var binding1  = wd.headerNames[from];
-            var binding2  = wd.headerNames[to];
+            var binding1 = wd.headerNames[from];
+            var binding2 = wd.headerNames[to];
             var colType1 = wd.colTypes[from];
             var colType2 = wd.colTypes[to];
 
             wd.headerNames[from] = binding2;
-            wd.headerNames[to]   = binding1;
-            wd.colTypes[from]    = colType2;
-            wd.colTypes[to]      = colType1;
+            wd.headerNames[to] = binding1;
+            wd.colTypes[from] = colType2;
+            wd.colTypes[to] = colType1;
 
             var array1 = Interpreter.LastInstance.GetVariableValue(binding1);
             var array2 = Interpreter.LastInstance.GetVariableValue(binding2);
@@ -4286,7 +4316,7 @@ namespace WpfCSCS
             for (int i = colId; i < cols.Count - 1; i++)
             {
                 wd.headerNames[i] = wd.headerNames[i + 1];
-                wd.colTypes[i]    = wd.colTypes[i + 1];
+                wd.colTypes[i] = wd.colTypes[i + 1];
             }
 
             dg.Items.Refresh();
@@ -5186,7 +5216,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 }));
                 return result;
             }
-            catch(Exception exc)
+            catch (Exception exc)
             {
                 Console.WriteLine(exc);
                 return result;
@@ -5408,22 +5438,22 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                         }
                     }
                 }
-               /* else if (defVar.DefType == "linecounter")
-                {
-                    var dg = defVar.Object as DataGrid;
-                    Application.Current.Dispatcher.Invoke(new Action(() =>
-                    {
-                        dg.SelectionUnit = DataGridSelectionUnit.CellOrRowHeader;
-                        dg.SelectedIndex = varValue.AsInt();
-                        var rowList = dg.ItemsSource as ObservableCollection<FillOutGridFunction.Row>;
-                        object item = rowList[dg.SelectedIndex];
-                        dg.SelectedItem = item;
-                        dg.ScrollIntoView(item);
-                        DataGridRow row = (DataGridRow)dg.ItemContainerGenerator.ContainerFromIndex(dg.SelectedIndex);
-                        row.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
-                    }));
+                /* else if (defVar.DefType == "linecounter")
+                 {
+                     var dg = defVar.Object as DataGrid;
+                     Application.Current.Dispatcher.Invoke(new Action(() =>
+                     {
+                         dg.SelectionUnit = DataGridSelectionUnit.CellOrRowHeader;
+                         dg.SelectedIndex = varValue.AsInt();
+                         var rowList = dg.ItemsSource as ObservableCollection<FillOutGridFunction.Row>;
+                         object item = rowList[dg.SelectedIndex];
+                         dg.SelectedItem = item;
+                         dg.ScrollIntoView(item);
+                         DataGridRow row = (DataGridRow)dg.ItemContainerGenerator.ContainerFromIndex(dg.SelectedIndex);
+                         row.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+                     }));
 
-                }*/
+                 }*/
                 else if (defVar.DefType == "maxelems")
                 {
                     var dg = defVar.Object as DataGrid;
@@ -5439,7 +5469,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                             Interpreter.LastInstance.AddGlobal(wd.actualElemsName, new GetVarFunction(actualElems), false);
                         }
                     }
-                    var rowList = dg.ItemsSource == null ? new List<ExpandoObject>() : 
+                    var rowList = dg.ItemsSource == null ? new List<ExpandoObject>() :
                                   dg.ItemsSource as List<ExpandoObject>;
                     while (rowList.Count > wd.maxElems)
                     {
