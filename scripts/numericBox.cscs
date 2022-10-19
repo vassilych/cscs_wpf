@@ -6,36 +6,40 @@ CreateWindow("../../scripts/numericBox.xaml");
 //NumericBox's Button
 function numbox1@clicked(){
     MessageBox(variable1);
-    SetFocus("tb2");
+    //SetFocus("tb2");
     //MessageBox(variable1 + 2);
     //variable1 = 55555;
 }
 
-// //entering NumericBox
-// a = 2;
-// function numbox1@pre(){
-//     MessageBox("PRE");
-//     a++;
-//     if(a%2 == 0){
-//         return false;
-//     }
-//     else{
-//         return true;
-//     }
-// }
+function nekidrugi(){
+    MessageBox("Neki Drugi!");
+}
 
-// //when leaving NumericBox
-// b = 2;
-// function numbox1@post(){
-//     MessageBox("POST");
-//     b++;
-//     if(b%2 == 0){
-//         return false;
-//     }
-//     else{
-//         return true;
-//     }
-// }
+//entering NumericBox
+a = 2;
+function numbox1@pre(){
+    MessageBox("PRE");
+    a++;
+    if(a%2 == 0){
+        return false;
+    }
+    else{
+        return true;
+    }
+}
+
+//when leaving NumericBox
+b = 2;
+function numbox1@post(){
+    MessageBox("POST");
+    b++;
+    if(b%2 == 0){
+        return false;
+    }
+    else{
+        return true;
+    }
+}
 
 // //occurs when text changes
 // function numbox1@TextChange(){

@@ -1,4 +1,4 @@
-DEFINE varijabla type a size 5 down;
+DEFINE varijabla type a size 15;
 //varijabla = "12345678";
 
 CreateWindow("../../scripts/enterBox.xaml");
@@ -12,31 +12,35 @@ function enterbox1@clicked(){
     //varijabla = "abcdefgh";
 }
 
-// //entering EnterBox
-// a = 2;
-// function enterbox1@pre(){
-//     MessageBox("PRE");
-//     a++;
-//     if(a%2 == 0){
-//         return false;
-//     }
-//     else{
-//         return true;
-//     }
-// }
+function nekidrugi(){
+    MessageBox("Neki Drugi!");
+}
 
-// //when leaving EnterBox
-// b = 2;
-// function enterbox1@post(){
-//     MessageBox("POST");
-//     b++;
-//     if(b%2 == 0){
-//         return false;
-//     }
-//     else{
-//         return true;
-//     }
-// }
+//entering EnterBox
+a = 2;
+function enterbox1@pre(){
+    MessageBox("PRE");
+    a++;
+    if(a%2 == 0){
+        return false;
+    }
+    else{
+        return true;
+    }
+}
+
+//when leaving EnterBox
+b = 2;
+function enterbox1@post(){
+    MessageBox("POST");
+    b++;
+    if(b%2 == 0){
+        return false;
+    }
+    else{
+        return true;
+    }
+}
 
 // //occurs when text changes
 // function enterbox1@TextChange(){

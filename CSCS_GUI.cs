@@ -874,6 +874,8 @@ namespace WpfCSCS
             return true;
         }
 
+        static bool shouldButtonClick = false;
+
         private static void Widget_Click(object sender, RoutedEventArgs e)
         {
             lastObjClickedWidgetName = ((Control)sender).Name;
@@ -886,6 +888,7 @@ namespace WpfCSCS
                 return;
             }
 
+            shouldButtonClick = true;
             if (sender is Button)
             {
                 var btn = sender as Button;
@@ -908,6 +911,8 @@ namespace WpfCSCS
                                 //{
                                 //    return;
                                 //}
+                                if (!shouldButtonClick)
+                                    return;
                                 break;
                             }
                         }
@@ -928,13 +933,14 @@ namespace WpfCSCS
                                 //{
                                 //    return;
                                 //}
+                                if (!shouldButtonClick)
+                                    return;
                                 break;
                             }
                         }
                     }
                 }
             }
-
 
 
             string funcName;
@@ -1120,6 +1126,16 @@ namespace WpfCSCS
                                 if (lastFocusedWidgetName == entTB.Name)
                                 {
                                     lastFocusedWidgetName = widgetName;
+                                    
+                                    var request = new TraversalRequest(FocusNavigationDirection.Next);
+                                    request.Wrapped = true;
+                                    btn.MoveFocus(request);
+
+                                    return;
+                                }
+                                else
+                                {
+                                    entTB.Focus();
                                     return;
                                 }
                                 break;
@@ -1140,6 +1156,16 @@ namespace WpfCSCS
                                 if (lastFocusedWidgetName == numTB.Name)
                                 {
                                     lastFocusedWidgetName = widgetName;
+
+                                    var request = new TraversalRequest(FocusNavigationDirection.Next);
+                                    request.Wrapped = true;
+                                    btn.MoveFocus(request);
+
+                                    return;
+                                }
+                                else
+                                {
+                                    numTB.Focus();
                                     return;
                                 }
                                 break;
@@ -1221,6 +1247,8 @@ namespace WpfCSCS
                     Variable.EmptyInstance, ChainFunction.GetScript(win));
                 if (result.Type == Variable.VarType.NUMBER && !result.AsBool()) // if script returned false
                 {
+                    if(widget is EnterTextBox || widget is NumericTextBox)
+                        shouldButtonClick = false;
                     skipPostEvent = true;
                     var widgetToFocusTo = CSCS_GUI.GetWidget(lastFocusedWidgetName);
                     if (widgetToFocusTo != null && (widgetToFocusTo is Control))
@@ -1230,6 +1258,8 @@ namespace WpfCSCS
                 }
                 else
                 {
+                    if (widget is EnterTextBox || widget is NumericTextBox)
+                        shouldButtonClick = true;
                     lastFocusedWidgetName = widgetName;
                 }
             }
@@ -1694,6 +1724,37 @@ namespace WpfCSCS
                     }
                 }
 
+                if (enterBox.KeyTraps != null)
+                {
+                    var splitted = enterBox.KeyTraps.Split('|');
+                    for(int i = 0; i < splitted.Length; i += 2)
+                    {
+                        var keyFromXaml = splitted[i];
+                        var funcName = splitted[i + 1];
+
+                        var routedCommand = new RoutedCommand();
+
+                        Key key = Key.None;
+                        ModifierKeys modifier = ModifierKeys.None;
+                        if (keyFromXaml.ToLower() == "f2")
+                        {
+                            key = Key.F2;
+                            modifier = ModifierKeys.None;
+                        }
+                        else if (keyFromXaml.ToLower() == "f3")
+                        {
+                            key = Key.F3;
+                            modifier = ModifierKeys.None;
+                        }
+
+                        routedCommand.InputGestures.Add(new KeyGesture(key, modifier, keyFromXaml));
+
+                        (widget as EnterTextBox).paramsForKeyTraps.Add(keyFromXaml, new List<object>() { funcName, widget, enterBox.Name });
+
+                        widget.CommandBindings.Add(new CommandBinding(routedCommand, runFunctionHandler));
+                    }
+                }
+
                 if (widget != null && !string.IsNullOrEmpty(enterBox.FieldName))
                 {
                     Controls[enterBox.FieldName.ToString().ToLower()] = widget;
@@ -1741,6 +1802,44 @@ namespace WpfCSCS
             }
         }
 
+
+        private static void runFunctionHandler(object sender, ExecutedRoutedEventArgs e)
+        {
+            if(sender is NumericTextBox)
+            {
+                var thisTB = (sender as NumericTextBox);
+                var rc = (e.Command as RoutedCommand);
+                var kg = (rc.InputGestures[0] as KeyGesture);
+                var keyFromXaml = kg.DisplayString;
+
+                var parameters = thisTB.paramsForKeyTraps[keyFromXaml];
+
+                var toRunFuncName = (string)parameters[0];
+                var toRunWidget = (FrameworkElement)parameters[1];
+                var toRunWidgetName = (string)parameters[2];
+
+                Control2Window.TryGetValue(toRunWidget, out Window win);
+                RunScript(toRunFuncName, win, new Variable(toRunWidgetName), new Variable(toRunWidgetName));
+            }
+            else if (sender is EnterTextBox)
+            {
+                var thisTB = (sender as EnterTextBox);
+                var rc = (e.Command as RoutedCommand);
+                var kg = (rc.InputGestures[0] as KeyGesture);
+                var keyFromXaml = kg.DisplayString;
+
+                var parameters = thisTB.paramsForKeyTraps[keyFromXaml];
+
+                var toRunFuncName = (string)parameters[0];
+                var toRunWidget = (FrameworkElement)parameters[1];
+                var toRunWidgetName = (string)parameters[2];
+
+                Control2Window.TryGetValue(toRunWidget, out Window win);
+                RunScript(toRunFuncName, win, new Variable(toRunWidgetName), new Variable(toRunWidgetName));
+            }
+            
+        }
+
         public static void CacheNumericBoxChild(FrameworkElement widget, Window win = null, List<FrameworkElement> controls = null, NumericBox numBox = null)
         {
             if(widget is NumericTextBox)
@@ -1752,6 +1851,37 @@ namespace WpfCSCS
                     if (defVar.Size < numBox.Size)
                     {
                         numBox.Size = defVar.Size;
+                    }
+                }
+
+                if (numBox.KeyTraps != null)
+                {
+                    var splitted = numBox.KeyTraps.Split('|');
+                    for (int i = 0; i < splitted.Length; i += 2)
+                    {
+                        var keyFromXaml = splitted[i];
+                        var funcName = splitted[i + 1];
+
+                        var routedCommand = new RoutedCommand();
+
+                        Key key = Key.None;
+                        ModifierKeys modifier = ModifierKeys.None;
+                        if (keyFromXaml.ToLower() == "f2")
+                        {
+                            key = Key.F2;
+                            modifier = ModifierKeys.None;
+                        }
+                        else if (keyFromXaml.ToLower() == "f3")
+                        {
+                            key = Key.F3;
+                            modifier = ModifierKeys.None;
+                        }
+
+                        routedCommand.InputGestures.Add(new KeyGesture(key, modifier, keyFromXaml));
+
+                        (widget as NumericTextBox).paramsForKeyTraps.Add(keyFromXaml, new List<object>() { funcName, widget, numBox.Name });
+
+                        widget.CommandBindings.Add(new CommandBinding(routedCommand, runFunctionHandler));
                     }
                 }
 

@@ -15,6 +15,9 @@
             FontSize="25"
                                 HorizontalAlignment="Left" VerticalAlignment="Top"/>
         <wcl:EnterBox 
+
+                        KeyTraps="F2|enterbox1@clicked|F3|nekidrugi"
+
                         ButtonSize="30" 
                         Size="10"
                         Case="Normal"

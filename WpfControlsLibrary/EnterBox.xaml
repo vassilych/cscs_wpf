@@ -14,7 +14,7 @@
         </Grid.ColumnDefinitions>
 
         <local:EnterTextBox x:Name="enterBoxTextBox" Grid.Column="0" HorizontalAlignment="Stretch" />
-        <Button x:Name="enterBoxButton" Grid.Column="1" Height="auto" Width="60" />
+        <Button Focusable="False" x:Name="enterBoxButton" Grid.Column="1" Height="auto" Width="60" />
 
     </Grid>
 </UserControl>

@@ -151,6 +151,19 @@ namespace WpfControlsLibrary
             }
         }
 
+        public static readonly DependencyProperty KeyTrapsProperty = DependencyProperty.Register("KeyTraps", typeof(string), typeof(NumericBox));
+        public string KeyTraps
+        {
+            get
+            {
+                return (string)base.GetValue(KeyTrapsProperty);
+            }
+            set
+            {
+                base.SetValue(KeyTrapsProperty, value);
+            }
+        }
+
         //public static readonly DependencyProperty ButtonNameProperty = DependencyProperty.Register("ButtonName", typeof(string), typeof(NumericBox));
         //public string ButtonName
         //{

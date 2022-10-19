@@ -86,6 +86,19 @@ namespace WpfControlsLibrary
                 base.SetValue(CaseProperty, value);
             }
         }
+        
+        public static readonly DependencyProperty KeyTrapsProperty = DependencyProperty.Register("KeyTraps", typeof(string), typeof(EnterBox));
+        public string KeyTraps
+        {
+            get
+            {
+                return (string)base.GetValue(KeyTrapsProperty);
+            }
+            set
+            {
+                base.SetValue(KeyTrapsProperty, value);
+            }
+        }
 
         public EnterBox()
         {
