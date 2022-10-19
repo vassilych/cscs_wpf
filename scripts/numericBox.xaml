@@ -15,6 +15,9 @@
 
                                 HorizontalAlignment="Left" VerticalAlignment="Top"/>
         <wcl:NumericBox 
+
+                        KeyTraps="F2|numbox1@clicked|F3|nekidrugi"
+                        
                         ButtonSize="150" 
                         Size="9" Dec="2" 
                         MinValue="-100"

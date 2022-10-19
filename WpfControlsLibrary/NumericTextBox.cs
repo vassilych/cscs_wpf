@@ -15,6 +15,8 @@ namespace WpfControlsLibrary
         const string thousandsDelimiter = ".";
         const string decimalSign = ",";
 
+        public Dictionary<string, List<object>> paramsForKeyTraps = new Dictionary<string, List<object>>();
+
         #region DependencyProperties
 
         //public static readonly DependencyProperty SizeProperty = DependencyProperty.Register("Size", typeof(int), typeof(NumericTextBox));

@@ -14,6 +14,9 @@ namespace WpfControlsLibrary
         public int Size;
         string textBeforeChange;
 
+        public Dictionary<string, List<object>> paramsForKeyTraps = new Dictionary<string, List<object>>();
+
+
         public override void OnApplyTemplate()
         {
             Size = 600;
