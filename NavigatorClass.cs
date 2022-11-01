@@ -10,7 +10,7 @@ namespace WpfCSCS
 {
     public class NavigatorClass
     {
-        public static void Init()
+        public void Init()
         {
             Interpreter.LastInstance.RegisterFunction(Constants.NAVIGATOR, new NavigatorFunction()); 
         }
@@ -41,16 +41,16 @@ namespace WpfCSCS
             }
         }
 
-        public static void NavigateFirst(string navigatorName)
+        public void NavigateFirst(string navigatorName)
         {
             new Btrieve.FINDVClass(navigatorOfTable[navigatorName], "f", navigatorKey[navigatorName]).FINDV();
         }
-        public static void NavigateLast(string navigatorName)
+        public void NavigateLast(string navigatorName)
         {
             new Btrieve.FINDVClass(navigatorOfTable[navigatorName], "l", navigatorKey[navigatorName]).FINDV();
         }
 
-        public static void NavigateNext(string navigatorName)
+        public void NavigateNext(string navigatorName)
         {
             if(Btrieve.OPENVs[navigatorOfTable[navigatorName]].currentRow == 0)
             {
@@ -62,7 +62,7 @@ namespace WpfCSCS
             }
         }
 
-        public static void NavigatePrevious(string navigatorName)
+        public void NavigatePrevious(string navigatorName)
         {
             if (Btrieve.OPENVs[navigatorOfTable[navigatorName]].currentRow == 0)
             {

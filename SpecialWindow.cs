@@ -34,6 +34,8 @@ namespace WpfCSCS
 
         public MODE Mode { get; set; }
 
+        public CSCS_GUI Gui { get; set; }
+
         public bool IsMain {
             get
             {
@@ -52,10 +54,11 @@ namespace WpfCSCS
             }
         }
 
-        public SpecialWindow(string filename, MODE mode = MODE.NORMAL, Window owner = null)
+        public SpecialWindow(CSCS_GUI gui, string filename, MODE mode = MODE.NORMAL, Window owner = null)
         {
             Mode = mode;
             Owner = owner;
+            Gui = gui;
             Instance = CreateWindow(filename);
 
             IsMain = CSCS_GUI.MainWindow == null;
@@ -115,7 +118,8 @@ namespace WpfCSCS
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnInit";
-            Interpreter.LastInstance.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
+            Interpreter.LastInstance.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance,
+                Gui.GetScript(win));
             Instance.SourceInitialized -= Win_SourceInitialized;
         }
 
@@ -123,7 +127,8 @@ namespace WpfCSCS
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnActivated";
-            Interpreter.LastInstance.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
+            Interpreter.LastInstance.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance,
+                Gui.GetScript(win));
             Instance.Activated -= Win_Activated;
         }
 
@@ -131,16 +136,17 @@ namespace WpfCSCS
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnOpen";
-            Interpreter.LastInstance.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance, ChainFunction.GetScript(win));
+            Interpreter.LastInstance.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance,
+                Gui.GetScript(win));
         }
 
         private void Win_Loaded(object sender, RoutedEventArgs e)
         {
             Window win = sender as Window;
-            CSCS_GUI.AddActions(win, true);
+            Gui.AddActions(win, true);
 
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnStart";
-            CSCS_GUI.RunScript(funcName, win, new Variable(win.Tag));
+            Gui.RunScript(funcName, win, new Variable(win.Tag));
             Instance.Loaded -= Win_Loaded;
         }
 
@@ -148,7 +154,7 @@ namespace WpfCSCS
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnDisplay";
-            CSCS_GUI.RunScript(funcName, win, new Variable(win.Tag));
+            Gui.RunScript(funcName, win, new Variable(win.Tag));
             Instance.ContentRendered -= Win_ContentRendered;
             if (Owner != null && Mode != MODE.NORMAL)
             {
@@ -160,7 +166,7 @@ namespace WpfCSCS
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnDeactivated";
-            CSCS_GUI.RunScript(funcName, win, new Variable(win.Tag));
+            Gui.RunScript(funcName, win, new Variable(win.Tag));
             Instance.Deactivated -= Win_Deactivated;
         }
 
@@ -168,7 +174,7 @@ namespace WpfCSCS
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnClose";
-            CSCS_GUI.RunScript(funcName, win, new Variable(win.Tag));
+            Gui.RunScript(funcName, win, new Variable(win.Tag));
 
             if (IsMain)
             {
@@ -179,7 +185,7 @@ namespace WpfCSCS
             Instance.Close();
             Instance = null;
 
-            var parent = ChainFunction.GetParentWindow(win.Tag.ToString());
+            var parent = Gui.GetParentWindow(win.Tag.ToString());
             parent?.Focus();
 
             NewWindowFunction.RemoveWindow(win);
@@ -189,7 +195,7 @@ namespace WpfCSCS
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnClosing";
-            var result = CSCS_GUI.RunScript(funcName, win, new Variable(win.Tag));
+            var result = Gui.RunScript(funcName, win, new Variable(win.Tag));
             e.Cancel = result != null && result.AsBool();
             if (e.Cancel)
             {
