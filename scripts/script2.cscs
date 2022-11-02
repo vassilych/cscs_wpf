@@ -1,7 +1,10 @@
 MessageBox("script2.cscs");
 
-PARAM arg1,arg2,arg3,arg4;
 
-MessageBox("Got params:",arg1,arg2,arg3,arg4);
+//DEFINE arg1, arg2, arg3, arg4 type a size 10;//ni potrebno ali ne smeta
+
+PARAM arg1,arg2,arg3,arg4;// dela ok
+
+MessageBox("Got params: " + arg1 + ", " + arg2 + ", " + arg3 + ", " +arg4);// dela ok
 
 quit;

@@ -1,0 +1,18 @@
+DEFINE hndl1 type i;
+
+hndl1 = openv("nkprinv", "bd1", "a");
+if(flerr() != 0){
+    MessageBox("flerr: " + flerr());
+}
+
+MessageBox("calling ACTIVE...");
+MessageBox("Active = " + Active(hndl1));
+
+MessageBox("calling findv MatchEXACT... (nkpr_gl_num: 10100010) // ID = 52");
+findv(hndl1, "m", "nkpr_gl_num", "10100010");
+MessageBox("NKPR_GL_NUM = " + NKPR_GL_NUM);
+
+MessageBox("calling ACTIVE...");
+MessageBox("Active = " + String(Active(hndl1)));
+
+exit;

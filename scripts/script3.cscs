@@ -1,3 +1,6 @@
+//nikad ne dođe tu ni na sljedeće naredbe
+//jer pada pri chainu na script3
+
 MessageBox("script3.cscs");
 
 PARAM arg1,arg2,arg3,arg4;

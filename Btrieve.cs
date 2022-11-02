@@ -982,7 +982,7 @@ order by {orderByString}
                             thisOpenv.currentRow = currentSqlId;
                             Btrieve.OPENVs[tableHndlNum] = thisOpenv;
                             Btrieve.OPENVs[tableHndlNum].Cache = new CachingClass() { KeyName = KeyClass.KeyName };
-                            Btrieve.OPENVs[tableHndlNum].currentCacheListIndex = 1; // ??
+                            //Btrieve.OPENVs[tableHndlNum].currentCacheListIndex = 1; // ??
                         }
                     }
                 }
@@ -1425,16 +1425,12 @@ order by {orderByString}
                                 KeyClass.KeyColumns[currentColumnName] = lineItem.Value.ToString();
                             }
                         }
-                        
-
                     }
-
 
                     string fieldValue = lineItem.Value.ToString();
 
                     CSCS_GUI.DEFINES[currentColumnName.ToLower()].InitVariable(new Variable(fieldValue).Clone());
                     Gui.OnVariableChange(currentColumnName.ToLower(), new Variable(fieldValue), true);
-
                 }
             }
 
@@ -1442,21 +1438,30 @@ order by {orderByString}
             {
                 int currentSqlId = thisOpenv.currentRow;
 
-                //if something is in Cache
-                if(thisOpenv.Cache.CachedLines.Count > 0)
+                if(lastUsedPreviousOrNext.TryGetValue(tableHndlNum, out FindvOption lastOption) && lastOption == option)
                 {
-                    var firstCachedLine = thisOpenv.Cache.CachedLines.First();
+                    //if something is in Cache
+                    if (thisOpenv.Cache.CachedLines.Count > 0)
+                    {
+                        var firstCachedLine = thisOpenv.Cache.CachedLines.First();
 
-                    fillBufferFromCacheLine(firstCachedLine);
-                    
-                    thisOpenv.Cache.CachedLines.Remove(firstCachedLine);
+                        fillBufferFromCacheLine(firstCachedLine);
 
-                    lastUsedPreviousOrNext[tableHndlNum] = option;
+                        thisOpenv.Cache.CachedLines.Remove(firstCachedLine);
 
-                    SetFlerr(0, tableHndlNum); // 0 means OK
-                    return Variable.EmptyInstance;
+                        lastUsedPreviousOrNext[tableHndlNum] = option;
+
+                        SetFlerr(0, tableHndlNum); // 0 means OK
+                        return Variable.EmptyInstance;
+                    }
                 }
-
+                else
+                {
+                    // option != lastOption ... direction changed
+                    thisOpenv.Cache.numOfRowsToGet = 1;
+                    thisOpenv.Cache.CachedLines = new List<CacheLine>();
+                }
+                
 
                 int numOfRowsToSelect = thisOpenv.Cache.numOfRowsToGet;
 
@@ -1465,10 +1470,9 @@ order by {orderByString}
                     thisOpenv.Cache.numOfRowsToGet = CSCS_GUI.MaxCacheSize;
 
 
-
                 string query = "";
 
-                if (false && lastUsedPreviousOrNext.TryGetValue(tableHndlNum, out FindvOption lastOption) && lastOption == option && !string.IsNullOrEmpty(nextPrevCachedWhereStrings[tableHndlNum]))
+                if (false && lastUsedPreviousOrNext.TryGetValue(tableHndlNum, out FindvOption lastOption2) && lastOption2 == option && !string.IsNullOrEmpty(nextPrevCachedWhereStrings[tableHndlNum]))
                 {
                     query = nextPrevCachedWhereStrings[tableHndlNum];
                 }
@@ -1535,8 +1539,7 @@ N'{paramsDeclaration}', ";
                             }
 
                             bool firstPass = true; // for buffer, first row outside cache
-
-                            
+                                                        
                             while (reader.Read())
                             {
                                 //if (firstPass)
@@ -1562,7 +1565,6 @@ N'{paramsDeclaration}', ";
                                             KeyClass.KeyColumns[currentColumnName] = reader[currentColumnName].ToString();
                                         }
                                     }
-
 
                                     var loweredCurrentColumnName = currentColumnName.ToLower();
                                     if (!CSCS_GUI.DEFINES.ContainsKey(loweredCurrentColumnName))
@@ -1600,9 +1602,6 @@ N'{paramsDeclaration}', ";
 
                                     currentFieldNum++;
                                 }
-                                //thisOpenv.Cache.CachedLines.Add(new CacheLine() { id = currentSqlId, Line = new Dictionary<string, DefineVariable>(cacheLine) });
-                                //thisOpenv.Cache.CachedLines.Add(new CacheLine() { id = currentSqlId, Line = (from x in cacheLine select x).ToDictionary(x => x.Key, x => x.Value)});
-                                //thisOpenv.Cache.CachedLines.Add(new CacheLine() { id = currentSqlId, Line = cacheLine.});
                                 thisOpenv.Cache.CachedLines.Add(new CacheLine() { id = currentSqlId, Line = CloneCacheLineDictionary(cacheLine) });
 
                                 //firstPass = false;
@@ -1615,9 +1614,9 @@ N'{paramsDeclaration}', ";
                     }
                 }
 
-                findNextOrPrevious(option);
-
                 lastUsedPreviousOrNext[tableHndlNum] = option;
+                
+                findNextOrPrevious(option);
 
                 SetFlerr(0, tableHndlNum); // 0 means OK
                 return Variable.EmptyInstance;
@@ -1637,9 +1636,7 @@ N'{paramsDeclaration}', ";
             {
                 int currentSqlId = thisOpenv.currentRow;
 
-                
-
-                int numOfRowsToSelect = thisOpenv.Cache.numOfRowsToGet;
+                int numOfRowsToSelect = 1;
 
                 string query = "";
 
@@ -1715,7 +1712,6 @@ N'{paramsDeclaration}', ";
                             {
                                 Dictionary<string, DefineVariable> cacheLine = new Dictionary<string, DefineVariable>();
 
-
                                 if (firstPass)
                                     currentSqlId = (int)reader["ID"];
 
@@ -1734,7 +1730,6 @@ N'{paramsDeclaration}', ";
                                             KeyClass.KeyColumns[currentColumnName] = reader[currentColumnName].ToString();
                                         }
                                     }
-
 
                                     var loweredCurrentColumnName = currentColumnName.ToLower();
                                     if (!CSCS_GUI.DEFINES.ContainsKey(loweredCurrentColumnName))
@@ -1784,7 +1779,6 @@ N'{paramsDeclaration}', ";
                 nextPrevCachedWhereStrings[tableHndlNum] = null;
                 cachedSqlForString[tableHndlNum] = null;
                 cachedColumnsToSelect[tableHndlNum] = null;
-
 
                 var matchExactValues = matchExactString.Split('|');
                 if (matchExactValues.Count() != KeyClass.KeyColumns.Count())
@@ -2134,19 +2128,19 @@ N'{paramsDeclaration}', ";
                 int tableHndlNum = Utils.GetSafeInt(args, 0);
                 string operationType = Utils.GetSafeString(args, 1).ToLower(); // buff -> buffer and recordNumber(ID)(thisOpenv.currentRow) / rec -> ONLY recordNumber
 
-                Clear(tableHndlNum, operationType);
+                Clear(tableHndlNum, operationType, script);
 
                 return Variable.EmptyInstance;
             }
 
-            public void Clear(int tableHndlNum, string operationType)
+            public void Clear(int tableHndlNum, string operationType, ParsingScript script)
             {
                 OpenvTable thisOpenv = Btrieve.OPENVs[tableHndlNum];
 
                 if (operationType == "buff")
                 {
                     //clear buffer
-                    new Btrieve.FINDVClass(tableHndlNum, "x").clearBuffer(thisOpenv);
+                    new Btrieve.FINDVClass(tableHndlNum, "x", "", "", "", "", script).clearBuffer(thisOpenv);
                 }
 
                 if (operationType == "buff" || operationType == "rec")
@@ -2220,7 +2214,9 @@ WHERE ID = {idNum}
                         if (!reader.HasRows)
                         {
                             //err: Record not found
-                            return new Variable((long)3);
+                            SetFlerr(3, tableHndlNum);
+                            //return new Variable((long)3);
+                            return Variable.EmptyInstance;
                         }
                         else
                         {
@@ -2306,7 +2302,7 @@ WHERE ID = {idNum}
             protected override Variable Evaluate(ParsingScript script)
             {
                 List<Variable> args = script.GetFunctionArgs();
-                Utils.CheckArgs(args.Count, 2, m_name);
+                Utils.CheckArgs(args.Count, 1, m_name);
                 tableHndlNum = Utils.GetSafeInt(args, 0);
                 noPrompt = Utils.GetSafeVariable(args, 1, new Variable(false)).AsBool(); // true -> noPrompt, false -> prompt("are you sure...?")
 
@@ -2362,9 +2358,9 @@ WHERE ID = {thisOpenv.currentRow}
             protected override Variable Evaluate(ParsingScript script)
             {
                 List<Variable> args = script.GetFunctionArgs();
-                Utils.CheckArgs(args.Count, 2, m_name);
+                Utils.CheckArgs(args.Count, 1, m_name);
                 int tableHndlNum = Utils.GetSafeInt(args, 0);
-                bool noPrompt = Utils.GetSafeVariable(args, 1).AsBool(); // true -> noPrompt, false -> prompt("are you sure...?")
+                bool noPrompt = Utils.GetSafeVariable(args, 1, new Variable(false)).AsBool(); // true -> noPrompt, false -> prompt("are you sure...?")
                 bool noClr = Utils.GetSafeVariable(args, 2, new Variable(false)).AsBool(); //
 
                 OpenvTable thisOpenv = Btrieve.OPENVs[tableHndlNum];
@@ -2612,7 +2608,7 @@ WHERE ID = {thisOpenv.currentRow}
                 if (!string.IsNullOrEmpty(startString))
                 {
                     // if has start string
-                    new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, startString).FINDV();
+                    new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, startString, "", "", script).FINDV();
                 }
                 else
                 {
@@ -2639,7 +2635,7 @@ WHERE ID = {thisOpenv.currentRow}
                         currentStart = thisOpenv.currentRow.ToString();
                     }
 
-                    new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, currentStart).FINDV();
+                    new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, currentStart, "", "", script).FINDV();
                 }
 
                 bool limited = false;
@@ -2672,7 +2668,7 @@ WHERE ID = {thisOpenv.currentRow}
                 {
                     if (forIsSet && !script.GetTempScript(forString.String).Execute(new char[] { '"' }, 0).AsBool())
                     {
-                        new Btrieve.FINDVClass(tableHndlNum, "n").FINDV();
+                        new Btrieve.FINDVClass(tableHndlNum, "n", "", "", "", "", script).FINDV();
                         continue;
                     }
 
@@ -2700,7 +2696,7 @@ WHERE ID = {thisOpenv.currentRow}
                         }
                     }
 
-                    new Btrieve.FINDVClass(tableHndlNum, "n").FINDV();
+                    new Btrieve.FINDVClass(tableHndlNum, "n", "", "", "", "", script).FINDV();
                     if (LastFlerrsOfFnums[tableHndlNum] == 3)
                     {
                         SetFlerr(0, tableHndlNum);
@@ -3297,7 +3293,7 @@ SELECT COUNT(*) as numOfRows FROM {Databases[thisOpenv.databaseName.ToUpper()]}.
                 if (!string.IsNullOrEmpty(startString))
                 {
                     //if has a start string
-                    new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, startString/*, forString.String*/).FINDV();
+                    new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, startString/*, forString.String*/, "", "", script).FINDV();
                 }
                 else
                 {
@@ -3326,7 +3322,7 @@ SELECT COUNT(*) as numOfRows FROM {Databases[thisOpenv.databaseName.ToUpper()]}.
                     }
 
 
-                    new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, currentStart).FINDV();
+                    new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, currentStart, "", "", script).FINDV();
                 }
 
                 bool limited = false;
@@ -3361,7 +3357,7 @@ SELECT COUNT(*) as numOfRows FROM {Databases[thisOpenv.databaseName.ToUpper()]}.
                 {
                     if (forIsSet && !script.GetTempScript(forString.String).Execute(new char[] { '"' }, 0).AsBool())
                     {
-                        new Btrieve.FINDVClass(tableHndlNum, "n").FINDV();
+                        new Btrieve.FINDVClass(tableHndlNum, "n", "", "", "", "", script).FINDV();
                         if (LastFlerrsOfFnums[tableHndlNum] == 3)
                         {
                             SetFlerr(0, tableHndlNum);
@@ -3388,7 +3384,7 @@ SELECT COUNT(*) as numOfRows FROM {Databases[thisOpenv.databaseName.ToUpper()]}.
                         }
                     }
 
-                    new Btrieve.FINDVClass(tableHndlNum, "n").FINDV();
+                    new Btrieve.FINDVClass(tableHndlNum, "n", "", "", "", "", script).FINDV();
                     if (LastFlerrsOfFnums[tableHndlNum] == 3)
                     {
                         SetFlerr(0, tableHndlNum);
@@ -3769,7 +3765,7 @@ WHERE ID = {thisOpenv.currentRow}
                         currentStart = thisOpenv.currentRow.ToString();
                     }
 
-                    new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, currentStart).FINDV();
+                    new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, currentStart, "", "", Script).FINDV();
                 }
 
                 //---------------------------------------------------------------------------
@@ -3788,7 +3784,7 @@ WHERE ID = {thisOpenv.currentRow}
                 {
                     if (forIsSet && !Script.GetTempScript(forString).Execute(new char[] { '"' }, 0).AsBool())
                     {
-                        new Btrieve.FINDVClass(tableHndlNum, "n").FINDV();
+                        new Btrieve.FINDVClass(tableHndlNum, "n", "", "", "", "", Script).FINDV();
                         continue;
                     }
 
@@ -4272,7 +4268,7 @@ WHERE ID = {thisOpenv.currentRow}
                     //INSERT sql
                     rowItemArray[0] = 0;
                     thisOpenv.currentRow = 0;
-                    new ClrFunction().Clear(tableHndlNum, "b");
+                    new ClrFunction().Clear(tableHndlNum, "b", Script);
                     redisplay = true;
                 }
 

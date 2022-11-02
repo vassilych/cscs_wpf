@@ -1,0 +1,15 @@
+DEFINE hndl1 type i;
+
+hndl1 = openv("nkprinv", "bd1", "a");
+if(flerr() != 0){
+    MessageBox("flerr: " + flerr());
+}
+else{
+    MessageBox("Successfuly opened.");
+    MessageBox("NKPR_GL_NUM = " + NKPR_GL_NUM);
+    MessageBox("Setting NKPR_GL_NUM to \"555\".");
+    NKPR_GL_NUM = 555;
+    MessageBox("NKPR_GL_NUM = " + NKPR_GL_NUM);
+}
+
+exit;

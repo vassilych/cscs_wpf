@@ -1,15 +1,19 @@
 MessageBox("script1.cscs");
 
+MessageBox("var1 = " + var1); // ispisuje "haha" (iz prethodne skripte/modula)
+//to je vjerojatno jer staticsi još postoje
+
 DEFINE array1 type a size 10 array 10;
 
-MessageBox("array1 = " + array1);
+MessageBox("array1 = " + array1);// dela ok
 
 function func(){
     return "b";
 }
 
-array1 = {"a", func(), "c"};
+//array1 = {"a", func(), "c"}; // to dela problem
+array1[0] = func();// dela ok
 
-MessageBox("array1 = " + array1);
+MessageBox("array1 = " + array1);// dela ok
 
 quit;

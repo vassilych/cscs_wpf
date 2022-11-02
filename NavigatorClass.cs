@@ -17,6 +17,7 @@ namespace WpfCSCS
 
         public static Dictionary<string, int> navigatorOfTable = new Dictionary<string, int>();
         public static Dictionary<string, string> navigatorKey = new Dictionary<string, string>();
+        public static Dictionary<string, ParsingScript> navigatorScript = new Dictionary<string, ParsingScript>();
 
         public class NavigatorFunction : ParserFunction
         {
@@ -36,6 +37,7 @@ namespace WpfCSCS
 
                 navigatorOfTable[navigatorName] = tableHndlNum;
                 navigatorKey[navigatorName] = tableKey;
+                navigatorScript[navigatorName] = script;
 
                 return Variable.EmptyInstance;
             }
@@ -43,11 +45,11 @@ namespace WpfCSCS
 
         public void NavigateFirst(string navigatorName)
         {
-            new Btrieve.FINDVClass(navigatorOfTable[navigatorName], "f", navigatorKey[navigatorName]).FINDV();
+            new Btrieve.FINDVClass(navigatorOfTable[navigatorName], "f", navigatorKey[navigatorName], "", "", "", navigatorScript[navigatorName]).FINDV();
         }
         public void NavigateLast(string navigatorName)
         {
-            new Btrieve.FINDVClass(navigatorOfTable[navigatorName], "l", navigatorKey[navigatorName]).FINDV();
+            new Btrieve.FINDVClass(navigatorOfTable[navigatorName], "l", navigatorKey[navigatorName], "", "", "", navigatorScript[navigatorName]).FINDV();
         }
 
         public void NavigateNext(string navigatorName)
@@ -58,7 +60,7 @@ namespace WpfCSCS
             }
             else
             {
-                new Btrieve.FINDVClass(navigatorOfTable[navigatorName], "n").FINDV();
+                new Btrieve.FINDVClass(navigatorOfTable[navigatorName], "n", "", "", "", "", navigatorScript[navigatorName]).FINDV();
             }
         }
 
@@ -70,7 +72,7 @@ namespace WpfCSCS
             }
             else
             {
-                new Btrieve.FINDVClass(navigatorOfTable[navigatorName], "p").FINDV();
+                new Btrieve.FINDVClass(navigatorOfTable[navigatorName], "p", "", "", "", "", navigatorScript[navigatorName]).FINDV();
             }
         }
 

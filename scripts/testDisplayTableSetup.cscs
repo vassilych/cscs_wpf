@@ -2,7 +2,7 @@ CreateWindow("../../scripts/DisplayTableSetupWindow.xaml");
 
 DEFINE table_hndl type i;
 
-table_hndl = openv("invoiceLines");
+table_hndl = openv("invoiceLines", "DB1", "a");
 if(flerr() != 0){
     MessageBox("flerr = " + Flerr());
     exit;
