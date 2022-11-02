@@ -76,7 +76,6 @@ namespace SplitAndMerge
 
             interpreter.RegisterFunction(Constants.CHAIN, new ChainFunction(false));
             interpreter.RegisterFunction(Constants.PARAM, new ChainFunction(true));
-            interpreter.RegisterFunction(Constants.QUIT, new QuitStatement());
 
             interpreter.RegisterFunction(Constants.WITH, new ConstantsFunction());
             interpreter.RegisterFunction(Constants.NEWRUNTIME, new ConstantsFunction());
@@ -4408,21 +4407,6 @@ namespace WpfCSCS
         }
     }
 
-    class QuitStatement : ParserFunction
-    {
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            script.CurrentModule = "";
-            if (script.StackLevel != null)
-            {
-                Interpreter.LastInstance.PopLocalVariables(script.StackLevel.Id);
-                script.StackLevel = null;
-            }
-
-            return Variable.EmptyInstance;
-        }
-    }
-
     class NewWindowFunction : ParserFunction
     {
         static string ns = "WpfCSCS.";
@@ -5639,6 +5623,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
         protected override Variable Evaluate(ParsingScript script)
         {
             List<Variable> args = script.GetFunctionArgs();
+            var code = Utils.GetSafeInt(args, 0, 0);
 
             foreach (var item in CSCS_GUI.DEFINES)
             {
@@ -5659,7 +5644,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 widget.IsEnabled = false;
             }
 
-            return new Variable(0L);
+            return QuitFunction.QuitScript(script, code);
         }
     }
 }
