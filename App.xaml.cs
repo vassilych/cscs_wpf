@@ -37,6 +37,7 @@ namespace WpfCSCS
             }
 
             CSCS_GUI.Dispatcher = this.Dispatcher;
+            CSCS_GUI gui = new CSCS_GUI();
 
             //cscsScript = "../../scripts/start.cscs";
             Console.WriteLine("Running CSCS script: " + pathName);
@@ -44,7 +45,7 @@ namespace WpfCSCS
 
             try
             {
-                CSCS_GUI.RunScript(pathName);
+                gui.RunScript(pathName);
             }
             catch (Exception exc)
             {
