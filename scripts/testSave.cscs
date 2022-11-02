@@ -1,0 +1,29 @@
+DEFINE hndl1 type i;
+
+hndl1 = openv("nkprinv", "bd1", "a");
+if(flerr() != 0){
+    MessageBox("flerr: " + flerr());
+}
+
+MessageBox("calling findv RCNSet... (ID = 140) // NKPR_GL_NUM = 10100041");
+RcnSet(hndl1, 140);
+if(flerr() != 0){
+    MessageBox("flerr() = " + flerr());
+    exit;
+}
+MessageBox("NKPR_GL_NUM = " + NKPR_GL_NUM);
+MessageBox("Before change, NKPR_GL_SONUM = " + NKPR_GL_SONUM);
+NKPR_GL_SONUM = 5;
+MessageBox("SONUM buffer changed to 5. Saving...");
+Save(hndl1);
+
+MessageBox("Read from DB again to check...");
+MessageBox("calling findv RCNSet... (ID = 140) // NKPR_GL_NUM = 10100041");
+RcnSet(hndl1, 140);
+if(flerr() != 0){
+    MessageBox("flerr() = " + flerr());
+    exit;
+}
+MessageBox("After change, NKPR_GL_SONUM = " + NKPR_GL_SONUM);
+
+exit;

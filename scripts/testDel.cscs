@@ -1,0 +1,31 @@
+DEFINE hndl1 type i;
+
+hndl1 = openv("nkprinv", "bd1", "a");
+if(flerr() != 0){
+    MessageBox("flerr: " + flerr());
+}
+
+MessageBox("calling findv RCNSet... (ID = 110) // NKPR_GL_NUM = 10100034");
+RcnSet(hndl1, 110);
+if(flerr() != 0){
+    MessageBox("flerr() = " + flerr());
+    exit;
+}
+MessageBox("NKPR_GL_NUM = " + NKPR_GL_NUM);
+
+MessageBox("calling DEL(with prompt)...");
+DEL(hndl1);
+
+MessageBox("calling DEL(without prompt)...");
+DEL(hndl1, true);
+
+MessageBox("Should be deleted. Checking buffer and recNum(RCN)...");
+MessageBox("RCNGet = " + RCNGet(hndl1) + ", NKPR_GL_NUM(buffer) = " + NKPR_GL_NUM);
+
+MessageBox("Should be deleted in database. Checking with RcnSet(ID = 110)... Should set FLERR");
+RcnSet(hndl1, 110);
+if(flerr() != 0){
+    MessageBox("flerr() = " + flerr());
+}
+
+exit;

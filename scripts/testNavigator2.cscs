@@ -1,0 +1,31 @@
+CreateWindow("../../scripts/testNavigator2.xaml");
+
+DEFINE table_hndl type i;
+
+table_hndl = Openv("NKPRINV", "BD1", "a");
+if(flerr() != 0){
+    MessageBox("flerrrr");
+}
+
+Navigator("navigator1", table_hndl, "nkpr_gl_num");
+
+// i = 0;
+// function navigator1@change(){
+//     i++;
+//     if(i % 2 == 0){
+//         return false;
+//     }
+//     else{
+//         return true;
+//     }
+// }
+
+function navigator1@AfterChange(){
+    MessageBox(RcnGet(table_hndl));
+}
+
+function btnX@clicked(){
+    MessageBox("X");
+    quit;
+}
+

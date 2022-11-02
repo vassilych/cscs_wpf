@@ -1,0 +1,96 @@
+DEFINE NKPRINV_hndl, NKPRINVL_hndl type i;
+
+NKPRINV_hndl= openv("NKPRINV");
+NKPRINVL_hndl= openv("NKPRINVL");
+
+DEFINE lokacijaSlike type a;
+
+lokacijaSlike = "E:\A - Aura Soft LOGO\logo crni.png";
+
+DEFINE panel1 type a size 3;
+DEFINE label1Cl type a size 10;
+DEFINE label1Lt, label1Top type i;
+DEFINE label1Wd, label1Ht type i;
+DEFINE label1Fs type i;
+DEFINE label1Fn type a size 30;
+
+DEFINE labelTotalFc type a size 10;
+
+labelTotalFc = "Blue";
+
+panel1 = "OFF";
+label1Cl = "Brown";
+label1Lt = 50;
+label1Top = 50;
+label1Wd = 600;
+label1Ht = 100;
+label1Fs = 50;
+label1Fn = "Times New Roman";
+
+DEFINE panel2, label2, label3 type a size 3;
+
+//panel2 = "OFF"; // mora bit Visible = true i CanShrink = true
+//label2 = "OFF"; // shrinka panel
+//label3 = "OFF"; // takoder mora bit "off"
+
+DEFINE report1_hndl, report2_hndl type i;
+
+//start = Now();
+
+report1_hndl = SetupReport("NKPRINVReport.repx"); //
+report2_hndl = SetupReport("NKPRINVLReport.repx", report1_hndl);
+
+
+findv(NKPRINV_hndl,"f","NKPR_GL_NUM");
+OutputReport(report1_hndl);
+
+
+//********
+//NKPR_GL_NUM = 10100004;
+//UpdateReport(report1_hndl, "NKPR_GL_NUM");
+//********
+
+
+findv(NKPRINVL_hndl,"m","NKPR_LN_INVNM", string(NKPR_GL_NUM));
+OutputReport(report2_hndl);
+
+for(i = 0; i >= 0; i++){
+    findv(NKPRINVL_hndl,"n");
+    if(flerr() || NKPR_GL_NUM != NKPR_LN_INVNM){
+        break;
+    }
+
+    OutputReport(report2_hndl);
+}
+/*
+//********
+NKPR_GL_NUM = 10100004;
+UpdateReport(report1_hndl, "NKPR_GL_NUM");
+//********
+*/
+
+for(j = 0; j < 999; j++){
+    findv(NKPRINV_hndl,"n");
+    if(flerr()){
+        break;
+    }
+    OutputReport(report1_hndl);
+
+    findv(NKPRINVL_hndl,"m","NKPR_LN_INVNM", string(NKPR_GL_NUM));
+    OutputReport(report2_hndl);
+
+    for(g = 0; g >= 0; g++){
+        findv(NKPRINVL_hndl,"n");
+        if(flerr() || NKPR_GL_NUM != NKPR_LN_INVNM){
+            break;
+        }
+
+        OutputReport(report2_hndl);
+    }
+}
+
+
+PrintReport();
+
+
+//MessageBox("start = " + start + ", end = " + Now());

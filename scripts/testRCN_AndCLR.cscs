@@ -1,0 +1,28 @@
+DEFINE hndl1 type i;
+
+hndl1 = openv("nkprinv", "bd1", "a");
+if(flerr() != 0){
+    MessageBox("flerr: " + flerr());
+}
+
+MessageBox("calling findv MatchEXACT... (nkpr_gl_num: 10100010) // ID = 52");
+findv(hndl1, "m", "nkpr_gl_num", "10100010");
+MessageBox("NKPR_GL_NUM = " + NKPR_GL_NUM);
+MessageBox("RCNGet = " + RCNGet(hndl1));
+
+MessageBox("calling RCNSet... (ID = 55) // NKPR_GL_NUM = 10100013");
+RCNSet(hndl1, 55);
+MessageBox("RCNGet = " + RCNGet(hndl1));
+MessageBox("NKPR_GL_NUM = " + NKPR_GL_NUM);
+
+MessageBox("calling CLR(\"rec\")");
+CLR(hndl1, "rec");
+MessageBox("RCNGet = " + RCNGet(hndl1));
+MessageBox("NKPR_GL_NUM = " + NKPR_GL_NUM);
+
+MessageBox("calling CLR(\"buff\")");
+CLR(hndl1, "buff");
+MessageBox("RCNGet = " + RCNGet(hndl1));
+MessageBox("NKPR_GL_NUM = " + NKPR_GL_NUM);
+
+exit;

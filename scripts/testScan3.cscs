@@ -1,0 +1,12 @@
+DEFINE hndl1 type i;
+
+hndl1 = openv("nkprinv", "bd1", "a");
+if(flerr() != 0){
+    MessageBox("flerr: " + flerr());
+}
+
+scan(hndl1;"nkpr_gl_num";"12000133";NKPR_GL_NUM<90100005;"";"n 10";""){
+    MessageBox("NKPR_GL_NUM = " + NKPR_GL_NUM);
+}
+
+exit;

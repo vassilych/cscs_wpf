@@ -1,0 +1,38 @@
+DEFINE hndl1 type i;
+
+hndl1 = openv("nkprinv", "bd1", "a");
+if(flerr() != 0){
+    MessageBox("flerr: " + flerr());
+}
+
+MessageBox("NKPR_GL_NUM = " + NKPR_GL_NUM);
+
+MessageBox("calling findv FIRST...");
+findv(hndl1, "f", "nkpr_gl_num");
+MessageBox("NKPR_GL_NUM = " + NKPR_GL_NUM);
+
+MessageBox("calling findv NEXT...");
+findv(hndl1, "n");
+MessageBox("NKPR_GL_NUM = " + NKPR_GL_NUM);
+
+MessageBox("calling findv PREVIUS...");
+findv(hndl1, "p");
+MessageBox("NKPR_GL_NUM = " + NKPR_GL_NUM);
+
+MessageBox("calling findv MatchEXACT... (nkpr_gl_num: 10100010)");
+findv(hndl1, "m", "nkpr_gl_num", "10100010");
+MessageBox("NKPR_GL_NUM = " + NKPR_GL_NUM);
+
+MessageBox("calling findv NEXT...");
+findv(hndl1, "n");
+MessageBox("NKPR_GL_NUM = " + NKPR_GL_NUM);
+
+MessageBox("calling findv PREVIUS...");
+findv(hndl1, "p");
+MessageBox("NKPR_GL_NUM = " + NKPR_GL_NUM);
+
+MessageBox("calling findv GENERIC... (nkpr_gl_num: 12000134)");
+findv(hndl1, "g", "nkpr_gl_num", "12000134");
+MessageBox("NKPR_GL_NUM = " + NKPR_GL_NUM);
+
+exit;

@@ -1,2 +1,24 @@
-MessageBox("not implemented");
+DEFINE hndl1 type i;
+
+hndl1 = openv("nkprinv", "bd1", "a");
+if(flerr() != 0){
+    MessageBox("flerr: " + flerr());
+}
+
+DEFINE numArray type i array 10;
+DEFINE cuscodArray type i array 10;
+DEFINE cusnmeArray type a size 20 array 10;
+DEFINE cusctyArray type a size 20 array 10;
+
+DEFINE cntr1 type i;
+
+RDA("nkpr_gl_num|nkpr_gl_cuscod|nkpr_gl_cusnme|nkpr_gl_cuscty", "numArray,cuscodArray,cusnmeArray,cusctyArray", hndl1, "nkpr_gl_num", "10100005", NKPR_GL_NUM < 10100020, "", "n 10", "cntr1");
+
+for(i = 0; i< 10; i++){
+    MessageBox("numArray[" + i + "] = " + numArray[i]);
+    MessageBox("cuscodArray[" + i + "] = " + cuscodArray[i]);
+    MessageBox("cusnmeArray[" + i + "] = " + cusnmeArray[i]);
+    MessageBox("cusctyArray[" + i + "] = " + cusctyArray[i]);
+}
+
 exit;
