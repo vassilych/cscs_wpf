@@ -3,6 +3,7 @@ DEFINE hndl1 type i;
 hndl1 = openv("nkprinv", "bd1", "a");
 if(flerr() != 0){
     MessageBox("flerr: " + flerr());
+    quit;
 }
 
 DEFINE cntr1 type i;
@@ -11,4 +12,4 @@ REPL(hndl1,"NKPR_GL_GOD,NKPR_GL_SONUM", "'5','5'", "nkpr_gl_num", "0", "", "", "
 
 MessageBox("REPL done. Check results in the DB.");
 
-exit;
+quit;

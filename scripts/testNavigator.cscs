@@ -5,6 +5,7 @@ DEFINE table_hndl type i;
 table_hndl = Openv("invoiceLines", "DB1");
 if(flerr() != 0){
     MessageBox("flerrrr");
+    quit;
 }
 
 Navigator("navigator1", table_hndl, "@1");

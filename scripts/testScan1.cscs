@@ -5,7 +5,7 @@ DEFINE invoiceHeaders_hndl type i;
 invoiceHeaders_hndl = openv("invoiceHeaders", "DB1", "a");
 if(flerr()){
     MessageBox("flerr = " + flerr());
-    exit;
+    quit;
 }
 
 MessageBox("start");

@@ -9,7 +9,7 @@ DEFINE hndl type i;
 hndl = openv("NKPRINVL", "BD1", "a");
 if(flerr()){
     MessageBox("flerr = " + flerr());
-    exit;
+    quit;
 }
 
 

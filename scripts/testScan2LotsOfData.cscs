@@ -5,7 +5,7 @@ DEFINE hndl type i;
 hndl = openv("invoiceLines", "DB1", "a");
 if(flerr()){
     MessageBox("flerr = " + flerr());
-    exit;
+    quit;
 }
 
 MessageBox("start");

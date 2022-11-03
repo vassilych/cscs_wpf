@@ -1,5 +1,10 @@
 MessageBox("script1.cscs");
 
+DEFINE var2 type a size 10;
+var2 = "var2value";
+MessageBox("var2 = " + var2);
+
+
 MessageBox("var1 = " + var1); // ispisuje "haha" (iz prethodne skripte/modula)
 //to je vjerojatno jer staticsi još postoje
 

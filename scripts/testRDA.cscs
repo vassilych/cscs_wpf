@@ -3,6 +3,7 @@ DEFINE hndl1 type i;
 hndl1 = openv("nkprinv", "bd1", "a");
 if(flerr() != 0){
     MessageBox("flerr: " + flerr());
+    quit;
 }
 
 DEFINE numArray type i array 10;
@@ -21,4 +22,4 @@ for(i = 0; i< 10; i++){
     MessageBox("cusctyArray[" + i + "] = " + cusctyArray[i]);
 }
 
-exit;
+quit;

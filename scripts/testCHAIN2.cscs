@@ -7,7 +7,6 @@ MessageBox("chaining to script1.cscs");
 CHAIN "../../scripts/script1.cscs";
 
 MessageBox("back from script1, array1 = " + array1);
-MessageBox("var2 = " + var2);
 
 MessageBox("chaining to script2.cscs");
 CHAIN "../../scripts/script2.cscs" WITH "argument1" "argument2" "argument3" "argument4";

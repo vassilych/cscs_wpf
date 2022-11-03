@@ -3,6 +3,7 @@ DEFINE hndl1 type i;
 hndl1 = openv("nkprinv", "bd1", "a");
 if(flerr() != 0){
     MessageBox("flerr: " + flerr());
+    quit;
 }
 
 MessageBox("calling findv RCNSet... (ID = 140) // NKPR_GL_NUM = 10100041");
@@ -26,4 +27,4 @@ if(flerr() != 0){
 }
 MessageBox("After change, NKPR_GL_SONUM = " + NKPR_GL_SONUM);
 
-exit;
+quit;

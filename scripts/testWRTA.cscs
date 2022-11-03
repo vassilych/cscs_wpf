@@ -74,3 +74,5 @@ WRTA(fromArray, toArray, hndl, "recaArray", 7, "", "cntr");
 //WRTA(fromArray, toArray, hndl, "", 3, "", "cntr");
 
 MessageBox(cntr);
+
+quit;
