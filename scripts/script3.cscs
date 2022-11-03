@@ -1,10 +1,14 @@
-//nikad ne dođe tu ni na sljedeće naredbe
-//jer pada pri chainu na script3
+// all variables defined in this script should be local to this script.
+// if we want a variable from parent script to be accessible here we need to DEFINE it again but with RESET option.
+// example: DEFINE varInParent type a size 20 reset;
 
+// never gets here
 MessageBox("script3.cscs");
 
-PARAM arg1,arg2,arg3,arg4;
+DEFINE arg4, arg5, arg6, arg7 type a size 20;
 
-MessageBox("Got params:",arg1,arg2,arg3,arg4);
+PARAM arg4,arg5,arg6,arg7;
+
+MessageBox("Got params:",arg4,arg5,arg6,arg7);
 
 quit;
