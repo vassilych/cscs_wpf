@@ -5,6 +5,7 @@ DEFINE table_hndl type i;
 table_hndl = Openv("NKPRINV", "BD1", "a");
 if(flerr() != 0){
     MessageBox("flerrrr");
+    quit;
 }
 
 Navigator("navigator1", table_hndl, "nkpr_gl_num");

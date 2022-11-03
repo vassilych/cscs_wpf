@@ -2903,7 +2903,7 @@ WHERE ID = {thisOpenv.currentRow}
                 //check from and to data types compatibility
                 if (!checkCompatibility())
                 {
-                    MessageBox.Show("Error: \"from\" arrays\' and \"to\" columns\' doesn\'t match data types.");
+                    MessageBox.Show("Error: \"from\" arrays\' and \"to\" columns\' data types doesn\'t match.");
                     return Variable.EmptyInstance;
                 }
 

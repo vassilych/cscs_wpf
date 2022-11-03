@@ -17,6 +17,7 @@ define hndl type i;
 hndl = openv("nkmkvezl", "bd1");
 if(flerr() != 0){
     MessageBox("flerr = " + flerr());
+    quit;
 }
 
 arrayPosition = 0;

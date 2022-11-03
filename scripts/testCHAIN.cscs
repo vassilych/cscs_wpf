@@ -1,19 +1,33 @@
-DEFINE var1 type a size 10;
+// all variables defined in this script should be local to this script.
+// if we want a variable from parent script to be accessible here we need to DEFINE it again but with RESET option.
+// example: DEFINE varInParent type a size 20 reset;
 
-var1 = "haha";
-MessageBox("var1 = " + var1);
+DEFINE varInParent type a size 20;
+varInParent = "varInParentValue";
+MessageBox("varInParent = " + varInParent);
 
 MessageBox("chaining to script1.cscs");
 CHAIN "../../scripts/script1.cscs";
 
-MessageBox("back from script1, array1 = " + array1);
+MessageBox("back from script1, varInScript1 = " + varInScript1);
+// prints "varInScript1Value" (from Chained-to(and also quited) script) 
+// -> this variable shouldn't be accessible because it's in other(chained-to) script.
+
+
 
 MessageBox("chaining to script2.cscs");
 CHAIN "../../scripts/script2.cscs" WITH "argument1" "argument2" "argument3" "argument4";
+MessageBox("arg1 = " + arg1); // prints: "arg1 = " -> arg1 should not be accessible.
+
+
 
 MessageBox("chaining to script3.cscs");
-//Tu Pada -> "myGrid,bla1bla2,bla3,bla4 doesn't exist"
+// crashes -> prints: "myGrid,bla1bla2,bla3,bla4 doesn't exist"
+// meaning of NEWRUNTIME is to start a new sepparate process 
 CHAIN "WpfCSCS.exe" "../../scripts/script3.cscs" NEWRUNTIME WITH "myGrid" "bla1"+"bla2" "bla3"  "bla4";
 
-//Ali ispiše ovo - valjda jer je fault tolerant
+
+// prints this - ok
 MessageBox("end");
+
+quit;

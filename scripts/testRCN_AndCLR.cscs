@@ -3,6 +3,7 @@ DEFINE hndl1 type i;
 hndl1 = openv("nkprinv", "bd1", "a");
 if(flerr() != 0){
     MessageBox("flerr: " + flerr());
+    quit;
 }
 
 MessageBox("calling findv MatchEXACT... (nkpr_gl_num: 10100010) // ID = 52");
@@ -25,4 +26,4 @@ CLR(hndl1, "buff");
 MessageBox("RCNGet = " + RCNGet(hndl1));
 MessageBox("NKPR_GL_NUM = " + NKPR_GL_NUM);
 
-exit;
+quit;

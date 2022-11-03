@@ -1,19 +1,15 @@
+// all variables defined in this script should be local to this script.
+// if we want a variable from parent script to be accessible here we need to DEFINE it again but with RESET option.
+// example: DEFINE varInParent type a size 20 reset;
+
 MessageBox("script1.cscs");
 
-MessageBox("var1 = " + var1); // ispisuje "haha" (iz prethodne skripte/modula)
-//to je vjerojatno jer staticsi još postoje
+DEFINE varInScript1 type a size 20;
+varInScript1 = "varInScript1Value";
+MessageBox("varInScript1 = " + varInScript1);
 
-DEFINE array1 type a size 10 array 10;
-
-MessageBox("array1 = " + array1);// dela ok
-
-function func(){
-    return "b";
-}
-
-//array1 = {"a", func(), "c"}; // to dela problem
-array1[0] = func();// dela ok
-
-MessageBox("array1 = " + array1);// dela ok
+MessageBox("varInParent = " + varInParent);
+// prints "varInParentValue" (from parent script)
+// -> this variable shouldn't be accessible, only with RESET option.
 
 quit;

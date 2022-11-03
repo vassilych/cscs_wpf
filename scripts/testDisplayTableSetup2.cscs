@@ -5,7 +5,7 @@ DEFINE table_hndl type i;
 table_hndl = openv("invoiceLines", "DB1");
 if(flerr() != 0){
     MessageBox("flerr = " + Flerr());
-    exit;
+    quit;
 }
 
 

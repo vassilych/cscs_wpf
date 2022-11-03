@@ -71,3 +71,5 @@ WRTA(fromArray, toArray, hndl, "recaArray", 1000, "", "cntrWRTA");
 MessageBox("WRTA done! =)");
 
 MessageBox("cntrWRTA = " + cntrWRTA);
+
+quit;

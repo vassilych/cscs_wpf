@@ -9,7 +9,7 @@ MessageBox("calling findv RCNSet... (ID = 110) // NKPR_GL_NUM = 10100034");
 RcnSet(hndl1, 110);
 if(flerr() != 0){
     MessageBox("flerr() = " + flerr());
-    exit;
+    quit;
 }
 MessageBox("NKPR_GL_NUM = " + NKPR_GL_NUM);
 
@@ -28,4 +28,4 @@ if(flerr() != 0){
     MessageBox("flerr() = " + flerr());
 }
 
-exit;
+quit;
