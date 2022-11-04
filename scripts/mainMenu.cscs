@@ -98,7 +98,11 @@ function mainMenuWindow_OnDisplay(){
 
     AddMenuItem("DataGridDC", "TestSqlW.cscs", "TestSqlW", "runScript");
     AddMenuItem("DataGridDC", "TestSqlArrayW.cscs", "TestSqlArrayW", "runScript");
-    
+
+    AddMenuSeparator("DataGridDC");
+
+    AddMenuItem("DataGridDC", "testDisplayTableSetupWhere.cscs", "testDisplayTableSetupWhere", "runScript");
+
 
     //------ REPORTING ------------------------------
 

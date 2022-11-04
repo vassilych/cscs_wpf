@@ -578,6 +578,7 @@ ORDER BY {orderBySB}
             Interpreter.LastInstance.RegisterFunction(Constants.SCAN, new ScanStatement());
 
             Interpreter.LastInstance.RegisterFunction(Constants.DISPLAY_TABLE_SETUP, new DisplayTableSetupFunction());
+            Interpreter.LastInstance.RegisterFunction(Constants.DISPLAY_TABLE_SETUP_WHERE, new DisplayTableSetupWhereFunction());
 
             Interpreter.LastInstance.RegisterFunction(Constants.DISPLAY_ARRAY_SETUP, new DisplayArraySetupFunction());
             Interpreter.LastInstance.RegisterFunction(Constants.DISPLAY_ARRAY_REFRESH, new DisplayArrayRefreshFunction());
@@ -3441,6 +3442,798 @@ WHERE ID = {thisOpenv.currentRow}
         static Dictionary<string, DataTable> gridsDataTables = new Dictionary<string, DataTable>(); // <gridName, DataTable>
         static Dictionary<string, OpenvTable> gridsOpenvs = new Dictionary<string, OpenvTable>(); // <gridName, OpenvTable>
 
+        public class DisplayTableSetupWhereFunction : ParserFunction
+        {
+            string gridName;
+
+            int tableHndlNum;
+
+            string tableKey;
+
+            //string startString;
+            //string whileString;
+
+            //string forString;
+
+            OpenvTable thisOpenv;
+            KeyClass KeyClass;
+
+            ParsingScript Script;
+            CSCS_GUI Gui;
+
+            //DataTable gridSource;
+            Dictionary<string, string> tagsAndHeaders;
+            Dictionary<string, Type> tagsAndTypes;
+            Dictionary<string, Type> newTagsAndTypes;
+            Dictionary<string, int> timeAndDateEditerTagsAndSizes = new Dictionary<string, int>();
+
+            DataGrid dg;
+            protected override Variable Evaluate(ParsingScript script)
+            {
+                Script = script;
+                Gui = script.Context as CSCS_GUI;
+                List<Variable> args = script.GetFunctionArgs();
+                Utils.CheckArgs(args.Count, 3, m_name);
+
+                gridName = Utils.GetSafeString(args, 0).ToLower();
+                tableHndlNum = Utils.GetSafeInt(args, 1);
+                tableKey = Utils.GetSafeString(args, 2);
+
+                //startString = Utils.GetSafeString(args, 3);
+                //whileString = Utils.GetSafeString(args, 4).ToLower();
+                //forString = Utils.GetSafeString(args, 5).ToLower();
+
+                gridsTableWhereClass[gridName] = new DisplayTableWhereClass();
+                gridsTableWhereClass[gridName].joinString = Utils.GetSafeString(args, 3);
+                gridsTableWhereClass[gridName].whereString = Utils.GetSafeString(args, 4);
+                
+
+                //------------------------------------------------------------------------
+
+                thisOpenv = Btrieve.OPENVs[tableHndlNum];
+
+                gridsOpenvs[gridName.ToLower()] = thisOpenv;
+
+                if (!string.IsNullOrEmpty(tableKey))
+                {
+                    if (tableKey.StartsWith("@") && int.TryParse(tableKey.TrimStart('@'), out int keyNum))
+                    {
+                        if (keyNum > 0)
+                        {
+                            var kljuceviTable = CSCS_GUI.Adictionary.SY_INDEXESList.Where(p => p.SYKI_SCHEMA == CSCS_GUI.Adictionary.SY_TABLESList.First(r => r.SYCT_NAME.ToUpper() == thisOpenv.tableName.ToUpper()).SYCT_SCHEMA).OrderBy(s => s.SYKI_KEYNUM).ToArray();
+
+                            KeyClass = thisOpenv.Keys.First(p => p.KeyName == kljuceviTable.Where(r => r.SYKI_KEYNUM == keyNum).First().SYKI_KEYNAME);
+                        }
+                        else
+                        {
+                            KeyClass = new KeyClass() { KeyName = "ID", Ascending = true, Unique = true, KeyNum = 0, KeyColumns = new Dictionary<string, string>() { { "ID", "" } } };
+                        }
+                    }
+                    else if (!thisOpenv.Keys.Any(p => p.KeyName.ToUpper() == tableKey.ToUpper()))
+                    {
+                        // "Key does not exist for this table!"
+                        SetFlerr(4, tableHndlNum);
+                        return Variable.EmptyInstance;
+                    }
+                    else
+                    {
+                        KeyClass = thisOpenv.Keys.First(p => p.KeyName.ToUpper() == tableKey.ToUpper());
+                    }
+                }
+                else
+                {
+                    KeyClass = thisOpenv.CurrentKey;
+                }
+
+                //------------------------------------------------------
+
+                dg = Gui.GetWidget(gridName) as DataGrid;
+                if (dg == null)
+                {
+                    return Variable.EmptyInstance;
+                }
+
+                //tagsAndTypes = new Dictionary<string, Type>();
+                //tagsAndHeaders = new Dictionary<string, string>();
+
+                if (tagsAndTypes == null)
+                    tagsAndTypes = new Dictionary<string, Type>();
+                if (tagsAndHeaders == null)
+                    tagsAndHeaders = new Dictionary<string, string>();
+
+                var columns = dg.Columns;
+                for (int i = 0; i < columns.Count; i++)
+                {
+                    var column = dg.Columns.ElementAt(i);
+
+                    if (column is DataGridTemplateColumn)
+                    {
+                        var dgtc = column as DataGridTemplateColumn;
+
+                        var cell = dgtc.CellTemplate.LoadContent();
+                        if (cell is TimeEditer)
+                        {
+                            var te = cell as TimeEditer;
+                            if (te.Tag != null)
+                            {
+                                tagsAndTypes.Add(te.Tag.ToString(), typeof(TimeSpan));
+                                tagsAndHeaders.Add(te.Tag.ToString(), dgtc.Header.ToString());
+                                timeAndDateEditerTagsAndSizes[te.Tag.ToString()] = te.DisplaySize;
+                            }
+                        }
+                        else if (cell is DateEditer)
+                        {
+                            var de = cell as DateEditer;
+                            if (de.Tag != null)
+                            {
+                                tagsAndTypes.Add(de.Tag.ToString(), typeof(DateTime));
+                                tagsAndHeaders.Add(de.Tag.ToString(), dgtc.Header.ToString());
+                                timeAndDateEditerTagsAndSizes[de.Tag.ToString()] = de.DisplaySize;
+                            }
+                        }
+                        else if (cell is CheckBox)
+                        {
+                            var cb = cell as CheckBox;
+                            if (cb.Tag != null)
+                            {
+                                tagsAndTypes.Add(cb.Tag.ToString(), typeof(bool));
+                                tagsAndHeaders.Add(cb.Tag.ToString(), dgtc.Header.ToString());
+                            }
+                        }
+                        else if (cell is TextBox)
+                        {
+
+                            var tb = cell as TextBox;
+                            if (tb.Tag != null)
+                            {
+                                tagsAndTypes.Add(tb.Tag.ToString(), typeof(string));
+                                tagsAndHeaders.Add(tb.Tag.ToString(), dgtc.Header.ToString());
+                            }
+                        }
+                    }
+                }
+
+                gridsDataTables[gridName] = new DataTable();
+                var idColumn = new DataColumn();
+                idColumn.DataType = System.Type.GetType("System.Int32");
+                idColumn.ColumnName = "ID";
+                idColumn.Caption = "ID";
+                idColumn.ReadOnly = true;
+                gridsDataTables[gridName].Columns.Add(idColumn);
+
+                newTagsAndTypes = new Dictionary<string, Type>();
+                foreach (var item in tagsAndTypes)
+                {
+
+                    var newColumn = new DataColumn();
+                    newColumn.ColumnName = item.Key;
+                    newColumn.DataType = item.Value;
+                    var field = CSCS_GUI.Adictionary.SY_FIELDSList.Where(p => p.SYTD_SCHEMA.ToLower() == thisOpenv.tableName.ToLower() && p.SYTD_FIELD == item.Key).FirstOrDefault();
+                    if (field != null)
+                    {
+                        switch (field.SYTD_TYPE)
+                        {
+                            case "B":
+                            case "I":
+                            case "R":
+                                newColumn.DataType = typeof(int);
+                                //tagsAndTypes[item.Key] = typeof(int);
+                                newTagsAndTypes[item.Key] = typeof(int);
+                                break;
+                            case "N":
+                                newColumn.DataType = typeof(double);
+                                //tagsAndTypes[item.Key] = typeof(double);
+                                newTagsAndTypes[item.Key] = typeof(double);
+                                break;
+                            case "A":
+                                newColumn.DataType = typeof(string);
+                                //tagsAndTypes[item.Key] = typeof(string);
+                                newTagsAndTypes[item.Key] = typeof(string);
+                                break;
+                            case "L":
+                                newColumn.DataType = typeof(bool);
+                                //tagsAndTypes[item.Key] = typeof(bool);
+                                newTagsAndTypes[item.Key] = typeof(bool);
+                                break;
+                            case "D":
+                                newColumn.DataType = typeof(DateTime);
+                                //tagsAndTypes[item.Key] = typeof(DateTime);
+                                newTagsAndTypes[item.Key] = typeof(DateTime);
+                                break;
+                            case "T":
+                                newColumn.DataType = typeof(TimeSpan);
+                                //tagsAndTypes[item.Key] = typeof(TimeSpan);
+                                newTagsAndTypes[item.Key] = typeof(TimeSpan);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
+
+                    newColumn.Caption = tagsAndHeaders[item.Key];
+                    gridsDataTables[gridName].Columns.Add(newColumn);
+                }
+
+                //StringBuilder selectSb = new StringBuilder();
+                //selectSb.Append("ID, ");
+
+                //foreach (var column in tagsAndTypes.Keys)
+                //{
+                //    selectSb.Append(column + ", ");
+                //}
+                //selectSb.Remove(selectSb.Length - 2, 2);
+
+                ////---------------------------------------------------------------------------
+
+                ////fillDataTable();
+
+                ////---------------------------------------------------------------------------
+
+                //dg.Items.Clear();
+                dg.Columns.Clear();
+
+                dg.AutoGenerateColumns = true;
+                dg.AutoGeneratingColumn += DataGrid_OnAutoGeneratingColumn;
+
+                dg.SelectionMode = DataGridSelectionMode.Single;
+                dg.SelectionUnit = DataGridSelectionUnit.FullRow;
+
+                dg.ItemsSource = gridsDataTables[gridName].AsDataView();
+                //dg.ItemsSource = gridSource.DefaultView;
+
+                //dg.SelectionChanged += Dg_SelectionChanged;
+                dg.CellEditEnding += Dg_CellEditEnding;
+                //dg.PreparingCellForEdit += Dg_PreparingCellForEdit;
+
+                dg.RowEditEnding += Dg_RowEditEnding;
+
+                dg.SelectedCellsChanged += Dg_SelectedCellsChanged;
+                //-------------------------------------------------------------------------------
+
+                //grids[gridName] = new DisplayArrayClass()
+                //{
+                //    dg = dg
+                //};
+                gridsTableWhereClass[gridName].dg = dg;
+                gridsTableWhereClass[gridName].tableOrArray = "table";
+                gridsTableWhereClass[gridName].tags = tagsAndHeaders.Keys.ToList();
+                gridsTableWhereClass[gridName].tableHndlNum = tableHndlNum;
+                gridsTableWhereClass[gridName].tableKey = tableKey;
+                gridsTableWhereClass[gridName].tagsAndTypes = tagsAndTypes;
+                gridsTableWhereClass[gridName].KeyClass = KeyClass;
+                gridsTableWhereClass[gridName].Script = Script;
+
+                fillDataTable(gridName);
+
+                return Variable.EmptyInstance;
+            }
+
+            public void fillDataTable(string gridName)
+            {
+                gridsDataTables[gridName].Rows.Clear();
+
+                var tableHndlNum = gridsTableWhereClass[gridName].tableHndlNum;
+                var tableKey = gridsTableWhereClass[gridName].tableKey;
+                var KeyClass = gridsTableWhereClass[gridName].KeyClass;
+                var thisOpenv = OPENVs[gridsTableWhereClass[gridName].tableHndlNum];
+
+                var joinString = gridsTableWhereClass[gridName].joinString;
+                var whereString = gridsTableWhereClass[gridName].whereString;
+
+                var Script = gridsTableWhereClass[gridName].Script;
+
+                var tagsAndTypes = gridsTableWhereClass[gridName].tagsAndTypes;
+
+
+                //---------------------------------------------------------------------------
+
+                gridsDataTables[gridName].Rows.Clear();
+
+
+                StringBuilder columnsSB = new StringBuilder();
+                columnsSB.Append($"{thisOpenv.tableName}.ID, ");
+                foreach (var columnName in tagsAndTypes.Keys)
+                {
+                    columnsSB.Append(thisOpenv.tableName + "." + columnName + ", ");
+                }
+                columnsSB.Remove(columnsSB.Length - 2, 2); // removes last ", "
+
+
+                StringBuilder orderBySB = new StringBuilder();
+                foreach (var keyColumn in KeyClass.KeyColumns)
+                {
+                    orderBySB.Append(thisOpenv.tableName + "." + keyColumn.Key + ", ");
+                }
+                if (!KeyClass.Unique)
+                {
+                    orderBySB.Append($"{thisOpenv.tableName}.ID, ");
+                }
+                orderBySB.Remove(orderBySB.Length - 2, 2); // removes last ", "
+
+
+                var query =
+$@"EXECUTE sp_executesql N'
+            select 
+            {columnsSB}
+            from {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName} {joinString}
+            --with (nolock)
+            {(string.IsNullOrEmpty(whereString)? "" : " WHERE " + whereString)}
+            order by {orderBySB}
+            '";
+
+                using (SqlConnection con = new SqlConnection(CSCS_SQL.ConnectionString))
+                {
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        con.Open();
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (!reader.HasRows)
+                            {
+                                SetFlerr(3, tableHndlNum);
+                                return;
+                            }
+                            else
+                            {
+                                gridsDataTables[gridName].Rows.Clear();
+                                gridsDataTables[gridName].Load(reader);
+                            }
+                        }
+                    }
+                }
+
+            }
+
+
+            private void DataGrid_OnAutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
+            {
+                if (e.PropertyName == "ID")
+                {
+                    e.Column.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    var realHeader = tagsAndHeaders[e.Column.Header.ToString()];
+
+                    if (e.PropertyType == typeof(DateTime))
+                    {
+                        // Create The Column
+                        DataGridTemplateColumn dateColumn = new DataGridTemplateColumn();
+
+                        //Binding bind = new Binding(e.Column.Header.ToString());
+                        //bind.Mode = BindingMode.TwoWay;
+                        //bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+                        //bind.StringFormat = "dd/MM/yy";
+                        //if(timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 10)
+                        //{
+                        //    bind.Converter = new DateEditerConverter();
+                        //    bind.StringFormat = "dd/MM/yyyy";
+                        //}
+
+                        Binding bind = new Binding(e.Column.Header.ToString());
+                        bind.Mode = BindingMode.TwoWay;
+                        bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+                        if (timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 8)
+                        {
+                            CultureInfo ci = CultureInfo.CreateSpecificCulture(CultureInfo.CurrentCulture.Name);
+                            ci.DateTimeFormat.ShortDatePattern = "dd/MM/yy";
+                            //ci.DateTimeFormat.LongDatePattern = "dd/MM/yyyy HH:mm:ss";
+                            Thread.CurrentThread.CurrentCulture = ci;
+
+                            bind.Converter = new DateEditerConverter();
+                            bind.ConverterParameter = 8; //size
+                            bind.StringFormat = "dd/MM/yy";
+                        }
+                        else if (timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 10)
+                        {
+                            CultureInfo ci = CultureInfo.CreateSpecificCulture(CultureInfo.CurrentCulture.Name);
+                            ci.DateTimeFormat.ShortDatePattern = "dd/MM/yyyy";
+                            //ci.DateTimeFormat.LongDatePattern = "dd/MM/yyyy HH:mm:ss";
+                            Thread.CurrentThread.CurrentCulture = ci;
+
+                            bind.Converter = new DateEditerConverter();
+                            bind.ConverterParameter = 10; //size
+                            bind.StringFormat = "dd/MM/yyyy";
+                        }
+
+                        // Create the TextBlock
+                        FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
+                        textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
+
+                        DataTemplate textBlockTemplate = new DataTemplate();
+                        textBlockTemplate.VisualTree = textBlockFactory;
+
+                        // Create the DatePicker
+                        FrameworkElementFactory datePickerFactory = new FrameworkElementFactory(typeof(DateEditer));
+                        datePickerFactory.SetBinding(DateEditer.TextProperty, bind);
+                        datePickerFactory.SetValue(DateEditer.DisplaySizeProperty, timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()]);
+
+
+                        DataTemplate datePickerTemplate = new DataTemplate();
+                        datePickerTemplate.VisualTree = datePickerFactory;
+
+                        // Set the Templates to the Column
+                        dateColumn.CellTemplate = textBlockTemplate;
+                        dateColumn.CellEditingTemplate = datePickerTemplate;
+
+                        e.Column = dateColumn;
+                    }
+                    else if (e.PropertyType == typeof(TimeSpan))
+                    {
+                        // Create The Column
+                        DataGridTemplateColumn timeColumn = new DataGridTemplateColumn();
+
+                        Binding bind = new Binding(e.Column.Header.ToString());
+                        bind.Mode = BindingMode.TwoWay;
+                        bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+                        if (timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 5)
+                        {
+                            bind.Converter = new TimeEditerConverter();
+                            bind.ConverterParameter = 5;
+                        }
+                        else if (timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 8)
+                        {
+                            bind.Converter = new TimeEditerConverter();
+                            bind.ConverterParameter = 8;
+                        }
+
+                        // Create the TextBlock
+                        FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
+                        textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
+                        //textBlockFactory.AddHandler(TextBlock.GotKeyboardFocusEvent, new KeyboardFocusChangedEventHandler(textBlockGotKeyboardFocus));
+
+                        DataTemplate textBlockTemplate = new DataTemplate();
+                        textBlockTemplate.VisualTree = textBlockFactory;
+
+                        // Create the TimeEditer
+                        FrameworkElementFactory timeEditerFactory = new FrameworkElementFactory(typeof(TimeEditer));
+                        timeEditerFactory.SetBinding(TimeEditer.TextProperty, bind);
+                        timeEditerFactory.SetValue(TimeEditer.DisplaySizeProperty, timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()]);
+
+                        DataTemplate timeEditerTemplate = new DataTemplate();
+                        timeEditerTemplate.VisualTree = timeEditerFactory;
+
+                        // Set the Templates to the Column
+                        timeColumn.CellTemplate = textBlockTemplate;
+                        timeColumn.CellEditingTemplate = timeEditerTemplate;
+
+                        e.Column = timeColumn;
+                    }
+                    else if (e.PropertyType == typeof(string))
+                    {
+                        // Create The Column
+                        DataGridTemplateColumn stringColumn = new DataGridTemplateColumn();
+
+                        Binding bind = new Binding(e.Column.Header.ToString());
+                        bind.Mode = BindingMode.TwoWay;
+                        bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+
+                        // Create the TextBlock
+                        FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
+                        textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
+
+                        DataTemplate textBlockTemplate = new DataTemplate();
+                        textBlockTemplate.VisualTree = textBlockFactory;
+
+                        // Create the TextBox
+                        FrameworkElementFactory textBoxFactory = new FrameworkElementFactory(typeof(TextBox));
+                        textBoxFactory.SetBinding(TextBox.TextProperty, bind);
+
+                        DataTemplate textBoxTemplate = new DataTemplate();
+                        textBoxTemplate.VisualTree = textBoxFactory;
+
+                        // Set the Templates to the Column
+                        stringColumn.CellTemplate = textBlockTemplate;
+                        stringColumn.CellEditingTemplate = textBoxTemplate;
+
+                        e.Column = stringColumn;
+                    }
+                    else if (e.PropertyType == typeof(int))
+                    {
+                        // Create The Column
+                        DataGridTemplateColumn stringColumn = new DataGridTemplateColumn();
+
+                        Binding bind = new Binding(e.Column.Header.ToString());
+                        bind.Mode = BindingMode.TwoWay;
+                        bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+                        bind.Converter = new TextBoxIntConverter();
+
+                        // Create the TextBlock
+                        FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
+                        textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
+
+                        DataTemplate textBlockTemplate = new DataTemplate();
+                        textBlockTemplate.VisualTree = textBlockFactory;
+
+                        // Create the TextBox
+                        FrameworkElementFactory textBoxFactory = new FrameworkElementFactory(typeof(TextBox));
+                        textBoxFactory.SetBinding(TextBox.TextProperty, bind);
+
+                        DataTemplate textBoxTemplate = new DataTemplate();
+                        textBoxTemplate.VisualTree = textBoxFactory;
+
+                        // Set the Templates to the Column
+                        stringColumn.CellTemplate = textBlockTemplate;
+                        stringColumn.CellEditingTemplate = textBoxTemplate;
+
+                        e.Column = stringColumn;
+                    }
+                    else if (e.PropertyType == typeof(double))
+                    {
+                        // Create The Column
+                        DataGridTemplateColumn stringColumn = new DataGridTemplateColumn();
+
+                        Binding bind = new Binding(e.Column.Header.ToString());
+                        bind.Mode = BindingMode.TwoWay;
+                        bind.UpdateSourceTrigger = UpdateSourceTrigger.LostFocus;
+                        bind.Converter = new TextBoxDoubleConverter();
+
+                        // Create the TextBlock
+                        FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
+                        textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
+
+                        DataTemplate textBlockTemplate = new DataTemplate();
+                        textBlockTemplate.VisualTree = textBlockFactory;
+
+                        // Create the TextBox
+                        FrameworkElementFactory textBoxFactory = new FrameworkElementFactory(typeof(TextBox));
+                        textBoxFactory.SetBinding(TextBox.TextProperty, bind);
+
+                        DataTemplate textBoxTemplate = new DataTemplate();
+                        textBoxTemplate.VisualTree = textBoxFactory;
+
+                        // Set the Templates to the Column
+                        stringColumn.CellTemplate = textBlockTemplate;
+                        stringColumn.CellEditingTemplate = textBoxTemplate;
+
+                        e.Column = stringColumn;
+                    }
+                    else if (e.PropertyType == typeof(bool))
+                    {
+                        // Create The Column
+                        DataGridTemplateColumn stringColumn = new DataGridTemplateColumn();
+
+                        Binding bind = new Binding(e.Column.Header.ToString());
+                        bind.Mode = BindingMode.TwoWay;
+                        bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+                        //bind.Converter = new TextBoxDoubleConverter();
+
+                        // Create the TextBlock
+                        FrameworkElementFactory checkBoxFactory = new FrameworkElementFactory(typeof(CheckBox));
+                        checkBoxFactory.SetBinding(CheckBox.IsCheckedProperty, bind);
+                        checkBoxFactory.SetValue(CheckBox.HorizontalAlignmentProperty, HorizontalAlignment.Center);
+
+                        DataTemplate checkBoxTemplate = new DataTemplate();
+                        checkBoxTemplate.VisualTree = checkBoxFactory;
+
+                        // Set the Templates to the Column
+                        stringColumn.CellTemplate = checkBoxTemplate;
+                        stringColumn.CellEditingTemplate = checkBoxTemplate;
+
+                        e.Column = stringColumn;
+                    }
+
+                    e.Column.Header = realHeader;
+                }
+            }
+
+            int lastRowIndex = -1;
+            object[] rowBeforeEdit/* = new object[] { }*/;
+            object[] rowAfterEdit;
+            public static bool dataGridUpdated = false;
+
+            private void Dg_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
+            {
+                var dg = (sender as DataGrid);
+
+                if (dg.Items.Count <= 0)
+                    return;
+
+                try
+                {
+                    if (dg.SelectedIndex < 0)
+                    {
+                        if (dg.Items.Count > 0)
+                        {
+                            dg.SelectedIndex = 0;
+                            var asdk = dg.Items[0];
+                        }
+                    }
+                    var currentItemArray = (dg.SelectedItem as DataRowView).Row.ItemArray;
+
+                    var currentRowIndex = dg.SelectedIndex;//dg.Items.IndexOf(dg.SelectedItem);
+                    if (currentRowIndex != lastRowIndex || dataGridUpdated)
+                    {
+                        dataGridUpdated = false;
+
+                        lastRowIndex = currentRowIndex;
+                        rowBeforeEdit = currentItemArray;
+
+                        var currRow = (dg.SelectedItem as DataRowView).Row;
+                        for (int i = 1; i < currRow.Table.Columns.Count; i++)
+                        {
+                            if (currentItemArray[i] is DateTime)
+                            {
+                                var currentItemAsDateTime = currentItemArray[i] as DateTime?;
+                                string initForDefine = "";
+                                switch (timeAndDateEditerTagsAndSizes[currRow.Table.Columns[i].ColumnName])
+                                {
+                                    case 10:
+                                        initForDefine = currentItemAsDateTime.Value.ToString("dd/MM/yyyy");
+                                        break;
+                                    case 8:
+                                        initForDefine = currentItemAsDateTime.Value.ToString("dd/MM/yy");
+                                        break;
+                                }
+
+                                CSCS_GUI.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable(initForDefine));
+                                Gui.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable(initForDefine), true);
+                            }
+                            else
+                            {
+                                CSCS_GUI.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable(currentItemArray[i]));
+                                Gui.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable(currentItemArray[i]), true);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+                dg.BeginEdit();
+            }
+
+            private void Dg_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+            {
+                var grid = (sender as DataGrid);
+
+                var index = e.Row.GetIndex();
+                DataGridRow row = (DataGridRow)grid.ItemContainerGenerator.ContainerFromIndex(index);
+                if (row != null && Validation.GetHasError(row))
+                {
+                    dg.CellEditEnding -= Dg_CellEditEnding;
+                    dg.CancelEdit();
+                    dg.CellEditEnding += Dg_CellEditEnding;
+                }
+
+                rowAfterEdit = (e.Row.Item as DataRowView).Row.ItemArray;
+            }
+
+            private void Dg_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+            {
+                if (rowBeforeEdit.SequenceEqual(rowAfterEdit))
+                {
+                    return;
+                }
+
+                var rowIndex = e.Row.GetIndex();
+
+                (sender as DataGrid).RowEditEnding -= Dg_RowEditEnding;
+                if (MessageBox.Show("Do you want to save the row?", "Caution", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                {
+                    (sender as DataGrid).CommitEdit();
+
+                    var rowItemArray = gridsDataTables[gridName].Rows[rowIndex].ItemArray;
+
+                    SaveRow(rowItemArray);
+                }
+                else
+                {
+                    (sender as DataGrid).SelectedCellsChanged -= Dg_SelectedCellsChanged;
+                    (sender as DataGrid).CancelEdit();
+                    (sender as DataGrid).SelectedCellsChanged += Dg_SelectedCellsChanged;
+                }
+                (sender as DataGrid).RowEditEnding += Dg_RowEditEnding;
+            }
+
+            private void SaveRow(object[] rowItemArray)
+            {
+                bool redisplay = false;
+
+                if (rowItemArray[0] is int)
+                {
+                    //UPDATE sql
+                    //fill buffer with current row
+                    new RcnSetFunction().RcnSet(Gui, tableHndlNum, (int)rowItemArray[0]);
+                }
+                else
+                {
+                    //INSERT sql
+                    rowItemArray[0] = 0;
+                    thisOpenv.currentRow = 0;
+                    new ClrFunction().Clear(tableHndlNum, "b", Script);
+                    redisplay = true;
+                }
+
+                int i = 1;
+
+                dynamic newVariableInit = null;
+                foreach (var item in tagsAndTypes)
+                {
+                    switch (CSCS_GUI.DEFINES[item.Key.ToLower()].Type)
+                    {
+                        case Variable.VarType.NONE:
+                            break;
+                        case Variable.VarType.UNDEFINED:
+                            break;
+                        case Variable.VarType.NUMBER:
+                            if (rowItemArray[i] is bool)
+                            {
+                                rowItemArray[i] = Utils.ConvertToDouble(rowItemArray[i]);
+                            }
+                            newVariableInit = double.Parse(rowItemArray[i].ToString().Replace(".", ","), NumberStyles.AllowDecimalPoint);
+                            break;
+                        case Variable.VarType.STRING:
+                            newVariableInit = rowItemArray[i].ToString();
+                            break;
+                        case Variable.VarType.ARRAY:
+                            break;
+                        case Variable.VarType.ARRAY_NUM:
+                            break;
+                        case Variable.VarType.ARRAY_STR:
+                            break;
+                        case Variable.VarType.MAP_NUM:
+                            break;
+                        case Variable.VarType.MAP_STR:
+                            break;
+                        case Variable.VarType.BYTE_ARRAY:
+                            break;
+                        case Variable.VarType.QUIT:
+                            break;
+                        case Variable.VarType.BREAK:
+                            break;
+                        case Variable.VarType.CONTINUE:
+                            break;
+                        case Variable.VarType.OBJECT:
+                            break;
+                        case Variable.VarType.ENUM:
+                            break;
+                        case Variable.VarType.VARIABLE:
+                            break;
+                        case Variable.VarType.DATETIME:
+                            if (TimeSpan.TryParse(rowItemArray[i].ToString(), out TimeSpan newTimeSpan))
+                            {
+                                newVariableInit = (TimeSpan)rowItemArray[i];
+                            }
+                            else if (DateTime.TryParse(rowItemArray[i].ToString(), out DateTime newDateTime))
+                            {
+                                switch (timeAndDateEditerTagsAndSizes[item.Key])
+                                {
+                                    case 10:
+                                        newVariableInit = ((DateTime)rowItemArray[i]).ToString("dd/MM/yyyy");
+                                        break;
+                                    case 8:
+                                        newVariableInit = ((DateTime)rowItemArray[i]).ToString("dd/MM/yy");
+                                        break;
+                                }
+                            }
+                            break;
+                        case Variable.VarType.CUSTOM:
+                            break;
+                        case Variable.VarType.POINTER:
+                            break;
+                        default:
+                            break;
+                    }
+                    CSCS_GUI.DEFINES[item.Key.ToLower()].InitVariable(new Variable(newVariableInit));
+                    Gui.OnVariableChange(item.Key.ToLower(), new Variable(newVariableInit), true);
+                    i++;
+                }
+
+                new SaveFunction().Save(true, thisOpenv, tableHndlNum, false, Script);
+
+                if (redisplay)
+                {
+                    //dg.Items.Clear();
+                    fillDataTable(gridName);
+                }
+            }
+
+        }
+        
         public class DisplayTableSetupFunction : ParserFunction
         {
             string gridName;
@@ -4394,9 +5187,32 @@ WHERE ID = {thisOpenv.currentRow}
 
             public ParsingScript Script;
         }
+        class DisplayTableWhereClass
+        {
+            public DataGrid dg;
+            public string lineCntrVarName;
+            public string actCntrVarName;
+            public string maxElemsVarName;
+            public List<string> tags;
+            public Dictionary<string, Type> tagsAndTypes;
+            public Dictionary<string, Type> newTagsAndTypes;
+            public string tableOrArray;
+
+            public int tableHndlNum;
+
+            public string joinString;
+            public string whereString;
+
+            public string tableKey;
+
+            public KeyClass KeyClass;
+
+            public ParsingScript Script;
+        }
 
         static Dictionary<string, DisplayArrayClass> gridsArrayClass = new Dictionary<string, DisplayArrayClass>();
         static Dictionary<string, DisplayTableClass> gridsTableClass = new Dictionary<string, DisplayTableClass>();
+        static Dictionary<string, DisplayTableWhereClass> gridsTableWhereClass = new Dictionary<string, DisplayTableWhereClass>();
         //static Dictionary<string, int> gridsLineCounters = new Dictionary<string, int>();
 
 
