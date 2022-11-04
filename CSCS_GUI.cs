@@ -168,6 +168,7 @@ namespace SplitAndMerge
         public const string SCAN = "Scan";
 
         public const string DISPLAY_TABLE_SETUP = "DisplayTableSetup";
+        public const string DISPLAY_TABLE_SETUP_WHERE = "DisplayTableSetupWhere";
         public const string DISPLAY_ARRAY_SETUP = "DisplayArraySetup";
         public const string DISPLAY_ARRAY_REFRESH = "DisplayArrayRefresh";
         public const string DISPLAYARRAY = "DisplayArray";
