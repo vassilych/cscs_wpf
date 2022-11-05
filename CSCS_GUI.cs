@@ -37,6 +37,7 @@ using CSCS.InterpreterManager;
 using DevExpress.Xpo.Logger;
 using WpfCSCS;
 using static SplitAndMerge.CSCSClass;
+using static DevExpress.Xpo.Helpers.AssociatedCollectionCriteriaHelper;
 
 namespace SplitAndMerge
 {
@@ -264,6 +265,11 @@ namespace WpfCSCS
         public static string lastObjClickedWidgetName;
 
         public static CSCS_GUI LastInstance { get; set; }
+
+        public static CSCS_GUI GetInstance(ParsingScript script) {
+            var result = script.Context as CSCS_GUI;
+            return result != null ? result : LastInstance;
+        }
 
         public Dictionary<string, List<Variable>> Parameters = new Dictionary<string, List<Variable>>();
         public Dictionary<string, Window> Tag2Parent { get; set; } = new Dictionary<string, Window>();
@@ -533,10 +539,16 @@ namespace WpfCSCS
 
         public void CloseAllWindows()
         {
-            foreach (var win in Window2File.Keys)
+            CSCS_GUI.Dispatcher.Invoke((Action)delegate ()
             {
-                win.Close();
-            }
+                foreach (var win in Window2File.Keys)
+                {
+                    if (win != CSCS_GUI.MainWindow)
+                    {
+                        win.Close();
+                    }
+                }
+            }, null);
         }
 
         public string GetWidgetBindingName(FrameworkElement widget)
@@ -3681,7 +3693,7 @@ namespace WpfCSCS
 
         protected override Variable Evaluate(ParsingScript script)
         {
-            var gui = script.Context as CSCS_GUI;
+            Gui = script.Context as CSCS_GUI;
             if (m_paramMode)
             {
                 var NameOrPathOfXamlForm = Utils.GetBodyBetween(script, '\0', '\0', Constants.END_STATEMENT);
@@ -3691,20 +3703,17 @@ namespace WpfCSCS
                 }
                 if (File.Exists(NameOrPathOfXamlForm))
                 {
-                    var parentWin = gui.GetParentWindow(script);
+                    var parentWin = Gui.GetParentWindow(script);
                     SpecialWindow modalwin;
                     if (parentWin != null && !script.ParentScript.OriginalScript.Contains("#MAINMENU"))
                     {
-                        //parentWin.IsEnabled = false;
-                        //parentWin.
-
                         var winMode = SpecialWindow.MODE.SPECIAL_MODAL;
-                        modalwin = CreateNew(gui, NameOrPathOfXamlForm, parentWin, winMode, script.Filename);
+                        modalwin = CreateNew(NameOrPathOfXamlForm, parentWin, winMode, script.Filename);
                     }
                     else
                     {
                         var winMode = SpecialWindow.MODE.NORMAL;
-                        modalwin = CreateNew(gui, NameOrPathOfXamlForm, parentWin, winMode, script.Filename);
+                        modalwin = CreateNew(NameOrPathOfXamlForm, parentWin, winMode, script.Filename);
                     }
 
 
@@ -4417,7 +4426,7 @@ namespace WpfCSCS
 
         static int s_currentWindow = -1;
 
-        CSCS_GUI Gui;
+        protected CSCS_GUI Gui;
 
         internal enum MODE { NEW, SHOW, HIDE, DELETE, NEXT, MODAL, SET_MAIN, UNSET_MAIN };
         MODE m_mode;
@@ -4457,7 +4466,7 @@ namespace WpfCSCS
                 var parentWin = Gui.GetParentWindow(script);
                 var winMode = m_mode == MODE.NEW ? SpecialWindow.MODE.NORMAL : //SpecialWindow.MODE.SPECIAL_MODAL;
                     parentWin == CSCS_GUI.MainWindow ? SpecialWindow.MODE.MODAL : SpecialWindow.MODE.SPECIAL_MODAL;
-                SpecialWindow modalwin = CreateNew(Gui, instanceName, parentWin, winMode, script.Filename);
+                SpecialWindow modalwin = CreateNew(instanceName, parentWin, winMode, script.Filename);
                 return new Variable(modalwin.Instance.Tag.ToString());
             }
 
@@ -4496,10 +4505,10 @@ namespace WpfCSCS
             return new Variable(instanceName);
         }
 
-        public SpecialWindow CreateNew(CSCS_GUI gui, string instanceName, Window parentWin = null,
+        public SpecialWindow CreateNew(string instanceName, Window parentWin = null,
             SpecialWindow.MODE winMode = SpecialWindow.MODE.NORMAL, string cscsFilename = "")
         {
-            SpecialWindow modalwin = new SpecialWindow(gui, instanceName, winMode,
+            SpecialWindow modalwin = new SpecialWindow(Gui, instanceName, winMode,
                 winMode != SpecialWindow.MODE.NORMAL ? parentWin : null);
             var wind = modalwin.Instance;
 
@@ -4509,7 +4518,7 @@ namespace WpfCSCS
             s_currentWindow = 0;
 
             Gui.CacheWindow(wind, cscsFilename);
-            gui.CacheParentWindow(tag, parentWin);
+            Gui.CacheParentWindow(tag, parentWin);
 
             wind.Show();
             return modalwin;
@@ -5626,26 +5635,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
             List<Variable> args = script.GetFunctionArgs();
             var code = Utils.GetSafeInt(args, 0, 0);
 
-            foreach (var item in CSCS_GUI.DEFINES)
-            {
-                var defineVar = item.Value;
-
-                DataGrid dg = defineVar.Object as DataGrid;
-                if (dg != null)
-                {
-                    dg.IsEnabled = false;
-                }
-
-                var name = item.Key;
-                if (!CSCS_GUI.WIDGETS.TryGetValue(name, out WidgetData wd))
-                {
-                    continue;
-                }
-                var widget = wd.widget;
-                widget.IsEnabled = false;
-            }
-
-            var gui = script.Context as CSCS_GUI;
+            var gui = CSCS_GUI.GetInstance(script);
             gui.CloseAllWindows();
 
             return QuitFunction.QuitScript(script, code);
