@@ -126,7 +126,7 @@ namespace WpfCSCS
         }
         void ProcessScanNew(ParsingScript script, string forString)
         {
-            var gui = script.Context as CSCS_GUI;
+            var gui = CSCS_GUI.GetInstance(script);
             int MAX_LOOPS = Interpreter.LastInstance.ReadConfig("maxLoops", 256000);
 
             string[] forTokens = forString.Split(Constants.END_STATEMENT);
@@ -150,8 +150,6 @@ namespace WpfCSCS
 
             int cycles = 0;
             bool stillValid = true;
-
-            //new Btrieve.FINDVClass((int)tableHndlNum.Value, "g", keyName.String, startString.AsString(), forExpression.String).FINDV();
 
             var scopeString = scope.String.ToLower();
             bool limited = false;
@@ -220,7 +218,7 @@ namespace WpfCSCS
 
                 for (int i = 0; i < keySegmentsOrdered.Count; i++)
                 {
-                    matchExactStringBuilder.Append(CSCS_GUI.DEFINES[keySegmentsOrdered[i].ToLower()]);
+                    matchExactStringBuilder.Append(gui.DEFINES[keySegmentsOrdered[i].ToLower()]);
                     matchExactStringBuilder.Append("|");
                 }
                 matchExactStringBuilder.Remove(matchExactStringBuilder.Length - 1, 1); // remove last "|"
@@ -354,7 +352,7 @@ ORDER BY {orderBySB}
                                 }
 
                                 var loweredCurrentColumnName = currentColumnName.ToLower();
-                                if (!CSCS_GUI.DEFINES.ContainsKey(loweredCurrentColumnName))
+                                if (!gui.DEFINES.ContainsKey(loweredCurrentColumnName))
                                 {
                                     return;
                                 }
@@ -363,15 +361,15 @@ ORDER BY {orderBySB}
                                     if (reader.GetFieldType(currentFieldNum) == typeof(DateTime))
                                     {
                                         DateTime fieldValue = (DateTime)reader[currentColumnName];
-                                        var dateFormat = CSCS_GUI.DEFINES[loweredCurrentColumnName].GetDateFormat();
+                                        var dateFormat = gui.DEFINES[loweredCurrentColumnName].GetDateFormat();
                                         var newVar = new Variable(fieldValue.ToString(dateFormat));
-                                        CSCS_GUI.DEFINES[loweredCurrentColumnName].InitVariable(newVar);
+                                        gui.DEFINES[loweredCurrentColumnName].InitVariable(newVar, gui);
                                         gui.OnVariableChange(loweredCurrentColumnName, newVar, true);
                                     }
                                     else
                                     {
                                         string fieldValue = reader[currentColumnName].ToString().TrimEnd();
-                                        CSCS_GUI.DEFINES[loweredCurrentColumnName].InitVariable(new Variable(fieldValue).Clone());
+                                        gui.DEFINES[loweredCurrentColumnName].InitVariable(new Variable(fieldValue).Clone(), gui);
                                         gui.OnVariableChange(loweredCurrentColumnName, new Variable(fieldValue), true);
                                     }
                                 }
@@ -419,7 +417,6 @@ ORDER BY {orderBySB}
                                     break;
                                 }
 
-                                //new Btrieve.FINDVClass(tableHndlNum, "n", keyName.String).FINDV();
                                 if (Btrieve.LastFlerrsOfFnums[tableHndlNum] == 3)
                                 {
                                     Btrieve.SetFlerr(0, tableHndlNum);
@@ -471,7 +468,7 @@ ORDER BY {orderBySB}
             int cycles = 0;
             bool stillValid = true;
 
-            new Btrieve.FINDVClass((int)tableHndlNum.Value, "g", keyName.String, startString.AsString(), forExpression.String, "", script).FINDV();
+            new Btrieve.FINDVClass(script, (int)tableHndlNum.Value, "g", keyName.String, startString.AsString(), forExpression.String).FINDV();
 
             var scopeString = scope.String.ToLower();
             bool limited = false;
@@ -532,7 +529,7 @@ ORDER BY {orderBySB}
                     break;
                 }
 
-                new Btrieve.FINDVClass((int)tableHndlNum.Value, "n", keyName.String, "", "", "", script).FINDV();
+                new Btrieve.FINDVClass(script, (int)tableHndlNum.Value, "n", keyName.String).FINDV();
                 if (Btrieve.LastFlerrsOfFnums[(int)tableHndlNum.Value] == 3)
                 {
                     Btrieve.SetFlerr(0, (int)tableHndlNum.Value);
@@ -617,6 +614,7 @@ ORDER BY {orderBySB}
 
         public static Variable OPENV(string tableName, string databaseName, ParsingScript script, string lockingType)
         {
+            var gui = CSCS_GUI.GetInstance(script);
             if (CSCS_SQL.SqlServerConnection.State != System.Data.ConnectionState.Open)
             {
                 CSCS_SQL.SqlServerConnection.Open();
@@ -636,10 +634,10 @@ ORDER BY {orderBySB}
 
             foreach (var field in listOfFields)
             {
-                if (!CSCS_GUI.DEFINES.ContainsKey(field.SYTD_FIELD))
+                if (!gui.DEFINES.ContainsKey(field.SYTD_FIELD))
                 {
                     DefineVariable newVar = new DefineVariable(field.SYTD_FIELD, null, field.SYTD_TYPE, field.SYTD_SIZE, field.SYTD_DEC, field.SYTD_ARRAYNUM/*, local, up*/);
-                    newVar.InitVariable(Variable.EmptyInstance, script);
+                    newVar.InitVariable(Variable.EmptyInstance, gui, script);
                 }
             }
 
@@ -685,7 +683,7 @@ ORDER BY {orderBySB}
 
         public class FINDVClass
         {
-            public FINDVClass(int _tableHndlNum, string _operationType, string _tableKey = "", string _matchExactValue = "", string _forString = "", string _columnsToSelect = "", ParsingScript _script = null, string _keyo = "")
+            public FINDVClass(ParsingScript _script, int _tableHndlNum, string _operationType, string _tableKey = "", string _matchExactValue = "", string _forString = "", string _columnsToSelect = "", string _keyo = "")
             {
                 tableHndlNum = _tableHndlNum;
                 operationType = _operationType;
@@ -695,7 +693,7 @@ ORDER BY {orderBySB}
                 columnsToSelect = _columnsToSelect;
                 script = _script;
                 keyo = _keyo;
-                Gui = script.Context as CSCS_GUI;
+                Gui = CSCS_GUI.GetInstance(script);
             }
 
             ParsingScript script;
@@ -773,7 +771,7 @@ ORDER BY {orderBySB}
 
                     for (int i = 0; i < keySegmentsOrdered.Count; i++)
                     {
-                        matchExactStringBuilder.Append(CSCS_GUI.DEFINES[keySegmentsOrdered[i].ToLower()]);
+                        matchExactStringBuilder.Append(Gui.DEFINES[keySegmentsOrdered[i].ToLower()]);
                         matchExactStringBuilder.Append("|");
                     }
                     matchExactStringBuilder.Remove(matchExactStringBuilder.Length - 1, 1); // remove last "|"
@@ -948,7 +946,7 @@ order by {orderByString}
                                     }
 
                                     var loweredCurrentColumnName = currentColumnName.ToLower();
-                                    if (!CSCS_GUI.DEFINES.ContainsKey(loweredCurrentColumnName))
+                                    if (!Gui.DEFINES.ContainsKey(loweredCurrentColumnName))
                                     {
                                         return new Variable((long)4);
                                     }
@@ -961,15 +959,15 @@ order by {orderByString}
                                             //if (DateTime.TryParse(toString, out fieldValue)){}
                                             
                                             DateTime fieldValue = (DateTime)reader[currentColumnName];
-                                            var dateFormat = CSCS_GUI.DEFINES[loweredCurrentColumnName].GetDateFormat();
+                                            var dateFormat = Gui.DEFINES[loweredCurrentColumnName].GetDateFormat();
                                             var newVar = new Variable(fieldValue.ToString(dateFormat));
-                                            CSCS_GUI.DEFINES[loweredCurrentColumnName].InitVariable(newVar);
+                                            Gui.DEFINES[loweredCurrentColumnName].InitVariable(newVar, Gui);
                                             Gui.OnVariableChange(loweredCurrentColumnName, newVar, true);
                                         }
                                         else
                                         {
                                             string fieldValue = reader[currentColumnName].ToString().TrimEnd();
-                                            CSCS_GUI.DEFINES[loweredCurrentColumnName].InitVariable(new Variable(fieldValue), script);
+                                            Gui.DEFINES[loweredCurrentColumnName].InitVariable(new Variable(fieldValue), Gui, script);
                                             Gui.OnVariableChange(loweredCurrentColumnName, new Variable(fieldValue), true);
                                         }
                                     }
@@ -1415,7 +1413,7 @@ order by {orderByString}
                     if (KeyClass.KeyColumns.Keys.Any(p => p.ToUpper() == currentColumnName.ToUpper()))
                     {
                         
-                        if (CSCS_GUI.DEFINES.TryGetValue(currentColumnName.ToLower(), out DefineVariable thisVar))
+                        if (Gui.DEFINES.TryGetValue(currentColumnName.ToLower(), out DefineVariable thisVar))
                         {
                             if(thisVar.DefType == "d")
                             {
@@ -1430,7 +1428,7 @@ order by {orderByString}
 
                     string fieldValue = lineItem.Value.ToString();
 
-                    CSCS_GUI.DEFINES[currentColumnName.ToLower()].InitVariable(new Variable(fieldValue).Clone());
+                    Gui.DEFINES[currentColumnName.ToLower()].InitVariable(new Variable(fieldValue).Clone(), Gui);
                     Gui.OnVariableChange(currentColumnName.ToLower(), new Variable(fieldValue), true);
                 }
             }
@@ -1568,7 +1566,7 @@ N'{paramsDeclaration}', ";
                                     }
 
                                     var loweredCurrentColumnName = currentColumnName.ToLower();
-                                    if (!CSCS_GUI.DEFINES.ContainsKey(loweredCurrentColumnName))
+                                    if (!Gui.DEFINES.ContainsKey(loweredCurrentColumnName))
                                     //if (!cacheLine.ContainsKey(loweredCurrentColumnName))
                                     {
                                         lastUsedPreviousOrNext[tableHndlNum] = option;
@@ -1582,7 +1580,7 @@ N'{paramsDeclaration}', ";
                                             //var dateFormat = CSCS_GUI.DEFINES[loweredCurrentColumnName].GetDateFormat();
                                             //var newVar = new Variable(fieldValue.ToString(dateFormat));
 
-                                            cacheLine.Add(currentColumnName, CSCS_GUI.DEFINES[loweredCurrentColumnName]);
+                                            cacheLine.Add(currentColumnName, Gui.DEFINES[loweredCurrentColumnName]);
                                             cacheLine[currentColumnName].DateTime = fieldValue;
                                             //cacheLine[currentColumnName].InitVariable(newVar);
                                             
@@ -1593,8 +1591,8 @@ N'{paramsDeclaration}', ";
                                         {
                                             string fieldValue = reader[currentColumnName].ToString().TrimEnd();
 
-                                            cacheLine.Add(currentColumnName, CSCS_GUI.DEFINES[loweredCurrentColumnName]);
-                                            cacheLine[currentColumnName].InitVariable(new Variable(fieldValue).Clone());
+                                            cacheLine.Add(currentColumnName, Gui.DEFINES[loweredCurrentColumnName]);
+                                            cacheLine[currentColumnName].InitVariable(new Variable(fieldValue).Clone(), Gui);
 
                                             //CSCS_GUI.DEFINES[loweredCurrentColumnName].InitVariable(new Variable(fieldValue).Clone());
                                             //CSCS_GUI.OnVariableChange(loweredCurrentColumnName, new Variable(fieldValue), true);
@@ -1733,7 +1731,7 @@ N'{paramsDeclaration}', ";
                                     }
 
                                     var loweredCurrentColumnName = currentColumnName.ToLower();
-                                    if (!CSCS_GUI.DEFINES.ContainsKey(loweredCurrentColumnName))
+                                    if (!Gui.DEFINES.ContainsKey(loweredCurrentColumnName))
                                     {
                                         lastUsedPreviousOrNext[tableHndlNum] = option;
                                         return new Variable((long)4);
@@ -1743,15 +1741,15 @@ N'{paramsDeclaration}', ";
                                         if (reader.GetFieldType(currentFieldNum) == typeof(DateTime))
                                         {
                                             DateTime fieldValue = (DateTime)reader[currentColumnName];
-                                            var dateFormat = CSCS_GUI.DEFINES[loweredCurrentColumnName].GetDateFormat();
+                                            var dateFormat = Gui.DEFINES[loweredCurrentColumnName].GetDateFormat();
                                             var newVar = new Variable(fieldValue.ToString(dateFormat));
-                                            CSCS_GUI.DEFINES[loweredCurrentColumnName].InitVariable(newVar);
+                                            Gui.DEFINES[loweredCurrentColumnName].InitVariable(newVar, Gui);
                                             Gui.OnVariableChange(loweredCurrentColumnName, newVar, true);
                                         }
                                         else
                                         {
                                             string fieldValue = reader[currentColumnName].ToString().TrimEnd();
-                                            CSCS_GUI.DEFINES[loweredCurrentColumnName].InitVariable(new Variable(fieldValue).Clone());
+                                            Gui.DEFINES[loweredCurrentColumnName].InitVariable(new Variable(fieldValue).Clone(), Gui);
                                             Gui.OnVariableChange(loweredCurrentColumnName, new Variable(fieldValue), true);
                                         }
                                     }
@@ -1868,7 +1866,7 @@ order by {orderByString}
                                     }
 
                                     var loweredCurrentColumnName = currentColumnName.ToLower();
-                                    if (!CSCS_GUI.DEFINES.ContainsKey(loweredCurrentColumnName))
+                                    if (!Gui.DEFINES.ContainsKey(loweredCurrentColumnName))
                                     {
                                         return new Variable((long)4);
                                     }
@@ -1877,15 +1875,15 @@ order by {orderByString}
                                         if (reader.GetFieldType(currentFieldNum) == typeof(DateTime))
                                         {
                                             DateTime fieldValue = (DateTime)reader[currentColumnName];
-                                            var dateFormat = CSCS_GUI.DEFINES[loweredCurrentColumnName].GetDateFormat();
+                                            var dateFormat = Gui.DEFINES[loweredCurrentColumnName].GetDateFormat();
                                             var newVar = new Variable(fieldValue.ToString(dateFormat));
-                                            CSCS_GUI.DEFINES[loweredCurrentColumnName].InitVariable(newVar);
+                                            Gui.DEFINES[loweredCurrentColumnName].InitVariable(newVar, Gui);
                                             Gui.OnVariableChange(loweredCurrentColumnName, newVar, true);
                                         }
                                         else
                                         {
                                             string fieldValue = reader[currentColumnName].ToString().TrimEnd();
-                                            CSCS_GUI.DEFINES[loweredCurrentColumnName].InitVariable(new Variable(fieldValue));
+                                            Gui.DEFINES[loweredCurrentColumnName].InitVariable(new Variable(fieldValue), Gui);
                                             Gui.OnVariableChange(loweredCurrentColumnName, new Variable(fieldValue), true);
                                         }
                                     }
@@ -1912,9 +1910,9 @@ order by {orderByString}
                 foreach (var bufferField in thisOpenv.FieldNames)
                 {
                     var field = bufferField.ToLower();
-                    if (CSCS_GUI.DEFINES.ContainsKey(field))
+                    if (Gui.DEFINES.ContainsKey(field))
                     {
-                        CSCS_GUI.DEFINES[field].InitVariable(Variable.EmptyInstance);
+                        Gui.DEFINES[field].InitVariable(Variable.EmptyInstance, Gui);
                         Gui.OnVariableChange(field, Variable.EmptyInstance, true);
                     }
                 }
@@ -2022,7 +2020,7 @@ N'{paramsDeclaration}', ";
                                     }
 
                                     var loweredCurrentColumnName = currentColumnName.ToLower();
-                                    if (!CSCS_GUI.DEFINES.ContainsKey(loweredCurrentColumnName))
+                                    if (!Gui.DEFINES.ContainsKey(loweredCurrentColumnName))
                                     {
                                         return new Variable((long)4);
                                     }
@@ -2031,15 +2029,15 @@ N'{paramsDeclaration}', ";
                                         if (reader.GetFieldType(currentFieldNum) == typeof(DateTime))
                                         {
                                             DateTime fieldValue = (DateTime)reader[currentColumnName];
-                                            var dateFormat = CSCS_GUI.DEFINES[loweredCurrentColumnName].GetDateFormat();
+                                            var dateFormat = Gui.DEFINES[loweredCurrentColumnName].GetDateFormat();
                                             var newVar = new Variable(fieldValue.ToString(dateFormat));
-                                            CSCS_GUI.DEFINES[loweredCurrentColumnName].InitVariable(newVar);
+                                            Gui.DEFINES[loweredCurrentColumnName].InitVariable(newVar, Gui);
                                             Gui.OnVariableChange(loweredCurrentColumnName, newVar, true);
                                         }
                                         else
                                         {
                                             string fieldValue = reader[currentColumnName].ToString().TrimEnd();
-                                            CSCS_GUI.DEFINES[loweredCurrentColumnName].InitVariable(new Variable(fieldValue).Clone());
+                                            Gui.DEFINES[loweredCurrentColumnName].InitVariable(new Variable(fieldValue).Clone(), Gui);
                                             Gui.OnVariableChange(loweredCurrentColumnName, new Variable(fieldValue), true);
                                         }
                                     }
@@ -2114,7 +2112,7 @@ N'{paramsDeclaration}', ";
                 columnsToSelect = Utils.GetSafeString(args, 5); // e.g. "VEZM_VEZNIBROJ, VEZM_RNALOG"
                 keyo = Utils.GetSafeString(args, 6); // e.g. "VEZM_VEZNIBROJ, VEZM_RNALOG"
 
-                new Btrieve.FINDVClass(tableHndlNum, operationType, tableKey, matchExactValue, forString, columnsToSelect, script, keyo).FINDV();
+                new Btrieve.FINDVClass(script, tableHndlNum, operationType, tableKey, matchExactValue, forString, columnsToSelect, keyo).FINDV();
 
                 return Variable.EmptyInstance;
             }
@@ -2141,7 +2139,7 @@ N'{paramsDeclaration}', ";
                 if (operationType == "buff")
                 {
                     //clear buffer
-                    new Btrieve.FINDVClass(tableHndlNum, "x", "", "", "", "", script).clearBuffer(thisOpenv);
+                    new Btrieve.FINDVClass(script, tableHndlNum, "x").clearBuffer(thisOpenv);
                 }
 
                 if (operationType == "buff" || operationType == "rec")
@@ -2189,7 +2187,7 @@ N'{paramsDeclaration}', ";
                 Utils.CheckArgs(args.Count, 2, m_name);
                 tableHndlNum = Utils.GetSafeInt(args, 0);
                 idNum = Utils.GetSafeInt(args, 1); // ID of record to be filled into buffer
-                var gui = script.Context as CSCS_GUI;
+                var gui = CSCS_GUI.GetInstance(script);
                 RcnSet(gui, tableHndlNum, idNum);
 
                 return Variable.EmptyInstance;
@@ -2230,7 +2228,7 @@ WHERE ID = {idNum}
                                     var currentColumnName = reader.GetName(currentFieldNum);
 
                                     var loweredCurrentColumnName = currentColumnName.ToLower();
-                                    if (!CSCS_GUI.DEFINES.ContainsKey(loweredCurrentColumnName))
+                                    if (!gui.DEFINES.ContainsKey(loweredCurrentColumnName))
                                     {
                                         // err: this column is not opened in buffer via Openv
                                         return new Variable((long)4);
@@ -2240,14 +2238,15 @@ WHERE ID = {idNum}
                                         if (reader.GetFieldType(currentFieldNum) == typeof(DateTime))
                                         {
                                             DateTime fieldValue = (DateTime)reader[currentColumnName];
-                                            var dateFormat = CSCS_GUI.DEFINES[loweredCurrentColumnName].GetDateFormat();
-                                            CSCS_GUI.DEFINES[loweredCurrentColumnName].InitVariable(new Variable(fieldValue.ToString(dateFormat)));
+                                            var dateFormat = gui.DEFINES[loweredCurrentColumnName].GetDateFormat();
+                                            gui.DEFINES[loweredCurrentColumnName].InitVariable(
+                                                new Variable(fieldValue.ToString(dateFormat)), gui);
                                             gui.OnVariableChange(loweredCurrentColumnName, new Variable(fieldValue.ToString(dateFormat)), true);
                                         }
                                         else
                                         {
                                             string fieldValue = reader[currentColumnName].ToString().TrimEnd();
-                                            CSCS_GUI.DEFINES[loweredCurrentColumnName].InitVariable(new Variable(fieldValue));
+                                            gui.DEFINES[loweredCurrentColumnName].InitVariable(new Variable(fieldValue), gui);
                                             gui.OnVariableChange(loweredCurrentColumnName, new Variable(fieldValue), true);
                                         }
                                     }
@@ -2320,7 +2319,7 @@ WHERE ID = {idNum}
                 if (DeleteCurrentRecord())
                 {
                     //clear buffer
-                    new Btrieve.FINDVClass(tableHndlNum, "x", "", "", "", "", script).clearBuffer(thisOpenv);
+                    new Btrieve.FINDVClass(script, tableHndlNum, "x").clearBuffer(thisOpenv);
 
                     //clear ID
                     thisOpenv.currentRow = 0;
@@ -2356,6 +2355,8 @@ WHERE ID = {thisOpenv.currentRow}
 
         public class SaveFunction : ParserFunction
         {
+            CSCS_GUI Gui;
+
             protected override Variable Evaluate(ParsingScript script)
             {
                 List<Variable> args = script.GetFunctionArgs();
@@ -2363,6 +2364,8 @@ WHERE ID = {thisOpenv.currentRow}
                 int tableHndlNum = Utils.GetSafeInt(args, 0);
                 bool noPrompt = Utils.GetSafeVariable(args, 1, new Variable(false)).AsBool(); // true -> noPrompt, false -> prompt("are you sure...?")
                 bool noClr = Utils.GetSafeVariable(args, 2, new Variable(false)).AsBool(); //
+
+                Gui = CSCS_GUI.GetInstance(script);
 
                 OpenvTable thisOpenv = Btrieve.OPENVs[tableHndlNum];
 
@@ -2396,7 +2399,7 @@ WHERE ID = {thisOpenv.currentRow}
                 if (clear && !noClr)
                 {
                     //clear buffer
-                    new Btrieve.FINDVClass(tableHndlNum, "x", "", "", "", "", script).clearBuffer(thisOpenv);
+                    new Btrieve.FINDVClass(script, tableHndlNum, "x").clearBuffer(thisOpenv);
 
                     //clear ID
                     thisOpenv.currentRow = 0;
@@ -2412,7 +2415,7 @@ WHERE ID = {thisOpenv.currentRow}
                 {
                     valuesStringBuilder.AppendLine("");
 
-                    var bufferVar = CSCS_GUI.DEFINES[field.ToLower()];
+                    var bufferVar = Gui.DEFINES[field.ToLower()];
                     if (bufferVar.DefType == "a" || bufferVar.DefType == "t" || bufferVar.DefType == "d")
                     {
                         var bufferVarAsString = bufferVar.AsString();
@@ -2471,7 +2474,7 @@ VALUES ({valuesStringBuilder})
                     setStringBuilder.AppendLine("");
                     setStringBuilder.Append(field + " = ");
 
-                    var bufferVar = CSCS_GUI.DEFINES[field.ToLower()];
+                    var bufferVar = Gui.DEFINES[field.ToLower()];
                     if (bufferVar.DefType == "a" || bufferVar.DefType == "t" || bufferVar.DefType == "d")
                     {
                         var bufferVarAsString = bufferVar.AsString();
@@ -2546,6 +2549,7 @@ WHERE ID = {thisOpenv.currentRow}
             KeyClass KeyClass;
 
             ParsingScript Script;
+            CSCS_GUI Gui;
 
             double rowsAffected = 0;
 
@@ -2554,6 +2558,7 @@ WHERE ID = {thisOpenv.currentRow}
             protected override Variable Evaluate(ParsingScript script)
             {
                 Script = script;
+                Gui = CSCS_GUI.GetInstance(script);
                 List<Variable> args = script.GetFunctionArgs();
                 Utils.CheckArgs(args.Count, 6, m_name);
 
@@ -2609,7 +2614,7 @@ WHERE ID = {thisOpenv.currentRow}
                 if (!string.IsNullOrEmpty(startString))
                 {
                     // if has start string
-                    new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, startString, "", "", script).FINDV();
+                    new Btrieve.FINDVClass(script, tableHndlNum, "g", tableKey, startString).FINDV();
                 }
                 else
                 {
@@ -2622,7 +2627,7 @@ WHERE ID = {thisOpenv.currentRow}
 
                         for (int i = 0; i < segmentsOrdered.Count(); i++)
                         {
-                            if (CSCS_GUI.DEFINES.TryGetValue(segmentsOrdered[i].ToLower(), out DefineVariable bufferVar))
+                            if (Gui.DEFINES.TryGetValue(segmentsOrdered[i].ToLower(), out DefineVariable bufferVar))
                             {
                                 currentStart += bufferVar.AsString();
                                 currentStart += "|";
@@ -2636,7 +2641,7 @@ WHERE ID = {thisOpenv.currentRow}
                         currentStart = thisOpenv.currentRow.ToString();
                     }
 
-                    new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, currentStart, "", "", script).FINDV();
+                    new Btrieve.FINDVClass(script, tableHndlNum, "g", tableKey, currentStart).FINDV();
                 }
 
                 bool limited = false;
@@ -2669,7 +2674,7 @@ WHERE ID = {thisOpenv.currentRow}
                 {
                     if (forIsSet && !script.GetTempScript(forString.String).Execute(new char[] { '"' }, 0).AsBool())
                     {
-                        new Btrieve.FINDVClass(tableHndlNum, "n", "", "", "", "", script).FINDV();
+                        new Btrieve.FINDVClass(script, tableHndlNum, "n").FINDV();
                         continue;
                     }
 
@@ -2697,7 +2702,7 @@ WHERE ID = {thisOpenv.currentRow}
                         }
                     }
 
-                    new Btrieve.FINDVClass(tableHndlNum, "n", "", "", "", "", script).FINDV();
+                    new Btrieve.FINDVClass(script, tableHndlNum, "n").FINDV();
                     if (LastFlerrsOfFnums[tableHndlNum] == 3)
                     {
                         SetFlerr(0, tableHndlNum);
@@ -2705,8 +2710,8 @@ WHERE ID = {thisOpenv.currentRow}
                     }
                 }
 
-                var current = CSCS_GUI.DEFINES[cntrNameString];
-                current.InitVariable(new Variable(rowsAffected));
+                var current = Gui.DEFINES[cntrNameString];
+                current.InitVariable(new Variable(rowsAffected), Gui);
 
                 return Variable.EmptyInstance;
             }
@@ -2728,9 +2733,9 @@ WHERE ID = {thisOpenv.currentRow}
                 for (int i = 0; i < toSplitted.Length; i++)
                 {
                     var arrayName = toSplitted[i].ToLower();
-                    if (CSCS_GUI.DEFINES[arrayName].Array > 1)
+                    if (Gui.DEFINES[arrayName].Array > 1)
                     {
-                        CSCS_GUI.DEFINES[arrayName].Tuple[rowNumber] = executed.ElementAt(i).Clone();
+                        Gui.DEFINES[arrayName].Tuple[rowNumber] = executed.ElementAt(i).Clone();
                     }
                 }
 
@@ -2760,6 +2765,7 @@ WHERE ID = {thisOpenv.currentRow}
             KeyClass KeyClass;
 
             ParsingScript Script;
+            CSCS_GUI Gui;
 
             double rowsAffected = 0; //
 
@@ -2872,6 +2878,7 @@ WHERE ID = {thisOpenv.currentRow}
             protected override Variable Evaluate(ParsingScript script)
             {
                 Script = script;
+                Gui = CSCS_GUI.GetInstance(script);
                 List<Variable> args = script.GetFunctionArgs();
                 Utils.CheckArgs(args.Count, 6, m_name);
 
@@ -2947,8 +2954,8 @@ WHERE ID = {thisOpenv.currentRow}
                             rowsAffected++;
                             rowNumber++;
 
-                            var current1 = CSCS_GUI.DEFINES[cntrNameString];
-                            current1.InitVariable(new Variable(rowsAffected));
+                            var current1 = Gui.DEFINES[cntrNameString];
+                            current1.InitVariable(new Variable(rowsAffected), Gui);
 
                             if (limited)
                             {
@@ -2982,8 +2989,8 @@ WHERE ID = {thisOpenv.currentRow}
 
                     arrayIndex++;
 
-                    var current = CSCS_GUI.DEFINES[cntrNameString];
-                    current.InitVariable(new Variable(rowsAffected));
+                    var current = Gui.DEFINES[cntrNameString];
+                    current.InitVariable(new Variable(rowsAffected), Gui);
                 }
 
                 
@@ -3000,7 +3007,7 @@ WHERE ID = {thisOpenv.currentRow}
 
                 string currentId = null;
 
-                if (CSCS_GUI.DEFINES.TryGetValue(recaArrayName.ToLower(), out recaArrayDefVar))
+                if (Gui.DEFINES.TryGetValue(recaArrayName.ToLower(), out recaArrayDefVar))
                 {
                     currentId = recaArrayDefVar.Tuple[arrayIndex].AsString();
                     var query =
@@ -3225,7 +3232,6 @@ SELECT COUNT(*) as numOfRows FROM {Databases[thisOpenv.databaseName.ToUpper()]}.
             string withString;
             string tableKey;
 
-
             string startString;
             ParsingScript whileString;
 
@@ -3239,12 +3245,14 @@ SELECT COUNT(*) as numOfRows FROM {Databases[thisOpenv.databaseName.ToUpper()]}.
 
             double rowsAffected = 0;
 
+            CSCS_GUI Gui;
+
             protected override Variable Evaluate(ParsingScript script)
             {
                 List<Variable> args = script.GetFunctionArgs();
                 Utils.CheckArgs(args.Count, 4, m_name);
 
-                var gui = script.Context as CSCS_GUI;
+                Gui = CSCS_GUI.GetInstance(script);
                 tableHndlNum = Utils.GetSafeInt(args, 0);
                 columnsString = Utils.GetSafeString(args, 1); // columns to replace
                 withString = Utils.GetSafeString(args, 2); // replace values
@@ -3294,7 +3302,7 @@ SELECT COUNT(*) as numOfRows FROM {Databases[thisOpenv.databaseName.ToUpper()]}.
                 if (!string.IsNullOrEmpty(startString))
                 {
                     //if has a start string
-                    new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, startString/*, forString.String*/, "", "", script).FINDV();
+                    new Btrieve.FINDVClass(script, tableHndlNum, "g", tableKey, startString/*, forString.String*/).FINDV();
                 }
                 else
                 {
@@ -3308,7 +3316,7 @@ SELECT COUNT(*) as numOfRows FROM {Databases[thisOpenv.databaseName.ToUpper()]}.
 
                         for (int i = 0; i < segmentsOrdered.Count(); i++)
                         {
-                            if (CSCS_GUI.DEFINES.TryGetValue(segmentsOrdered[i].ToLower(), out DefineVariable bufferVar))
+                            if (Gui.DEFINES.TryGetValue(segmentsOrdered[i].ToLower(), out DefineVariable bufferVar))
                             {
                                 currentStart += bufferVar.AsString();
                                 currentStart += "|";
@@ -3323,7 +3331,7 @@ SELECT COUNT(*) as numOfRows FROM {Databases[thisOpenv.databaseName.ToUpper()]}.
                     }
 
 
-                    new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, currentStart, "", "", script).FINDV();
+                    new Btrieve.FINDVClass(script, tableHndlNum, "g", tableKey, currentStart).FINDV();
                 }
 
                 bool limited = false;
@@ -3358,7 +3366,7 @@ SELECT COUNT(*) as numOfRows FROM {Databases[thisOpenv.databaseName.ToUpper()]}.
                 {
                     if (forIsSet && !script.GetTempScript(forString.String).Execute(new char[] { '"' }, 0).AsBool())
                     {
-                        new Btrieve.FINDVClass(tableHndlNum, "n", "", "", "", "", script).FINDV();
+                        new Btrieve.FINDVClass(script, tableHndlNum, "n").FINDV();
                         if (LastFlerrsOfFnums[tableHndlNum] == 3)
                         {
                             SetFlerr(0, tableHndlNum);
@@ -3385,7 +3393,7 @@ SELECT COUNT(*) as numOfRows FROM {Databases[thisOpenv.databaseName.ToUpper()]}.
                         }
                     }
 
-                    new Btrieve.FINDVClass(tableHndlNum, "n", "", "", "", "", script).FINDV();
+                    new Btrieve.FINDVClass(script, tableHndlNum, "n").FINDV();
                     if (LastFlerrsOfFnums[tableHndlNum] == 3)
                     {
                         SetFlerr(0, tableHndlNum);
@@ -3393,10 +3401,10 @@ SELECT COUNT(*) as numOfRows FROM {Databases[thisOpenv.databaseName.ToUpper()]}.
                     }
                 }
 
-                if (CSCS_GUI.DEFINES.TryGetValue(cntrNameString, out DefineVariable currentDefVar))
+                if (Gui.DEFINES.TryGetValue(cntrNameString, out DefineVariable currentDefVar))
                 {
-                    currentDefVar.InitVariable(new Variable(rowsAffected));
-                    gui.OnVariableChange(cntrNameString, new Variable(rowsAffected), true);
+                    currentDefVar.InitVariable(new Variable(rowsAffected), Gui);
+                    Gui.OnVariableChange(cntrNameString, new Variable(rowsAffected), true);
                 }
 
                 return Variable.EmptyInstance;
@@ -3471,7 +3479,7 @@ WHERE ID = {thisOpenv.currentRow}
             protected override Variable Evaluate(ParsingScript script)
             {
                 Script = script;
-                Gui = script.Context as CSCS_GUI;
+                Gui = CSCS_GUI.GetInstance(script);
                 List<Variable> args = script.GetFunctionArgs();
                 Utils.CheckArgs(args.Count, 3, m_name);
 
@@ -4067,12 +4075,12 @@ $@"EXECUTE sp_executesql N'
                                         break;
                                 }
 
-                                CSCS_GUI.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable(initForDefine));
+                                Gui.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable(initForDefine), Gui);
                                 Gui.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable(initForDefine), true);
                             }
                             else
                             {
-                                CSCS_GUI.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable(currentItemArray[i]));
+                                Gui.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable(currentItemArray[i]), Gui);
                                 Gui.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable(currentItemArray[i]), true);
                             }
                         }
@@ -4153,7 +4161,7 @@ $@"EXECUTE sp_executesql N'
                 dynamic newVariableInit = null;
                 foreach (var item in tagsAndTypes)
                 {
-                    switch (CSCS_GUI.DEFINES[item.Key.ToLower()].Type)
+                    switch (Gui.DEFINES[item.Key.ToLower()].Type)
                     {
                         case Variable.VarType.NONE:
                             break;
@@ -4218,7 +4226,7 @@ $@"EXECUTE sp_executesql N'
                         default:
                             break;
                     }
-                    CSCS_GUI.DEFINES[item.Key.ToLower()].InitVariable(new Variable(newVariableInit));
+                    Gui.DEFINES[item.Key.ToLower()].InitVariable(new Variable(newVariableInit), Gui);
                     Gui.OnVariableChange(item.Key.ToLower(), new Variable(newVariableInit), true);
                     i++;
                 }
@@ -4263,7 +4271,7 @@ $@"EXECUTE sp_executesql N'
             protected override Variable Evaluate(ParsingScript script)
             {
                 Script = script;
-                Gui = script.Context as CSCS_GUI;
+                Gui = CSCS_GUI.GetInstance(script);
                 List<Variable> args = script.GetFunctionArgs();
                 Utils.CheckArgs(args.Count, 3, m_name);
 
@@ -4531,7 +4539,7 @@ $@"EXECUTE sp_executesql N'
                     }
                     startStringResult = startStringResult.Remove(startStringResult.Length - 1, 1);
 
-                    new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, startStringResult, "", "", Script).FINDV();
+                    new Btrieve.FINDVClass(Script, tableHndlNum, "g", tableKey, startStringResult).FINDV();
                 }
                 else
                 {
@@ -4544,7 +4552,7 @@ $@"EXECUTE sp_executesql N'
 
                         for (int i = 0; i < segmentsOrdered.Count(); i++)
                         {
-                            if (CSCS_GUI.DEFINES.TryGetValue(segmentsOrdered[i].ToLower(), out DefineVariable bufferVar))
+                            if (Gui.DEFINES.TryGetValue(segmentsOrdered[i].ToLower(), out DefineVariable bufferVar))
                             {
                                 currentStart += bufferVar.AsString();
                                 currentStart += "|";
@@ -4558,7 +4566,7 @@ $@"EXECUTE sp_executesql N'
                         currentStart = thisOpenv.currentRow.ToString();
                     }
 
-                    new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, currentStart, "", "", Script).FINDV();
+                    new Btrieve.FINDVClass(Script, tableHndlNum, "g", tableKey, currentStart).FINDV();
                 }
 
                 //---------------------------------------------------------------------------
@@ -4577,7 +4585,7 @@ $@"EXECUTE sp_executesql N'
                 {
                     if (forIsSet && !Script.GetTempScript(forString).Execute(new char[] { '"' }, 0).AsBool())
                     {
-                        new Btrieve.FINDVClass(tableHndlNum, "n", "", "", "", "", Script).FINDV();
+                        new Btrieve.FINDVClass(Script, tableHndlNum, "n").FINDV();
                         continue;
                     }
 
@@ -4587,7 +4595,7 @@ $@"EXECUTE sp_executesql N'
 
                     foreach (var column in tagsAndTypes)
                     {
-                        if (CSCS_GUI.DEFINES.TryGetValue(column.Key.ToLower(), out DefineVariable defVar))
+                        if (Gui.DEFINES.TryGetValue(column.Key.ToLower(), out DefineVariable defVar))
                         {
                             currentRow[column.Key] = defVar.AsString();
                         }
@@ -4595,7 +4603,7 @@ $@"EXECUTE sp_executesql N'
                     gridsDataTables[gridName].Rows.Add(currentRow);
 
 
-                    new Btrieve.FINDVClass(tableHndlNum, "n", "", "", "", "", Script).FINDV();
+                    new Btrieve.FINDVClass(Script, tableHndlNum, "n").FINDV();
                     if (LastFlerrsOfFnums[tableHndlNum] == 3)
                     {
                         SetFlerr(0, tableHndlNum);
@@ -4984,12 +4992,12 @@ $@"EXECUTE sp_executesql N'
                                         break;
                                 }
 
-                                CSCS_GUI.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable(initForDefine));
+                                Gui.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable(initForDefine), Gui);
                                 Gui.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable(initForDefine), true);
                             }
                             else
                             {
-                                CSCS_GUI.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable(currentItemArray[i]));
+                                Gui.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable(currentItemArray[i]), Gui);
                                 Gui.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable(currentItemArray[i]), true);
                             }
                         }
@@ -5070,7 +5078,7 @@ $@"EXECUTE sp_executesql N'
                 dynamic newVariableInit = null;
                 foreach (var item in tagsAndTypes)
                 {
-                    switch (CSCS_GUI.DEFINES[item.Key.ToLower()].Type)
+                    switch (Gui.DEFINES[item.Key.ToLower()].Type)
                     {
                         case Variable.VarType.NONE:
                             break;
@@ -5135,7 +5143,7 @@ $@"EXECUTE sp_executesql N'
                         default:
                             break;
                     }
-                    CSCS_GUI.DEFINES[item.Key.ToLower()].InitVariable(new Variable(newVariableInit));
+                    Gui.DEFINES[item.Key.ToLower()].InitVariable(new Variable(newVariableInit), Gui);
                     Gui.OnVariableChange(item.Key.ToLower(), new Variable(newVariableInit), true);
                     i++;
                 }
@@ -5236,7 +5244,7 @@ $@"EXECUTE sp_executesql N'
                     if (gridsArrayClass.TryGetValue(gridName, out DisplayArrayClass dac))
                     {
                         // updates lineCntr variable
-                        if (CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar))
+                        if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar))
                         {
                             defVar.Value = value;
                         }
@@ -5250,7 +5258,7 @@ $@"EXECUTE sp_executesql N'
                     }
 
                     string funcName;
-                    if (CSCS_GUI.s_MoveHandlers.TryGetValue(widgetName, out funcName))
+                    if (Gui.m_MoveHandlers.TryGetValue(widgetName, out funcName))
                     {
                         Gui.Control2Window.TryGetValue(dg, out Window win);
                         var result = Interpreter.LastInstance.Run(funcName, new Variable(widgetName), null,
@@ -5284,7 +5292,7 @@ $@"EXECUTE sp_executesql N'
             protected override Variable Evaluate(ParsingScript script)
             {
                 Script = script;
-                Gui = script.Context as CSCS_GUI;
+                Gui = CSCS_GUI.GetInstance(script);
                 List<Variable> args = script.GetFunctionArgs();
                 Utils.CheckArgs(args.Count, 4, m_name);
 
@@ -5303,7 +5311,7 @@ $@"EXECUTE sp_executesql N'
 
                 //------------------------------------------------------------------------
 
-                if (CSCS_GUI.DEFINES.TryGetValue(maxRowsVarName.ToLower(), out DefineVariable defVar))
+                if (Gui.DEFINES.TryGetValue(maxRowsVarName.ToLower(), out DefineVariable defVar))
                 {
                     if (defVar.Type == Variable.VarType.NUMBER)
                     {
@@ -5315,7 +5323,7 @@ $@"EXECUTE sp_executesql N'
                     //throw error
                 }
 
-                if (CSCS_GUI.DEFINES.TryGetValue(actCntrVarName.ToLower(), out DefineVariable defVar2))
+                if (Gui.DEFINES.TryGetValue(actCntrVarName.ToLower(), out DefineVariable defVar2))
                 {
                     if (defVar2.Type == Variable.VarType.NUMBER)
                     {
@@ -5402,7 +5410,7 @@ $@"EXECUTE sp_executesql N'
                     newColumn.ColumnName = item.Key;
                     newColumn.DataType = item.Value;
 
-                    if (CSCS_GUI.DEFINES.TryGetValue(item.Key.ToLower(), out DefineVariable defVariable))
+                    if (Gui.DEFINES.TryGetValue(item.Key.ToLower(), out DefineVariable defVariable))
                     {
                         switch (defVariable.DefType.ToUpper())
                         {
@@ -5515,7 +5523,7 @@ $@"EXECUTE sp_executesql N'
                 {
                     var thisArrCount = 0;
                     var arrName = gridsArrayClass[gridName].tagsAndTypes.Keys.ToArray()[i];
-                    if (CSCS_GUI.DEFINES.TryGetValue(arrName.ToLower(), out DefineVariable defineVariable))
+                    if (Gui.DEFINES.TryGetValue(arrName.ToLower(), out DefineVariable defineVariable))
                     {
                         if (defineVariable.Type == Variable.VarType.ARRAY)
                         {
@@ -5534,12 +5542,12 @@ $@"EXECUTE sp_executesql N'
                     lastArrayCount = thisArrCount;
                 }
 
-                if (!CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable maxrows))
+                if (!Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable maxrows))
                 {
                     return;
                 }
 
-                if (!CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable actelems))
+                if (!Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable actelems))
                 {
                     return;
                 }
@@ -5550,7 +5558,7 @@ $@"EXECUTE sp_executesql N'
 
                     foreach (var column in gridsArrayClass[gridName].newTagsAndTypes)
                     {
-                        if (CSCS_GUI.DEFINES.TryGetValue(column.Key.ToLower(), out DefineVariable defVar))
+                        if (Gui.DEFINES.TryGetValue(column.Key.ToLower(), out DefineVariable defVar))
                         {
                             Variable current = defVar.Tuple.ElementAt(i);
                             switch (column.Value.Name)
@@ -5950,7 +5958,7 @@ $@"EXECUTE sp_executesql N'
 
                 dg.BeginEdit();
 
-                CSCS_GUI.DEFINES[lineCntrVarName.ToLower()].InitVariable(new Variable(currentRowIndex));
+                Gui.DEFINES[lineCntrVarName.ToLower()].InitVariable(new Variable(currentRowIndex), Gui);
             }
 
             private void Dg_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
@@ -6013,7 +6021,7 @@ $@"EXECUTE sp_executesql N'
                 for (int i = 0; i < gridsArrayClass[gridName].tagsAndTypes.Count; i++)
                 {
                     var arrName = gridsArrayClass[gridName].newTagsAndTypes.Keys.ToArray()[i];
-                    if (CSCS_GUI.DEFINES.TryGetValue(arrName.ToLower(), out DefineVariable defineVariable))
+                    if (Gui.DEFINES.TryGetValue(arrName.ToLower(), out DefineVariable defineVariable))
                     {
                         if (defineVariable.Type == Variable.VarType.ARRAY)
                         {
@@ -6074,10 +6082,11 @@ $@"EXECUTE sp_executesql N'
             {
                 List<Variable> args = script.GetFunctionArgs();
                 Utils.CheckArgs(args.Count, 1, m_name);
+                var gui = CSCS_GUI.GetInstance(script);
 
                 var gridName = Utils.GetSafeString(args, 0);
 
-                if (CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar))
+                if (gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar))
                 {
                     gridsArrayClass[gridName].dg.SelectedIndex = (int)defVar.Value;
                     gridsArrayClass[gridName].dg.ScrollIntoView(gridsArrayClass[gridName].dg.SelectedItem);
@@ -6099,7 +6108,7 @@ $@"EXECUTE sp_executesql N'
                 var option = Utils.GetSafeString(args, 1).ToLower();
 
                 DataGrid dg = null;
-                Gui = script.Context as CSCS_GUI;
+                Gui = CSCS_GUI.GetInstance(script);
 
                 if (Gui.Controls.TryGetValue(gridName, out FrameworkElement dgFe))
                 {
@@ -6117,13 +6126,13 @@ $@"EXECUTE sp_executesql N'
                 {
                     case "updatecurrent":
 
-                        if (CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable lineCntrDefVar))
+                        if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable lineCntrDefVar))
                         {
                             var itemArray = gridsDataTables[gridName].Rows[(int)lineCntrDefVar.Value].ItemArray;
                             for (int i = 0; i < itemArray.Length; i++)
                             {
 
-                                if (CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].tags[i].ToLower(), out DefineVariable defVar))
+                                if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].tags[i].ToLower(), out DefineVariable defVar))
                                 {
                                     itemArray[i] = defVar.Tuple[(int)lineCntrDefVar.Value].AsString();
                                 }
@@ -6186,7 +6195,7 @@ $@"EXECUTE sp_executesql N'
                 List<Variable> args = script.GetFunctionArgs();
                 Utils.CheckArgs(args.Count, 2, m_name);
 
-                Gui = script.Context as CSCS_GUI;
+                Gui = CSCS_GUI.GetInstance(script);
 
                 var gridName = Utils.GetSafeString(args, 0).ToLower();
                 var option = Utils.GetSafeString(args, 1).ToLower();
@@ -6209,13 +6218,13 @@ $@"EXECUTE sp_executesql N'
                 {
                     case "updatecurrent":
 
-                        if (CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable lineCntrDefVar))
+                        if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable lineCntrDefVar))
                         {
                             var itemArray = gridsDataTables[gridName].Rows[(int)lineCntrDefVar.Value].ItemArray;
                             for (int i = 0; i < itemArray.Length; i++)
                             {
 
-                                if (CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].tags[i].ToLower(), out DefineVariable defVar))
+                                if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].tags[i].ToLower(), out DefineVariable defVar))
                                 {
                                     itemArray[i] = defVar.Tuple[(int)lineCntrDefVar.Value].AsString();
                                 }
@@ -6279,7 +6288,7 @@ $@"EXECUTE sp_executesql N'
                 List<Variable> args = script.GetFunctionArgs();
                 Utils.CheckArgs(args.Count, 2, m_name);
 
-                Gui = script.Context as CSCS_GUI;
+                Gui = CSCS_GUI.GetInstance(script);
 
                 var gridName = Utils.GetSafeString(args, 0).ToLower();
                 var option = Utils.GetSafeString(args, 1).ToLower();
@@ -6303,7 +6312,7 @@ $@"EXECUTE sp_executesql N'
                                     var currentRowCount = dg.Items.Count;
 
                                     // check for max length
-                                    if (CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable defVar))
+                                    if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable defVar))
                                     {
                                         if (currentRowCount + 1 > defVar.Value)
                                         {
@@ -6317,7 +6326,7 @@ $@"EXECUTE sp_executesql N'
                                     {
                                         var tagToLower = item.ToLower();
 
-                                        if (CSCS_GUI.DEFINES.TryGetValue(tagToLower, out DefineVariable defVar2))
+                                        if (Gui.DEFINES.TryGetValue(tagToLower, out DefineVariable defVar2))
                                         {
                                             if (defVar2.Tuple.Count > currentRowCount)
                                             {
@@ -6332,15 +6341,15 @@ $@"EXECUTE sp_executesql N'
 
 
                                     // fill linCntr with new element index
-                                    if (CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar3))
+                                    if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar3))
                                     {
-                                        defVar3.InitVariable(new Variable(currentRowCount));
+                                        defVar3.InitVariable(new Variable(currentRowCount), Gui);
                                     }
 
                                     // increment active elements variable
-                                    if (CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar4))
+                                    if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar4))
                                     {
-                                        defVar4.InitVariable(new Variable(defVar4.Value + 1));
+                                        defVar4.InitVariable(new Variable(defVar4.Value + 1), Gui);
                                     }
 
                                     // add new grid row
@@ -6384,7 +6393,7 @@ $@"EXECUTE sp_executesql N'
                                                 {
                                                     var tagToLower = item.ToLower();
 
-                                                    if (CSCS_GUI.DEFINES.TryGetValue(tagToLower, out DefineVariable defVar2))
+                                                    if (Gui.DEFINES.TryGetValue(tagToLower, out DefineVariable defVar2))
                                                     {
                                                         defVar2.Tuple[0] = new Variable() { };
                                                     }
@@ -6400,11 +6409,11 @@ $@"EXECUTE sp_executesql N'
                                         }
 
                                         // decrement active elements variable
-                                        if (CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar5))
+                                        if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar5))
                                         {
                                             if ((int)defVar5.Value > 1)
                                             {
-                                                defVar5.InitVariable(new Variable(defVar5.Value - 1));
+                                                defVar5.InitVariable(new Variable(defVar5.Value - 1), Gui);
                                             }
                                         }
                                     }
@@ -6421,7 +6430,7 @@ $@"EXECUTE sp_executesql N'
                                 else if (gridsArrayClass[gridName].tableOrArray == "array")
                                 {
                                     // check for max length
-                                    if (CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable defVar6))
+                                    if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable defVar6))
                                     {
                                         if (dg.Items.Count + 1 > defVar6.Value)
                                         {
@@ -6437,9 +6446,9 @@ $@"EXECUTE sp_executesql N'
                                             gridsDataTables[gridName].Rows.InsertAt(gridsDataTables[gridName].NewRow(), dg.SelectedIndex + 1);
 
                                             // increment active elements variable
-                                            if (CSCS_GUI.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar7))
+                                            if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar7))
                                             {
-                                                defVar7.InitVariable(new Variable(defVar7.Value + 1));
+                                                defVar7.InitVariable(new Variable(defVar7.Value + 1), Gui);
                                             }
 
                                             dg.SelectedIndex++;
@@ -6495,7 +6504,7 @@ $@"EXECUTE sp_executesql N'
                 {
                     foreach (var arrayName in dac.tags)
                     {
-                        if (CSCS_GUI.DEFINES.TryGetValue(arrayName.ToLower(), out DefineVariable defVar))
+                        if (Gui.DEFINES.TryGetValue(arrayName.ToLower(), out DefineVariable defVar))
                         {
                             defVar.Tuple.Insert(index, new Variable());
                         }
@@ -6518,7 +6527,7 @@ $@"EXECUTE sp_executesql N'
                 {
                     foreach (var arrayName in dac.tags)
                     {
-                        if (CSCS_GUI.DEFINES.TryGetValue(arrayName.ToLower(), out DefineVariable defVar))
+                        if (Gui.DEFINES.TryGetValue(arrayName.ToLower(), out DefineVariable defVar))
                         {
                             defVar.Tuple.RemoveAt(index);
                         }

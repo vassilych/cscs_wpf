@@ -45,11 +45,11 @@ namespace WpfCSCS
 
         public void NavigateFirst(string navigatorName)
         {
-            new Btrieve.FINDVClass(navigatorOfTable[navigatorName], "f", navigatorKey[navigatorName], "", "", "", navigatorScript[navigatorName]).FINDV();
+            new Btrieve.FINDVClass(navigatorScript[navigatorName], navigatorOfTable[navigatorName], "f", navigatorKey[navigatorName]).FINDV();
         }
         public void NavigateLast(string navigatorName)
         {
-            new Btrieve.FINDVClass(navigatorOfTable[navigatorName], "l", navigatorKey[navigatorName], "", "", "", navigatorScript[navigatorName]).FINDV();
+            new Btrieve.FINDVClass(navigatorScript[navigatorName], navigatorOfTable[navigatorName], "l", navigatorKey[navigatorName]).FINDV();
         }
 
         public void NavigateNext(string navigatorName)
@@ -60,7 +60,7 @@ namespace WpfCSCS
             }
             else
             {
-                new Btrieve.FINDVClass(navigatorOfTable[navigatorName], "n", "", "", "", "", navigatorScript[navigatorName]).FINDV();
+                new Btrieve.FINDVClass(navigatorScript[navigatorName], navigatorOfTable[navigatorName], "n").FINDV();
             }
         }
 
@@ -72,7 +72,7 @@ namespace WpfCSCS
             }
             else
             {
-                new Btrieve.FINDVClass(navigatorOfTable[navigatorName], "p", "", "", "", "", navigatorScript[navigatorName]).FINDV();
+                new Btrieve.FINDVClass(navigatorScript[navigatorName], navigatorOfTable[navigatorName], "p").FINDV();
             }
         }
 

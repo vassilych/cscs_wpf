@@ -33,7 +33,8 @@ namespace WpfCSCS
 
         static Dictionary<int, XtraReport> Reports;
 
-        ParsingScript script;
+        ParsingScript Script;
+        CSCS_GUI Gui;
 
         static Dictionary<int, DataSet> DataSets = new Dictionary<int, DataSet>();
         static Dictionary<int, DataTable> DataTables = new Dictionary<int, DataTable>();
@@ -46,9 +47,10 @@ namespace WpfCSCS
         {
             option = _option;
         }
-        protected override Variable Evaluate(ParsingScript _script)
+        protected override Variable Evaluate(ParsingScript script)
         {
-            script = _script;
+            Script = script;
+            Gui = CSCS_GUI.GetInstance(script);
 
             switch (option)
             {
@@ -75,7 +77,7 @@ namespace WpfCSCS
         {
             bool isMainReport;
 
-            List<Variable> args = script.GetFunctionArgs();
+            List<Variable> args = Script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 1, m_name);
 
             string reportFilename = Utils.GetSafeString(args, 0);
@@ -126,7 +128,7 @@ namespace WpfCSCS
                 foreach (var fieldName in fieldsOfReports[1])
                 {
                     Type fieldType = typeof(Int32);
-                    if (CSCS_GUI.DEFINES.TryGetValue(fieldName, out DefineVariable defVar))
+                    if (Gui.DEFINES.TryGetValue(fieldName, out DefineVariable defVar))
                     {
                         switch (defVar.DefType)
                         {
@@ -167,7 +169,7 @@ namespace WpfCSCS
                     {
                         //has Tag
                         var imageSourceVariableName = picture.Tag.ToString().ToLower();
-                        if (CSCS_GUI.DEFINES.TryGetValue(imageSourceVariableName, out DefineVariable defVar))
+                        if (Gui.DEFINES.TryGetValue(imageSourceVariableName, out DefineVariable defVar))
                         {
                             picture.ImageUrl = defVar.AsString();
                         }
@@ -219,7 +221,7 @@ namespace WpfCSCS
                 foreach (var fieldName in fieldsOfReports[thisSubreportNum])
                 {
                     Type fieldType = typeof(Int32);
-                    if (CSCS_GUI.DEFINES.TryGetValue(fieldName, out DefineVariable defVar))
+                    if (Gui.DEFINES.TryGetValue(fieldName, out DefineVariable defVar))
                     {
                         switch (defVar.DefType)
                         {
@@ -268,7 +270,7 @@ namespace WpfCSCS
 
         private void OutputReport()
         {
-            List<Variable> args = script.GetFunctionArgs();
+            List<Variable> args = Script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 1, m_name);
 
             int reportHndlNum = Utils.GetSafeInt(args, 0);
@@ -302,7 +304,7 @@ namespace WpfCSCS
                 {
                     newObjectArray[i] = thisSubreportsMainReport;
                 }
-                else if (CSCS_GUI.DEFINES.TryGetValue(dataTableFieldName, out DefineVariable defVar))
+                else if (Gui.DEFINES.TryGetValue(dataTableFieldName, out DefineVariable defVar))
                 {
                     switch (defVar.DefType)
                     {
@@ -341,7 +343,7 @@ namespace WpfCSCS
                     if (!control.Name.StartsWith("xr"))
                     {
                         string controlName = control.Name.ToLower();
-                        if (CSCS_GUI.DEFINES.TryGetValue(controlName, out DefineVariable defVar)) // visibility
+                        if (Gui.DEFINES.TryGetValue(controlName, out DefineVariable defVar)) // visibility
                         {
                             if (defVar.AsString().ToLower() == "off")
                             {
@@ -352,20 +354,20 @@ namespace WpfCSCS
                                 control.Visible = true;
                             }
                         }
-                        if (CSCS_GUI.DEFINES.TryGetValue(controlName + "cl", out DefineVariable defVar1)) // font color
+                        if (Gui.DEFINES.TryGetValue(controlName + "cl", out DefineVariable defVar1)) // font color
                         {
                             var label = control as XRLabel;
                             label.ForeColor = System.Drawing.Color.FromName(defVar1.AsString());
                         }
-                        if (CSCS_GUI.DEFINES.TryGetValue(controlName + "lt", out DefineVariable defVar2)) // left margin
+                        if (Gui.DEFINES.TryGetValue(controlName + "lt", out DefineVariable defVar2)) // left margin
                         {
                             control.LeftF = (float)defVar2.AsDouble();
                         }
-                        if (CSCS_GUI.DEFINES.TryGetValue(controlName + "top", out DefineVariable defVar3)) // left margin
+                        if (Gui.DEFINES.TryGetValue(controlName + "top", out DefineVariable defVar3)) // left margin
                         {
                             control.TopF = (float)defVar3.AsDouble();
                         }
-                        if (CSCS_GUI.DEFINES.TryGetValue(controlName + "fc", out DefineVariable defVar4)) // font color
+                        if (Gui.DEFINES.TryGetValue(controlName + "fc", out DefineVariable defVar4)) // font color
                         {
                             try
                             {
@@ -381,25 +383,25 @@ namespace WpfCSCS
                             {
                             }
                         }
-                        if (CSCS_GUI.DEFINES.TryGetValue(controlName + "fs", out DefineVariable defVar5)) // font size
+                        if (Gui.DEFINES.TryGetValue(controlName + "fs", out DefineVariable defVar5)) // font size
                         {
                             System.Drawing.Font oldFont = control.GetEffectiveFont();
                             System.Drawing.Font newFont = new System.Drawing.Font(oldFont.FontFamily, (float)defVar5.AsDouble(), oldFont.Style);
                             control.Font = newFont;
                         }
-                        if (CSCS_GUI.DEFINES.TryGetValue(controlName + "fn", out DefineVariable defVar6)) // font name
+                        if (Gui.DEFINES.TryGetValue(controlName + "fn", out DefineVariable defVar6)) // font name
                         {
                             System.Drawing.Font oldFont = control.GetEffectiveFont();
                             System.Drawing.Font newFont = new System.Drawing.Font(new System.Drawing.FontFamily(defVar6.AsString()), oldFont.Size, oldFont.Style);
                             control.Font = newFont;
                         }
-                        if (CSCS_GUI.DEFINES.TryGetValue(control.Name.ToLower() + "wd", out DefineVariable defVar7))
+                        if (Gui.DEFINES.TryGetValue(control.Name.ToLower() + "wd", out DefineVariable defVar7))
                         {
                             var requestedWidth = (float)defVar7.AsDouble();
                             if (requestedWidth != 0)
                                 control.WidthF = requestedWidth;
                         }
-                        if (CSCS_GUI.DEFINES.TryGetValue(control.Name.ToLower() + "ht", out DefineVariable defVar8))
+                        if (Gui.DEFINES.TryGetValue(control.Name.ToLower() + "ht", out DefineVariable defVar8))
                         {
                             var requestedHeighth = (float)defVar8.AsDouble();
                             if (requestedHeighth != 0)
@@ -412,7 +414,7 @@ namespace WpfCSCS
 
         private void UpdateReport()
         {
-            List<Variable> args = script.GetFunctionArgs();
+            List<Variable> args = Script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 2, m_name);
 
             int reportHndlNum = Utils.GetSafeInt(args, 0);
@@ -425,7 +427,7 @@ namespace WpfCSCS
 
             foreach (var variable in variableArray)
             {
-                if (CSCS_GUI.DEFINES.TryGetValue(variable.ToLower(), out DefineVariable defVar))
+                if (Gui.DEFINES.TryGetValue(variable.ToLower(), out DefineVariable defVar))
                 {
                     switch (defVar.DefType)
                     {

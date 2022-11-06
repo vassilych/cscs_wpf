@@ -261,8 +261,8 @@ namespace WpfCSCS
         public NavigatorClass NavigatorClass { get; set; } = new NavigatorClass();
         public Btrieve Btrieve { get; set; } = new Btrieve();
 
-        public static string lastObjWidgetName;
-        public static string lastObjClickedWidgetName;
+        public string LastObjWidgetName;
+        public string LastObjClickedWidgetName;
 
         public static CSCS_GUI LastInstance { get; set; }
 
@@ -361,30 +361,29 @@ namespace WpfCSCS
 
         //public static Action<string, string> OnWidgetClick;
 
-        static Dictionary<string, string> s_actionHandlers = new Dictionary<string, string>();
-        static Dictionary<string, string> s_preActionHandlers = new Dictionary<string, string>();
-        static Dictionary<string, string> s_postActionHandlers = new Dictionary<string, string>();
-        static Dictionary<string, string> s_keyDownHandlers = new Dictionary<string, string>();
-        static Dictionary<string, string> s_keyUpHandlers = new Dictionary<string, string>();
-        static Dictionary<string, string> s_textChangedHandlers = new Dictionary<string, string>();
-        static Dictionary<string, string> s_selChangedHandlers = new Dictionary<string, string>();
-        static Dictionary<string, string> s_mouseHoverHandlers = new Dictionary<string, string>();
-        static Dictionary<string, string> s_dateSelectedHandlers = new Dictionary<string, string>();
+        Dictionary<string, string> m_actionHandlers = new Dictionary<string, string>();
+        Dictionary<string, string> m_preActionHandlers = new Dictionary<string, string>();
+        Dictionary<string, string> m_postActionHandlers = new Dictionary<string, string>();
+        Dictionary<string, string> m_keyDownHandlers = new Dictionary<string, string>();
+        Dictionary<string, string> m_keyUpHandlers = new Dictionary<string, string>();
+        Dictionary<string, string> m_textChangedHandlers = new Dictionary<string, string>();
+        Dictionary<string, string> m_selChangedHandlers = new Dictionary<string, string>();
+        Dictionary<string, string> m_mouseHoverHandlers = new Dictionary<string, string>();
+        Dictionary<string, string> m_dateSelectedHandlers = new Dictionary<string, string>();
 
         //Pre, Post
-        static Dictionary<string, string> s_PreHandlers = new Dictionary<string, string>();
-        static Dictionary<string, string> s_PostHandlers = new Dictionary<string, string>();
+        Dictionary<string, string> m_PreHandlers = new Dictionary<string, string>();
+        Dictionary<string, string> m_PostHandlers = new Dictionary<string, string>();
 
+        Dictionary<string, string> m_NavigatorChangeHandlers = new Dictionary<string, string>();
+        Dictionary<string, string> m_NavigatorAfterChangeHandlers = new Dictionary<string, string>();
 
-        static Dictionary<string, string> s_NavigatorChangeHandlers = new Dictionary<string, string>();
-        static Dictionary<string, string> s_NavigatorAfterChangeHandlers = new Dictionary<string, string>();
+        Dictionary<string, string> m_ChangeHandlers = new Dictionary<string, string>();
 
-        static Dictionary<string, string> s_ChangeHandlers = new Dictionary<string, string>();
+        public Dictionary<string, string> m_MoveHandlers = new Dictionary<string, string>();
+        Dictionary<string, string> m_SelectHandlers = new Dictionary<string, string>();
 
-        public static Dictionary<string, string> s_MoveHandlers = new Dictionary<string, string>();
-        static Dictionary<string, string> s_SelectHandlers = new Dictionary<string, string>();
-
-        static Dictionary<string, Variable> s_boundVariables = new Dictionary<string, Variable>();
+        Dictionary<string, Variable> m_boundVariables = new Dictionary<string, Variable>();
         //static Dictionary<string, TabPage> s_tabPages           = new Dictionary<string, TabPage>();
         //static TabControl s_tabControl;
 
@@ -392,12 +391,12 @@ namespace WpfCSCS
 
         public static AdictionaryLocal.Adictionary Adictionary { get; set; } = new AdictionaryLocal.Adictionary();
 
-        public static Dictionary<string, DefineVariable> DEFINES { get; set; } =
+        public Dictionary<string, DefineVariable> DEFINES { get; set; } =
             new Dictionary<string, DefineVariable>();
-        public static Dictionary<string, WidgetData> WIDGETS { get; set; } =
+        public Dictionary<string, WidgetData> WIDGETS { get; set; } =
             new Dictionary<string, WidgetData>();
 
-        public static Dictionary<string, Dictionary<string, bool>> s_varExists =
+        public Dictionary<string, Dictionary<string, bool>> m_varExists =
             new Dictionary<string, Dictionary<string, bool>>();
 
 
@@ -575,7 +574,7 @@ namespace WpfCSCS
             }
 
             var widgetName = name.ToLower();
-            if (!s_boundVariables.TryGetValue(widgetName, out Variable bounded))
+            if (!m_boundVariables.TryGetValue(widgetName, out Variable bounded))
             {
                 return;
             }
@@ -588,7 +587,7 @@ namespace WpfCSCS
             var text = newValue.AsString();
 
             SetTextWidgetFunction.SetText(widget, text);
-            s_boundVariables[widgetName] = newValue;
+            m_boundVariables[widgetName] = newValue;
         }
 
         void UpdateVariable(FrameworkElement widget, Variable newValue)
@@ -599,9 +598,9 @@ namespace WpfCSCS
                 return;
             }
 
-            if (CSCS_GUI.DEFINES.TryGetValue(widgetName, out DefineVariable defVar))
+            if (DEFINES.TryGetValue(widgetName, out DefineVariable defVar))
             {
-                defVar.InitVariable(newValue);
+                defVar.InitVariable(newValue, this);
                 return;
             }
 
@@ -682,7 +681,7 @@ namespace WpfCSCS
                         {
                             var headerStr = binding.Path.Path.ToLower();
                             var headerVar = new DefineVariable(headerStr, "datagrid", dg, i);
-                            headerVar.InitFromExisting(headerStr);
+                            headerVar.InitFromExisting(this, headerStr);
                             DEFINES[headerStr] = headerVar;
                             wd.headers[headerStr] = headerVar;
                             wd.headerNames.Add(headerStr);
@@ -699,7 +698,7 @@ namespace WpfCSCS
             }
 
             name = name.ToLower();
-            s_boundVariables[name] = current;
+            m_boundVariables[name] = current;
             if (DEFINES.TryGetValue(name, out DefineVariable defVar))
             {
                 OnVariableChange(name, defVar);
@@ -729,7 +728,7 @@ namespace WpfCSCS
                     sortedCast = sorted.Cast<ExpandoObject>();
                 }
 
-                FillWidgetFunction.ResetArrays(sender as FrameworkElement, sortedCast);
+                FillWidgetFunction.ResetArrays(this, sender as FrameworkElement, sortedCast);
             }, null);
 
             //Console.WriteLine(e.Handled);
@@ -767,14 +766,14 @@ namespace WpfCSCS
             {
                 return false;
             }
-            s_actionHandlers[name] = action;
+            m_actionHandlers[name] = action;
             clickable.Click += new RoutedEventHandler(Widget_Click);
             return true;
         }
 
         public bool AddPreActionHandler(string name, string action, FrameworkElement widget)
         {
-            s_preActionHandlers[name] = action;
+            m_preActionHandlers[name] = action;
             if (widget is ComboBox)
             {
                 var combo = widget as ComboBox;
@@ -786,7 +785,7 @@ namespace WpfCSCS
         }
         public bool AddPostActionHandler(string name, string action, FrameworkElement widget)
         {
-            s_postActionHandlers[name] = action;
+            m_postActionHandlers[name] = action;
             if (widget is ComboBox)
             {
                 var combo = widget as ComboBox;
@@ -799,13 +798,13 @@ namespace WpfCSCS
 
         public bool AddKeyDownHandler(string name, string action, FrameworkElement widget)
         {
-            s_keyDownHandlers[name] = action;
+            m_keyDownHandlers[name] = action;
             widget.KeyDown += new KeyEventHandler(Widget_KeyDown);
             return true;
         }
         public bool AddKeyUpHandler(string name, string action, FrameworkElement widget)
         {
-            s_keyUpHandlers[name] = action;
+            m_keyUpHandlers[name] = action;
             widget.KeyUp += new KeyEventHandler(Widget_KeyUp);
             return true;
         }
@@ -817,7 +816,7 @@ namespace WpfCSCS
                 return false;
             }
 
-            s_textChangedHandlers[name] = action;
+            m_textChangedHandlers[name] = action;
             // x2
             textable.TextChanged -= new TextChangedEventHandler(Widget_TextChanged);
             textable.TextChanged += new TextChangedEventHandler(Widget_TextChanged);
@@ -831,7 +830,7 @@ namespace WpfCSCS
             {
                 return false;
             }
-            s_selChangedHandlers[name] = action;
+            m_selChangedHandlers[name] = action;
             sel.SelectionChanged += new SelectionChangedEventHandler(Widget_SelectionChanged);
             return true;
         }
@@ -842,7 +841,7 @@ namespace WpfCSCS
             {
                 return false;
             }
-            s_dateSelectedHandlers[name] = action;
+            m_dateSelectedHandlers[name] = action;
             datePicker.SelectedDateChanged += DatePicker_SelectedDateChanged;
 
             return true;
@@ -861,7 +860,7 @@ namespace WpfCSCS
                 return false;
             }
 
-            s_PreHandlers[name] = action;
+            m_PreHandlers[name] = action;
             textable.GotFocus -= new RoutedEventHandler(Widget_Pre);
             textable.GotFocus += new RoutedEventHandler(Widget_Pre);
 
@@ -876,7 +875,7 @@ namespace WpfCSCS
                 return false;
             }
 
-            s_PostHandlers[name] = action;
+            m_PostHandlers[name] = action;
             textable.PreviewLostKeyboardFocus -= new KeyboardFocusChangedEventHandler(Widget_Post);
             textable.PreviewLostKeyboardFocus += new KeyboardFocusChangedEventHandler(Widget_Post);
 
@@ -893,7 +892,7 @@ namespace WpfCSCS
                     return false;
                 }
 
-                s_ChangeHandlers[name] = action;
+                m_ChangeHandlers[name] = action;
                 tabControl.SelectionChanged += new SelectionChangedEventHandler(Widget_Change);
 
                 return true;
@@ -906,7 +905,7 @@ namespace WpfCSCS
                     return false;
                 }
 
-                s_NavigatorChangeHandlers[name] = action;
+                m_NavigatorChangeHandlers[name] = action;
                 nav.Navigator_buttonClicked += new EventHandler(Navigator_Change);
 
                 return true;
@@ -925,7 +924,7 @@ namespace WpfCSCS
                     return false;
                 }
 
-                s_NavigatorAfterChangeHandlers[name] = action;
+                m_NavigatorAfterChangeHandlers[name] = action;
                 nav.Navigator_buttonClicked -= new EventHandler(Navigator_AfterChange);
                 nav.Navigator_buttonClicked += new EventHandler(Navigator_AfterChange);
 
@@ -945,7 +944,7 @@ namespace WpfCSCS
                     return false;
                 }
 
-                s_MoveHandlers[name] = action;
+                m_MoveHandlers[name] = action;
                 //dg.SelectionChanged -= new SelectionChangedEventHandler(DataGrid_Move);
                 //dg.SelectionChanged += new SelectionChangedEventHandler(DataGrid_Move);
 
@@ -965,7 +964,7 @@ namespace WpfCSCS
                     return false;
                 }
 
-                s_SelectHandlers[name] = action;
+                m_SelectHandlers[name] = action;
                 dg.MouseDoubleClick -= new MouseButtonEventHandler(DataGrid_Select);
                 dg.MouseDoubleClick += new MouseButtonEventHandler(DataGrid_Select);
 
@@ -989,7 +988,7 @@ namespace WpfCSCS
             var picker = sender as DatePicker;
             DateTime? date = picker?.SelectedDate;
             if (string.IsNullOrWhiteSpace(widgetName) || date == null ||
-               !s_dateSelectedHandlers.TryGetValue(widgetName, out string funcName))
+               !m_dateSelectedHandlers.TryGetValue(widgetName, out string funcName))
             {
                 return;
             }
@@ -999,7 +998,7 @@ namespace WpfCSCS
 
         public bool AddMouseHoverHandler(string name, string action, FrameworkElement widget)
         {
-            s_mouseHoverHandlers[name] = action;
+            m_mouseHoverHandlers[name] = action;
             widget.MouseEnter += new MouseEventHandler(Widget_Hover);
             return true;
         }
@@ -1008,8 +1007,8 @@ namespace WpfCSCS
 
         private void Widget_Click(object sender, RoutedEventArgs e)
         {
-            lastObjClickedWidgetName = ((Control)sender).Name;
-            lastObjWidgetName = lastObjClickedWidgetName;
+            LastObjClickedWidgetName = ((Control)sender).Name;
+            LastObjWidgetName = LastObjClickedWidgetName;
 
             var widget = sender as FrameworkElement;
             var widgetName = GetWidgetName(widget);
@@ -1074,7 +1073,7 @@ namespace WpfCSCS
 
 
             string funcName;
-            if (!s_actionHandlers.TryGetValue(widgetName, out funcName))
+            if (!m_actionHandlers.TryGetValue(widgetName, out funcName))
             {
                 return;
             }
@@ -1104,7 +1103,7 @@ namespace WpfCSCS
             }
 
             string funcName;
-            if (s_preActionHandlers.TryGetValue(widgetName, out funcName))
+            if (m_preActionHandlers.TryGetValue(widgetName, out funcName))
             {
                 var arg = GetTextWidgetFunction.GetText(widget);
                 Control2Window.TryGetValue(widget, out Window win);
@@ -1123,7 +1122,7 @@ namespace WpfCSCS
             }
 
             string funcName;
-            if (s_postActionHandlers.TryGetValue(widgetName, out funcName))
+            if (m_postActionHandlers.TryGetValue(widgetName, out funcName))
             {
                 var arg = GetTextWidgetFunction.GetText(widget);
                 Control2Window.TryGetValue(widget, out Window win);
@@ -1142,7 +1141,7 @@ namespace WpfCSCS
             }
 
             string funcName;
-            if (s_keyDownHandlers.TryGetValue(widgetName, out funcName))
+            if (m_keyDownHandlers.TryGetValue(widgetName, out funcName))
             {
                 Control2Window.TryGetValue(widget, out Window win);
                 Interpreter.LastInstance.Run(funcName, new Variable(widgetName),
@@ -1160,7 +1159,7 @@ namespace WpfCSCS
             }
 
             string funcName;
-            if (s_keyUpHandlers.TryGetValue(widgetName, out funcName))
+            if (m_keyUpHandlers.TryGetValue(widgetName, out funcName))
             {
                 Control2Window.TryGetValue(widget, out Window win);
                 Interpreter.LastInstance.Run(funcName, new Variable(widgetName),
@@ -1182,7 +1181,7 @@ namespace WpfCSCS
             UpdateVariable(widget, text);
 
             string funcName;
-            if (s_textChangedHandlers.TryGetValue(widgetName, out funcName))
+            if (m_textChangedHandlers.TryGetValue(widgetName, out funcName))
             {
                 Control2Window.TryGetValue(widget, out Window win);
                 Interpreter.LastInstance.Run(funcName, new Variable(widgetName), text,
@@ -1194,7 +1193,7 @@ namespace WpfCSCS
         {
             var widget = sender as Selector;
             var widgetName = GetWidgetBindingName(widget);
-            if (s_selChangedHandlers.TryGetValue(widgetName, out string funcName))
+            if (m_selChangedHandlers.TryGetValue(widgetName, out string funcName))
             {
                 var item = e.AddedItems.Count > 0 ? e.AddedItems[0].ToString() : e.RemovedItems.Count > 0 ? e.RemovedItems[0].ToString() : "";
                 Control2Window.TryGetValue(widget, out Window win);
@@ -1212,7 +1211,7 @@ namespace WpfCSCS
                 return;
             }
 
-            if (s_mouseHoverHandlers.TryGetValue(widgetName, out string funcName))
+            if (m_mouseHoverHandlers.TryGetValue(widgetName, out string funcName))
             {
                 Control2Window.TryGetValue(widget, out Window win);
                 Interpreter.LastInstance.Run(funcName, new Variable(widgetName), new Variable(e.ToString()),
@@ -1221,12 +1220,12 @@ namespace WpfCSCS
         }
 
 
-        static string lastFocusedWidgetName = "";
-        public static bool skipPostEvent;
+        string lastFocusedWidgetName = "";
+        public bool skipPostEvent;
 
         private void Widget_Pre(object sender, RoutedEventArgs e)
         {
-            lastObjWidgetName = ((Control)sender).Name;
+            LastObjWidgetName = ((Control)sender).Name;
 
             Control widget = sender as Control;
             var widgetName = GetWidgetName(widget);
@@ -1365,7 +1364,7 @@ namespace WpfCSCS
             skipPostEvent = false;
 
             string funcName;
-            if (s_PreHandlers.TryGetValue(widgetName, out funcName))
+            if (m_PreHandlers.TryGetValue(widgetName, out funcName))
             {
                 Control2Window.TryGetValue(widget, out Window win);
                 var result = Interpreter.LastInstance.Run(funcName, new Variable(widgetName), null,
@@ -1405,8 +1404,7 @@ namespace WpfCSCS
                 return;
             }
 
-            lastObjWidgetName = ((Control)e.NewFocus).Name;
-
+            LastObjWidgetName = ((Control)e.NewFocus).Name;
 
             if ((Control)sender is Button)
             {
@@ -1513,7 +1511,7 @@ namespace WpfCSCS
 
 
             string funcName;
-            if (s_PostHandlers.TryGetValue(widgetName, out funcName))
+            if (m_PostHandlers.TryGetValue(widgetName, out funcName))
             {
                 Control2Window.TryGetValue(widget, out Window win);
                 var result = Interpreter.LastInstance.Run(funcName, new Variable(widgetName), null,
@@ -1521,7 +1519,7 @@ namespace WpfCSCS
                 if (result.Type == Variable.VarType.NUMBER && !result.AsBool())
                 {
                     e.Handled = true;
-                    lastObjWidgetName = widgetName;
+                    LastObjWidgetName = widgetName;
                 }
             }
         }
@@ -1541,7 +1539,7 @@ namespace WpfCSCS
             }
 
             string funcName;
-            if (s_ChangeHandlers.TryGetValue(widgetName, out funcName))
+            if (m_ChangeHandlers.TryGetValue(widgetName, out funcName))
             {
                 Control2Window.TryGetValue(widget, out Window win);
                 Interpreter.LastInstance.Run(funcName, new Variable(widgetName), null,
@@ -1550,7 +1548,7 @@ namespace WpfCSCS
             }
         }
 
-        static bool skipAfterChange = true;
+        bool skipAfterChange = true;
         private void Navigator_Change(object sender, EventArgs e)
         {
             WpfControlsLibrary.Navigator widget = sender as WpfControlsLibrary.Navigator;
@@ -1561,7 +1559,7 @@ namespace WpfCSCS
             }
 
             string funcName;
-            if (s_NavigatorChangeHandlers.TryGetValue(widgetName, out funcName))
+            if (m_NavigatorChangeHandlers.TryGetValue(widgetName, out funcName))
             {
                 Control2Window.TryGetValue(widget, out Window win);
                 var result = Interpreter.LastInstance.Run(funcName, new Variable(widgetName), null,
@@ -1613,7 +1611,7 @@ namespace WpfCSCS
             }
 
             string funcName;
-            if (s_NavigatorAfterChangeHandlers.TryGetValue(widgetName, out funcName))
+            if (m_NavigatorAfterChangeHandlers.TryGetValue(widgetName, out funcName))
             {
                 Control2Window.TryGetValue(widget, out Window win);
                 var result = Interpreter.LastInstance.Run(funcName, new Variable(widgetName), null,
@@ -1631,7 +1629,7 @@ namespace WpfCSCS
             }
 
             string funcName;
-            if (s_MoveHandlers.TryGetValue(widgetName, out funcName))
+            if (m_MoveHandlers.TryGetValue(widgetName, out funcName))
             {
                 Control2Window.TryGetValue(widget, out Window win);
                 var result = Interpreter.LastInstance.Run(funcName, new Variable(widgetName), null,
@@ -1655,7 +1653,7 @@ namespace WpfCSCS
             }
 
             string funcName;
-            if (s_SelectHandlers.TryGetValue(widgetName, out funcName))
+            if (m_SelectHandlers.TryGetValue(widgetName, out funcName))
             {
                 Control2Window.TryGetValue(widget, out Window win);
                 var result = Interpreter.LastInstance.Run(funcName, new Variable(widgetName), null,
@@ -2267,7 +2265,7 @@ namespace WpfCSCS
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 1, m_name);
 
-            var gui = script.Context as CSCS_GUI;
+            var gui = CSCS_GUI.GetInstance(script);
             var widgetName = Utils.GetSafeString(args, 0);
             var widget = gui.GetWidget(widgetName);
             if (widget == null)
@@ -2296,8 +2294,9 @@ namespace WpfCSCS
 
     class DisplayArrFuncFunction : ParserFunction
     {
-        static Dictionary<string, List<string>> arraysOfGrids = new Dictionary<string, List<string>>();
+        Dictionary<string, List<string>> arraysOfGrids = new Dictionary<string, List<string>>();
 
+        CSCS_GUI Gui;
         Dictionary<string, ObservableCollection<object[]>> rowsOfGrids { get; set; } = new Dictionary<string, ObservableCollection<object[]>>();
 
         protected override Variable Evaluate(ParsingScript script)
@@ -2306,8 +2305,8 @@ namespace WpfCSCS
             Utils.CheckArgs(args.Count, 1, m_name);
 
             var widgetName = Utils.GetSafeString(args, 0);
-            var gui = script.Context as CSCS_GUI;
-            var dg = gui.GetWidget(widgetName) as DataGrid;
+            Gui = CSCS_GUI.GetInstance(script);
+            var dg = Gui.GetWidget(widgetName) as DataGrid;
             if (dg == null)
             {
                 return Variable.EmptyInstance;
@@ -2316,7 +2315,6 @@ namespace WpfCSCS
             List<List<Variable>> cols = new List<List<Variable>>();
             List<string> headers = new List<string>();
             List<string> tags = new List<string>();
-
 
             var columns = dg.Columns;
             foreach (var column in columns)
@@ -2340,7 +2338,7 @@ namespace WpfCSCS
 
                         tags.Add(arrayToBindTo);
 
-                        if (DEFINES.TryGetValue(arrayToBindTo, out DefineVariable defVar))
+                        if (Gui.DEFINES.TryGetValue(arrayToBindTo, out DefineVariable defVar))
                         {
                             if (defVar.Array > 0)
                             {
@@ -2395,7 +2393,7 @@ namespace WpfCSCS
             {
                 for (int j = 0; j < rowsOfGrids[gridName].Count; j++)
                 {
-                    var array = DEFINES[arrayNames[i]];
+                    var array = Gui.DEFINES[arrayNames[i]];
                     array.Tuple[j] = new Variable(rowsOfGrids[gridName][j][i]);
                 }
             }
@@ -2415,8 +2413,8 @@ namespace WpfCSCS
             Utils.CheckArgs(args.Count, 1, m_name);
 
             var widgetName = Utils.GetSafeString(args, 0);
-            var gridVar = VariableArgsFunction.GetDatagridData(widgetName, out CSCS_GUI.WidgetData wd);
-            var gui = script.Context as CSCS_GUI;
+            var gui = CSCS_GUI.GetInstance(script);
+            var gridVar = VariableArgsFunction.GetDatagridData(gui, widgetName, out CSCS_GUI.WidgetData wd);
             DataGrid dg = gridVar != null ? gridVar.Object as DataGrid : gui.GetWidget(widgetName) as DataGrid;
             if (dg == null)
             {
@@ -2568,7 +2566,7 @@ namespace WpfCSCS
             Utils.CheckArgs(args.Count, 2, m_name);
 
             var widgetName = Utils.GetSafeString(args, 0);
-            var gui = script.Context as CSCS_GUI;
+            var gui = CSCS_GUI.GetInstance(script);
             var widget = gui.GetWidget(widgetName);
             if (widget == null)
             {
@@ -2695,7 +2693,7 @@ namespace WpfCSCS
             Utils.CheckArgs(args.Count, 1, m_name);
 
             var text = Utils.GetSafeString(args, 0);
-            var gui = script.Context as CSCS_GUI;
+            var gui = CSCS_GUI.GetInstance(script);
             var widget = gui.GetWidget(text);
 
             PrintDialog printDlg = new PrintDialog();
@@ -2727,7 +2725,7 @@ namespace WpfCSCS
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 1, m_name);
 
-            var gui = script.Context as CSCS_GUI;
+            var gui = CSCS_GUI.GetInstance(script);
             var widgetName = Utils.GetSafeString(args, 0);
             var widget = gui.GetWidget(widgetName);
             return GetText(widget);
@@ -2782,7 +2780,7 @@ namespace WpfCSCS
             var widgetName = Utils.GetSafeString(args, 0);
             var text = Utils.GetSafeString(args, 1);
 
-            var gui = script.Context as CSCS_GUI;
+            var gui = CSCS_GUI.GetInstance(script);
             var widget = gui.GetWidget(widgetName);
             if (widget == null)
             {
@@ -2935,7 +2933,7 @@ namespace WpfCSCS
             Utils.CheckArgs(args.Count, 1, m_name);
             var data = args[0];
 
-            var gui = script.Context as CSCS_GUI;
+            var gui = CSCS_GUI.GetInstance(script);
             var widget = gui.GetWidget(widgetName);
             var itemsAdded = 0;
             if (widget is ComboBox)
@@ -3026,7 +3024,7 @@ namespace WpfCSCS
             var widgetName = Utils.GetSafeString(args, 0).ToLower();
             var option = Utils.GetSafeString(args, 1).ToLower();
 
-            var gui = script.Context as CSCS_GUI;
+            var gui = CSCS_GUI.GetInstance(script);
             var widget = gui.GetWidget(widgetName);
             if (widget is DataGrid)
             {
@@ -3106,7 +3104,7 @@ namespace WpfCSCS
             widget = widget == null ? gui.GetWidget(widgetName) as DataGrid : widget;
             if (widget is DataGrid)
             {
-                if (CSCS_GUI.WIDGETS.TryGetValue(widgetName, out CSCS_GUI.WidgetData wd))
+                if (gui.WIDGETS.TryGetValue(widgetName, out CSCS_GUI.WidgetData wd))
                 {
                     foreach (var entry in wd.headers)
                     {
@@ -3117,7 +3115,7 @@ namespace WpfCSCS
 
                 var dg = widget as DataGrid;
                 var rowList = dg.ItemsSource as List<ExpandoObject>;
-                FillWidgetFunction.ResetArrays(dg);
+                FillWidgetFunction.ResetArrays(gui, dg);
                 rowList?.Clear();
                 dg.ItemsSource = null;
                 dg.Items.Refresh();
@@ -3249,7 +3247,7 @@ namespace WpfCSCS
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 1, m_name);
 
-            var gui = script.Context as CSCS_GUI;
+            var gui = CSCS_GUI.GetInstance(script);
             var widgetName = Utils.GetSafeString(args, 0);
             var widget = gui.GetWidget(widgetName);
             if (widget == null || !(widget is Control))
@@ -3272,13 +3270,14 @@ namespace WpfCSCS
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 0, m_name);
 
-            if (string.IsNullOrEmpty(CSCS_GUI.lastObjWidgetName))
+            var gui = CSCS_GUI.GetInstance(script);
+            if (string.IsNullOrEmpty(gui.LastObjWidgetName))
             {
                 return Variable.EmptyInstance;
             }
             else
             {
-                return new Variable(CSCS_GUI.lastObjWidgetName);
+                return new Variable(gui.LastObjWidgetName);
             }
         }
     }
@@ -3290,13 +3289,14 @@ namespace WpfCSCS
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 0, m_name);
 
-            if (string.IsNullOrEmpty(CSCS_GUI.lastObjClickedWidgetName))
+            var gui = CSCS_GUI.GetInstance(script);
+            if (string.IsNullOrEmpty(gui.LastObjClickedWidgetName))
             {
                 return Variable.EmptyInstance;
             }
             else
             {
-                return new Variable(CSCS_GUI.lastObjClickedWidgetName);
+                return new Variable(gui.LastObjClickedWidgetName);
             }
         }
     }
@@ -3370,7 +3370,7 @@ namespace WpfCSCS
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 1, m_name);
 
-            var gui = script.Context as CSCS_GUI;
+            var gui = CSCS_GUI.GetInstance(script);
             var widgetName = Utils.GetSafeString(args, 0);
             var colorName = Utils.GetSafeString(args, 1);
             var widget = gui.GetWidget(widgetName);
@@ -3401,7 +3401,7 @@ namespace WpfCSCS
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 1, m_name);
 
-            var gui = script.Context as CSCS_GUI;
+            var gui = CSCS_GUI.GetInstance(script);
             var widgetName = Utils.GetSafeString(args, 0);
             var imageName = Utils.GetSafeString(args, 1);
             var widget = gui.GetWidget(widgetName);
@@ -3448,7 +3448,7 @@ namespace WpfCSCS
             Utils.CheckArgs(args.Count, 1, m_name);
 
             var parentName = Utils.GetSafeString(args, 0);
-            var gui = script.Context as CSCS_GUI;
+            var gui = CSCS_GUI.GetInstance(script);
             ItemsControl parent = gui.GetWidget(parentName) as ItemsControl;
             if (parent == null)
             {
@@ -3495,7 +3495,7 @@ namespace WpfCSCS
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 1, m_name);
 
-            var gui = script.Context as CSCS_GUI;
+            var gui = CSCS_GUI.GetInstance(script);
             var parentName = Utils.GetSafeString(args, 0);
             ItemsControl parent = gui.GetWidget(parentName) as ItemsControl;
             if (parent == null || parent.Items == null)
@@ -3537,7 +3537,7 @@ namespace WpfCSCS
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 1, m_name);
 
-            var gui = script.Context as CSCS_GUI;
+            var gui = CSCS_GUI.GetInstance(script);
             var widgetName = Utils.GetSafeString(args, 0);
             var widget = gui.GetWidget(widgetName);
             if (widget == null)
@@ -3565,7 +3565,7 @@ namespace WpfCSCS
         {
             var separator = new char[] { ',' };
             List<Variable> parameters;
-            Gui = script.Context as CSCS_GUI;
+            Gui = CSCS_GUI.GetInstance(script);
             if (m_paramMode)
             {
                 var argsStr = Utils.GetBodyBetween(script, '\0', '\0', Constants.END_STATEMENT);
@@ -3693,7 +3693,7 @@ namespace WpfCSCS
 
         protected override Variable Evaluate(ParsingScript script)
         {
-            Gui = script.Context as CSCS_GUI;
+            Gui = CSCS_GUI.GetInstance(script);
             if (m_paramMode)
             {
                 var NameOrPathOfXamlForm = Utils.GetBodyBetween(script, '\0', '\0', Constants.END_STATEMENT);
@@ -3823,6 +3823,7 @@ namespace WpfCSCS
         {
             var objectName = m_processFirstToken ? Utils.GetToken(script, new char[] { ' ', '}', ')', ';' }) : "";
             Name = Name.ToUpper();
+            CSCS_GUI gui = CSCS_GUI.GetInstance(script);
 
             if (Name == Constants.DISPLAY_ARR_SETUP)
             {
@@ -3840,7 +3841,7 @@ namespace WpfCSCS
                 List<Variable> args = script.GetFunctionArgs();
                 Utils.CheckArgs(args.Count, 1, m_name);
                 var name = args[0].AsString();
-                DisplayArrRefresh(name);
+                DisplayArrRefresh(gui, name);
                 return Variable.EmptyInstance;
             }
             GetParameters(script);
@@ -3967,10 +3968,10 @@ namespace WpfCSCS
             return wd.lineCounter;
         }
 
-        public static DefineVariable GetDatagridData(string name, out CSCS_GUI.WidgetData wd)
+        public static DefineVariable GetDatagridData(CSCS_GUI gui, string name, out CSCS_GUI.WidgetData wd)
         {
             wd = null;
-            if (!CSCS_GUI.DEFINES.TryGetValue(name, out DefineVariable gridVar))
+            if (!gui.DEFINES.TryGetValue(name, out DefineVariable gridVar))
             {
                 return null;
             }
@@ -3978,16 +3979,16 @@ namespace WpfCSCS
             {
                 throw new ArgumentException("Variable of wrong type: [" + gridVar.DefType + "]");
             }
-            if (!CSCS_GUI.WIDGETS.TryGetValue(name, out wd))
+            if (!gui.WIDGETS.TryGetValue(name, out wd))
             {
                 throw new ArgumentException("Couldn't find widget data for widget: [" + name + "]");
             }
             return gridVar;
         }
 
-        static void DisplayArrRefresh(string name)
+        static void DisplayArrRefresh(CSCS_GUI gui, string name)
         {
-            var gridVar = GetDatagridData(name, out CSCS_GUI.WidgetData wd);
+            var gridVar = GetDatagridData(gui, name, out CSCS_GUI.WidgetData wd);
             if (gridVar == null)
             {
                 throw new ArgumentException("Couldn't find variable [" + name + "]");
@@ -3999,12 +4000,12 @@ namespace WpfCSCS
 
         Variable DisplayArrSetup(ParsingScript script, string name, string lineCounterStr, string actualElemsStr, string maxElemsStr)
         {
-            var gridVar = GetDatagridData(name, out CSCS_GUI.WidgetData wd);
+            var gui = CSCS_GUI.GetInstance(script); 
+            var gridVar = GetDatagridData(gui, name, out CSCS_GUI.WidgetData wd);
             if (gridVar == null)
             {
                 throw new ArgumentException("Couldn't find variable [" + name + "]");
             }
-            var gui = script.Context as CSCS_GUI;
             lineCounterStr = lineCounterStr.ToLower();
             actualElemsStr = actualElemsStr.ToLower();
 
@@ -4015,14 +4016,14 @@ namespace WpfCSCS
             if (Utils.CheckLegalName(lineCounterStr, script, false))
             {
                 wd.lineCounterName = lineCounterStr;
-                CSCS_GUI.DEFINES[lineCounterStr] = new DefineVariable(name, "lineCounter", gridVar.Object, true);
+                gui.DEFINES[lineCounterStr] = new DefineVariable(name, "lineCounter", gridVar.Object, true);
             }
             if (Utils.CheckLegalName(actualElemsStr, script, false))
             {
                 wd.actualElemsName = actualElemsStr;
                 wd.actualElemsVar = new Variable(wd.actualElems);
                 Interpreter.LastInstance.AddGlobal(actualElemsStr, new GetVarFunction(wd.actualElemsVar), false);
-                CSCS_GUI.DEFINES[actualElemsStr] = new DefineVariable(name, "actualElems", gridVar.Object, true);
+                gui.DEFINES[actualElemsStr] = new DefineVariable(name, "actualElems", gridVar.Object, true);
             }
             if (Utils.CheckLegalName(maxElemsStr, script, false))
             {
@@ -4031,7 +4032,7 @@ namespace WpfCSCS
                 wd.maxElemsName = maxElemsStr;
                 wd.maxElemsVar = new Variable(wd.maxElems);
                 Interpreter.LastInstance.AddGlobal(maxElemsStr, new GetVarFunction(wd.maxElemsVar), false);
-                CSCS_GUI.DEFINES[maxElemsStr] = new DefineVariable(name, "maxElems", gridVar.Object, true);
+                gui.DEFINES[maxElemsStr] = new DefineVariable(name, "maxElems", gridVar.Object, true);
             }
             AdjustmaxElems(dg, wd);
             GetSelectedRow(dg, wd);
@@ -4065,8 +4066,9 @@ namespace WpfCSCS
         public static Variable CreateVariable(ParsingScript script, string name, Variable value, Variable init,
             string type = "", int size = 0, int dec = 3, int array = 0, bool local = false, bool up = false, bool down = false, string dup = null)
         {
+            var gui = CSCS_GUI.GetInstance(script);
             DefineVariable dupVar = null;
-            if (!string.IsNullOrWhiteSpace(dup) && !CSCS_GUI.DEFINES.TryGetValue(dup, out dupVar))
+            if (!string.IsNullOrWhiteSpace(dup) && !gui.DEFINES.TryGetValue(dup, out dupVar))
             {
                 throw new ArgumentException("Couldn't find variable [" + dup + "]");
             }
@@ -4080,7 +4082,7 @@ namespace WpfCSCS
             {
                 newVar = dupVar != null ? new DefineVariable(objName, dupVar, local) :
                                           new DefineVariable(objName, valueStr, type, size, dec, array, local, up, down);
-                newVar.InitVariable(dupVar != null ? dupVar.Init : init, script);
+                newVar.InitVariable(dupVar != null ? dupVar.Init : init, gui, script);
             }
 
             return newVar;
@@ -4088,13 +4090,13 @@ namespace WpfCSCS
 
         DefineVariable DataGrid(ParsingScript script, string name, bool addrow, bool insertrow, bool deleterow, string action)
         {
-            var gridVar = GetDatagridData(name, out CSCS_GUI.WidgetData wd);
+            var gui = CSCS_GUI.GetInstance(script);
+            var gridVar = GetDatagridData(gui, name, out CSCS_GUI.WidgetData wd);
             if (gridVar == null)
             {
                 throw new ArgumentException("Couldn't find variable [" + name + "]");
             }
 
-            var gui = script.Context as CSCS_GUI;
             DataGrid dg = gridVar.Object as DataGrid;
             wd.lineCounter = dg.SelectedIndex;
             var where = wd.lineCounter >= 0 ? wd.lineCounter : 0;
@@ -4126,10 +4128,10 @@ namespace WpfCSCS
 
             if ((insertrow || addrow) && !dg.IsReadOnly)
             {
-                FillWidgetFunction.ResetArrays(dg);
+                FillWidgetFunction.ResetArrays(gui, dg);
             }
 
-            FillWidgetFunction.UpdateGridCounts(dg, wd);
+            FillWidgetFunction.UpdateGridCounts(gui, dg, wd);
             FillWidgetFunction.UpdateGridSelection(dg, wd);
             return gridVar;
         }
@@ -4138,8 +4140,8 @@ namespace WpfCSCS
         DefineVariable DisplayArray(ParsingScript script, string name, string
             lineCounter, string maxElems, string actualElems, string action)
         {
-            var gui = script.Context as CSCS_GUI;
-            if (!CSCS_GUI.DEFINES.TryGetValue(name, out DefineVariable gridVar))
+            var gui = CSCS_GUI.GetInstance(script);
+            if (!gui.DEFINES.TryGetValue(name, out DefineVariable gridVar))
             {
                 throw new ArgumentException("Couldn't find variable [" + name + "]");
             }
@@ -4147,7 +4149,7 @@ namespace WpfCSCS
             {
                 throw new ArgumentException("Variable of wrong type: [" + gridVar.DefType + "]");
             }
-            if (!CSCS_GUI.WIDGETS.TryGetValue(name, out CSCS_GUI.WidgetData wd))
+            if (!gui.WIDGETS.TryGetValue(name, out CSCS_GUI.WidgetData wd))
             {
                 throw new ArgumentException("Couldn't find widget data for widget: [" + name + "]");
             }
@@ -4166,11 +4168,11 @@ namespace WpfCSCS
             }
 
             var rowList = dg.ItemsSource as List<ExpandoObject>;
-            FillWidgetFunction.ResetArrays(dg);
+            FillWidgetFunction.ResetArrays(gui, dg);
 
-            CSCS_GUI.DEFINES[lineCounter] = new DefineVariable(name, "lineCounter", gridVar.Object, true);
-            CSCS_GUI.DEFINES[maxElems] = new DefineVariable(name, "maxElems", gridVar.Object, true);
-            CSCS_GUI.DEFINES[actualElems] = new DefineVariable(name, "actualElems", gridVar.Object, true);
+            gui.DEFINES[lineCounter] = new DefineVariable(name, "lineCounter", gridVar.Object, true);
+            gui.DEFINES[maxElems] = new DefineVariable(name, "maxElems", gridVar.Object, true);
+            gui.DEFINES[actualElems] = new DefineVariable(name, "actualElems", gridVar.Object, true);
 
             var max = Interpreter.LastInstance.GetVariableValue(maxElems, script);
             int maxValue = max == null ? 0 : max.AsInt();
@@ -4246,7 +4248,7 @@ namespace WpfCSCS
 
             foreach (var headerName in wd.headerNames)
             {
-                FillWidgetFunction.AddGridData(name, headerName);
+                FillWidgetFunction.AddGridData(gui, name, headerName);
             }
 
             FillWidgetFunction.UpdateGridSelection(dg, wd);
@@ -4255,7 +4257,8 @@ namespace WpfCSCS
 
         static void AddGridColumn(ParsingScript script, string name, string header, string binding)
         {
-            if (!CSCS_GUI.DEFINES.TryGetValue(name, out DefineVariable gridVar))
+            var gui = CSCS_GUI.GetInstance(script);
+            if (!gui.DEFINES.TryGetValue(name, out DefineVariable gridVar))
             {
                 throw new ArgumentException("Couldn't find variable [" + name + "]");
             }
@@ -4263,7 +4266,7 @@ namespace WpfCSCS
             {
                 throw new ArgumentException("Variable of wrong type: [" + gridVar.DefType + "]");
             }
-            if (!CSCS_GUI.WIDGETS.TryGetValue(name, out CSCS_GUI.WidgetData wd))
+            if (!gui.WIDGETS.TryGetValue(name, out CSCS_GUI.WidgetData wd))
             {
                 throw new ArgumentException("Couldn't find widget data for widget: [" + name + "]");
             }
@@ -4278,9 +4281,9 @@ namespace WpfCSCS
             wd.headerBindings.Add(binding);
             var headerStr = binding.ToLower();
             var headerVar = new DefineVariable(headerStr, "datagrid", dg, dg.Columns.Count - 1);
-            headerVar.InitFromExisting(headerStr);
+            headerVar.InitFromExisting(gui, headerStr);
             headerVar.Active = true;
-            CSCS_GUI.DEFINES[headerStr] = headerVar;
+            gui.DEFINES[headerStr] = headerVar;
             wd.headers[headerStr] = headerVar;
             wd.headerNames.Add(headerStr);
             wd.colTypes.Add(CSCS_GUI.WidgetData.COL_TYPE.STRING);
@@ -4291,16 +4294,17 @@ namespace WpfCSCS
             {
                 Variable cellValue = headerVar.Tuple != null && headerVar.Tuple.Count > i ?
                                      headerVar.Tuple[i] : Variable.EmptyInstance;
-                MyAssignFunction.AddCell(dg, i, dg.Columns.Count - 1, cellValue);
+                MyAssignFunction.AddCell(gui, dg, i, dg.Columns.Count - 1, cellValue);
             }
 
-            FillWidgetFunction.ResetArrays(dg);
+            FillWidgetFunction.ResetArrays(gui, dg);
             FillWidgetFunction.UpdateGridSelection(dg, wd);
         }
 
         static void ShiftGridColumns(ParsingScript script, string name, int from, int to)
         {
-            if (!CSCS_GUI.DEFINES.TryGetValue(name, out DefineVariable gridVar))
+            var gui = CSCS_GUI.GetInstance(script);
+            if (!gui.DEFINES.TryGetValue(name, out DefineVariable gridVar))
             {
                 throw new ArgumentException("Couldn't find variable [" + name + "]");
             }
@@ -4308,7 +4312,7 @@ namespace WpfCSCS
             {
                 throw new ArgumentException("Variable of wrong type: [" + gridVar.DefType + "]");
             }
-            if (!CSCS_GUI.WIDGETS.TryGetValue(name, out CSCS_GUI.WidgetData wd))
+            if (!gui.WIDGETS.TryGetValue(name, out CSCS_GUI.WidgetData wd))
             {
                 throw new ArgumentException("Couldn't find widget data for widget: [" + name + "]");
             }
@@ -4347,7 +4351,8 @@ namespace WpfCSCS
 
         static void DeleteGridColumn(ParsingScript script, string name, int colId)
         {
-            if (!CSCS_GUI.DEFINES.TryGetValue(name, out DefineVariable gridVar))
+            var gui = CSCS_GUI.GetInstance(script);
+            if (!gui.DEFINES.TryGetValue(name, out DefineVariable gridVar))
             {
                 throw new ArgumentException("Couldn't find variable [" + name + "]");
             }
@@ -4355,7 +4360,7 @@ namespace WpfCSCS
             {
                 throw new ArgumentException("Variable of wrong type: [" + gridVar.DefType + "]");
             }
-            if (!CSCS_GUI.WIDGETS.TryGetValue(name, out CSCS_GUI.WidgetData wd))
+            if (!gui.WIDGETS.TryGetValue(name, out CSCS_GUI.WidgetData wd))
             {
                 throw new ArgumentException("Couldn't find widget data for widget: [" + name + "]");
             }
@@ -4439,7 +4444,7 @@ namespace WpfCSCS
         protected override Variable Evaluate(ParsingScript script)
         {
             List<Variable> args = script.GetFunctionArgs();
-            Gui = script.Context as CSCS_GUI;
+            Gui = CSCS_GUI.GetInstance(script);
 
             if (m_mode == MODE.NEXT)
             {
@@ -4563,14 +4568,15 @@ namespace WpfCSCS
             Utils.CheckArgs(args.Count, 2, m_name);
             var widgetName = Utils.GetSafeString(args, 0);
             var varName = Utils.GetSafeString(args, 1);
+            var gui = CSCS_GUI.GetInstance(script);
 
-            int count = AddGridData(widgetName, varName);
+            int count = AddGridData(gui, widgetName, varName);
             return new Variable(count);
         }
 
-        public static int AddGridData(string widgetName, string headerName)
+        public static int AddGridData(CSCS_GUI gui, string widgetName, string headerName)
         {
-            if (!CSCS_GUI.WIDGETS.TryGetValue(widgetName, out CSCS_GUI.WidgetData wd) ||
+            if (!gui.WIDGETS.TryGetValue(widgetName, out CSCS_GUI.WidgetData wd) ||
                 !(wd.widget is DataGrid))
             {
                 return 0;
@@ -4578,12 +4584,12 @@ namespace WpfCSCS
             DataGrid dg = wd.widget as DataGrid;
 
             var data = Interpreter.LastInstance.GetVariableValue(headerName);
-            if (!CSCS_GUI.DEFINES.TryGetValue(headerName, out DefineVariable defVar) || data == null)
+            if (!gui.DEFINES.TryGetValue(headerName, out DefineVariable defVar) || data == null)
             {
                 return 0;
             }
 
-            if (CSCS_GUI.DEFINES.TryGetValue(dg.DataContext as string, out DefineVariable headerDef) &&
+            if (gui.DEFINES.TryGetValue(dg.DataContext as string, out DefineVariable headerDef) &&
                 dg.Columns.Count > defVar.Index && headerDef.Tuple.Count > defVar.Index)
             {
                 var textCol = dg.Columns[defVar.Index] as DataGridTextColumn;
@@ -4595,10 +4601,10 @@ namespace WpfCSCS
             int count = wd.maxElems <= 0 ? entries.Count : Math.Min(entries.Count, wd.maxElems);
             for (int i = 0; i < count; i++)
             {
-                MyAssignFunction.AddCell(dg, i, defVar.Index, entries[i]);
+                MyAssignFunction.AddCell(gui, dg, i, defVar.Index, entries[i]);
             }
 
-            UpdateGridCounts(dg, wd);
+            UpdateGridCounts(gui, dg, wd);
 
             wd.headers[headerName] = data;
             dg.Items.Refresh();
@@ -4621,20 +4627,20 @@ namespace WpfCSCS
             dg.UpdateLayout();
         }
 
-        public static void UpdateGridCounts(DataGrid dg, CSCS_GUI.WidgetData wd = null)
+        public static void UpdateGridCounts(CSCS_GUI gui, DataGrid dg, CSCS_GUI.WidgetData wd = null)
         {
-            if (wd == null && !CSCS_GUI.WIDGETS.TryGetValue(dg.DataContext as string, out wd))
+            if (wd == null && !gui.WIDGETS.TryGetValue(dg.DataContext as string, out wd))
             {
                 return;
             }
 
             //dg.Items.Refresh();
             var rowList = dg.ItemsSource as List<ExpandoObject>;
-            if (CSCS_GUI.DEFINES.TryGetValue(wd.actualElemsName, out DefineVariable actualElems))
+            if (gui.DEFINES.TryGetValue(wd.actualElemsName, out DefineVariable actualElems))
             {
                 actualElems.Value = wd.actualElems = rowList.Count;// dg.Items.Count;
                 Interpreter.LastInstance.AddGlobal(wd.actualElemsName, new GetVarFunction(actualElems), false);
-                if (CSCS_GUI.DEFINES.TryGetValue(wd.lineCounterName, out DefineVariable lineCounter) &&
+                if (gui.DEFINES.TryGetValue(wd.lineCounterName, out DefineVariable lineCounter) &&
                     dg.SelectedIndex < 0)
                 {
                     if (wd.lineCounter < 0)
@@ -4653,7 +4659,7 @@ namespace WpfCSCS
             return num1 < num2 ? -1 : num2 > num1 ? 1 : 0;
         }
 
-        public static void ResetArrays(FrameworkElement widget, IEnumerable<ExpandoObject> newCollection = null)
+        public static void ResetArrays(CSCS_GUI gui, FrameworkElement widget, IEnumerable<ExpandoObject> newCollection = null)
         {
             DataGrid dg = widget as DataGrid;
             if (dg == null)
@@ -4662,7 +4668,7 @@ namespace WpfCSCS
             }
             var name = dg.DataContext as string;
             if (string.IsNullOrWhiteSpace(name) ||
-                !CSCS_GUI.WIDGETS.TryGetValue(name, out CSCS_GUI.WidgetData wd))
+                !gui.WIDGETS.TryGetValue(name, out CSCS_GUI.WidgetData wd))
             {
                 return;
             }
@@ -4706,7 +4712,7 @@ namespace WpfCSCS
                         headerData.Tuple.Add(Variable.EmptyInstance);
                     }
                     headerData.Tuple[rowNb] = cellValue;
-                    MyAssignFunction.AddCell(dg, rowNb, colNb, cellValue);
+                    MyAssignFunction.AddCell(gui, dg, rowNb, colNb, cellValue);
                 }
             }
             //dg.Items.Refresh();
@@ -4997,7 +5003,7 @@ namespace WpfCSCS
             return val;
         }
 
-        public void InitVariable(Variable init, ParsingScript script = null, bool update = true, int arrayIndex = -1)
+        public void InitVariable(Variable init, CSCS_GUI gui, ParsingScript script = null, bool update = true, int arrayIndex = -1)
         {
             /*
 I  - signed small int (2 bytes), from -32,768 to 32.767
@@ -5091,17 +5097,17 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 {
                     Interpreter.LastInstance.AddGlobalOrLocalVariable(Name, new GetVarFunction(this), script);
                 }
-                //InitFromExisting(Name);
-                CSCS_GUI.DEFINES[Name] = this;
+                //InitFromExisting(gui, Name);
+                gui.DEFINES[Name] = this;
             }
             CSCS_GUI.ChangingBoundVariable = false;
 
             LocalAssign = false;
         }
 
-        public void InitFromExisting(string name)
+        public void InitFromExisting(CSCS_GUI gui, string name)
         {
-            if (!CSCS_GUI.DEFINES.TryGetValue(name, out DefineVariable existing))
+            if (!gui.DEFINES.TryGetValue(name, out DefineVariable existing))
             {
                 var existingVar = Interpreter.LastInstance.GetVariableValue(name);
                 if (existingVar != null && existingVar.Tuple != null)
@@ -5310,12 +5316,13 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
     {
         protected override Variable Evaluate(ParsingScript script)
         {
+            var gui = CSCS_GUI.GetInstance(script);
             var pointer = script.Pointer;
             List<string> args = Utils.GetTokens(script);
             Utils.CheckArgs(args.Count, 1, m_name);
 
             DefineVariable defVar;
-            if (!CSCS_GUI.DEFINES.TryGetValue(m_name, out defVar))
+            if (!gui.DEFINES.TryGetValue(m_name, out defVar))
             {
                 script.Pointer = pointer;
                 return base.Evaluate(script);
@@ -5376,7 +5383,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
         {
             m_originalName = m_name;
             m_pointerAssign = m_name.StartsWith("&");
-            var gui = script.Context as CSCS_GUI;
+            var gui = CSCS_GUI.GetInstance(script);
             if (m_pointerAssign)
             {
                 m_name = m_name.Substring(1);
@@ -5388,7 +5395,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 m_name = m_name.Substring(0, argStart);
             }
 
-            if (!CSCS_GUI.DEFINES.TryGetValue(m_name, out DefineVariable defVar))
+            if (!gui.DEFINES.TryGetValue(m_name, out DefineVariable defVar))
             {
                 return null;
             }
@@ -5415,13 +5422,14 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
         {
             m_name = Constants.GetRealName(varName);
             script.CurrentAssign = m_name;
+            var gui = CSCS_GUI.GetInstance(script);
 
             Variable varValue = Utils.GetItem(script);
             if (m_pointerAssign)
             {
-                if (CSCS_GUI.DEFINES.TryGetValue(defVar.Pointer, out DefineVariable refValue))
+                if (gui.DEFINES.TryGetValue(defVar.Pointer, out DefineVariable refValue))
                 {
-                    refValue.InitVariable(varValue, script, false);
+                    refValue.InitVariable(varValue, gui, script, false);
                     Interpreter.LastInstance.AddGlobalOrLocalVariable(m_originalName,
                             new GetVarFunction(refValue));
                     Interpreter.LastInstance.AddGlobalOrLocalVariable(defVar.Pointer,
@@ -5435,14 +5443,14 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 {
                     var dg = defVar.Object as DataGrid;
                     CSCS_GUI.WidgetData wd;
-                    if (defVar.Index < 0 && CSCS_GUI.WIDGETS.TryGetValue(m_name, out wd))
+                    if (defVar.Index < 0 && gui.WIDGETS.TryGetValue(m_name, out wd))
                     {
                         if (defVar.Active)
                         {
                             var column = dg.Columns[m_arrayIndex] as DataGridTextColumn;
                             column.Header = varValue.AsString();
                         }
-                        if (CSCS_GUI.DEFINES.TryGetValue(m_name, out DefineVariable headerDef))
+                        if (gui.DEFINES.TryGetValue(m_name, out DefineVariable headerDef))
                         {
                             headerDef.SetAsArray();
                             while (headerDef.Tuple.Count < dg.Columns.Count)
@@ -5455,8 +5463,8 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                     else
                     {
                         var rowList = dg.ItemsSource as List<ExpandoObject>;
-                        if (!CSCS_GUI.WIDGETS.TryGetValue(dg.DataContext as string, out wd) ||
-                            !CSCS_GUI.DEFINES.TryGetValue(wd.actualElemsName, out DefineVariable actualElems))
+                        if (!gui.WIDGETS.TryGetValue(dg.DataContext as string, out wd) ||
+                            !gui.DEFINES.TryGetValue(wd.actualElemsName, out DefineVariable actualElems))
                         {
                             return Variable.EmptyInstance;
                         }
@@ -5470,9 +5478,9 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                         }
                         if (defVar.Active && m_arrayIndex >= 0 && defVar.Index >= 0)
                         { // Changing value of an existing cell
-                            AddCell(dg, m_arrayIndex, defVar.Index, varValue);
+                            AddCell(gui, dg, m_arrayIndex, defVar.Index, varValue);
 
-                            FillWidgetFunction.ResetArrays(dg);
+                            FillWidgetFunction.ResetArrays(gui, dg);
                             actualElems.Value = rowList.Count;
 
                             FillWidgetFunction.UpdateGridSelection(dg, wd);
@@ -5498,13 +5506,13 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 else if (defVar.DefType == "maxelems")
                 {
                     var dg = defVar.Object as DataGrid;
-                    var wd = CSCS_GUI.WIDGETS[dg.DataContext as string];
+                    var wd = gui.WIDGETS[dg.DataContext as string];
                     wd.maxElems = varValue.AsInt();
                     if (wd.actualElems <= 0 || wd.actualElems > wd.maxElems)
                     {
                         wd.actualElems = wd.maxElems;
                         if (!string.IsNullOrWhiteSpace(wd.actualElemsName) &&
-                            CSCS_GUI.DEFINES.TryGetValue(wd.actualElemsName, out DefineVariable actualElems))
+                            gui.DEFINES.TryGetValue(wd.actualElemsName, out DefineVariable actualElems))
                         {
                             actualElems.Value = wd.maxElems;
                             Interpreter.LastInstance.AddGlobal(wd.actualElemsName, new GetVarFunction(actualElems), false);
@@ -5522,7 +5530,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 }
                 else
                 {
-                    defVar.InitVariable(varValue, script, false, m_arrayIndex);
+                    defVar.InitVariable(varValue, gui, script, false, m_arrayIndex);
                     OnVariableChange(m_name, defVar, true);
                 }
             }
@@ -5534,10 +5542,10 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
             return defVar;
         }
 
-        public static void AddCell(DataGrid dg, int rowNb, int colNb, Variable varValue)
+        public static void AddCell(CSCS_GUI gui, DataGrid dg, int rowNb, int colNb, Variable varValue)
         {
             var name = dg.DataContext as string;
-            if (string.IsNullOrWhiteSpace(name) || !CSCS_GUI.WIDGETS.TryGetValue(name, out CSCS_GUI.WidgetData wd))
+            if (string.IsNullOrWhiteSpace(name) || !gui.WIDGETS.TryGetValue(name, out CSCS_GUI.WidgetData wd))
             {
                 return;
             }
