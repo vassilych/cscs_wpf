@@ -1,15 +1,24 @@
-// all variables defined in this script should be local to this script.
-// if we want a variable from parent script to be accessible here we need to DEFINE it again but with RESET option.
-// example: DEFINE varInParent type a size 20 reset;
+
+NewInterpreter();
+SetInterpreter(3);
+
+MessageBox("Interpreter num. 3 before CHAIN");
 
 MessageBox("script1.cscs");
 
-DEFINE varInScript1 type a size 20;
-varInScript1 = "varInScript1Value";
-MessageBox("varInScript1 = " + varInScript1);
+CreateWindow("../../scripts/tabControl.xaml");
 
-MessageBox("varInParent = " + varInParent);
-// prints "varInParentValue" (from parent script)
-// -> this variable shouldn't be accessible, only with RESET option.
+MessageBox("chaining to script2.cscs");
+CHAIN "../../scripts/script2.cscs" WITH "argument1" "argument2" "argument3" "argument4";
+
+MessageBox("Interpreter num. 3 after CHAIN");
+
+// DEFINE varInScript1 type a size 20;
+// varInScript1 = "varInScript1Value";
+// MessageBox("varInScript1 = " + varInScript1);
+
+
+RemoveInterpreter(3);// should close only this 1 window opened in this interpreter/module
+SetInterpreter(2);
 
 quit;

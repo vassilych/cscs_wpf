@@ -1,6 +1,3 @@
-// all variables defined in this script should be local to this script.
-// if we want a variable from parent script to be accessible here we need to DEFINE it again but with RESET option.
-// example: DEFINE varInParent type a size 20 reset;
 
 // never gets here
 MessageBox("script3.cscs");

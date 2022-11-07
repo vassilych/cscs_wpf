@@ -1,13 +1,21 @@
-// all variables defined in this script should be local to this script.
-// if we want a variable from parent script to be accessible here we need to DEFINE it again but with RESET option.
-// example: DEFINE varInParent type a size 20 reset;
+
+NewInterpreter();
+SetInterpreter(4);
+
+MessageBox("Interpreter num. 4");
 
 MessageBox("script2.cscs");
 
+CreateWindow("../../scripts/tabControl.xaml");
+CreateWindow("../../scripts/tabControl.xaml");
+
 DEFINE arg1, arg2, arg3, arg4 type a size 20;
+PARAM arg1,arg2,arg3,arg4;
+MessageBox("Got params: " + arg1 + ", " + arg2 + ", " + arg3 + ", " +arg4);
 
-PARAM arg1,arg2,arg3,arg4;// works ok
+MessageBox("Closing Interpreter 4");
 
-MessageBox("Got params: " + arg1 + ", " + arg2 + ", " + arg3 + ", " +arg4);// works ok
+RemoveInterpreter(4);// should close only this 2 windows opened in this script/module/interpreter - but closes all(4) windows except mainMenu
+SetInterpreter(3);
 
 quit;
