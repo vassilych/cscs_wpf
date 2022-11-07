@@ -9,8 +9,9 @@ CreateWindow("../../scripts/mainMenuWindow.xaml");
 
 function runScript(sender, load){
     //MessageBox("sender = " + sender + ", load = "  + load);   
+    MessageBox("Interpreter num. 1 before CHAIN");
     CHAIN ("../../scripts/" + sender/* + ".cscs"*/); // WITH "argument1" "argument2";
-
+    MessageBox("Interpreter num. 1 after CHAIN");
 }
 
 function mainMenuWindow_OnDisplay(){
