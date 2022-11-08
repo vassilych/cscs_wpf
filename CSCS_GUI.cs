@@ -297,22 +297,16 @@ namespace WpfCSCS
             return CSCS_GUI.MainWindow;
         }
 
+        static int s_id;
+        public int ID { get; private set; }
         public CSCS_GUI(ParsingScript script = null)
         {
             LastInstance = this;
+            ID = ++s_id;
             if (script != null)
             {
                 script.Context = this;
             }
-        }
-
-        public class GUI_Interpreter : Interpreter
-        {
-            public GUI_Interpreter(CSCS_GUI gui)
-            {
-                CSCS_GUI = gui;
-            }
-            public CSCS_GUI CSCS_GUI { get; set; }
         }
 
         public static Dispatcher Dispatcher { get; set; }
@@ -387,7 +381,7 @@ namespace WpfCSCS
         //static Dictionary<string, TabPage> s_tabPages           = new Dictionary<string, TabPage>();
         //static TabControl s_tabControl;
 
-        static InterpreterManagerModule s_interpreterManager = new InterpreterManagerModule();
+        static public InterpreterManagerModule InterpreterManager = new InterpreterManagerModule();
 
         public static AdictionaryLocal.Adictionary Adictionary { get; set; } = new AdictionaryLocal.Adictionary();
 
@@ -406,16 +400,16 @@ namespace WpfCSCS
             {
                 new CscsGuiModule(),
                 //new CscsMathModule(),
-                s_interpreterManager
+                InterpreterManager
             };
         }
         public void Init()
         {
-            s_interpreterManager.OnInterpreterCreated += InterpreterCreated;
-            s_interpreterManager.Modules = GetModuleList();
-            var interpreterId = s_interpreterManager.NewInterpreter();
-            s_interpreterManager.SetInterpreter(interpreterId);
-            s_interpreterManager.CreateInstance(Interpreter.LastInstance);
+            InterpreterManager.OnInterpreterCreated += InterpreterCreated;
+            InterpreterManager.Modules = GetModuleList();
+            var interpreterId = InterpreterManager.NewInterpreter();
+            InterpreterManager.SetInterpreter(interpreterId);
+            InterpreterManager.CreateInstance(Interpreter.LastInstance);
 
             //Interpreter.LastInstance.OnOutput += Print;
             ParserFunction.OnVariableChange += OnVariableChange;
@@ -466,7 +460,7 @@ namespace WpfCSCS
             // execution. On error an exception will be thrown.
             if (sender is Interpreter interpreter)
             {
-                s_interpreterManager.CreateInstance(interpreter);
+                InterpreterManager.CreateInstance(interpreter);
                 interpreter.OnOutput += Print;
             }
         }
@@ -3655,7 +3649,10 @@ namespace WpfCSCS
             chainScript.StackLevel = Interpreter.LastInstance.AddStackLevel(chainScript.Filename);
             chainScript.CurrentModule = chainName;
             chainScript.ParentScript = script;
-            chainScript.Context = script.Context;
+            Gui = new CSCS_GUI(chainScript);
+            Gui.Init();
+            chainScript.SetInterpreter(CSCS_GUI.InterpreterManager.CurrentInterpreter);
+            //chainScript.Context = script.Context;
 
             Gui.Parameters[chainScript.Filename] = parameters;
 

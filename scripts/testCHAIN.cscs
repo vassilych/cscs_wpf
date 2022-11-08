@@ -1,6 +1,6 @@
 
-NewInterpreter();
-SetInterpreter(2);
+//h=NewInterpreter();
+//SetInterpreter(h);
 
 MessageBox("Interpreter num. 2 before CHAIN");
 

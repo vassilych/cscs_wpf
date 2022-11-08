@@ -1,8 +1,8 @@
 
-NewInterpreter();
-SetInterpreter(4);
+//NewInterpreter();
+//SetInterpreter(4);
 
-MessageBox("Interpreter num. 4");
+//MessageBox("Interpreter num. 4");
 
 MessageBox("script2.cscs");
 
