@@ -4,9 +4,13 @@ SetInterpreter(2);
 
 MessageBox("Interpreter num. 2 before CHAIN");
 
-// DEFINE varInParent type a size 20;
-// varInParent = "varInParentValue";
-// MessageBox("varInParent = " + varInParent);
+DEFINE varInParent type a size 20;
+varInParent = "varInParentValue";
+MessageBox("varInParent = " + varInParent);
+
+DEFINE varInParent2 type a size 20;
+varInParent = "varInParent2Value";
+MessageBox("varInParent2 = " + varInParent2);
 
 CreateWindow("../../scripts/tabControl.xaml"); // will stay open until user closes it with "X" in top-right corner
 
@@ -14,6 +18,10 @@ MessageBox("chaining to script1.cscs");
 CHAIN "../../scripts/script1.cscs";
 
 MessageBox("Interpreter num. 2 after CHAIN");
+
+MessageBox("Back from script1, varInParent = " + varInParent); // should print "newValue"
+MessageBox("Back from script1, varInParent2 = " + varInParent2); // should print "newValue2"
+
 
 
 // prints this - ok

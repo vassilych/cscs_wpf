@@ -6,6 +6,18 @@ MessageBox("Interpreter num. 3 before CHAIN");
 
 MessageBox("script1.cscs");
 
+// ResetField()
+ResetField("testCHAIN", "varInParent");
+MessageBox("varInParent = " + varInparent); // should print "varInParentValue"
+varInParent = "newValue";
+MessageBox("varInParent = " + varInparent); // should print "newValue"
+
+// DEFINE with reset option
+DEFINE varInParent2 type a size 20 reset;
+MessageBox("varInParent2 = " + varInParent2); // should print "varInParent2Value"
+varInParent2 = "newValue2"
+MessageBox("varInParent2 = " + varInParent2); // should print "newValue2"
+
 CreateWindow("../../scripts/tabControl.xaml");
 
 MessageBox("chaining to script2.cscs");
