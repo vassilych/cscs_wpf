@@ -1,36 +1,16 @@
 
-//NewInterpreter();
-//SetInterpreter(3);
-
-//MessageBox("Interpreter num. 3 before CHAIN");
-
 MessageBox("script1.cscs");
-
-// ResetField()
-//ResetField("testCHAIN", "varInParent");
-//MessageBox("varInParent = " + varInparent); // should print "varInParentValue"
-//varInParent = "newValue";
-//MessageBox("varInParent = " + varInparent); // should print "newValue"
-
-// DEFINE with reset option
-DEFINE varInParent2 type a size 20 reset;
-MessageBox("varInParent2 = " + varInParent2); // should print "varInParent2Value"
-varInParent2 = "newValue2";
-MessageBox("varInParent2 = " + varInParent2); // should print "newValue2"
 
 CreateWindow("../../scripts/tabControl.xaml");
 
 MessageBox("chaining to script2.cscs");
 CHAIN "../../scripts/script2.cscs" WITH "argument1" "argument2" "argument3" "argument4";
 
-MessageBox("Interpreter num. 3 after CHAIN");
+MessageBox("back in script1.cscs");
 
-// DEFINE varInScript1 type a size 20;
-// varInScript1 = "varInScript1Value";
-// MessageBox("varInScript1 = " + varInScript1);
+DEFINE varInScript1 type a size 20;// if this DEFINE is set before CHAIN the following MessageBox works, if DEFINEd here it doesn't.
+varInScript1 = "varInScript1Value";
+MessageBox("varInScript1 = " + varInScript1); // 'Couldn't find variable [varInScript1]. Line 13: MessageBox("varInScript1 = " + varInScript1);'
 
-
-RemoveInterpreter(3);// should close only this 1 window opened in this interpreter/module
-SetInterpreter(2);
 
 quit;

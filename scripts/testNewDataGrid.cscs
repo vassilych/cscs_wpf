@@ -64,7 +64,7 @@ Attach[9] = "Nine";
 actElems = 19;
 MaxElement = 100;
 
-DisplayArrSetup("grid1", "Q", "actElems", "MaxElement");
+DisplayArraySetup("grid1", "Q", "actElems", "MaxElement");
 
 //------------------------------
 
