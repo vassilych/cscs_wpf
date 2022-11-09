@@ -1,0 +1,4 @@
+CHAIN "../../scripts/loop1.cscs";
+CHAIN "../../scripts/loop2.cscs";
+
+MessageBox("end");

@@ -1,15 +1,11 @@
 
-//h=NewInterpreter();
-//SetInterpreter(h);
-
-MessageBox("Interpreter num. 2 before CHAIN");
 
 DEFINE varInParent type a size 20;
 varInParent = "varInParentValue";
 MessageBox("varInParent = " + varInParent);
 
 DEFINE varInParent2 type a size 20;
-varInParent = "varInParent2Value";
+varInParent2 = "varInParent2Value";
 MessageBox("varInParent2 = " + varInParent2);
 
 CreateWindow("../../scripts/tabControl.xaml"); // will stay open until user closes it with "X" in top-right corner
@@ -17,15 +13,10 @@ CreateWindow("../../scripts/tabControl.xaml"); // will stay open until user clos
 MessageBox("chaining to script1.cscs");
 CHAIN "../../scripts/script1.cscs";
 
-MessageBox("Interpreter num. 2 after CHAIN");
+MessageBox("Back from script1.");
 
-MessageBox("Back from script1, varInParent = " + varInParent); // should print "newValue"
-MessageBox("Back from script1, varInParent2 = " + varInParent2); // should print "newValue2"
+MessageBox("varInParent = " + varInParent);
+MessageBox("varInParent2 = " + varInParent2);
 
 
-
-// prints this - ok
 MessageBox("end");
-
-//here now should be a window opened from line 11 in this script bound to interpreter 2, along with mainMenuWindow bound to interpreter 1
-//this window(line 11) is waiting for user to click "X" to close that window and interpreter 2 or e.g. quit command in some button click event

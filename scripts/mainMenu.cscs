@@ -133,6 +133,7 @@ function mainMenuWindow_OnDisplay(){
     AddMenuSeparator("OtherDC");
     
     AddMenuItem("OtherDC", "testCHAIN.cscs", "testCHAIN", "runScript");
+    AddMenuItem("OtherDC", "testTwoLoops.cscs", "testTwoLoops", "runScript");
     
     AddMenuSeparator("OtherDC");
     
