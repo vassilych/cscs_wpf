@@ -1,0 +1,8 @@
+DEFINE date1 type d size 8;
+date1 = "12/12/12";
+
+CreateWindow("../../scripts/dateEditer.xaml");
+
+function btn1@clicked(){
+    MessageBox(date1);
+}
