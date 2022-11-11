@@ -40,6 +40,7 @@ function mainMenuWindow_OnDisplay(){
     //------------ BTRIEVE ------------------------
 
     AddMenuItem("BtrieveDC", "testOpenv.cscs", "testOpenv", "runScript");
+    AddMenuItem("BtrieveDC", "testOpenv2.cscs", "testOpenv2", "runScript");
     AddMenuItem("BtrieveDC", "testFindv.cscs", "testFindv", "runScript");
     
     AddMenuSeparator("BtrieveDC");

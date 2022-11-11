@@ -1,9 +1,11 @@
 CreateWindow("../../scripts/loopButton1.xaml");
 
+x = 0;
+
 function btn1@clicked(){
-    x1 = 0;
+    
     for(i = 0; i< 10000;i++){
-        x1 += i;
+        x += i;
     }
-    MessageBox(x1);
+    MessageBox(x);
 }
