@@ -1,0 +1,12 @@
+DEFINE hndl1 type i;
+
+hndl1 = openv("invoiceLines", "db1", "a");
+if(flerr() != 0){
+    MessageBox("flerr: " + flerr());
+    quit;
+}
+else{
+    MessageBox("Successfuly opened.");
+}
+
+quit;
