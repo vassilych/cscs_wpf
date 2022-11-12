@@ -982,16 +982,20 @@ namespace WpfCSCS
         private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             var widget = sender as FrameworkElement;
-            var widgetName = GetWidgetBindingName(widget);
+            var widgetBindingName = GetWidgetBindingName(widget);
+            var widgetName = GetWidgetName(widget);
             var picker = sender as DatePicker;
             DateTime? date = picker?.SelectedDate;
-            if (string.IsNullOrWhiteSpace(widgetName) || date == null ||
+            if (string.IsNullOrWhiteSpace(widgetBindingName) || date == null ||
                !m_dateSelectedHandlers.TryGetValue(widgetName, out string funcName))
             {
                 return;
             }
-
-            ValueUpdated(funcName, widgetName, widget, new Variable(date.Value.ToString("yyyy/MM/dd")));
+            if(DEFINES.TryGetValue(widgetBindingName, out DefineVariable defVar))
+            {
+                var dateFormat = defVar.GetDateFormat();
+                ValueUpdated(funcName, widgetName, widget, new Variable(date.Value.ToString(dateFormat)));
+            }
         }
 
         public bool AddMouseHoverHandler(string name, string action, FrameworkElement widget)
@@ -2857,6 +2861,15 @@ namespace WpfCSCS
                 {
                     richTextBox.Document.Blocks.Clear();
                     richTextBox.Document.Blocks.Add(new Paragraph(new Run(text)));
+                }));
+            }
+            else if (widget is DateEditer && !string.IsNullOrWhiteSpace(text))
+            {
+                var dateEditer = widget as DateEditer;
+                var format = text.Length == 10 ? "dd/MM/yyyy" : text.Length == 8 ? "dd/MM/yy" : "yyyy/MM/dd hh:mm:ss";
+                dispatcher.Invoke(new Action(() =>
+                {
+                    dateEditer.SelectedDate = DateTime.ParseExact(text, format, CultureInfo.InvariantCulture);
                 }));
             }
             else if (widget is DatePicker && !string.IsNullOrWhiteSpace(text))
