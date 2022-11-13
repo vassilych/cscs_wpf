@@ -348,13 +348,16 @@ namespace WpfCSCS
         public static string RequireDEFINE { get; set; }
         public static string DefaultDB { get; set; }
         public static int MaxCacheSize { get; set; }
+
+        bool m_initialized;
+
         public Dictionary<string, FrameworkElement> Controls { get; set; } = new Dictionary<string, FrameworkElement>();
         public Dictionary<FrameworkElement, Window> Control2Window { get; set; } = new Dictionary<FrameworkElement, Window>();
 
         public Dictionary<Window, string> Window2File { get; set; } = new Dictionary<Window, string>();
         public Dictionary<string, Window> File2Window { get; set; } = new Dictionary<string, Window>();
 
-        public Interpreter Interpreter { get; set; }
+        public Interpreter Interpreter { get; private set; }
 
         //public static Action<string, string> OnWidgetClick;
 
@@ -408,6 +411,12 @@ namespace WpfCSCS
         }
         public void Init()
         {
+            if (m_initialized)
+            {
+                return;
+            }
+            m_initialized = true;
+
             InterpreterManager.OnInterpreterCreated += InterpreterCreated;
             InterpreterManager.Modules = GetModuleList();
             var interpreterId = InterpreterManager.NewInterpreter();
@@ -453,8 +462,11 @@ namespace WpfCSCS
             }
 
             CacheAdictionary();
-
             FillDatabasesDictionary();
+
+            ReportFunction.Init(Interpreter);
+            Btrieve.Init(Interpreter);
+            NavigatorClass.Init(Interpreter);
         }
 
         private static void InterpreterCreated(object sender, EventArgs e)
@@ -2224,9 +2236,6 @@ namespace WpfCSCS
         public Variable RunScript(string fileName, bool encode = false)
         {
             Init();
-            ReportFunction.Init();
-            Btrieve.Init();
-            NavigatorClass.Init();
 
             if (encode)
             {
@@ -4762,7 +4771,7 @@ namespace WpfCSCS
             string country = Utils.GetSafeString(args, 1, "HR");
             /*string callBack = Utils.GetSafeString(args, 2);
 
-            CustomFunction callbackFunction = Interpreter.LastInstance.GetFunction(callBack, null) as CustomFunction;
+            CustomFunction callbackFunction = gui.Interpreter.GetFunction(callBack, null) as CustomFunction;
             if (callbackFunction == null)
             {
                 throw new ArgumentException("Error: Couldn't find function [" + callBack + "]");

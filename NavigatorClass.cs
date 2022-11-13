@@ -10,9 +10,9 @@ namespace WpfCSCS
 {
     public class NavigatorClass
     {
-        public void Init()
+        public void Init(Interpreter intepreter)
         {
-            Interpreter.LastInstance.RegisterFunction(Constants.NAVIGATOR, new NavigatorFunction()); 
+            intepreter.RegisterFunction(Constants.NAVIGATOR, new NavigatorFunction()); 
         }
 
         public static Dictionary<string, int> navigatorOfTable = new Dictionary<string, int>();

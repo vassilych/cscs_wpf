@@ -118,7 +118,7 @@ namespace WpfCSCS
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnInit";
-            Interpreter.LastInstance.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance,
+            Gui.Interpreter.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance,
                 Gui.GetScript(win));
             Instance.SourceInitialized -= Win_SourceInitialized;
         }
@@ -127,7 +127,7 @@ namespace WpfCSCS
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnActivated";
-            Interpreter.LastInstance.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance,
+            Gui.Interpreter.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance,
                 Gui.GetScript(win));
             Instance.Activated -= Win_Activated;
         }
@@ -136,7 +136,7 @@ namespace WpfCSCS
         {
             Window win = sender as Window;
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnOpen";
-            Interpreter.LastInstance.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance,
+            Gui.Interpreter.Run(funcName, new Variable(win.Tag), Variable.EmptyInstance, Variable.EmptyInstance,
                 Gui.GetScript(win));
         }
 

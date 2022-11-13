@@ -21,12 +21,12 @@ namespace WpfCSCS
     }
     public class ReportFunction : ParserFunction
     {
-        public static void Init()
+        public static void Init(Interpreter interpreter)
         {
-            Interpreter.LastInstance.RegisterFunction(Constants.SETUP_REPORT, new ReportFunction(ReportOption.Setup));
-            Interpreter.LastInstance.RegisterFunction(Constants.OUTPUT_REPORT, new ReportFunction(ReportOption.Output));
-            Interpreter.LastInstance.RegisterFunction(Constants.UPDATE_REPORT, new ReportFunction(ReportOption.Update));
-            Interpreter.LastInstance.RegisterFunction(Constants.PRINT_REPORT, new ReportFunction(ReportOption.Print));
+            interpreter.RegisterFunction(Constants.SETUP_REPORT, new ReportFunction(ReportOption.Setup));
+            interpreter.RegisterFunction(Constants.OUTPUT_REPORT, new ReportFunction(ReportOption.Output));
+            interpreter.RegisterFunction(Constants.UPDATE_REPORT, new ReportFunction(ReportOption.Update));
+            interpreter.RegisterFunction(Constants.PRINT_REPORT, new ReportFunction(ReportOption.Print));
         }
 
         ReportOption option;
