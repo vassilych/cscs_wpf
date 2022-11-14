@@ -9,9 +9,10 @@ CreateWindow("../../scripts/mainMenuWindow.xaml");
 
 function runScript(sender, load){
     //MessageBox("sender = " + sender + ", load = "  + load);   
-    MessageBox("Interpreter num. 1 before CHAIN");
+    
+    //MessageBox("Interpreter num. 1 before CHAIN");
     CHAIN ("../../scripts/" + sender/* + ".cscs"*/); // WITH "argument1" "argument2";
-    MessageBox("Interpreter num. 1 after CHAIN");
+    //MessageBox("Interpreter num. 1 after CHAIN");
 }
 
 function mainMenuWindow_OnDisplay(){
@@ -49,6 +50,8 @@ function mainMenuWindow_OnDisplay(){
     AddMenuItem("BtrieveDC", "testScan2LotsOfData.cscs", "testScan2LotsOfData", "runScript");    
     AddMenuItem("BtrieveDC", "testScan2LotsOfDataNKPRINVL.cscs", "testScan2LotsOfDataNKPRINVL", "runScript");
     AddMenuItem("BtrieveDC", "testScan3.cscs", "testScan3", "runScript");
+    AddMenuItem("BtrieveDC", "testScanWhere.cscs", "testScanWhere", "runScript");
+    AddMenuItem("BtrieveDC", "testScanComparedToScanWhere.cscs", "testScanComparedToScanWhere", "runScript");
 
     AddMenuSeparator("BtrieveDC");
 

@@ -1,0 +1,26 @@
+DEFINE hndl1 type i;
+
+hndl1 = openv("nkprinvl", "bd1", "a");
+if(flerr() != 0){
+    MessageBox("flerr: " + flerr());
+    quit;
+}
+
+i=0;
+MessageBox("start scan");
+scan(hndl1;"nkpr_ln_invnm";"0";true;"";"";""){
+    
+    i++;
+}
+MessageBox("end. i = " + i);
+
+
+i=0;
+MessageBox("start scanWhere");
+scanWhere(hndl1;"nkpr_ln_invnm";"";"";"";"nkpr_ln_invnm"){
+    
+    i++;
+}
+MessageBox("end. i = " + i);
+
+quit;

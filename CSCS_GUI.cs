@@ -168,6 +168,7 @@ namespace SplitAndMerge
         public const string TRC = "Trc";
 
         public const string SCAN = "Scan";
+        public const string SCAN_WHERE = "ScanWhere";
 
         public const string DISPLAY_TABLE_SETUP = "DisplayTableSetup";
         public const string DISPLAY_TABLE_SETUP_WHERE = "DisplayTableSetupWhere";
