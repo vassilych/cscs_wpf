@@ -1,0 +1,24 @@
+DEFINE hndl1 type i;
+
+hndl1 = openv("nkprinv", "bd1", "a");
+if(flerr() != 0){
+    MessageBox("flerr: " + flerr());
+    quit;
+}
+
+scanWhere(hndl1;"nkpr_gl_num";"nkpr_gl_num > 10100010 and nkpr_gl_num < 10100020";"left join nkprinvl on nkprinv.nkpr_gl_num = nkprinvl.nkpr_ln_invnm";"n 10";"nkpr_gl_num, nkpr_gl_cuscod"){
+    if(NKPR_GL_NUM == 10100013){
+        continue;
+    }
+
+    if(NKPR_GL_NUM > 10100017){
+        break;
+    }
+
+    MessageBox("NKPR_GL_NUM = " + NKPR_GL_NUM);
+    
+}
+
+quit;
+
+//

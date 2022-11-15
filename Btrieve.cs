@@ -545,6 +545,557 @@ ORDER BY {orderBySB}
             gui.Interpreter.SkipBlock(script);
         }
     }
+    
+    class ScanWhereStatement : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            return ProcessScanWhere(script);
+        }
+        Variable ProcessScanWhere(ParsingScript script)
+        {
+            string forString = Utils.GetBodyBetween(script, Constants.START_ARG, Constants.END_ARG);
+            script.Forward();
+
+            ProcessScanWhere(script, forString);
+
+            return Variable.EmptyInstance;
+        }
+        void ProcessScanNew(ParsingScript script, string forString)
+        {
+            var gui = CSCS_GUI.GetInstance(script);
+            int MAX_LOOPS = gui.Interpreter.ReadConfig("maxLoops", 256000);
+
+            string[] forTokens = forString.Split(Constants.END_STATEMENT);
+            if (forTokens.Length != 7)
+            {
+                throw new ArgumentException("Expecting: scan(hndlNum; \"keyName\"; \"start|start2\"; \"whileString\"; \"forString\"; \"scope(a)\"; \"lock(t / f)\")");
+            }
+
+            int startForCondition = script.Pointer;
+
+
+            int tableHndlNum = (int)script.GetTempScript(forTokens[0]).Execute(null, 0).Value;
+            var keyName = script.GetTempScript(forTokens[1]).Execute(null, 0);
+            var startString = script.GetTempScript(forTokens[2]).Execute(null, 0).AsString();
+            var whileString = script.GetTempScript(forTokens[3]);
+            var forExpression = script.GetTempScript(forTokens[4]).Execute(null, 0).AsString();
+            var scope = script.GetTempScript(forTokens[5]).Execute(null, 0);
+            var nlock = script.GetTempScript(forTokens[6]).Execute(null, 0);
+
+            KeyClass KeyClass;
+
+            int cycles = 0;
+            bool stillValid = true;
+
+            var scopeString = scope.String.ToLower();
+            bool limited = false;
+            int selectLimit = 0;
+            int selectLimitCounter = 0;
+            if (scopeString.StartsWith("n"))
+            {
+                var selectLimitString = scopeString.TrimStart('n').Replace(" ", "");
+                if (int.TryParse(selectLimitString, out selectLimit))
+                {
+                    limited = true;
+                    selectLimitCounter = selectLimit;
+                }
+                else
+                {
+                    Btrieve.SetFlerr(12, tableHndlNum);
+                    return;
+                }
+            }
+
+            //--------------------------------------
+            
+            var thisOpenv = Btrieve.OPENVs[tableHndlNum];
+
+
+            //get KeyClass
+            if (keyName.AsString().StartsWith("@") && int.TryParse(keyName.AsString().TrimStart('@'), out int keyNum))
+            {
+                if (keyNum > 0)
+                {
+                    // for optimization
+                    var kljuceviTable = CSCS_GUI.Adictionary.SY_INDEXESList.Where(p => p.SYKI_SCHEMA == CSCS_GUI.Adictionary.SY_TABLESList.First(r => r.SYCT_NAME.ToUpper() == thisOpenv.tableName.ToUpper()).SYCT_SCHEMA).OrderBy(s => s.SYKI_KEYNUM).ToArray();
+
+                    KeyClass = thisOpenv.Keys.First(p => p.KeyName == kljuceviTable.Where(r => r.SYKI_KEYNUM == keyNum).First().SYKI_KEYNAME);
+                }
+                else
+                {
+                    KeyClass = new KeyClass() { KeyName = "ID", Ascending = true, Unique = true, KeyNum = 0, KeyColumns = new Dictionary<string, string>() { { "ID", "" } } };
+                }
+            }
+            else if (!thisOpenv.Keys.Any(p => p.KeyName.ToUpper() == keyName.AsString().ToUpper()))
+            {
+                // "Key does not exist for this table!"
+                Btrieve.SetFlerr(4, tableHndlNum);
+                return;
+            }
+            else
+            {
+                KeyClass = thisOpenv.Keys.First(p => p.KeyName.ToUpper() == keyName.AsString().ToUpper());
+            }
+
+            //start string
+            List<string> keySegmentsOrdered = new List<string>();
+
+            var keyUsed = CSCS_GUI.Adictionary.SY_INDEXESList.Where(p => p.SYKI_KEYNAME == KeyClass.KeyName).ToList();
+            keySegmentsOrdered = keyUsed.OrderBy(p => p.SYKI_SEGNUM).Select(p => p.SYKI_FIELD).ToList();
+
+            if (!KeyClass.Unique)
+            {
+                keySegmentsOrdered.Add("ID");
+            }
+
+            if (KeyClass.KeyNum != 0 && string.IsNullOrEmpty(startString))
+            {
+                StringBuilder matchExactStringBuilder = new StringBuilder();
+
+                for (int i = 0; i < keySegmentsOrdered.Count; i++)
+                {
+                    matchExactStringBuilder.Append(gui.DEFINES[keySegmentsOrdered[i].ToLower()]);
+                    matchExactStringBuilder.Append("|");
+                }
+                matchExactStringBuilder.Remove(matchExactStringBuilder.Length - 1, 1); // remove last "|"
+                startString = matchExactStringBuilder.ToString();
+            }
+
+            //OderBySB
+            StringBuilder orderBySB = new StringBuilder();
+
+            string ascDescOption = "";
+
+            ascDescOption = "asc";
+            
+            foreach (var segmentName in KeyClass.KeyColumns.Keys)
+            {
+                orderBySB.Append($" {segmentName} {ascDescOption},");
+            }
+
+            if (!KeyClass.Unique)
+            {
+                orderBySB.Append(" ID ");
+                orderBySB.Append("asc");
+            }
+            else
+            {
+                orderBySB.Remove(orderBySB.Length - 1, 1);
+            }
+
+
+            //sql where -- start string & 
+            StringBuilder sqlStartStringSB = new StringBuilder();
+
+
+            var matchExactValues = startString.Split('|');
+            if (matchExactValues.Count() != KeyClass.KeyColumns.Count())
+            {
+                Btrieve.SetFlerr(99, tableHndlNum);
+                return;
+            }
+
+
+            //string sqlWhereString = "(";
+            //for (int i = 0; i < keySegmentsOrdered.Count; i++)
+            //{
+            //    sqlWhereString += keySegmentsOrdered[i] + " >=" + matchExactValues[i] + " AND ";
+            //}
+            //sqlWhereString = sqlWhereString.Substring(0, sqlWhereString.Length - 5);
+            //sqlWhereString += ")";
+
+            //if (!string.IsNullOrEmpty(forExpression))
+            //{
+            //    sqlWhereString += " AND (" + forExpression + ")";
+            //}
+            
+            // startString and forSqlExpression
+            string sqlWhereString = "((";
+            for (int j = 0; j < keySegmentsOrdered.Count; j++)
+            {
+                for (int i = 0; i < keySegmentsOrdered.Count - j; i++)
+                {
+                    string compareSign = "";
+                    if (i < keySegmentsOrdered.Count - j - 1)
+                        compareSign = " = ";
+                    else if (i == keySegmentsOrdered.Count - j - 1)
+                    {
+                        if (j == 0)
+                            compareSign = " >= ";
+                        else
+                            compareSign = " > ";
+                    }
+                        sqlWhereString += keySegmentsOrdered[i] + compareSign + matchExactValues[i] + " AND ";
+                }
+                sqlWhereString = sqlWhereString.Substring(0, sqlWhereString.Length - 5);
+                sqlWhereString += ") OR (";    
+            }
+            sqlWhereString = sqlWhereString.Substring(0, sqlWhereString.Length - 5);
+            sqlWhereString += ")";
+
+
+            if (!string.IsNullOrEmpty(forExpression))
+            {
+                sqlWhereString += " AND (" + forExpression + ")";
+            }
+
+
+
+            string query =
+    $@"EXECUTE sp_executesql N'
+SELECT {(limited? "TOP " + selectLimit : "")}
+*
+FROM {Btrieve.Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
+
+with (nolock) 
+
+{(!string.IsNullOrEmpty(sqlWhereString) ? " WHERE (" + sqlWhereString + ")" : "")} 
+
+ORDER BY {orderBySB}
+'";
+
+
+            int currentSqlId = 0;
+
+            using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+            {
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    if (!reader.HasRows)
+                    {
+                        Btrieve.SetFlerr(3, tableHndlNum);
+                        return;
+                    }
+                    else
+                    {
+                        while (reader.Read())
+                        {
+                            currentSqlId = (int)reader["ID"];
+                            int currentFieldNum = 1;
+                            while (currentFieldNum < reader.FieldCount)
+                            {
+                                var currentColumnName = reader.GetName(currentFieldNum);
+                                if (KeyClass.KeyColumns.Keys.Any(p => p.ToUpper() == currentColumnName.ToUpper()))
+                                {
+                                    if (reader.GetFieldType(currentFieldNum) == typeof(DateTime))
+                                    {
+                                        KeyClass.KeyColumns[currentColumnName] = ((DateTime)reader[currentColumnName]).ToString("yyyy-MM-dd");
+                                    }
+                                    else
+                                    {
+                                        KeyClass.KeyColumns[currentColumnName] = reader[currentColumnName].ToString();
+                                    }
+                                }
+
+                                var loweredCurrentColumnName = currentColumnName.ToLower();
+                                if (!gui.DEFINES.ContainsKey(loweredCurrentColumnName))
+                                {
+                                    return;
+                                }
+                                else
+                                {
+                                    if (reader.GetFieldType(currentFieldNum) == typeof(DateTime))
+                                    {
+                                        DateTime fieldValue = (DateTime)reader[currentColumnName];
+                                        var dateFormat = gui.DEFINES[loweredCurrentColumnName].GetDateFormat();
+                                        var newVar = new Variable(fieldValue.ToString(dateFormat));
+                                        gui.DEFINES[loweredCurrentColumnName].InitVariable(newVar, gui);
+                                        gui.OnVariableChange(loweredCurrentColumnName, newVar, true);
+                                    }
+                                    else
+                                    {
+                                        string fieldValue = reader[currentColumnName].ToString().TrimEnd();
+                                        gui.DEFINES[loweredCurrentColumnName].InitVariable(new Variable(fieldValue).Clone(), gui);
+                                        gui.OnVariableChange(loweredCurrentColumnName, new Variable(fieldValue), true);
+                                    }
+                                }
+                                currentFieldNum++;
+                            }
+
+
+                            if (stillValid)
+                            {
+                                if (limited && selectLimitCounter == 0)
+                                {
+                                    Btrieve.SetFlerr(0, tableHndlNum);
+                                    break;
+                                }
+
+                                var condResult = whileString.Execute(null, 0);
+
+                                stillValid = Convert.ToBoolean(condResult.Value);
+                                if (!stillValid)
+                                {
+                                    break;
+                                }
+
+                                if (MAX_LOOPS > 0 && ++cycles >= MAX_LOOPS)
+                                {
+                                    throw new ArgumentException("Looks like an infinite loop after " +
+                                                                  cycles + " cycles.");
+                                }
+
+                                script.Pointer = startForCondition;
+                                Variable result = gui.Interpreter.ProcessBlock(script);
+
+                                if (limited)
+                                {
+                                    selectLimitCounter--;
+                                    if (selectLimitCounter == 0)
+                                    {
+                                        Btrieve.SetFlerr(0, tableHndlNum);
+                                        break;
+                                    }
+                                }
+
+                                if (result.IsReturn || result.Type == Variable.VarType.BREAK)
+                                {
+                                    break;
+                                }
+
+                                if (Btrieve.LastFlerrsOfFnums[tableHndlNum] == 3)
+                                {
+                                    Btrieve.SetFlerr(0, tableHndlNum);
+                                    break;
+                                }
+
+                            }
+
+                            Btrieve.SetFlerr(0, tableHndlNum);
+
+                            script.Pointer = startForCondition;
+                            gui.Interpreter.SkipBlock(script);
+                        }
+
+                        
+                    }
+                    thisOpenv.CurrentKey = KeyClass;
+                    thisOpenv.currentRow = currentSqlId;
+                    Btrieve.OPENVs[tableHndlNum] = thisOpenv;
+                }
+            }
+
+            Btrieve.SetFlerr(0, tableHndlNum);
+
+            
+        }
+        void ProcessScanWhere(ParsingScript script, string forString)
+        {
+            var gui = CSCS_GUI.GetInstance(script);
+            int MAX_LOOPS = gui.Interpreter.ReadConfig("maxLoops", 256000);
+
+            string[] forTokens = forString.Split(Constants.END_STATEMENT);
+            if (forTokens.Length != 6)
+            {
+                throw new ArgumentException("Expecting: scan(hndlNum; \"keyName\"; \"whereString\"; \"joinString\"; \"scope\"; \"columns\"");
+            }
+
+            int startForCondition = script.Pointer;
+
+            var Gui = CSCS_GUI.GetInstance(script);
+
+            var tableHndlNum = script.GetTempScript(forTokens[0]).Execute(null, 0);
+            var keyName = script.GetTempScript(forTokens[1]).Execute(null, 0);
+            var whereString = script.GetTempScript(forTokens[2]).Execute(null, 0);
+            var joinString = script.GetTempScript(forTokens[3]).Execute(null, 0);
+            var scope = script.GetTempScript(forTokens[4]).Execute(null, 0);
+            var columns = script.GetTempScript(forTokens[5]).Execute(null, 0);
+
+            KeyClass KeyClass = new KeyClass();
+
+            int cycles = 0;
+
+            //------------------------
+
+            var thisOpenv = Btrieve.OPENVs[(int)tableHndlNum.Value];
+
+            if (!string.IsNullOrEmpty(keyName.String))
+            {
+                if (keyName.String.StartsWith("@") && int.TryParse(keyName.String.TrimStart('@'), out int keyNum))
+                {
+                    if (keyNum > 0)
+                    {
+                        var kljuceviTable = CSCS_GUI.Adictionary.SY_INDEXESList.Where(p => p.SYKI_SCHEMA == CSCS_GUI.Adictionary.SY_TABLESList.First(r => r.SYCT_NAME.ToUpper() == thisOpenv.tableName.ToUpper()).SYCT_SCHEMA).OrderBy(s => s.SYKI_KEYNUM).ToArray();
+
+                        KeyClass = thisOpenv.Keys.First(p => p.KeyName == kljuceviTable.Where(r => r.SYKI_KEYNUM == keyNum).First().SYKI_KEYNAME);
+                    }
+                    else
+                    {
+                        KeyClass = new KeyClass() { KeyName = "ID", Ascending = true, Unique = true, KeyNum = 0, KeyColumns = new Dictionary<string, string>() { { "ID", "" } } };
+                    }
+                }
+                else if (!thisOpenv.Keys.Any(p => p.KeyName.ToUpper() == keyName.String.ToUpper()))
+                {
+                    // "Key does not exist for this table!"
+                    Btrieve.SetFlerr(4, (int)tableHndlNum.Value);
+                    return;
+                }
+                else
+                {
+                    KeyClass = thisOpenv.Keys.First(p => p.KeyName.ToUpper() == keyName.String.ToUpper());
+                }
+            }
+            else
+            {
+                KeyClass = thisOpenv.CurrentKey;
+            }
+
+            //----------------------
+
+            StringBuilder columnsSB = new StringBuilder();
+            if (string.IsNullOrEmpty(columns.String))
+            {
+                //sve kolone
+                columnsSB.Append($"{thisOpenv.tableName}.ID, ");
+                foreach (var columnName in thisOpenv.FieldNames)
+                {
+                    columnsSB.Append(thisOpenv.tableName + "." + columnName + ", ");
+                }
+                columnsSB.Remove(columnsSB.Length - 2, 2); // removes last ", "
+            }
+            else
+            {
+                columnsSB.Append($"{thisOpenv.tableName}.ID, ");
+                foreach (var columnName in columns.String.Replace(" ", "").Split(','))
+                {
+                    columnsSB.Append(thisOpenv.tableName + "." + columnName + ", ");
+                }
+                columnsSB.Remove(columnsSB.Length - 2, 2); // removes last ", "
+            }
+            
+            
+
+            StringBuilder orderBySB = new StringBuilder();
+            foreach (var keyColumn in KeyClass.KeyColumns)
+            {
+                orderBySB.Append(thisOpenv.tableName + "." + keyColumn.Key + ", ");
+            }
+            if (!KeyClass.Unique)
+            {
+                orderBySB.Append($"{thisOpenv.tableName}.ID, ");
+            }
+            orderBySB.Remove(orderBySB.Length - 2, 2); // removes last ", "
+
+            var scopeString = scope.String.ToLower();
+            int selectCount = 0;
+            if (scopeString.StartsWith("n"))
+            {
+                var selectLimitString = scopeString.TrimStart('n').Replace(" ", "");
+                if (!int.TryParse(selectLimitString, out selectCount))
+                {
+                    Btrieve.SetFlerr(12, (int)tableHndlNum.Value);
+                    return;
+                }
+            }
+
+
+            var query =
+$@"EXECUTE sp_executesql N'
+
+            use {Btrieve.Databases[thisOpenv.databaseName.ToUpper()]};            
+
+            select 
+            {(selectCount != 0 ? "TOP " + selectCount : "")}
+            {columnsSB}
+            from {Btrieve.Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName} {joinString.String}
+            --with (nolock)
+            {(string.IsNullOrEmpty(whereString.String) ? "" : " WHERE " + whereString.String)}
+            order by {orderBySB}
+            '";
+
+            using (SqlConnection con = new SqlConnection(CSCS_SQL.ConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    con.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (!reader.HasRows)
+                        {
+                            Btrieve.SetFlerr(3, (int)tableHndlNum.Value);
+                            return;
+                        }
+                        else
+                        {
+                            while (reader.Read())
+                            {
+                                thisOpenv.currentRow = (int)reader["ID"];
+
+                                int currentFieldNum = 1;
+                                while (currentFieldNum < reader.FieldCount)
+                                {
+                                    var currentColumnName = reader.GetName(currentFieldNum);
+                                    if (KeyClass.KeyColumns.Keys.Any(p => p.ToUpper() == currentColumnName.ToUpper()))
+                                    {
+                                        if (reader.GetFieldType(currentFieldNum) == typeof(DateTime))
+                                        {
+                                            KeyClass.KeyColumns[currentColumnName] = ((DateTime)reader[currentColumnName]).ToString("yyyy-MM-dd");
+                                        }
+                                        else
+                                        {
+                                            KeyClass.KeyColumns[currentColumnName] = reader[currentColumnName].ToString();
+                                        }
+                                    }
+
+                                    var loweredCurrentColumnName = currentColumnName.ToLower();
+                                    if (!Gui.DEFINES.ContainsKey(loweredCurrentColumnName))
+                                    {
+                                        Btrieve.SetFlerr(4, (int)tableHndlNum.Value);
+                                        return;
+                                    }
+                                    else
+                                    {
+                                        if (reader.GetFieldType(currentFieldNum) == typeof(DateTime))
+                                        {
+                                            DateTime fieldValue = (DateTime)reader[currentColumnName];
+                                            var dateFormat = Gui.DEFINES[loweredCurrentColumnName].GetDateFormat();
+                                            var newVar = new Variable(fieldValue.ToString(dateFormat));
+
+                                            Gui.DEFINES[loweredCurrentColumnName].InitVariable(newVar, Gui);
+                                            Gui.OnVariableChange(loweredCurrentColumnName, newVar, true);
+                                        }
+                                        else
+                                        {
+                                            string fieldValue = reader[currentColumnName].ToString().TrimEnd();
+
+                                            Gui.DEFINES[loweredCurrentColumnName].InitVariable(new Variable(fieldValue).Clone(), Gui);
+                                            Gui.OnVariableChange(loweredCurrentColumnName, new Variable(fieldValue), true);
+                                        }
+                                    }
+
+                                    currentFieldNum++;
+                                }
+
+
+
+                                if (MAX_LOOPS > 0 && ++cycles >= MAX_LOOPS)
+                                {
+                                    throw new ArgumentException("Looks like an infinite loop after " +
+                                                                  cycles + " cycles.");
+                                }
+
+                                script.Pointer = startForCondition;
+                                Variable result = gui.Interpreter.ProcessBlock(script);
+
+                                if (result.IsReturn || result.Type == Variable.VarType.BREAK)
+                                {
+                                    break;
+                                }
+
+                            }
+
+                            Btrieve.SetFlerr(0, (int)tableHndlNum.Value);
+
+                            script.Pointer = startForCondition;
+                            gui.Interpreter.SkipBlock(script);
+                        }
+                    }
+                }
+            }
+
+        }
+    }
 
 
 
@@ -574,6 +1125,7 @@ ORDER BY {orderBySB}
             interpreter.RegisterFunction(Constants.FLERR, new FlerrFunction());
 
             interpreter.RegisterFunction(Constants.SCAN, new ScanStatement());
+            interpreter.RegisterFunction(Constants.SCAN_WHERE, new ScanWhereStatement());
 
             interpreter.RegisterFunction(Constants.DISPLAY_TABLE_SETUP, new DisplayTableSetupFunction());
             interpreter.RegisterFunction(Constants.DISPLAY_TABLE_SETUP_WHERE, new DisplayTableSetupWhereFunction());

@@ -18,5 +18,7 @@ MessageBox("Back from script1.");
 MessageBox("varInParent = " + varInParent);
 MessageBox("varInParent2 = " + varInParent2);
 
+MessageBox("chaining to script3.cscs");
+CHAIN "../../scripts/script3.cscs" NEWRUNTIME WITH "myGrid" "bla1"+"bla2" "bla3" "bla4";
 
 MessageBox("end");
