@@ -3627,9 +3627,8 @@ namespace WpfCSCS
             Utils.CheckArgs(args.Count, 1, m_name);
 
             string chainName = args[0].AsString();
-            string binName = chainName;
             parameters = new List<Variable>();
-            string paramsStr = "\"";
+            string paramsStr = " \"";
             bool canAdd = false;
             bool newRuntime = false;
             for (int i = 1; i < args.Count; i++)
@@ -3654,7 +3653,7 @@ namespace WpfCSCS
                 canAdd = args[i].AsString().ToLower() == Constants.WITH;
                 if (!canAdd)
                 {
-                    var parami = chainName = args[i].AsString();
+                    var parami = args[i].AsString();
                     paramsStr += parami + " ";
                 }
             }
@@ -3662,14 +3661,9 @@ namespace WpfCSCS
             if (newRuntime)
             {
                 paramsStr = paramsStr.Substring(0, paramsStr.Length - 1) + '"';
-                var execDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                var exec = Path.Combine(execDir, binName);
-                RunExecFunction.RunExec(exec, paramsStr);
-                //var t = Task.Run(() => RunTask(chainScript));
-                //t.Wait();
-                //var result = t.Result;
-                //return result;
-                return Variable.EmptyInstance;
+                var exec = Process.GetCurrentProcess().MainModule.FileName;
+                var result = RunExecFunction.RunExec(exec, chainName + paramsStr);
+                return result;
             }
 
             ParsingScript chainScript = tempScript.GetIncludeFileScript(chainName);
