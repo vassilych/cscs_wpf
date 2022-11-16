@@ -1,0 +1,6 @@
+
+SqlToXlsx("bd1", "select top 10000 * from nkprinv", "exportedToxlsx.xlsx");
+
+MessageBox("Done.");
+
+quit;

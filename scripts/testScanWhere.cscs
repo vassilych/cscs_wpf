@@ -20,5 +20,3 @@ scanWhere(hndl1;"nkpr_gl_num";"nkpr_gl_num > 10100010 and nkpr_gl_num < 10100020
 }
 
 quit;
-
-//

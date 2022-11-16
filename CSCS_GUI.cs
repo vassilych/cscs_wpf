@@ -183,6 +183,8 @@ namespace SplitAndMerge
 
         public const string NAVIGATOR = "Navigator";
 
+        public const string SQL_TO_XLSX = "SqlToXlsx";
+
         public const string READ_XML_FILE = "readXmlFile";
         public const string READ_TAGCONTENT_FROM_XMLSTRING = "readTagContentFromXmlString";
 
@@ -467,6 +469,7 @@ namespace WpfCSCS
 
             ReportFunction.Init(Interpreter);
             Btrieve.Init(Interpreter);
+            Excel.Init(Interpreter);
             NavigatorClass.Init(Interpreter);
         }
 

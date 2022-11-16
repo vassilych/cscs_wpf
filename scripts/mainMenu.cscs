@@ -171,6 +171,10 @@ function mainMenuWindow_OnDisplay(){
     AddMenuSeparator("OtherDC");
     
     AddMenuItem("OtherDC", "dateEditer.cscs", "dateEditer", "runScript"); // ?
+    
+    AddMenuSeparator("OtherDC");
+    
+    AddMenuItem("OtherDC", "testSqlToXlsx.cscs", "testSqlToXlsx", "runScript"); // ?
 
     //------------------------------------   
 }
