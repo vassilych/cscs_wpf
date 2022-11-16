@@ -131,6 +131,16 @@
     <Reference Include="DevExpress.XtraReports.v18.2, Version=18.2.14.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
       <HintPath>packages\DevExpress.Reporting.Core.18.2.14\lib\net452\DevExpress.XtraReports.v18.2.dll</HintPath>
     </Reference>
+    <Reference Include="MiniExcel, Version=1.28.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\MiniExcel.dll</HintPath>
+    </Reference>
+    <Reference Include="Spire.Pdf, Version=8.7.2.0, Culture=neutral, PublicKeyToken=663f351905198cb3, processorArchitecture=MSIL">
+      <HintPath>packages\FreeSpire.XLS.12.7.0\lib\net40\Spire.Pdf.dll</HintPath>
+    </Reference>
+    <Reference Include="Spire.XLS, Version=12.7.0.0, Culture=neutral, PublicKeyToken=663f351905198cb3, processorArchitecture=MSIL">
+      <HintPath>packages\FreeSpire.XLS.12.7.0\lib\net40\Spire.XLS.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration" />
@@ -175,6 +185,7 @@
     <Compile Include="CSCS\InterpreterManagerFunctions.cs" />
     <Compile Include="CSCS\InterpreterManagerInstance.cs" />
     <Compile Include="CSCS\InterpreterManagerModule.cs" />
+    <Compile Include="Excel.cs" />
     <Compile Include="NavigatorClass.cs" />
     <Compile Include="Reporting.cs" />
     <Compile Include="SpecialWindow.cs" />

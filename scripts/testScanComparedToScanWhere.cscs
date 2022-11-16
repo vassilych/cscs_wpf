@@ -17,6 +17,7 @@ MessageBox("end. i = " + i);
 
 i=0;
 MessageBox("start scanWhere");
+//only 1 column - nkpr_ln_invnm
 scanWhere(hndl1;"nkpr_ln_invnm";"";"";"";"nkpr_ln_invnm"){
     
     i++;

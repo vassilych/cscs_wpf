@@ -3,14 +3,22 @@ MessageBox("script1.cscs");
 
 CreateWindow("../../scripts/tabControl.xaml");
 
+DEFINE varInScript1_2 type a size 20;
+varInScript1_2 = "varInScript1_2Value";
+MessageBox("varInScript1_2 = " + varInScript1_2);
+
+function func1(){
+    return "stringFromFunc1";
+}
+
 MessageBox("chaining to script2.cscs");
-CHAIN "../../scripts/script2.cscs" WITH "argument1" "argument2" "argument3" "argument4";
+CHAIN "../../scripts/script2.cscs" WITH "argument1",varInScript1_2,func1(),"argument4"+varInScript1_2;
 
 MessageBox("back in script1.cscs");
 
-DEFINE varInScript1 type a size 20;// if this DEFINE is set before CHAIN the following MessageBox works, if DEFINEd here it doesn't.
+DEFINE varInScript1 type a size 20;
 varInScript1 = "varInScript1Value";
-MessageBox("varInScript1 = " + varInScript1); // 'Couldn't find variable [varInScript1]. Line 13: MessageBox("varInScript1 = " + varInScript1);'
+MessageBox("varInScript1 = " + varInScript1);
 
 
 quit;

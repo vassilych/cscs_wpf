@@ -1,11 +1,10 @@
-
-// never gets here
 MessageBox("script3.cscs");
 
 DEFINE arg4, arg5, arg6, arg7 type a size 20;
 
 PARAM arg4,arg5,arg6,arg7;
 
-MessageBox("Got params:",arg4,arg5,arg6,arg7);
+MessageBox("Got params:" + arg4 + arg5 + arg6 + arg7);
 
-quit;
+CreateWindow("../../scripts/tabControl.xaml");
+
