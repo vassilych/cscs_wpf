@@ -3596,12 +3596,13 @@ namespace WpfCSCS
                 var argsStr = Utils.GetBodyBetween(script, '\0', '\0', Constants.END_STATEMENT);
                 string[] argsArray = argsStr.Split(separator);
                 //string msg = "CmdArgs:";
-                if (!Gui.Parameters.TryGetValue(script.Filename, out parameters))
+                var fileFullName = script.GetFilePath(script.Filename);
+                if (!Gui.Parameters.TryGetValue(fileFullName, out parameters))
                 {
                     parameters = new List<Variable>();
                     string[] cmdArgs = Environment.GetCommandLineArgs();
-                    var cmdArgsArr = cmdArgs.Length > 1 ? cmdArgs[1].Split(separator) : new string[0];
-                    for (int i = 1; i < cmdArgsArr.Length; i++)
+                    var cmdArgsArr = cmdArgs.Length > 2 ? cmdArgs[2].Split(separator) : new string[0];
+                    for (int i = 0; i < cmdArgsArr.Length; i++)
                     {
                         parameters.Add(new Variable(cmdArgsArr[i]));
                         //msg += "[" + cmdArgsArr[i] + "]";
@@ -3612,7 +3613,8 @@ namespace WpfCSCS
                 {
                     var func = new GetVarFunction(parameters[i]);
                     func.Name = argsArray[i];
-                    script.StackLevel.Variables[argsArray[i]] = func;
+                    //script.StackLevel.Variables[argsArray[i]] = func;
+                    script.InterpreterInstance.AddGlobalOrLocalVariable(func.Name, func);
 
                     //msg += func.Name + "=[" + parameters[i].AsString() + "] ";
                 }
@@ -3630,6 +3632,7 @@ namespace WpfCSCS
             Utils.CheckArgs(args.Count, 1, m_name);
 
             string chainName = args[0].AsString();
+            string chainFullName = script.GetFilePath(chainName);
             parameters = new List<Variable>();
             string paramsStr = " \"";
             bool canAdd = false;
@@ -3665,7 +3668,7 @@ namespace WpfCSCS
             {
                 paramsStr = paramsStr.Substring(0, paramsStr.Length - 1) + '"';
                 var exec = Process.GetCurrentProcess().MainModule.FileName;
-                var result = RunExecFunction.RunExec(exec, chainName + paramsStr);
+                var result = RunExecFunction.RunExec(exec, chainFullName + paramsStr);
                 return result;
             }
 

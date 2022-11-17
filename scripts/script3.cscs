@@ -4,7 +4,7 @@ DEFINE arg4, arg5, arg6, arg7 type a size 20;
 
 PARAM arg4,arg5,arg6,arg7;
 
-MessageBox("Got params:" + arg4 + arg5 + arg6 + arg7);
+MessageBox("Got params:" + arg4 + " AND " + arg5 + " AND " + arg6 + " AND " + arg7);
 
 CreateWindow("../../scripts/tabControl.xaml");
 
