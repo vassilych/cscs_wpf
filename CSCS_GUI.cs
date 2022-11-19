@@ -390,6 +390,9 @@ namespace WpfCSCS
         //static Dictionary<string, TabPage> s_tabPages           = new Dictionary<string, TabPage>();
         //static TabControl s_tabControl;
 
+        internal CSCS_SQL SQLInstance { get; set; } = new CSCS_SQL();
+        internal Btrieve BtrieveInstance { get; set; } = new Btrieve();
+
         static public InterpreterManagerModule InterpreterManager = new InterpreterManagerModule();
 
         public static AdictionaryLocal.Adictionary Adictionary { get; set; } = new AdictionaryLocal.Adictionary();
@@ -455,20 +458,23 @@ namespace WpfCSCS
 
             RequireDEFINE = App.GetConfiguration("Require_Define", "false");
             DefaultDB = App.GetConfiguration("DefaultDB", "adictionary");
-            CSCS_SQL.ConnectionString = App.GetConfiguration("ConnectionString", "");
-
-            CSCS_SQL.SqlServerConnection = new SqlConnection(CSCS_SQL.ConnectionString);
 
             if (int.TryParse(App.GetConfiguration("MaxCacheSize", "300"), out int cacheSize))
             {
                 MaxCacheSize = cacheSize;
             }
 
+            CSCS_SQL.ConnectionString = App.GetConfiguration("ConnectionString", "");
+
+            SQLInstance.SqlServerConnection = new SqlConnection(CSCS_SQL.ConnectionString);
+            SQLInstance.Init(Interpreter);
+
             CacheAdictionary();
             FillDatabasesDictionary();
 
+            BtrieveInstance.Init(this);
+
             ReportFunction.Init(Interpreter);
-            Btrieve.Init(Interpreter);
             Excel.Init(Interpreter);
             NavigatorClass.Init(Interpreter);
         }

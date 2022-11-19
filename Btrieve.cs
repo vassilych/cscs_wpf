@@ -321,7 +321,7 @@ ORDER BY {orderBySB}
 
             int currentSqlId = 0;
 
-            using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+            using (SqlCommand cmd = new SqlCommand(query, gui.SQLInstance.SqlServerConnection))
             {
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
@@ -758,7 +758,7 @@ ORDER BY {orderBySB}
 
             int currentSqlId = 0;
 
-            using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+            using (SqlCommand cmd = new SqlCommand(query, gui.SQLInstance.SqlServerConnection))
             {
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
@@ -1101,8 +1101,11 @@ $@"EXECUTE sp_executesql N'
 
     public class Btrieve
     {
-        public static void Init(Interpreter interpreter)
+        public void Init(CSCS_GUI gui)
         {
+            Gui = gui;
+            Interpreter interpreter = gui.Interpreter;
+
             interpreter.RegisterFunction(Constants.OPENV, new OpenvFunction());
             interpreter.RegisterFunction(Constants.FINDV, new FindvFunction());
             interpreter.RegisterFunction(Constants.CLOSEV, new ClosevFunction());
@@ -1141,6 +1144,8 @@ $@"EXECUTE sp_executesql N'
             //interpreter.RegisterFunction(Constants.SCAN, new ScanStatement());
         }
 
+        CSCS_GUI Gui { get; set; }
+
         public static Dictionary<string, string> Databases { get; set; } = new Dictionary<string, string>(); // <SYCD_USERCODE, SYCD_DBASENAME>
 
         public static Dictionary<int, OpenvTable> OPENVs { get; set; } =
@@ -1155,22 +1160,22 @@ $@"EXECUTE sp_executesql N'
                 LastFlerrsOfFnums[fnum] = errNum;
         }
 
-        public static Variable CLOSEV(int tableHndlNum)
+        public Variable CLOSEV(int tableHndlNum)
         {
-            if (CSCS_SQL.SqlServerConnection.State != System.Data.ConnectionState.Closed)
+            if (Gui.SQLInstance.SqlServerConnection.State != System.Data.ConnectionState.Closed)
             {
-                CSCS_SQL.SqlServerConnection.Close();
+                Gui.SQLInstance.SqlServerConnection.Close();
             }
 
             return Variable.EmptyInstance;
         }
 
-        public static Variable OPENV(string tableName, string databaseName, ParsingScript script, string lockingType)
+        public Variable OPENV(string tableName, string databaseName, ParsingScript script, string lockingType)
         {
             var gui = CSCS_GUI.GetInstance(script);
-            if (CSCS_SQL.SqlServerConnection.State != System.Data.ConnectionState.Open)
+            if (Gui.SQLInstance.SqlServerConnection.State != System.Data.ConnectionState.Open)
             {
-                CSCS_SQL.SqlServerConnection.Open();
+                Gui.SQLInstance.SqlServerConnection.Open();
             }
 
             //
@@ -1462,7 +1467,7 @@ with (nolock)
 order by {orderByString}
 '";
 
-                using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+                using (SqlCommand cmd = new SqlCommand(query, Gui.SQLInstance.SqlServerConnection))
                 {
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
@@ -2071,7 +2076,7 @@ N'{paramsDeclaration}', ";
 
                 query += paramsValues;
 
-                using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+                using (SqlCommand cmd = new SqlCommand(query, Gui.SQLInstance.SqlServerConnection))
                 {
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
@@ -2239,7 +2244,7 @@ N'{paramsDeclaration}', ";
 
                 query += paramsValues;
 
-                using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+                using (SqlCommand cmd = new SqlCommand(query, Gui.SQLInstance.SqlServerConnection))
                 {
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
@@ -2382,7 +2387,7 @@ where (
 {(!string.IsNullOrEmpty(sqlForString) ? "AND (" + sqlForString + ")" : "")} 
 order by {orderByString}
 '";
-                using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+                using (SqlCommand cmd = new SqlCommand(query, Gui.SQLInstance.SqlServerConnection))
                 {
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
@@ -2536,7 +2541,7 @@ N'{paramsDeclaration}', ";
 
                 query += paramsValues;
 
-                using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+                using (SqlCommand cmd = new SqlCommand(query, Gui.SQLInstance.SqlServerConnection))
                 {
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
@@ -2624,7 +2629,8 @@ N'{paramsDeclaration}', ";
                 var databaseName = Utils.GetSafeString(args, 1, CSCS_GUI.DefaultDB);
                 var lockingType = Utils.GetSafeString(args, 2, "n").ToLower();
 
-                return Btrieve.OPENV(tableName, databaseName, script, lockingType);
+                var gui = CSCS_GUI.GetInstance(script);
+                return gui.BtrieveInstance.OPENV(tableName, databaseName, script, lockingType);
             }
         }
 
@@ -2636,7 +2642,8 @@ N'{paramsDeclaration}', ";
                 Utils.CheckArgs(args.Count, 1, m_name);
                 var tableHndlNum = Utils.GetSafeInt(args, 0);
 
-                return Btrieve.CLOSEV(tableHndlNum);
+                var gui = CSCS_GUI.GetInstance(script);
+                return gui.BtrieveInstance.CLOSEV(tableHndlNum);
             }
         }
 
@@ -2759,7 +2766,7 @@ from {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
 
 WHERE ID = {idNum}
 '";
-                using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+                using (SqlCommand cmd = new SqlCommand(query, gui.SQLInstance.SqlServerConnection))
                 {
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
@@ -2851,11 +2858,14 @@ WHERE ID = {idNum}
             bool noPrompt;
 
             OpenvTable thisOpenv;
+            CSCS_GUI Gui;
 
             protected override Variable Evaluate(ParsingScript script)
             {
                 List<Variable> args = script.GetFunctionArgs();
                 Utils.CheckArgs(args.Count, 1, m_name);
+
+                Gui = CSCS_GUI.GetInstance(script);
                 tableHndlNum = Utils.GetSafeInt(args, 0);
                 noPrompt = Utils.GetSafeVariable(args, 1, new Variable(false)).AsBool(); // true -> noPrompt, false -> prompt("are you sure...?")
 
@@ -2889,7 +2899,7 @@ WHERE ID = {idNum}
 Delete from {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
 WHERE ID = {thisOpenv.currentRow}
 '";
-                using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+                using (SqlCommand cmd = new SqlCommand(query, Gui.SQLInstance.SqlServerConnection))
                 {
                     var rez = cmd.ExecuteNonQuery();
                     if (rez == 1)
@@ -3002,7 +3012,7 @@ WHERE ID = {thisOpenv.currentRow}
 INSERT INTO {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
 VALUES ({valuesStringBuilder})
 '";
-                using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+                using (SqlCommand cmd = new SqlCommand(query, Gui.SQLInstance.SqlServerConnection))
                 {
                     var rez = cmd.ExecuteNonQuery();
                     if (rez == 1)
@@ -3062,7 +3072,7 @@ Update {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
 SET {setStringBuilder}
 WHERE ID = {thisOpenv.currentRow}
 '";
-                using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+                using (SqlCommand cmd = new SqlCommand(query, Gui.SQLInstance.SqlServerConnection))
                 {
                     var rez = cmd.ExecuteNonQuery();
                     if (rez == 1)
@@ -3569,7 +3579,7 @@ SELECT COUNT(*) FROM {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpen
 WHERE id = {currentId}
 '";
 
-                    using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+                    using (SqlCommand cmd = new SqlCommand(query, Gui.SQLInstance.SqlServerConnection))
                     {
                         var reader = cmd.ExecuteReader();
                         if (reader.Read())
@@ -3651,7 +3661,7 @@ SET {columnsEqualsValuesString}
 WHERE id = {currentId}
 '";
 
-                    using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+                    using (SqlCommand cmd = new SqlCommand(query, Gui.SQLInstance.SqlServerConnection))
                     {
                         try
                         {
@@ -3720,7 +3730,7 @@ VALUES
 ({valuesString})
 '";
 
-                    using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+                    using (SqlCommand cmd = new SqlCommand(query, Gui.SQLInstance.SqlServerConnection))
                     {
                         try
                         {
@@ -3741,11 +3751,13 @@ VALUES
         public class TRCFunction : ParserFunction
         {
             OpenvTable thisOpenv;
+            CSCS_GUI Gui;
 
             protected override Variable Evaluate(ParsingScript script)
             {
                 List<Variable> args = script.GetFunctionArgs();
                 Utils.CheckArgs(args.Count, 1, m_name);
+                Gui = CSCS_GUI.GetInstance(script);
 
                 int tableHndlNum = Utils.GetSafeInt(args, 0);
 
@@ -3759,7 +3771,7 @@ $@"EXECUTE sp_executesql N'
 SELECT COUNT(*) as numOfRows FROM {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
 '";
 
-                    using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+                    using (SqlCommand cmd = new SqlCommand(query, Gui.SQLInstance.SqlServerConnection))
                     {
                         using (var reader = cmd.ExecuteReader())
                         {
@@ -3988,7 +4000,7 @@ Update {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
 SET {setStringBuilder}
 WHERE ID = {thisOpenv.currentRow}
 '";
-                using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+                using (SqlCommand cmd = new SqlCommand(query, Gui.SQLInstance.SqlServerConnection))
                 {
                     int rows = cmd.ExecuteNonQuery();
                     rowsAffected += rows;
@@ -7107,7 +7119,7 @@ DELETE FROM {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableNa
 where ID = {rowId}
 '";
 
-                    using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+                    using (SqlCommand cmd = new SqlCommand(query, Gui.SQLInstance.SqlServerConnection))
                     {
                         var ret = cmd.ExecuteNonQuery();
                         return true;

@@ -41,7 +41,6 @@ namespace WpfCSCS
 
             //cscsScript = "../../scripts/start.cscs";
             Console.WriteLine("Running CSCS script: " + pathName);
-            CSCS_SQL.Init();
 
             try
             {

@@ -41,7 +41,8 @@ namespace WpfCSCS
             }
             query = $"use {dbFullName};\n" + query;
 
-            using (SqlCommand cmd = new SqlCommand(query, CSCS_SQL.SqlServerConnection))
+            var gui = CSCS_GUI.GetInstance(script);
+            using (SqlCommand cmd = new SqlCommand(query, gui.SQLInstance.SqlServerConnection))
             {
                 if (cmd.Connection.State != ConnectionState.Open)
                 {
