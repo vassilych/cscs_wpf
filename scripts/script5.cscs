@@ -1,0 +1,3 @@
+MessageBox("we are in script5");
+
+quit;

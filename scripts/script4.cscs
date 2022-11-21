@@ -1,0 +1,13 @@
+MessageBox("we are in script4");
+
+ResetField("testCHAIN2", "varInParent");
+
+MessageBox(varInParent);
+varInParent = "nestoNovo";
+MessageBox(varInParent);
+
+
+CHAIN "../../scripts/script5.cscs";
+
+
+MessageBox("we are back in script4");
