@@ -34,6 +34,9 @@ function mainMenuWindow_OnDisplay(){
         
     AddMenuSeparator("ScriptsDC");
     AddMenuItem("ScriptsDC", "ReportingDC", "Reporting");
+        
+    AddMenuSeparator("ScriptsDC");
+    AddMenuItem("ScriptsDC", "ExcelDC", "Excel");
     
     AddMenuSeparator("ScriptsDC");
     AddMenuItem("ScriptsDC", "OtherDC", "Other");
@@ -114,6 +117,10 @@ function mainMenuWindow_OnDisplay(){
     AddMenuItem("ReportingDC", "TestReporting4_NKPRINV(L).cscs", "TestReporting4_NKPRINV(L)", "runScript");
     AddMenuItem("ReportingDC", "TestReporting4_NKPRINV(L) - sa SCANom.cscs", "TestReporting4_NKPRINV(L) - sa SCANom", "runScript");
     
+    //------ REPORTING ------------------------------
+
+    AddMenuItem("ExcelDC", "XFileNew.cscs", "XFileNew", "runScript");
+    
 
     //------- OTHER -----------------------------
 
@@ -137,6 +144,7 @@ function mainMenuWindow_OnDisplay(){
     AddMenuSeparator("OtherDC");
     
     AddMenuItem("OtherDC", "testCHAIN.cscs", "testCHAIN", "runScript");
+    AddMenuItem("OtherDC", "testCHAIN2.cscs", "testCHAIN2", "runScript");
     AddMenuItem("OtherDC", "testTwoLoops.cscs", "testTwoLoops", "runScript");
     
     AddMenuSeparator("OtherDC");

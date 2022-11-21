@@ -179,11 +179,42 @@ namespace SplitAndMerge
 
         public const string DATAGRID = "DataGrid";
 
+        public const string ResetField = "ResetField";
+
         public const string FLERR = "Flerr";
 
         public const string NAVIGATOR = "Navigator";
 
         public const string SQL_TO_XLSX = "SqlToXlsx";
+
+        public const string X_FILE_NEW = "XFileNew";
+        public const string X_FILE_OPEN = "XFileOpen";
+        public const string X_FILE_SAVE = "XFileSave";
+        public const string X_FILE_SAVE_AS = "XFileSaveAs";
+        public const string X_FILE_DELETE = "XFileDelete";
+        public const string X_SHEET_ADD = "XSheetAdd";
+        public const string X_SHEET_DELETE = "XSheetDelete";
+        public const string X_SHEET_COUNT = "XSheetCount";
+        public const string X_SHEET_CLEAR = "XSheetClear";
+        public const string X_SHEET_RENAME = "XSheetRename";
+        public const string X_CELL_WRITE_STRING = "XCellWriteString";
+        public const string X_CELL_WRITE_INTEGER = "XCellWriteInteger";
+        public const string X_CELL_WRITE_DOUBLE = "XCellWriteDouble";
+        public const string X_CELL_WRITE_BOOLEAN = "XCellWriteBoolean";
+        public const string X_CELL_WRITE_TIME = "XCellWriteTime";
+        public const string X_CELL_WRITE_DATE = "XCellWriteDate";
+        public const string X_CELL_WRITE_DATETIME = "XCellWriteDateTime";
+        public const string X_CELL_WRITE_FORMULA = "XCellWriteFormula";
+        public const string X_CELL_READ_STRING = "XCellReadString";
+        public const string X_CELL_READ_INTEGER = "XCellReadInteger";
+        public const string X_CELL_READ_DOUBLE = "XCellReadDouble";
+        public const string X_CELL_READ_BOOLEAN = "XCellReadBoolean";
+        public const string X_CELL_READ_TIME = "XCellReadTime";
+        public const string X_CELL_READ_DATE = "XCellReadDate";
+        public const string X_CELL_READ_FORMULA = "XCellReadFormula";
+        public const string X_CELL_EMPTY = "XCellEmpty";
+        public const string X_FIND_SHEET = "XFindSheet";
+        public const string X_FIND_COLUMN = "XFindColumn";
 
         public const string READ_XML_FILE = "readXmlFile";
         public const string READ_TAGCONTENT_FROM_XMLSTRING = "readTagContentFromXmlString";
@@ -3597,6 +3628,7 @@ namespace WpfCSCS
             var separator = new char[] { ',' };
             List<Variable> parameters;
             Gui = CSCS_GUI.GetInstance(script);
+
             if (m_paramMode)
             {
                 var argsStr = Utils.GetBodyBetween(script, '\0', '\0', Constants.END_STATEMENT);
@@ -5559,6 +5591,11 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                     dg.ItemsSource = rowList;
                     dg.Items.Refresh();
                     dg.UpdateLayout();
+                }
+                else if (defVar.DefType == "d")
+                {
+                    defVar.InitVariable(varValue, gui, script, false, m_arrayIndex);
+                    OnVariableChange(m_name, defVar, true);
                 }
                 else
                 {

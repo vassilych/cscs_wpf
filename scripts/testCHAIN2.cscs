@@ -1,0 +1,12 @@
+
+
+DEFINE varInParent type a size 10;
+varInParent = "varValue";
+
+MessageBox("we are in first script");
+
+CHAIN "../../scripts/script4.cscs";
+
+MessageBox("we are back in first script");
+
+MessageBox("varInParent = " + varInParent);

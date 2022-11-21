@@ -1140,8 +1140,9 @@ $@"EXECUTE sp_executesql N'
             interpreter.RegisterFunction(Constants.DISPLAYTABLE, new DisplayTableFunction());
 
             interpreter.RegisterFunction(Constants.DATAGRID, new DataGridFunction());
+            
+            interpreter.RegisterFunction(Constants.ResetField, new ResetFieldFunction());
 
-            //interpreter.RegisterFunction(Constants.SCAN, new ScanStatement());
         }
 
         CSCS_GUI Gui { get; set; }
@@ -7138,6 +7139,42 @@ where ID = {rowId}
                 Rect bounds = element.TransformToAncestor(container).TransformBounds(new Rect(0.0, 0.0, element.ActualWidth, element.ActualHeight));
                 Rect rect = new Rect(0.0, 0.0, container.ActualWidth, container.ActualHeight);
                 return rect.Contains(bounds.TopLeft) || rect.Contains(bounds.BottomRight);
+            }
+        }
+        
+        class ResetFieldFunction : ParserFunction
+        {
+            CSCS_GUI Gui;
+
+            protected override Variable Evaluate(ParsingScript script)
+            {
+                List<Variable> args = script.GetFunctionArgs();
+                Utils.CheckArgs(args.Count, 2, m_name);
+
+                Gui = CSCS_GUI.GetInstance(script);
+
+                var scriptName = Utils.GetSafeString(args, 0).ToLower();
+                var varName = Utils.GetSafeString(args, 1).ToLower();
+
+                ParsingScript parent = script.ParentScript;
+                while (parent != null)
+                {
+                    if (Path.GetFileNameWithoutExtension(parent.Filename).ToLower() != scriptName)
+                    {
+                        parent = parent.ParentScript;
+                    }
+                    else
+                    {
+                        if((parent.Context as CSCS_GUI).DEFINES.TryGetValue(varName, out DefineVariable defVar))
+                        {
+                            //here we have to put in sync those two variables, defVar and new variable with the same name but in "Gui"
+                            break;
+                        }
+                    }
+                }
+
+
+                return Variable.EmptyInstance;
             }
         }
 
