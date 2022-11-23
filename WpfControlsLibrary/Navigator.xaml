@@ -8,9 +8,15 @@
              d:DesignHeight="55" d:DesignWidth="300"
              Loaded="UserControl_Loaded">
     <Grid>
-        <Button Content="|&lt;--" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Height="55" Click="FirstButton_Click"/>
-        <Button Content="&lt;-" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Height="55" Margin="75,0,0,0" Click="PreviousButton_Click"/>
-        <Button Content="-&gt;" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Height="55" Margin="150,0,0,0" Click="NextButton_Click"/>
-        <Button Content="--&gt;|" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Height="55" Margin="225,0,0,0" Click="LastButton_Click"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Button Content="|&lt;--" Click="FirstButton_Click"/>
+        <Button Grid.Column="1" Content="&lt;-" Click="PreviousButton_Click"/>
+        <Button Grid.Column="2" Content="-&gt;" Click="NextButton_Click"/>
+        <Button Grid.Column="3" Content="--&gt;|" Click="LastButton_Click"/>
     </Grid>
 </UserControl>
