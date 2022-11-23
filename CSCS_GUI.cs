@@ -215,6 +215,32 @@ namespace SplitAndMerge
         public const string X_CELL_EMPTY = "XCellEmpty";
         public const string X_FIND_SHEET = "XFindSheet";
         public const string X_FIND_COLUMN = "XFindColumn";
+        public const string X_FIND_ROW = "XFindRow";
+        public const string X_COPY_CELL = "XCopyCell";
+        public const string X_COPY_ROW = "XCopyRow";
+        public const string X_COPY_ROW_TO_ROW = "XCopyRowToRow";
+        public const string X_COPY_COLUMN = "XCopyColumn";
+        public const string X_FORMAT_COLUMN = "XFormatColumn";
+        public const string X_LAST_ROW = "XLastRow";
+        public const string X_LAST_COLUMN = "XLastColumn";
+        public const string X_LAST_ADDRESS = "XLastAddress";
+        public const string X_INSERT_ROWS = "XInsertRows";
+        public const string X_DELETE_ROW = "XDeleteRow";
+        public const string X_COLUMNS_AUTO_FIT = "XColumnsAutoFit";
+        public const string X_SET_TABLE = "XSetTable";
+        public const string X_NAMED_CELL_POSITION = "XNamedCellPosition";
+        public const string X_NAMED_RANGE_ADD = "XNamedRangeAdd";
+        public const string X_HEADER = "XHeader";
+        public const string X_FOOTER = "XFooter";
+        public const string X_FONT_NAME = "XFontName";
+        public const string X_FONT_SIZE = "XFontSize";
+        public const string X_FONT_COLOR = "XFontColor";
+        public const string X_BACKGROUND_COLOR = "XBackgroundColor";
+        public const string X_ALIGN = "XAlign";
+        public const string X_FONT_FORMAT = "XFontFormat";
+        public const string X_BORDER = "XBorder";
+        
+        public const string X_ERR = "XErr";
 
         public const string READ_XML_FILE = "readXmlFile";
         public const string READ_TAGCONTENT_FROM_XMLSTRING = "readTagContentFromXmlString";

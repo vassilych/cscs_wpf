@@ -119,7 +119,7 @@ function mainMenuWindow_OnDisplay(){
     
     //------ REPORTING ------------------------------
 
-    AddMenuItem("ExcelDC", "XFileNew.cscs", "XFileNew", "runScript");
+    AddMenuItem("ExcelDC", "TestExcel.cscs", "TestExcel", "runScript");
     
 
     //------- OTHER -----------------------------

@@ -1,0 +1,176 @@
+XFileNew('newFile.xlsx');
+XFileDelete("newFile.xlsx");
+
+XFileNew("newFile.xlsx");
+XFileOpen("newFile.xlsx");
+
+XSheetAdd("Sheet2");
+XSheetAdd("Sheet3");
+
+XSheetDelete(3);
+
+
+XSheetRename(1, "newName");
+
+XCellWriteString(1, 1, 1, "stringValue");
+XSheetClear(1);
+
+XCellWriteString(1, 2, 2, "stringValue");
+XCellWriteInteger(1, 3, 3, 123);
+XCellWriteDouble(1, 4, 4, 123456789, "");
+XCellWriteBoolean(1, 5, 5, true);
+
+DEFINE varTime8 type T size 8;
+varTime8 = "12:12:12";
+XCellWriteTime(1, 6, 6, "varTime8");
+
+DEFINE varDate8 type D size 8;
+varDate8 = "15/03/22";
+XCellWriteDate(1, 7, 7, "varDate8");
+
+XCellWriteDateTime(1, 8, 8, "varDate8", "varTime8");
+
+XCellWriteInteger(1, 3, 5, 1);
+XCellWriteInteger(1, 3, 6, 2);
+XCellWriteInteger(1, 3, 7, 3);
+XCellWriteInteger(1, 3, 8, 4);
+XCellWriteFormula(1, 9, 9, "SUM(C$5:C$8)");
+
+sheetCount = XSheetCount();
+MessageBox("sheetCount = " + sheetCount);
+
+DEFINE varString type a size 10; 
+varString = XCellReadString(1, 2, 2);
+MessageBox("varString = " + varString);
+
+DEFINE varInt type i; 
+varInt = XCellReadInteger(1, 3, 3);
+MessageBox("varInt = " + varInt);
+
+DEFINE varDouble type r;
+varDouble = XCellReadDouble(1, 4, 4);
+MessageBox("varDouble = " + varDouble);
+
+DEFINE varBool type l;
+varBool = XCellReadBoolean(1, 5, 5);
+MessageBox("varBool = " + varBool);
+
+DEFINE varTime5 type T size 5;
+varTime5 = "12:12";
+XCellWriteTime(1, 10, 10, "varTime5");
+
+DEFINE varTimeRead type T size 8;
+varTimeRead = XCellReadTime(1, 10, 10);
+MessageBox("varTimeRead = " + varTimeRead);
+
+
+DEFINE varDateRead type D size 10;
+varDateRead = XCellReadDate(1, 7, 7);
+MessageBox("varDateRead = " + varDateRead);
+
+
+DEFINE varFormula type a size 10;
+varFormula = XCellReadFormula(1, 9, 9);
+MessageBox("varFormula = " + varFormula);
+
+XCellWriteString(1, 3, 1, "stringValue");
+XCellWriteString(1, 4, 1, "stringValue");
+XCellWriteString(1, 5, 1, "stringValue");
+XCellWriteString(1, 6, 1, "stringValue");
+
+//add style
+XBackgroundColor(1, 3, 1, 0, 255, 0);
+XFontColor(1, 3, 1, 255, 0, 0);
+
+XBackgroundColor(1, 4, 1, 0, 255, 0);
+XFontColor(1, 4, 1, 255, 0, 0);
+
+XBackgroundColor(1, 5, 1, 0, 255, 0);
+XFontColor(1, 5, 1, 255, 0, 0);
+
+XBackgroundColor(1, 6, 1, 0, 255, 0);
+XFontColor(1, 6, 1, 255, 0, 0);
+
+
+XCellEmpty(1, 3, 1, 1);
+XCellEmpty(1, 4, 1, 2);
+XCellEmpty(1, 5, 1, 3);
+
+
+sheetIndex = XFindSheet("Sheet2");
+MessageBox("sheetIndex = " + sheetIndex);
+
+XCopyCell(1, 8, 8, 1, 8, 7);
+XCopyCell(1, 8, 7, 1, 8, 6);
+
+XCopyRow(1, 10, 3);
+
+XCopyRowToRow(1, 7, 2, 1);
+
+XCopyColumn(1, 10, 3);
+
+XFormatColumn(1, 7, "dd/mm/yy");
+
+MessageBox("XLastRow(1) = " + XLastRow(1));
+
+MessageBox("XLastColumn(1) = " + XLastColumn(1));
+
+MessageBox("XLastAddress(1) = " + XLastAddress(1));
+
+XInsertRows(1, 1, 2);
+
+XDeleteRow(1, 1);
+
+XColumnsAutoFit(1);
+
+// not working yet
+// XCellWriteString(1, 10, 10, "col1");
+// XCellWriteString(1, 11, 10, "col2");
+// XCellWriteString(1, 12, 10, "col3");
+// XCellWriteString(1, 13, 10, "col4");
+// XSetTable(1, 10, 10, 14, 13, "Table1");
+
+// not working yet
+// XNamedRangeAdd("NAME of the named range", "newName!$A$1:$A$1");
+
+// DEFINE sheet type i;
+// DEFINE column type i;
+// DEFINE row type i;
+// XNamedCellPosition("sheet", "column", "row", "NAME of the named range");
+// MessageBox("sheet = " + sheet + ", column = " + column + ", row = " + row);
+
+
+XHeader(1, 2, "N A S L O V");
+
+XFooter(1, 3, "F O O T E R");
+
+XFontName(1, 2, 3, "Comic Sans MS");
+
+XFontSize(1, 2, 3, 25);
+
+XFontColor(1, 2, 3, 255, 0, 0);
+
+XBackgroundColor(1, 2, 3, 0, 255, 0);
+
+XAlign(1, 2, 3, 2, 2);
+
+XFontFormat(1, 2, 3, true, true, true, true, true, false);
+
+XBorder(1, 8, 8, true, true, true, true, 1, 2, 3, 1);
+
+XCellWriteString(1, 1, 1, "a");
+XAlign(1, 1, 1, 2, 2);
+
+XFileSave();
+
+XFileOpen("newFile.xlsx");
+
+XFileSaveAs("newFileCopy.xlsx");
+
+quit;
+
+//------ assign > size ---------------
+
+// DEFINE varString type a size 5; // 
+// varString = "asdghkajsdghks";//XCellReadString(1, 1, 5);
+// MessageBox(varString);
