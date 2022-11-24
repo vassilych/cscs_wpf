@@ -7159,20 +7159,22 @@ where ID = {rowId}
                 ParsingScript parent = script.ParentScript;
                 while (parent != null)
                 {
-                    if (Path.GetFileNameWithoutExtension(parent.Filename).ToLower() != scriptName)
+                    var candidate = Path.GetFileNameWithoutExtension(parent.Filename).ToLower();
+                    if (candidate != scriptName)
                     {
                         parent = parent.ParentScript;
+                        continue;
                     }
-                    else
+                    var parentGui = parent.Context as CSCS_GUI;
+                    if (parentGui != null && parentGui.DEFINES.TryGetValue(varName, out DefineVariable defVar))
                     {
-                        if((parent.Context as CSCS_GUI).DEFINES.TryGetValue(varName, out DefineVariable defVar))
-                        {
-                            //here we have to put in sync those two variables, defVar and new variable with the same name but in "Gui"
-                            break;
-                        }
+                        //here we have to put in sync those two variables, defVar and new variable with the same name but in "Gui"
+                        Gui.DEFINES[varName] = defVar;
+                        Gui.Interpreter.AddGlobalOrLocalVariable(varName, new GetVarFunction(defVar));
+                        MyAssignFunction.AddVariableMap(varName, parent);
+                        return defVar;
                     }
                 }
-
 
                 return Variable.EmptyInstance;
             }

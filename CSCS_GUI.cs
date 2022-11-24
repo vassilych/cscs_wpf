@@ -327,9 +327,14 @@ namespace WpfCSCS
 
         public static CSCS_GUI LastInstance { get; set; }
 
-        public static CSCS_GUI GetInstance(ParsingScript script) {
+        public static CSCS_GUI GetInstance(ParsingScript script)
+        {
             var result = script.Context as CSCS_GUI;
-            return result != null ? result : LastInstance;
+            if (result == null)
+            {
+                script.Context = result = LastInstance;
+            }
+            return result;
         }
 
         public Dictionary<string, List<Variable>> Parameters = new Dictionary<string, List<Variable>>();
@@ -5435,13 +5440,42 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
         string m_originalName;
         int m_arrayIndex = -1;
 
+        static Dictionary<string, ParsingScript> s_variableMap = new Dictionary<string, ParsingScript>();
+        public MyAssignFunction(string name = "")
+        {
+            m_name = name;
+        }
+        public static void AddVariableMap(string varName, ParsingScript parentScript)
+        {
+            s_variableMap[varName] = parentScript;
+        }
+        public static bool ProcessParentScript(ParsingScript script, string varName, Variable varValue)
+        {
+            if (!s_variableMap.TryGetValue(varName, out ParsingScript parentScript) ||
+                parentScript == script)
+            {
+                return false;
+            }
+            var assign = new MyAssignFunction(varName);
+            DefineVariable defVar = assign.IsDefinedVariable(parentScript);
+            if (defVar == null)
+            {
+                return false;
+            }
+            var result = assign.DoAssign(parentScript, assign.m_name, defVar, ref varValue);
+            return true;
+        }
+
         protected override Variable Evaluate(ParsingScript script)
         {
             InterpreterInstance = script.InterpreterInstance;
             DefineVariable defVar = IsDefinedVariable(script);
             if (defVar != null)
             {
-                return DoAssign(script, m_name, defVar);
+                Variable varValue = Variable.EmptyInstance;
+                var result = DoAssign(script, m_name, defVar, ref varValue);
+                ProcessParentScript(script, m_name.ToLower(), varValue);
+                return result;
             }
             var res = Assign(script, m_originalName);
             return ResetNotDefined(res);
@@ -5453,7 +5487,10 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
             DefineVariable defVar = IsDefinedVariable(script);
             if (defVar != null)
             {
-                return DoAssign(script, m_name, defVar);
+                Variable varValue = Variable.EmptyInstance;
+                var result = DoAssign(script, m_name, defVar, ref varValue);
+                ProcessParentScript(script, m_name, varValue);
+                return result;
             }
             var res = await AssignAsync(script, m_originalName);
             return ResetNotDefined(res);
@@ -5508,13 +5545,13 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
             return defVar;
         }
 
-        public Variable DoAssign(ParsingScript script, string varName, DefineVariable defVar, bool localIfPossible = false)
+        public Variable DoAssign(ParsingScript script, string varName, DefineVariable defVar, ref Variable varValue)
         {
             m_name = Constants.GetRealName(varName);
             script.CurrentAssign = m_name;
             var gui = CSCS_GUI.GetInstance(script);
 
-            Variable varValue = Utils.GetItem(script);
+            varValue = varValue == Variable.EmptyInstance ? Utils.GetItem(script) : varValue;
             if (m_pointerAssign)
             {
                 if (gui.DEFINES.TryGetValue(defVar.Pointer, out DefineVariable refValue))
