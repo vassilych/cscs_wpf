@@ -1,3 +1,12 @@
-MessageBox("we are in script5");
+CreateWindow("../../scripts/winWithButton1.xaml");
 
-quit;
+function btn1@clicked(){
+    MessageBox("btn1 in script5");
+    // varInParent = varInParent + 1;
+    varInParent++;
+    MessageBox("varInParent = " + varInParent);
+}
+
+ResetField("testCHAIN2", "varInParent");
+
+MessageBox("we are in script5");

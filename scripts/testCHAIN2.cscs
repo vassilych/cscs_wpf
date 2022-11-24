@@ -1,7 +1,15 @@
 
+CreateWindow("../../scripts/winWithButton1.xaml");
 
-DEFINE varInParent type a size 10;
-varInParent = "varValue";
+function btn1@clicked(){
+    MessageBox("btn1 in testCHAIN");
+    // varInParent = varInParent + 1;
+    varInParent++;
+    MessageBox("varInParent = " + varInParent);
+}
+
+DEFINE varInParent type i;
+varInParent = 0;
 
 MessageBox("we are in first script");
 

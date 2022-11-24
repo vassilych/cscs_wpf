@@ -81,6 +81,7 @@ namespace WpfCSCS
             interpreter.RegisterFunction(Constants.X_ALIGN, new XAlignFunction());
             interpreter.RegisterFunction(Constants.X_FONT_FORMAT, new XFontFormatFunction());
             interpreter.RegisterFunction(Constants.X_BORDER, new XBorderFunction());
+            interpreter.RegisterFunction(Constants.X_PIVOT_TABLE_REFRESH, new XPivotTableRefreshFunction());
             
             interpreter.RegisterFunction(Constants.X_ERR, new XErrFunction());
         }
@@ -191,6 +192,17 @@ namespace WpfCSCS
             }
 
             return path;
+        }
+    }
+
+    class XErrFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 0, m_name);
+
+            return new Variable(Excel.errorNumber);
         }
     }
 
@@ -1706,7 +1718,7 @@ namespace WpfCSCS
             var FirstColumn = Utils.GetSafeInt(args, 2);
             var LastRow = Utils.GetSafeInt(args, 3);
             var LastColumn = Utils.GetSafeInt(args, 4);
-            var TableName = Utils.GetSafeString(args, 4);
+            var TableName = Utils.GetSafeString(args, 5);
 
             try
             {
@@ -2381,14 +2393,38 @@ namespace WpfCSCS
         }
     }
     
-    class XErrFunction : ParserFunction
+    class XPivotTableRefreshFunction : ParserFunction
     {
         protected override Variable Evaluate(ParsingScript script)
         {
-            List<Variable> args = script.GetFunctionArgs();
-            Utils.CheckArgs(args.Count, 0, m_name);
+            Excel.errorNumber = 0;
 
-            return new Variable(Excel.errorNumber);
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 2, m_name);
+
+            var SheetPivot = Utils.GetSafeInt(args, 0);
+            var SheetData = Utils.GetSafeInt(args, 1);
+
+            try
+            {
+                //get a reference to the Pivot and Details tables
+                ExcelWorksheet piv = Excel.document.Workbook.Worksheets[SheetPivot];
+                ExcelWorksheet det = Excel.document.Workbook.Worksheets[SheetData];
+
+                //build the range from top left to the far right column and bottom row (removes blanks)               
+                var dataRange = det.Cells[det.Dimension.Start.Address.ToString() + ":" + det.Dimension.End.Address.ToString()];
+                piv.PivotTables[0].CacheDefinition.SourceRange = dataRange;
+
+                return new Variable(true);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("[TAS2XLSX] Error:" + e.Message, "PivotTableRefresh");
+                Excel.errorNumber = 1;
+                return new Variable(false);
+            }
         }
     }
+    
+    
 }

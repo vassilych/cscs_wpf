@@ -1,9 +1,18 @@
+CreateWindow("../../scripts/winWithButton1.xaml");
+
+function btn1@clicked(){
+    MessageBox("btn1 in script4");
+    // varInParent = varInParent + 1;
+    varInParent++;
+    MessageBox("varInParent = " + varInParent);
+}
+
 MessageBox("we are in script4");
 
 ResetField("testCHAIN2", "varInParent");
 
 MessageBox(varInParent);
-varInParent = "nestoNovo";
+varInParent = 10;
 MessageBox(varInParent);
 
 
