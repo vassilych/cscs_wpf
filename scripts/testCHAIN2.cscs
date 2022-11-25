@@ -1,12 +1,19 @@
+DEFINE varInParent type i;
 
+function winWithButtons_OnStart(){
+    varInParent = 0;
+    MessageBox("varInParent = " + varInParent);
+}
+CreateWindow("../../scripts/winWithButtons.xaml");
 
-DEFINE varInParent type a size 10;
-varInParent = "varValue";
+function btn1@clicked(){
+    CHAIN "../../scripts/script4.cscs";
+}
 
-MessageBox("we are in first script");
-
-CHAIN "../../scripts/script4.cscs";
-
-MessageBox("we are back in first script");
-
-MessageBox("varInParent = " + varInParent);
+function btn2@clicked(){
+    MessageBox("btn2 in testCHAIN2");
+    varInParent = varInParent + 1;
+    varInParent++;
+    varInParent += 3;
+    MessageBox("varInParent = " + varInParent);
+}

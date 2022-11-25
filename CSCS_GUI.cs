@@ -179,7 +179,10 @@ namespace SplitAndMerge
 
         public const string DATAGRID = "DataGrid";
 
-        public const string ResetField = "ResetField";
+        public const string RESET_FIELD = "ResetField";
+        
+        public const string CO_GET = "COGet";
+        public const string CO_SET = "COSet";
 
         public const string FLERR = "Flerr";
 
@@ -239,6 +242,7 @@ namespace SplitAndMerge
         public const string X_ALIGN = "XAlign";
         public const string X_FONT_FORMAT = "XFontFormat";
         public const string X_BORDER = "XBorder";
+        public const string X_PIVOT_TABLE_REFRESH = "XPivotTableRefresh";
         
         public const string X_ERR = "XErr";
 
@@ -519,7 +523,7 @@ namespace WpfCSCS
             Precompiler.AsyncMode = false;
 
             RequireDEFINE = App.GetConfiguration("Require_Define", "false");
-            DefaultDB = App.GetConfiguration("DefaultDB", "adictionary");
+            DefaultDB = App.GetConfiguration("DefaultDB", "ad");
 
             if (int.TryParse(App.GetConfiguration("MaxCacheSize", "300"), out int cacheSize))
             {
@@ -530,6 +534,8 @@ namespace WpfCSCS
 
             SQLInstance.SqlServerConnection = new SqlConnection(CSCS_SQL.ConnectionString);
             SQLInstance.Init(Interpreter);
+
+            Locking.Init(SQLInstance.SqlServerConnection);
 
             CacheAdictionary();
             FillDatabasesDictionary();

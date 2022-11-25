@@ -1141,7 +1141,10 @@ $@"EXECUTE sp_executesql N'
 
             interpreter.RegisterFunction(Constants.DATAGRID, new DataGridFunction());
             
-            interpreter.RegisterFunction(Constants.ResetField, new ResetFieldFunction());
+            interpreter.RegisterFunction(Constants.RESET_FIELD, new ResetFieldFunction());
+            
+            interpreter.RegisterFunction(Constants.CO_GET, new COGetFunction());
+            interpreter.RegisterFunction(Constants.CO_SET, new COSetFunction());
 
         }
 
@@ -7177,6 +7180,40 @@ where ID = {rowId}
                 }
 
                 return Variable.EmptyInstance;
+            }
+        }
+        
+        class COGetFunction : ParserFunction
+        {
+            CSCS_GUI Gui;
+
+            protected override Variable Evaluate(ParsingScript script)
+            {
+                List<Variable> args = script.GetFunctionArgs();
+                Utils.CheckArgs(args.Count, 0, m_name);
+
+                Gui = CSCS_GUI.GetInstance(script);
+
+                return new Variable(CSCS_GUI.DefaultDB);
+            }
+        }
+        
+        class COSetFunction : ParserFunction
+        {
+            CSCS_GUI Gui;
+
+            protected override Variable Evaluate(ParsingScript script)
+            {
+                List<Variable> args = script.GetFunctionArgs();
+                Utils.CheckArgs(args.Count, 1, m_name);
+
+                Gui = CSCS_GUI.GetInstance(script);
+
+                var dbShortName = Utils.GetSafeString(args, 0).ToLower();
+
+                CSCS_GUI.DefaultDB = dbShortName;
+
+                return new Variable(true);
             }
         }
 

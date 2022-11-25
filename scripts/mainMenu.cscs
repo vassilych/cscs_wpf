@@ -183,6 +183,10 @@ function mainMenuWindow_OnDisplay(){
     AddMenuSeparator("OtherDC");
     
     AddMenuItem("OtherDC", "testSqlToXlsx.cscs", "testSqlToXlsx", "runScript"); // ?
+    
+    AddMenuSeparator("OtherDC");
+    
+    AddMenuItem("OtherDC", "testPointers.cscs", "testPointers", "runScript"); // ?
 
     //------------------------------------   
 }

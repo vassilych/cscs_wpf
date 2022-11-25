@@ -124,20 +124,20 @@ XDeleteRow(1, 1);
 XColumnsAutoFit(1);
 
 // not working yet
-// XCellWriteString(1, 10, 10, "col1");
-// XCellWriteString(1, 11, 10, "col2");
-// XCellWriteString(1, 12, 10, "col3");
-// XCellWriteString(1, 13, 10, "col4");
-// XSetTable(1, 10, 10, 14, 13, "Table1");
+XCellWriteString(1, 10, 10, "col1");
+XCellWriteString(1, 11, 10, "col2");
+XCellWriteString(1, 12, 10, "col3");
+XCellWriteString(1, 13, 10, "col4");
+XSetTable(1, 10, 10, 14, 13, "Table1");
 
 // not working yet
-// XNamedRangeAdd("NAME of the named range", "newName!$A$1:$A$1");
+XNamedRangeAdd("NAMEOfTheNamedRange", "newName!$A$1:$A$1");
 
-// DEFINE sheet type i;
-// DEFINE column type i;
-// DEFINE row type i;
-// XNamedCellPosition("sheet", "column", "row", "NAME of the named range");
-// MessageBox("sheet = " + sheet + ", column = " + column + ", row = " + row);
+DEFINE sheet type i;
+DEFINE column type i;
+DEFINE row type i;
+XNamedCellPosition("sheet", "column", "row", "NAMEOfTheNamedRange");
+MessageBox("sheet = " + sheet + ", column = " + column + ", row = " + row);
 
 
 XHeader(1, 2, "N A S L O V");

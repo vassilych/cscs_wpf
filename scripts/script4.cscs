@@ -1,13 +1,24 @@
-MessageBox("we are in script4");
+function winWithButtons_OnStart(){
+    ResetField("testCHAIN2", "varInParent");//crashes here
+    varInParent = 10;
+    MessageBox("varInParent = " + varInParent);
+}
+CreateWindow("../../scripts/winWithButtons.xaml");
 
-ResetField("testCHAIN2", "varInParent");
+function btn1@clicked(){
+    CHAIN "../../scripts/script5.cscs";
+}
 
-MessageBox(varInParent);
-varInParent = "nestoNovo";
-MessageBox(varInParent);
+function btn2@clicked(){
+    MessageBox("btn2 in script4");
+    varInParent = varInParent + 1;
+    varInParent++;
+    varInParent += 3;
+    MessageBox("varInParent = " + varInParent);
+}
 
 
-CHAIN "../../scripts/script5.cscs";
 
 
-MessageBox("we are back in script4");
+
+
