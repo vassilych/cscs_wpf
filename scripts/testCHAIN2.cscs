@@ -17,5 +17,3 @@ function btn2@clicked(){
     varInParent += 3;
     MessageBox("varInParent = " + varInParent);
 }
-
-CHAIN "../../scripts/script4.cscs";
