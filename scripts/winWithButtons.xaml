@@ -8,11 +8,15 @@
         mc:Ignorable="d"
         Title="Window1" Height="300" Width="500">
     <Grid>
-       <Button Content="CHAIN" Name="btn1"
-       VerticalAlignment="Center" HorizontalAlignment="Center"
-       />
-       <Button Content="MSG" Name="btn2"
-       VerticalAlignment="Bottom" HorizontalAlignment="Center"
-       />
+
+        <Label DataContext="varInParent" Name="label1" Content=""
+        VerticalAlignment="Top" HorizontalAlignment="Center"/>
+
+        <Button Content="CHAIN" Name="btn1"
+        VerticalAlignment="Center" HorizontalAlignment="Center"
+        />
+        <Button Content="MSG" Name="btn2"
+        VerticalAlignment="Bottom" HorizontalAlignment="Center"
+        />
     </Grid>
 </Window>
