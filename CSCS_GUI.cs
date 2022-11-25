@@ -535,6 +535,8 @@ namespace WpfCSCS
             SQLInstance.SqlServerConnection = new SqlConnection(CSCS_SQL.ConnectionString);
             SQLInstance.Init(Interpreter);
 
+            Locking.Init(SQLInstance.SqlServerConnection);
+
             CacheAdictionary();
             FillDatabasesDictionary();
 

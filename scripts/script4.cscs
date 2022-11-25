@@ -1,22 +1,26 @@
-CreateWindow("../../scripts/winWithButton1.xaml");
+DEFINE a type F;
+
+function winWithButtons_OnStart(){
+    ResetField("testCHAIN2", "varInParent");
+    varInParent = 10;
+    MessageBox("varInParent = " + varInParent);
+}
+CreateWindow("../../scripts/winWithButtons.xaml");
 
 function btn1@clicked(){
-    MessageBox("btn1 in script4");
-    // varInParent = varInParent + 1;
+    CHAIN "../../scripts/script5.cscs";
+}
+
+function btn2@clicked(){
+    MessageBox("btn2 in script4");
+    varInParent = varInParent + 1;
     varInParent++;
+    varInParent += 3;
     MessageBox("varInParent = " + varInParent);
 }
 
-MessageBox("we are in script4");
-
-ResetField("testCHAIN2", "varInParent");
-
-MessageBox(varInParent);
-varInParent = 10;
-MessageBox(varInParent);
 
 
-CHAIN "../../scripts/script5.cscs";
 
 
-MessageBox("we are back in script4");
+
