@@ -9,12 +9,12 @@
              >
     <Grid HorizontalAlignment="Stretch">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" MinWidth="100"/>
+            <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
 
         <local:EnterTextBox x:Name="enterBoxTextBox" Grid.Column="0" HorizontalAlignment="Stretch" />
-        <Button Focusable="False" x:Name="enterBoxButton" Grid.Column="1" Height="auto" Width="60" />
+        <Button Focusable="False" x:Name="enterBoxButton" Grid.Column="1" Height="auto"/>
 
     </Grid>
 </UserControl>
