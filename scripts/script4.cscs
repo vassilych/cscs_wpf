@@ -1,5 +1,5 @@
 function winWithButtons_OnStart(){
-    ResetField("testCHAIN2", "varInParent");
+    ResetField("testCHAIN2", "varInParent");//crashes here
     varInParent = 10;
     MessageBox("varInParent = " + varInParent);
 }
