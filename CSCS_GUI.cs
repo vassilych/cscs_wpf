@@ -39,6 +39,7 @@ using WpfCSCS;
 using static SplitAndMerge.CSCSClass;
 using static DevExpress.Xpo.Helpers.AssociatedCollectionCriteriaHelper;
 using DevExpress.XtraCharts;
+using DevExpress.Xpf.Bars.Themes;
 
 namespace SplitAndMerge
 {
@@ -58,8 +59,8 @@ namespace SplitAndMerge
     {
         public CscsGuiModuleInstance(Interpreter interpreter)
         {
-            interpreter.RegisterFunction("#MAINMENU", new MAINMENUcommand());
-            interpreter.RegisterFunction("#WINFORM", new WINFORMcommand(true));
+            interpreter.RegisterFunction(Constants.MAINMENU, new MAINMENUcommand());
+            interpreter.RegisterFunction(Constants.WINFORM, new WINFORMcommand(true));
 
             interpreter.RegisterFunction(Constants.READ_XML_FILE, new ReadXmlFileFunction());
             interpreter.RegisterFunction(Constants.READ_TAGCONTENT_FROM_XMLSTRING,
@@ -147,6 +148,8 @@ namespace SplitAndMerge
         public const string OUTPUT_REPORT = "OutputReport";
         public const string UPDATE_REPORT = "UpdateReport";
         public const string PRINT_REPORT = "PrintReport";
+        public const string MAINMENU = "#MAINMENU";
+        public const string WINFORM = "#WINFORM";
 
         public const string OPENV = "Openv";
         public const string FINDV = "Findv";
@@ -3654,6 +3657,7 @@ namespace WpfCSCS
         bool m_paramMode;
         CSCS_GUI Gui;
         public static Dictionary<string, ParsingScript> Chains { get; set; } = new Dictionary<string, ParsingScript>();
+        public static Dictionary<string, bool> MainWindow { get; set; } = new Dictionary<string, bool>();
 
         public ChainFunction(bool paramMode = false)
         {
@@ -3696,6 +3700,7 @@ namespace WpfCSCS
                 //MessageBox.Show(msg, parameters.Count + " args", MessageBoxButton.OK, MessageBoxImage.Hand);
 
                 Chains[script.Filename] = script;
+                CheckScriptIsMain(script.Filename);
                 return Variable.EmptyInstance;
             }
 
@@ -3751,6 +3756,8 @@ namespace WpfCSCS
             chainScript.StackLevel = Gui.Interpreter.AddStackLevel(chainScript.Filename);
             chainScript.CurrentModule = chainName;
             chainScript.ParentScript = script;
+            CheckScriptIsMain(chainName);
+
             Gui = new CSCS_GUI(chainScript);
             Gui.Init();
             chainScript.SetInterpreter(CSCS_GUI.InterpreterManager.CurrentInterpreter);
@@ -3779,6 +3786,37 @@ namespace WpfCSCS
 
             return result;
         }
+    
+        static bool CheckScriptIsMain(string fileName)
+        {
+            var fullName = Path.GetFullPath(fileName);
+            if (!File.Exists(fullName))
+            {
+                return false;
+            }
+            var data = File.ReadAllText(fullName);
+            bool isMain = data.StartsWith(Constants.MAINMENU);
+            MainWindow[fullName] = isMain;
+            return isMain;
+        }
+        public static bool CheckParentScriptIsMain(ParsingScript script)
+        {
+            var fileName = script != null && script.ParentScript != null ? script.ParentScript.Filename : null;
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                return false;
+            }
+            return CheckScriptIsMain(fileName);
+        }
+        public static bool IsScriptMain(string fileName)
+        {
+            var fullName = Path.GetFullPath(fileName);
+            if (!MainWindow.TryGetValue(fullName, out bool isMain))
+            {
+                isMain = CheckScriptIsMain(fullName);
+            }
+            return isMain;
+        }
     }
 
     class WINFORMcommand : NewWindowFunction
@@ -3804,15 +3842,15 @@ namespace WpfCSCS
                 {
                     var parentWin = Gui.GetParentWindow(script);
                     SpecialWindow modalwin;
-                    if (parentWin != null && !script.ParentScript.OriginalScript.Contains("#MAINMENU"))
+                    if (parentWin != null && !script.ParentScript.OriginalScript.Contains(Constants.MAINMENU))
                     {
                         var winMode = SpecialWindow.MODE.SPECIAL_MODAL;
-                        modalwin = CreateNew(NameOrPathOfXamlForm, parentWin, winMode, script.Filename);
+                        modalwin = CreateNew(NameOrPathOfXamlForm, parentWin, winMode, script);
                     }
                     else
                     {
                         var winMode = SpecialWindow.MODE.NORMAL;
-                        modalwin = CreateNew(NameOrPathOfXamlForm, parentWin, winMode, script.Filename);
+                        modalwin = CreateNew(NameOrPathOfXamlForm, parentWin, winMode, script);
                     }
 
 
@@ -4572,8 +4610,8 @@ namespace WpfCSCS
                 var parentWin = Gui.GetParentWindow(script);
                 var winMode = m_mode == MODE.NEW ? SpecialWindow.MODE.NORMAL : //SpecialWindow.MODE.SPECIAL_MODAL;
                     parentWin == CSCS_GUI.MainWindow ? SpecialWindow.MODE.MODAL : SpecialWindow.MODE.SPECIAL_MODAL;
-                SpecialWindow modalwin = CreateNew(instanceName, parentWin, winMode, script.Filename);
-                return new Variable(modalwin.Instance.Tag.ToString());
+                SpecialWindow modalwin = CreateNew(instanceName, parentWin, winMode, script);
+                return new Variable(modalwin.Instance == null ? "" : modalwin.Instance.Tag.ToString());
             }
 
             if (!s_windows.TryGetValue(instanceName, out wind))
@@ -4612,10 +4650,11 @@ namespace WpfCSCS
         }
 
         public SpecialWindow CreateNew(string instanceName, Window parentWin = null,
-            SpecialWindow.MODE winMode = SpecialWindow.MODE.NORMAL, string cscsFilename = "")
+            SpecialWindow.MODE winMode = SpecialWindow.MODE.NORMAL, ParsingScript script = null)
         {
-            SpecialWindow modalwin = new SpecialWindow(Gui, instanceName, winMode,
-                winMode != SpecialWindow.MODE.NORMAL ? parentWin : null);
+            string cscsFilename = script == null ? "" : script.Filename;
+            SpecialWindow modalwin = new SpecialWindow(Gui, instanceName, winMode, parentWin);
+            //winMode != SpecialWindow.MODE.NORMAL ? parentWin : null);
             var wind = modalwin.Instance;
 
             var tag = wind.Tag.ToString();
@@ -4626,7 +4665,17 @@ namespace WpfCSCS
             Gui.CacheWindow(wind, cscsFilename);
             Gui.CacheParentWindow(tag, parentWin);
 
-            wind.Show();
+            var isMain = ChainFunction.CheckParentScriptIsMain(script);
+            if (parentWin == null || isMain)
+            {
+                wind.Show();
+            }
+            else
+            {
+                //parentWin.Hide();
+                wind.Hide();
+                wind.ShowDialog();
+            }
             return modalwin;
         }
 
