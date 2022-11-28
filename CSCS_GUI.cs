@@ -3757,6 +3757,7 @@ namespace WpfCSCS
             chainScript.CurrentModule = chainName;
             chainScript.ParentScript = script;
             CheckScriptIsMain(chainName);
+            Chains[chainScript.Filename] = chainScript;
 
             Gui = new CSCS_GUI(chainScript);
             Gui.Init();

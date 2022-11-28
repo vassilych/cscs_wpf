@@ -36,6 +36,8 @@ namespace WpfCSCS
 
         public CSCS_GUI Gui { get; set; }
 
+        public string ID { get; set; }
+
         public bool IsMain {
             get
             {
@@ -66,7 +68,7 @@ namespace WpfCSCS
 
             Random rnd = new Random();
             var inst = filename + "_" + rnd.Next(1000);
-            Instance.Tag = inst;
+            Instance.Tag = ID = inst;
 
             Instance.SourceInitialized += Win_SourceInitialized;
             Instance.Activated += Win_Activated;
