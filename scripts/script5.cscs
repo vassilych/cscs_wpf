@@ -1,13 +1,21 @@
+
+function btn2@clicked(){
+    MessageBox("btn2 in script5");
+    // varInParent = varInParent + 1;
+    // varInParent++;
+    // varInParent += 3;
+
+    varInParent = varInParent + 1;
+    varInParent = varInParent + 1;
+    varInParent = varInParent + 1;
+    varInParent = varInParent + 1;
+    varInParent = varInParent + 1;
+
+    MessageBox("varInParent = " + varInParent);
+}
+
 function winWithButtons_OnStart(){
     ResetField("testCHAIN2", "varInParent");
     MessageBox("varInParent = " + varInParent);
 }
 CreateWindow("../../scripts/winWithButtons.xaml");
-
-function btn2@clicked(){
-    MessageBox("btn2 in script5");
-    varInParent = varInParent + 1;
-    varInParent++;
-    varInParent += 3;
-    MessageBox("varInParent = " + varInParent);
-}

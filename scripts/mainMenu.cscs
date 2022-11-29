@@ -187,6 +187,10 @@ function mainMenuWindow_OnDisplay(){
     AddMenuSeparator("OtherDC");
     
     AddMenuItem("OtherDC", "testPointers.cscs", "testPointers", "runScript"); // ?
+    
+    AddMenuSeparator("OtherDC");
+    
+    AddMenuItem("OtherDC", "lst_konto.cscs", "lst_konto", "runScript"); // ?
 
     //------------------------------------   
 }

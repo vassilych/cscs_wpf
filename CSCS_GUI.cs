@@ -1036,8 +1036,8 @@ namespace WpfCSCS
                 }
 
                 m_MoveHandlers[name] = action;
-                //dg.SelectionChanged -= new SelectionChangedEventHandler(DataGrid_Move);
-                //dg.SelectionChanged += new SelectionChangedEventHandler(DataGrid_Move);
+                dg.SelectionChanged -= new SelectionChangedEventHandler(DataGrid_Move);
+                dg.SelectionChanged += new SelectionChangedEventHandler(DataGrid_Move);
 
                 return true;
             }
@@ -1498,8 +1498,8 @@ namespace WpfCSCS
             {
                 return;
             }
-
-            LastObjWidgetName = ((Control)e.NewFocus).Name;
+            if(((Control)e.NewFocus) != null)
+                LastObjWidgetName = ((Control)e.NewFocus).Name;
 
             if ((Control)sender is Button)
             {
@@ -1518,7 +1518,7 @@ namespace WpfCSCS
                             {
                                 var entTB = item as EnterTextBox;
 
-                                if (((Control)e.NewFocus).Name == entTB.Name)
+                                if (((Control)e.NewFocus)?.Name == entTB.Name)
                                 {
                                     return;
                                 }
@@ -1537,7 +1537,7 @@ namespace WpfCSCS
                             {
                                 var numTB = item as NumericTextBox;
 
-                                if (((Control)e.NewFocus).Name == numTB.Name)
+                                if (((Control)e.NewFocus)?.Name == numTB.Name)
                                 {
                                     return;
                                 }
@@ -1565,7 +1565,7 @@ namespace WpfCSCS
                             {
                                 var entBtn = item as Button;
 
-                                if (((Control)e.NewFocus).Name == entBtn.Name)
+                                if (((Control)e.NewFocus)?.Name == entBtn.Name)
                                 {
                                     return;
                                 }
@@ -1593,7 +1593,7 @@ namespace WpfCSCS
                             {
                                 var numBtn = item as Button;
 
-                                if (((Control)e.NewFocus).Name == numBtn.Name)
+                                if (((Control)e.NewFocus)?.Name == numBtn.Name)
                                 {
                                     return;
                                 }

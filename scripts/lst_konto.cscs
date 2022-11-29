@@ -1,0 +1,45 @@
+define fastAlpha type a size 15 up local; // local??
+define nkgkacct_hndl type i;
+define konto type a size 15;
+
+function lst_konto1_onStart(){
+    nkgkacct_hndl = openv('NKGKACCT', "BD1");
+}
+CreateWindow("../../scripts/lst_konto1.xaml");
+
+function cekonto@clicked(){
+    konto = list_acct();
+}
+
+function gbExit@clicked(){
+    quit;
+}  
+
+function lst_konto_onStart(){
+    displayTableSetup('List_Acct', nkgkacct_hndl, "gk_ac_konto", "", true, true);
+}
+
+
+function list_acct(){
+    ret = ModalWindow('../../scripts/lst_konto.xaml');
+    return gk_ac_konto;
+} 
+
+
+//-------------------
+
+
+
+
+function gbAcctOk@clicked(){
+    // //set_object get_form_name() property 'modal_result' value mrOk
+    // CloseWindow("../../scripts/lst_konto.xaml");
+
+    list_acct@select();
+}
+
+function List_Acct@Select(){
+    //set_object get_form_name() property 'modal_result' value mrOk
+    CloseWindow("../../scripts/lst_konto.xaml");
+}
+

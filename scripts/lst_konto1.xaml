@@ -1,0 +1,82 @@
+<!-- 
+<Window 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:wcl="clr-namespace:WpfControlsLibrary;assembly=WpfControlsLibrary"
+    mc:Ignorable="d"
+    xmlns:local="clr-namespace:lst_konto"
+    Title="Test konto" 
+    Height="252" 
+    Width="403">
+    <Grid>      
+        <wcl:EnterBox
+            ButtonSize="25" 
+            Size="0" 
+            Text=" "
+            FieldName ="ObjedX_od"
+            Name="ceOJOd"
+            Case="Normal"
+            Height ="22" Width="77"       
+            Margin="412,455,0,0"
+            HorizontalAlignment="Left" VerticalAlignment="Top"
+            TabIndex="5"/> 
+
+        <Button HorizontalAlignment="Left" VerticalAlignment="Top"
+            Height="32" 
+            Margin="331,5,0,0"
+            Width="72" 
+            Background="White"
+            Name="gbExit">
+        </Button> 
+
+
+    </Grid> 
+</Window >  -->
+
+
+        <Window 
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+xmlns:wcl="clr-namespace:WpfControlsLibrary;assembly=WpfControlsLibrary"
+        mc:Ignorable="d"
+        xmlns:local="clr-namespace:test_acct1"
+        Title="Test konto" 
+        Height="252" 
+        Width="403">
+         <Grid Background="GRay">      
+ 
+        <wcl:EnterBox
+        ButtonSize="21" 
+        Size="0" 
+        Text="llllll"
+        FieldName ="konto"
+        Name="ceKonto"
+        KeyTraps="f2|ceKonto.click"
+        Case="Normal"
+        Height ="22" Width="121"       
+        Margin="104,64,0,0"
+        HorizontalAlignment="Left" VerticalAlignment="Top"
+        TabIndex="0"/> 
+
+
+        <Button   HorizontalAlignment="Left" VerticalAlignment="Top"
+        Height="49" 
+        Margin="240,144,0,0"
+        Width="75" 
+        Background="White"
+        Name="gbExit">
+<StackPanel Orientation="Horizontal">
+
+ <TextBlock VerticalAlignment="Center" Text="Exit"/>
+        </StackPanel>
+
+         </Button> 
+
+
+        </Grid>
+        </Window > 
+
