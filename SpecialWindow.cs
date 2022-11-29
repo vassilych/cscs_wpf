@@ -160,7 +160,7 @@ namespace WpfCSCS
             Instance.ContentRendered -= Win_ContentRendered;
             if (Owner != null && Mode != MODE.NORMAL)
             {
-                win.Owner = Owner;
+                //win.Owner = Owner;
             }
         }
 

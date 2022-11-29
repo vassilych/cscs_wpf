@@ -109,7 +109,7 @@ namespace WpfControlsLibrary
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            enterBoxTextBox.Size = Size;
+            enterBoxTextBox.Size = Size == 0? Int32.MaxValue : Size;
             enterBoxTextBox.Text = Text;
             enterBoxTextBox.CharacterCasing = Case.ToLower() == "up"? CharacterCasing.Upper : (Case.ToLower() == "down"? CharacterCasing.Lower : CharacterCasing.Normal);
 
