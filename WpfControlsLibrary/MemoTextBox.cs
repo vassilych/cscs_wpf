@@ -38,8 +38,9 @@ namespace WpfControlsLibrary
                 Size = Int32.MaxValue;
             }
 
-            TextWrapping = TextWrapping.Wrap;
+            //TextWrapping = TextWrapping.Wrap;
             VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
 
             base.OnApplyTemplate();
 

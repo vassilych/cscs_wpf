@@ -86,6 +86,8 @@ namespace SplitAndMerge
             interpreter.RegisterFunction(Constants.SET_FOCUS, new SetFocusFunction());
             interpreter.RegisterFunction(Constants.LAST_OBJ, new LastObjFunction());
             interpreter.RegisterFunction(Constants.LAST_OBJ_CLICKED, new LastObjClickedFunction());
+            
+            interpreter.RegisterFunction(Constants.STRINGS, new StringsFunction());
 
             interpreter.RegisterFunction("OpenFile", new OpenFileFunction(false));
             interpreter.RegisterFunction("OpenFileContents", new OpenFileFunction(true));
@@ -255,6 +257,8 @@ namespace SplitAndMerge
         public const string SET_FOCUS = "SetFocus";
         public const string LAST_OBJ = "LastObj";
         public const string LAST_OBJ_CLICKED = "LastObjClick";
+        
+        public const string STRINGS = "Strings";
 
         public const string DEFINE = "DEFINE";
         public const string DISPLAY_ARRAY = "DISPLAYARR";
@@ -3402,6 +3406,103 @@ namespace WpfCSCS
             }
         }
     }
+    
+    class StringsFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            var gui = CSCS_GUI.GetInstance(script);
+
+            
+
+            var widgetName = Utils.GetSafeString(args, 0);
+            var option = Utils.GetSafeString(args, 1);
+            var argStr = Utils.GetSafeString(args, 2);
+            var argNum = Utils.GetSafeInt(args, 3);
+            //var arg3 = Utils.GetSafeString(args, 4);
+
+            var widget = gui.GetWidget(widgetName);
+            if(widget is MemoTextBox)
+            {
+                var mtb = widget as MemoTextBox;
+                List<string> lines = mtb.Text.Split('\n').ToList();
+
+                if (option == "stCount")
+                    return new Variable(lines.Count);
+                else if (option == "stGetLine")
+                {
+                    return new Variable(lines[argNum]);
+                }
+                else if (option == "stGetText")
+                {
+                    return new Variable(mtb.Text);
+                }
+                else if (option == "stSetLine")
+                {
+                    lines[argNum] = argStr;
+                    mtb.Text = string.Join("\n", lines);
+                    return Variable.EmptyInstance;
+                }
+                else if (option == "stSetText")
+                {
+                    mtb.Text = argStr;
+                    return Variable.EmptyInstance;
+                }
+                else if (option == "stClear")
+                {
+                    mtb.Text = "";
+                    return Variable.EmptyInstance;
+                }
+                else if (option == "stAddLine")
+                {
+                    lines.Add(argStr);
+                    mtb.Text = string.Join("\n", lines);
+                    return Variable.EmptyInstance;
+                }
+                else if (option == "stDelLine")
+                {
+                    lines.RemoveAt(argNum);
+                    mtb.Text = string.Join("\n", lines);
+                    return Variable.EmptyInstance;
+                }
+                else if (option == "stInsLine")
+                {
+                    lines.Insert(argNum, argStr);
+                    mtb.Text = string.Join("\n", lines);
+                    return Variable.EmptyInstance;
+                }
+                else if (option == "stLoad")
+                {
+                    string text = File.ReadAllText(argStr);
+                    mtb.Text = text;
+                    return Variable.EmptyInstance;
+                }
+                else if (option == "stSave")
+                {
+                    File.WriteAllText(argStr, mtb.Text);
+                    return Variable.EmptyInstance;
+                }
+                else if (option == "stSort")
+                {
+                    lines.Sort();
+                    mtb.Text = string.Join("\n", lines);
+                    return Variable.EmptyInstance;
+                }
+                else if (option == "stFind" || option == "stLocate")
+                {
+                    var index = Int32.MaxValue;
+                    index = lines.FindIndex(p => p == argStr);
+                    return new Variable(index);
+                }
+            }
+
+            return Variable.EmptyInstance;
+        }
+    }
+
     class OpenFileFunction : ParserFunction
     {
         bool m_getFileContents;
