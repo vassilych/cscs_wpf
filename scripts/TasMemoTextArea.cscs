@@ -1,0 +1,27 @@
+DEFINE var1 type a size 100;
+
+CreateWindow("../../scripts/TasMemoTextArea.xaml");
+
+function btn1@clicked(){
+    MessageBox("var1 = " + var1);
+    MessageBox("x = " + x);
+    // MessageBox("pre = " + pre);
+    // MessageBox("post = " + post);
+}
+
+x = 0;
+function memo1@TextChange(){
+    x++;
+}
+
+pre = 0;
+function memo1@pre(){
+pre++;
+}
+
+post = 0;
+function memo1@post(){
+    post++;
+    MessageBox("POST!");
+    return false;
+}

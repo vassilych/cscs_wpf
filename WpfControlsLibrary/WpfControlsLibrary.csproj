@@ -52,6 +52,7 @@
     <Compile Include="EnterBox.xaml.cs">
       <DependentUpon>EnterBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MemoTextBox.cs" />
     <Compile Include="EnterTextBox.cs" />
     <Compile Include="Navigator.xaml.cs">
       <DependentUpon>Navigator.xaml</DependentUpon>
