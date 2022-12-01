@@ -110,6 +110,9 @@ namespace SplitAndMerge
             interpreter.RegisterFunction("FillOutGrid", new FillOutGridFunction());
             interpreter.RegisterFunction("FillOutGridFromDB", new FillOutGridFunction(true));
             interpreter.RegisterFunction("BindSQL", new BindSQLFunction());
+            
+            interpreter.RegisterFunction("NewBindSQL", new NewBindSQLFunction());
+
             interpreter.RegisterFunction("MessageBox", new MessageBoxFunction());
             interpreter.RegisterFunction("SendToPrinter", new PrintFunction());
 
@@ -124,6 +127,9 @@ namespace SplitAndMerge
             interpreter.RegisterFunction("CheckVATNumber", new CheckVATFunction());
             interpreter.RegisterFunction("GetVATName", new CheckVATFunction(CheckVATFunction.MODE.NAME));
             interpreter.RegisterFunction("GetVATAddress", new CheckVATFunction(CheckVATFunction.MODE.ADDRESS));
+
+            interpreter.RegisterFunction("GetGridRowCount", new GetGridRowCountFunction());
+            interpreter.RegisterFunction("FillBufferFromGridRow", new FillBufferFromGridRowFunction());
 
             interpreter.RegisterFunction("CreateWindow", new NewWindowFunction(NewWindowFunction.MODE.NEW));
             interpreter.RegisterFunction("CloseWindow", new NewWindowFunction(NewWindowFunction.MODE.DELETE));
@@ -2708,6 +2714,151 @@ namespace WpfCSCS
         }
     }
 
+    class NewBindSQLFunction : ParserFunction
+    {
+        public static Dictionary<string, List<string>> gridsHeaders = new Dictionary<string, List<string>>();
+        public static Dictionary<string, List<string>> gridsTags = new Dictionary<string, List<string>>();
+        public static Dictionary<string, List<Variable.VarType>> gridsTypes = new Dictionary<string, List<Variable.VarType>>();
+
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 2, m_name);
+
+            var gui = CSCS_GUI.GetInstance(script);
+            var widgetName = Utils.GetSafeString(args, 0);
+            var widget = gui.GetWidget(widgetName);
+            if (widget == null)
+            {
+                return Variable.EmptyInstance;
+            }
+            var queryString = Utils.GetSafeString(args, 1);
+
+            if (widget is DataGrid)
+            {
+                var dg = widget as DataGrid;
+
+                //--------------------
+
+                gridsHeaders.Add(widgetName.ToLower(), new List<string>());
+                gridsTags.Add(widgetName.ToLower(), new List<string>());
+                gridsTypes.Add(widgetName.ToLower(), new List<Variable.VarType>());
+
+                var dgColumns = dg.Columns;
+                for (int i = 0; i < dgColumns.Count; i++)
+                {
+                    var column = dg.Columns.ElementAt(i);
+
+                    if (column is DataGridTemplateColumn)
+                    {
+                        var dgtc = column as DataGridTemplateColumn;
+
+                        var cell = dgtc.CellTemplate.LoadContent();
+
+                        gridsHeaders[widgetName.ToLower()].Add(dgtc.Header.ToString());
+
+                        if (cell is TimeEditer)
+                        {
+                            var te = cell as TimeEditer;
+                            if (te.Tag != null)
+                            {
+                                gridsTags[widgetName.ToLower()].Add(te.Tag.ToString());
+                                //tagsAndTypes.Add(te.Tag.ToString(), typeof(TimeSpan));
+                                //tagsAndHeaders.Add(te.Tag.ToString(), dgtc.Header.ToString());
+                                //timeAndDateEditerTagsAndSizes[te.Tag.ToString()] = te.DisplaySize;
+                            }
+                        }
+                        else if (cell is DateEditer)
+                        {
+                            var de = cell as DateEditer;
+                            if (de.Tag != null)
+                            {
+                                gridsTags[widgetName.ToLower()].Add(de.Tag.ToString());
+                                //tagsAndTypes.Add(de.Tag.ToString(), typeof(DateTime));
+                                //tagsAndHeaders.Add(de.Tag.ToString(), dgtc.Header.ToString());
+                                //timeAndDateEditerTagsAndSizes[de.Tag.ToString()] = de.DisplaySize;
+                            }
+                        }
+                        else if (cell is CheckBox)
+                        {
+                            var cb = cell as CheckBox;
+                            if (cb.Tag != null)
+                            {
+                                gridsTags[widgetName.ToLower()].Add(cb.Tag.ToString());
+                                //tagsAndTypes.Add(cb.Tag.ToString(), typeof(bool));
+                                //tagsAndHeaders.Add(cb.Tag.ToString(), dgtc.Header.ToString());
+                            }
+                        }
+                        else if (cell is TextBox)
+                        {
+                            var tb = cell as TextBox;
+                            if (tb.Tag != null)
+                            {
+                                gridsTags[widgetName.ToLower()].Add(tb.Tag.ToString());
+                                //tagsAndTypes.Add(tb.Tag.ToString(), typeof(string));
+                                //tagsAndHeaders.Add(tb.Tag.ToString(), dgtc.Header.ToString());
+                            }
+                        }
+                    }
+                }
+
+                //------------------
+
+                dg.Items.Clear();
+                dg.Columns.Clear();
+
+                //var query = "select * from " + tableName;
+                var sqlResult = SQLQueryFunction.GetData(queryString/*, tableName*/);
+
+                Variable columns = sqlResult.Tuple[0];
+                columns.Tuple.RemoveAll(p => p.String.ToLower() == "id");
+                for (int i = 0; i < columns.Tuple.Count; i += 1)
+                {
+                    string label = columns.Tuple[i].AsString();
+                    if (label.ToLower() == "id")
+                    {
+                        continue;
+                    }
+                    DataGridTextColumn column = new DataGridTextColumn();
+                    //column.Header = label;
+                    column.Header = gridsHeaders[widgetName.ToLower()][i];
+                    column.Binding = new Binding(label.Replace(' ', '_'));
+
+                    dg.Columns.Add(column);
+                }
+
+                for (int i = 1; i < sqlResult.Tuple.Count; i++)
+                {
+                    var data = sqlResult.Tuple[i];
+                    data.Tuple.RemoveAt(0);
+                    dynamic row = new ExpandoObject();
+                    for (int j = 0; j < dg.Columns.Count; j++)
+                    {
+                        gridsTypes[widgetName.ToLower()].Add(data.Tuple[j].Type);
+                        //var column = dg.Columns[j].Header.ToString();
+                        var column = gridsTags[widgetName.ToLower()][j];
+                        string val = "";
+                        if (data.Tuple[j].Type == Variable.VarType.DATETIME)
+                        {
+                            val = data.Tuple.Count > j ? data.Tuple[j].DateTime.ToString("dd/MM/yyyy") : "";
+                        }
+                        else
+                        {
+                            val = data.Tuple.Count > j ? data.Tuple[j].AsString() : "";
+                        }
+                        ((IDictionary<String, Object>)row)[column.Replace(' ', '_')] = val;
+                    }
+                    dg.Items.Add(row);
+                    Console.WriteLine(i);
+                }
+
+                return new Variable(sqlResult.Tuple.Count);
+            }
+
+            return Variable.EmptyInstance;
+        }
+    }
+
     public class RunExecFunction : ParserFunction
     {
         protected override Variable Evaluate(ParsingScript script)
@@ -5069,6 +5220,123 @@ namespace WpfCSCS
                 s_cache[vat + "name"] = ExtractTag(response, "name");
                 s_cache[vat + "address"] = ExtractTag(response, "address");
             }
+        }
+    }
+
+    internal class GetGridRowCountFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            var gui = CSCS_GUI.GetInstance(script);
+            var widgetName = Utils.GetSafeString(args, 0);
+            var widget = gui.GetWidget(widgetName);
+            if (widget == null)
+            {
+                return Variable.EmptyInstance;
+            }
+
+            if (widget is DataGrid)
+            {
+                var dg = widget as DataGrid;
+                var rowCount = (double)dg.Items.Count;
+                return new Variable(rowCount);
+            }
+
+            return Variable.EmptyInstance;
+        }
+    }
+
+    internal class FillBufferFromGridRowFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 2, m_name);
+
+            var gui = CSCS_GUI.GetInstance(script);
+            var widgetName = Utils.GetSafeString(args, 0).ToLower();
+            var rowIndex = Utils.GetSafeInt(args, 1);
+            var widget = gui.GetWidget(widgetName);
+            if (widget == null)
+            {
+                return Variable.EmptyInstance;
+            }
+
+            if (widget is DataGrid)
+            {
+                var dg = widget as DataGrid;
+
+                for (int i = 0; i < NewBindSQLFunction.gridsTags[widgetName].Count; i++)
+                {
+                    var defName = NewBindSQLFunction.gridsTags[widgetName][i];
+                    var rowColumnVarObject = ((IDictionary<String, Object>)dg.Items[rowIndex])[defName];
+                    var varType = NewBindSQLFunction.gridsTypes[widgetName][i];
+                    gui.DEFINES[defName.ToLower()].Type = varType;
+                    //CSCS_GUI.DEFINES[defName.ToLower()].InitVariable(new Variable(varType));
+                    switch (varType)
+                    {
+                        case Variable.VarType.NONE:
+                            break;
+                        case Variable.VarType.UNDEFINED:
+                            break;
+                        case Variable.VarType.NUMBER:
+                            gui.DEFINES[defName.ToLower()].InitVariable(new Variable(double.Parse((string)rowColumnVarObject)), gui);
+                            break;
+                        case Variable.VarType.STRING:
+                            gui.DEFINES[defName.ToLower()].InitVariable(new Variable((string)rowColumnVarObject), gui);
+                            break;
+                        case Variable.VarType.ARRAY:
+                            break;
+                        case Variable.VarType.ARRAY_NUM:
+                            break;
+                        case Variable.VarType.ARRAY_STR:
+                            break;
+                        case Variable.VarType.ARRAY_INT:
+                            break;
+                        case Variable.VarType.INT:
+                            break;
+                        case Variable.VarType.MAP_INT:
+                            break;
+                        case Variable.VarType.MAP_NUM:
+                            break;
+                        case Variable.VarType.MAP_STR:
+                            break;
+                        case Variable.VarType.BYTE_ARRAY:
+                            break;
+                        case Variable.VarType.QUIT:
+                            break;
+                        case Variable.VarType.BREAK:
+                            break;
+                        case Variable.VarType.CONTINUE:
+                            break;
+                        case Variable.VarType.OBJECT:
+                            gui.DEFINES[defName.ToLower()].InitVariable(new Variable(rowColumnVarObject), gui);
+                            break;
+                        case Variable.VarType.ENUM:
+                            break;
+                        case Variable.VarType.VARIABLE:
+                            break;
+                        case Variable.VarType.DATETIME:
+                            //CSCS_GUI.DEFINES[defName.ToLower()].InitVariable(new Variable(varType));
+                            gui.DEFINES[defName.ToLower()].DateTime = DateTime.ParseExact((string)rowColumnVarObject, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                            //CSCS_GUI.DEFINES[defName.ToLower()].InitVariable(new Variable(DateTime.ParseExact((string)rowColumnVarObject, "dd/MM/yyyy", CultureInfo.InvariantCulture)));
+                            break;
+                        case Variable.VarType.CUSTOM:
+                            break;
+                        case Variable.VarType.POINTER:
+                            break;
+                        default:
+                            break;
+                    }
+                    //CSCS_GUI.DEFINES[defName.ToLower()].InitVariable(new Variable(rowColumnVarObject));
+
+                }
+            }
+
+            return Variable.EmptyInstance;
         }
     }
 

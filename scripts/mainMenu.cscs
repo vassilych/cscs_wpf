@@ -195,7 +195,11 @@ function mainMenuWindow_OnDisplay(){
     AddMenuSeparator("OtherDC");
     
     AddMenuItem("OtherDC", "TasMemoTextArea.cscs", "TasMemoTextArea", "runScript"); // ?
-
+    
+    AddMenuSeparator("OtherDC");
+    
+    AddMenuItem("OtherDC", "NewBindSQL.cscs", "NewBindSQL", "runScript");
+    AddMenuItem("OtherDC", "NewBindSQLDB1.cscs", "NewBindSQLDB1", "runScript");
     //------------------------------------   
 }
 
