@@ -5,7 +5,7 @@ function btn1@clicked(){
 }
 
 function btn2@clicked(){
-    MessageBox("btn2 in script4");
+    //MessageBox("btn2 in script4");
     // varInParent = varInParent + 1;
     // varInParent++;
     // varInParent += 3;
@@ -16,13 +16,15 @@ function btn2@clicked(){
     varInParent = varInParent + 1;
     varInParent = varInParent + 1;
 
-    MessageBox("varInParent = " + varInParent);
+    MessageBox("btn2 in script4 varInParent = " + varInParent);
 }
 
-function winWithButtons_OnStart(){
+function winWithButtons_OnStart() {
     ResetField("testCHAIN2", "varInParent");//crashes here
-    varInParent = 10;
-    MessageBox("varInParent = " + varInParent);
+    if (!NameExists(varInParent)) {
+      varInParent = 10;
+    }
+    MessageBox("START4 varInParent = " + varInParent);
 }
 CreateWindow("../../scripts/winWithButtons.xaml");
 
