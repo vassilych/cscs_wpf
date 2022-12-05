@@ -1,0 +1,25 @@
+CreateWindow("../../scripts/NewBindSQL.xaml");
+
+// MessageBox("asdasdasd");
+
+// SQLConnectionString("Server=localhost;Database=adictionary;User Id=sa;Password=aura;Initial Catalog=database1");
+
+DEFINE hndl1, hndl2 type i;
+
+hndl1 = openv("invoiceLines", "DB1");
+hndl2 = openv("invoiceHeaders", "DB1");
+
+DEFINE lala1 type a;
+DEFINE lala2 type a;
+DEFINE xinvoicenum type a;
+DEFINE yinvoicenum type a;
+
+
+NewBindSQL("grid1", "select top 100 x.invoiceNumber as lala1, invoiceLineNumber as lala2, x.invoicenumber as xinvoicenum, y.invoicenumber as yinvoicenum from invoiceLines as x  join invoiceHeaders as y on x.invoicenumber = y.invoicenumber order by x.invoicenumber");
+
+//MessageBox(GetGridRowCount("grid1"));
+
+for(i = 0; i < GetGridRowCount("grid1"); i++){
+    FillBufferFromGridRow("grid1", i);
+    MessageBox(lala2);
+}
