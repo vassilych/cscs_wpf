@@ -1,0 +1,5 @@
+CreateWindow("../../scripts/testStatusBar.xaml");
+
+StatusBar("statusbar1", 0, "new text 1");
+StatusBar("statusbar1", 1, "new text 2");
+MessageBox(StatusBar("statusbar1", 2));

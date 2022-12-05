@@ -200,6 +200,10 @@ function mainMenuWindow_OnDisplay(){
     
     AddMenuItem("OtherDC", "NewBindSQL.cscs", "NewBindSQL", "runScript");
     AddMenuItem("OtherDC", "NewBindSQLDB1.cscs", "NewBindSQLDB1", "runScript");
+    
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testStatusBar.cscs", "testStatusBar", "runScript");
     //------------------------------------   
 }
 

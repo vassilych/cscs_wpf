@@ -88,6 +88,8 @@ namespace SplitAndMerge
             interpreter.RegisterFunction(Constants.LAST_OBJ_CLICKED, new LastObjClickedFunction());
             
             interpreter.RegisterFunction(Constants.STRINGS, new StringsFunction());
+            
+            interpreter.RegisterFunction(Constants.STATUS_BAR, new StatusBarFunction());
 
             interpreter.RegisterFunction("OpenFile", new OpenFileFunction(false));
             interpreter.RegisterFunction("OpenFileContents", new OpenFileFunction(true));
@@ -265,6 +267,8 @@ namespace SplitAndMerge
         public const string LAST_OBJ_CLICKED = "LastObjClick";
         
         public const string STRINGS = "Strings";
+        
+        public const string STATUS_BAR = "StatusBar";
 
         public const string DEFINE = "DEFINE";
         public const string DISPLAY_ARRAY = "DISPLAYARR";
@@ -3647,6 +3651,57 @@ namespace WpfCSCS
                     var index = Int32.MaxValue;
                     index = lines.FindIndex(p => p == argStr);
                     return new Variable(index);
+                }
+            }
+
+            return Variable.EmptyInstance;
+        }
+    }
+    
+    class StatusBarFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            var gui = CSCS_GUI.GetInstance(script);
+
+            var widgetName = Utils.GetSafeString(args, 0);
+            var position = Utils.GetSafeInt(args, 1);
+            var newText = Utils.GetSafeString(args, 2);
+
+            var widget = gui.GetWidget(widgetName);
+            if(widget is StatusBar)
+            {
+                var statusbar = widget as StatusBar;
+
+                var statusbarItems = statusbar.Items;
+
+                int x = 0;
+                for(int i = 0; i< statusbarItems.Count; i++)
+                {
+                    if (statusbarItems[i] is Separator)
+                        continue;
+
+                    if(position == x)
+                    {
+                        if (statusbar.Items[i] is StatusBarItem)
+                        {
+                            if((statusbar.Items[i] as StatusBarItem).Content is TextBlock)
+                            {
+                                if (!string.IsNullOrEmpty(newText))
+                                    ((statusbar.Items[i] as StatusBarItem).Content as TextBlock).Text = newText;
+                                else
+                                    return new Variable(((statusbar.Items[i] as StatusBarItem).Content as TextBlock).Text);
+                            }
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        x++;
+                    }
                 }
             }
 
