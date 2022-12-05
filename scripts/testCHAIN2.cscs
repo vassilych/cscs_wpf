@@ -2,7 +2,7 @@ DEFINE varInParent type i;
 
 function winWithButtons_OnStart(){
     varInParent = 0;
-    MessageBox("varInParent = " + varInParent);
+    MessageBox("START CHAIN2 varInParent = " + varInParent);
 }
 CreateWindow("../../scripts/winWithButtons.xaml");
 
@@ -11,7 +11,6 @@ function btn1@clicked(){
 }
 
 function btn2@clicked(){
-    MessageBox("btn2 in testCHAIN2");
     // varInParent = varInParent + 1;
     // varInParent++;
     // varInParent += 3;
@@ -22,5 +21,5 @@ function btn2@clicked(){
     varInParent = varInParent + 1;
     varInParent = varInParent + 1;
 
-    MessageBox("varInParent = " + varInParent);
+    MessageBox("btn2 in testCHAIN2 varInParent = " + varInParent);
 }
