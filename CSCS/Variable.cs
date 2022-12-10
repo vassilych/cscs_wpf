@@ -21,12 +21,17 @@ namespace SplitAndMerge
             NONE, UNDEFINED, INT, LONG, BOOL, DOUBLE, STRING, BYTE_ARRAY, ARRAY, DATE_TIME, OBJECT
         };
 
+        static int s_id;
+        public int Id { get; set; }
+        
         public Variable()
         {
+            Id = ++s_id;
             Reset();
         }
         public Variable(VarType type)
         {
+            Id = ++s_id;
             Type = type;
             if (Type == VarType.ARRAY)
             {
@@ -35,46 +40,55 @@ namespace SplitAndMerge
         }
         public Variable(double d)
         {
+            Id = ++s_id;
             Value = d;
             Original = OriginalType.DOUBLE;
         }
         public Variable(int d)
         {
+            Id = ++s_id;
             Value = d;
             Original = OriginalType.INT;
         }
         public Variable(long d)
         {
+            Id = ++s_id;
             Value = d;
             Original = OriginalType.LONG;
         }
         public Variable(bool d)
         {
+            Id = ++s_id;
             Value = d ? 1.0 : 0.0;
             Original = OriginalType.BOOL;
         }
         public Variable(string s)
         {
+            Id = ++s_id;
             String = s;
             Original = OriginalType.STRING;
         }
         public Variable(DateTime dt)
         {
+            Id = ++s_id;
             DateTime = dt;
             Original = OriginalType.DATE_TIME;
         }
         public Variable(byte[] ba)
         {
+            Id = ++s_id;
             ByteArray = ba;
             Original = OriginalType.BYTE_ARRAY;
         }
         public Variable(List<Variable> a)
         {
+            Id = ++s_id;
             this.Tuple = a;
             Original = OriginalType.ARRAY;
         }
         public Variable(List<string> a)
         {
+            Id = ++s_id;
             List<Variable> tuple = new List<Variable>(a.Count);
             for (int i = 0; i < a.Count; i++)
             {
@@ -85,6 +99,7 @@ namespace SplitAndMerge
         }
         public Variable(List<double> a)
         {
+            Id = ++s_id;
             List<Variable> tuple = new List<Variable>(a.Count);
             for (int i = 0; i < a.Count; i++)
             {
@@ -95,6 +110,7 @@ namespace SplitAndMerge
         }
         public Variable(Dictionary<string, string> a)
         {
+            Id = ++s_id;
             List<Variable> tuple = new List<Variable>(a.Count);
             foreach (string key in a.Keys)
             {
@@ -108,6 +124,7 @@ namespace SplitAndMerge
         }
         public Variable(Dictionary<string, double> a)
         {
+            Id = ++s_id;
             List<Variable> tuple = new List<Variable>(a.Count);
             foreach (string key in a.Keys)
             {
@@ -122,6 +139,7 @@ namespace SplitAndMerge
 
         public Variable(object o, Type t = null)
         {
+            Id = ++s_id;
             Object = o;
             Original = OriginalType.OBJECT;
             ObjectType = t == null ? o?.GetType() : t;

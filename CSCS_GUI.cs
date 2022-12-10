@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Dynamic;
 using System.Reflection;
-using SplitAndMerge;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -23,23 +22,15 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Data.SqlClient;
 using static WpfCSCS.CSCS_GUI;
-using DevExpress.Xpf.Printing;
-using DevExpress.Xpf.Editors;
-using DevExpress.XtraReports.UI;
-
 
 using System.Text.RegularExpressions;
 using System.Data;
-using DevExpress.XtraPrinting.Caching;
 using static WpfCSCS.Btrieve;
 using WpfControlsLibrary;
 using CSCS.InterpreterManager;
-using DevExpress.Xpo.Logger;
 using WpfCSCS;
+using SplitAndMerge;
 using static SplitAndMerge.CSCSClass;
-using static DevExpress.Xpo.Helpers.AssociatedCollectionCriteriaHelper;
-using DevExpress.XtraCharts;
-using DevExpress.Xpf.Bars.Themes;
 
 namespace SplitAndMerge
 {
@@ -6006,6 +5997,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
             {
                 return null;
             }
+            script.InterpreterInstance.AddGlobalOrLocalVariable(m_name, new GetVarFunction(defVar));
 
             if (argStart > 0)
             {
@@ -6031,7 +6023,8 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
             script.CurrentAssign = m_name;
             var gui = CSCS_GUI.GetInstance(script);
 
-            varValue = varValue == Variable.EmptyInstance ? Utils.GetItem(script) : varValue;
+            bool passedEmpty = varValue == Variable.EmptyInstance;
+            varValue = passedEmpty ? Utils.GetItem(script) : varValue;
             if (m_pointerAssign)
             {
                 if (gui.DEFINES.TryGetValue(defVar.Pointer, out DefineVariable refValue))
