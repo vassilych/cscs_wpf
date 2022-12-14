@@ -1,0 +1,16 @@
+
+function btn2@clicked(){
+    
+    MessageBox("btn2 in script4 varInParent = " + varInParent);
+}
+
+function winWithButtons_OnStart() {
+    ResetField("testCHAIN2stringVar", "varInParent");
+
+    MessageBox("START4 varInParent = " + varInParent);
+}
+CreateWindow("../../scripts/winWithButtons.xaml");
+
+
+
+

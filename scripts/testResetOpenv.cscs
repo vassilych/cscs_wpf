@@ -1,0 +1,9 @@
+define hndl type i;
+
+hndl = openv("nkmkvezm", "bd1");
+
+findv(hndl, "f", "@1");
+
+MessageBox(VEZM_VEZNIBROJ);
+
+CHAIN "../../scripts/testResetOpenv2.cscs";

@@ -1,0 +1,5 @@
+ResetField("testResetOpenv", "VEZM_VEZNIBROJ");
+
+MessageBox("chain 2 -> vezm veznibroj = " + VEZM_VEZNIBROJ);
+
+quit;

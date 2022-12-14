@@ -1,0 +1,44 @@
+DEFINE a type i;
+a = 5;
+MessageBox("a = " + a);
+
+function func1(a){
+    //a = 10;
+    MessageBox("a = " + a);
+    DEFINE b type i;
+    b = 10;
+    MessageBox("b = " + b);
+}
+
+func1(55);
+MessageBox("a = " + a);
+
+MessageBox("b = " + b);
+
+for(i = 0; i < 2; i++){
+    DEFINE c type i;
+    c = 5;
+    MessageBox("c = " + c);
+}
+
+MessageBox("c = " + c);
+
+//-------------------------
+
+DEFINE e type i;
+e = 100;
+MessageBox("e = " + e);
+
+function winWithButtons_OnStart() {
+    DEFINE d type i;
+    d = 111;
+    MessageBox("d = " + d);
+    
+    MessageBox("e = " + e);
+    DEFINE e type i;
+    MessageBox("e = " + e);
+}
+CreateWindow("../../scripts/winWithButtons.xaml");
+
+MessageBox("d = " + d);
+MessageBox("e = " + e);

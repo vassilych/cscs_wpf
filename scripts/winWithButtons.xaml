@@ -9,8 +9,17 @@
         Title="Window1" Height="300" Width="500">
     <Grid>
 
-        <Label DataContext="varInParent" Name="label1" Content=""
-        VerticalAlignment="Top" HorizontalAlignment="Center"/>
+        <!-- <Label DataContext="varInParent" Name="label1" Content=""
+        VerticalAlignment="Top" HorizontalAlignment="Center"/> -->
+        
+        <!-- <wcl:NumericBox  Name="tb1" Size="10"
+        VerticalAlignment="Top" HorizontalAlignment="Center"
+        Margin="0,100,0,0"/> -->
+
+        <TextBox Name="tb1" DataContext="varInParent"
+        VerticalAlignment="Top" HorizontalAlignment="Center"
+        Margin="0,100,0,0"/>
+
 
         <Button Content="CHAIN" Name="btn1"
         VerticalAlignment="Center" HorizontalAlignment="Center"
