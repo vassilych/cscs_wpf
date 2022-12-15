@@ -1,0 +1,37 @@
+DEFINE a type i;
+a = 5;
+MessageBox("a = " + a);//5
+
+DEFINE lala type a size 100;
+lala = "lala";
+MessageBox("lala = " + lala);
+
+function func1(){
+    //a = 10;
+
+    MessageBox("lala = " + lala);
+    DefineLocal(lala, "novitekst");
+    MessageBox("lala = " + lala);
+    
+    DefineLocal(a, 100);
+    MessageBox("a = " + a);//5
+    b = 10;
+    MessageBox("b = " + b);
+    x = 100;
+}
+
+func1();
+
+MessageBox("lala = " + lala);
+MessageBox(x);
+
+MessageBox("a = " + a);//5
+
+MessageBox("b = " + b);
+
+for(i = 0; i < 2; i++){
+    c = 5;
+    MessageBox("c = " + c);
+}
+
+MessageBox("c = " + c);

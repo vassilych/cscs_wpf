@@ -146,7 +146,12 @@ function mainMenuWindow_OnDisplay(){
     AddMenuItem("OtherDC", "testCHAIN.cscs", "testCHAIN", "runScript");
     AddMenuItem("OtherDC", "testCHAIN2.cscs", "testCHAIN2", "runScript");
     AddMenuItem("OtherDC", "testTwoLoops.cscs", "testTwoLoops", "runScript");
+    AddMenuItem("OtherDC", "testCHAIN2stringVar.cscs", "testCHAIN2stringVar", "runScript");
     
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testResetOpenv.cscs", "testResetOpenv", "runScript");
+
     AddMenuSeparator("OtherDC");
     
     AddMenuItem("OtherDC", "testSetImage.cscs", "testSetImage", "runScript"); // ?
@@ -204,6 +209,14 @@ function mainMenuWindow_OnDisplay(){
     AddMenuSeparator("OtherDC");
 
     AddMenuItem("OtherDC", "testStatusBar.cscs", "testStatusBar", "runScript");
+    
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testLocalVariables.cscs", "testLocalVariables", "runScript");
+    
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testLocalDEFINES.cscs", "testLocalDEFINES", "runScript");
     //------------------------------------   
 }
 
