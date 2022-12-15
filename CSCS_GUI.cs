@@ -341,11 +341,16 @@ namespace WpfCSCS
 
         public static CSCS_GUI GetInstance(ParsingScript script)
         {
+            if (script == null)
+            {
+                return LastInstance;
+            }
             var result = script.Context as CSCS_GUI;
             if (result == null)
             {
                 script.Context = result = LastInstance;
             }
+            result.Script = script;
             return result;
         }
 
@@ -377,10 +382,13 @@ namespace WpfCSCS
 
         static int s_id;
         public int ID { get; private set; }
+
+        public ParsingScript Script { get; private set; }
         public CSCS_GUI(ParsingScript script = null)
         {
             LastInstance = this;
             ID = ++s_id;
+            Script = script;
             if (script != null)
             {
                 script.Context = this;
@@ -688,7 +696,7 @@ namespace WpfCSCS
 
         void UpdateVariable(FrameworkElement widget, Variable newValue)
         {
-            var widgetName = GetWidgetBindingName(widget);
+            var widgetName = GetWidgetBindingName(widget).ToLower();
             if (string.IsNullOrWhiteSpace(widgetName))
             {
                 return;
@@ -696,7 +704,9 @@ namespace WpfCSCS
 
             if (DEFINES.TryGetValue(widgetName, out DefineVariable defVar))
             {
-                defVar.InitVariable(newValue, this);
+                var assign = new MyAssignFunction(widgetName);
+                assign.DoAssign(Script, widgetName, defVar, ref newValue);
+                //defVar.InitVariable(newValue, this);
                 return;
             }
 
