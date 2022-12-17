@@ -469,6 +469,8 @@ namespace WpfCSCS
         Dictionary<string, string> m_SelectHandlers = new Dictionary<string, string>();
 
         Dictionary<string, Variable> m_boundVariables = new Dictionary<string, Variable>();
+
+        HashSet<string> m_updatingWidget = new HashSet<string>();
         //static Dictionary<string, TabPage> s_tabPages           = new Dictionary<string, TabPage>();
         //static TabControl s_tabControl;
 
@@ -1282,13 +1284,16 @@ namespace WpfCSCS
         {
             TextBoxBase widget = sender as TextBoxBase;
             var widgetName = GetWidgetName(widget);
-            if (string.IsNullOrWhiteSpace(widgetName))
+            if (string.IsNullOrWhiteSpace(widgetName) ||
+                m_updatingWidget.Contains(widgetName))
             {
                 return;
             }
 
+            m_updatingWidget.Add(widgetName);
             var text = GetTextWidgetFunction.GetText(widget);
             UpdateVariable(widget, text);
+            m_updatingWidget.Remove(widgetName);
 
             string funcName;
             if (m_textChangedHandlers.TryGetValue(widgetName, out funcName))
