@@ -1,7 +1,7 @@
 DEFINE varInParent type a;
 
 function winWithButtons_OnStart(){
-    varInParent = "lalala";
+    varInParent = "lala";
     MessageBox("START CHAIN2 varInParent = " + varInParent);
 }
 CreateWindow("../../scripts/winWithButtons.xaml");
@@ -12,7 +12,7 @@ function btn1@clicked(){
 
 function btn2@clicked(){
     
-    varInParent = varInParent + "x";
+    varInParent += "x";
 
     MessageBox("btn2 in testCHAIN2 varInParent = " + varInParent);
 }

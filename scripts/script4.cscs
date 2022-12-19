@@ -7,14 +7,13 @@ function btn1@clicked(){
 function btn2@clicked(){
     //MessageBox("btn2 in script4");
     // varInParent = varInParent + 1;
-    // varInParent++;
-    // varInParent += 3;
+    varInParent++;
 
-    varInParent = varInParent + 1;  
-    varInParent = varInParent + 1;
-    varInParent = varInParent + 1;
-    varInParent = varInParent + 1;
-    varInParent = varInParent + 1;
+    //varInParent = varInParent + 1;  
+    //varInParent = varInParent + 1;
+    //varInParent = varInParent + 1;
+    //varInParent = varInParent + 1;
+    //varInParent = varInParent + 1;
 
     MessageBox("btn2 in script4 varInParent = " + varInParent);
 }
@@ -28,6 +27,12 @@ function winWithButtons_OnStart() {
 }
 CreateWindow("../../scripts/winWithButtons.xaml");
 
+/*
+DEFINE lala type i;
+lala = 9;
+a=lala++;
+b=--lala;
+lala-=2;
+lala*=10;
 
-
-
+*/

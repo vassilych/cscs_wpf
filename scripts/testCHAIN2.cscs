@@ -13,13 +13,13 @@ function btn1@clicked(){
 function btn2@clicked(){
     // varInParent = varInParent + 1;
     // varInParent++;
-    // varInParent += 3;
+    varInParent += 5;
 
-    varInParent = varInParent + 1;
-    varInParent = varInParent + 1;
-    varInParent = varInParent + 1;
-    varInParent = varInParent + 1;
-    varInParent = varInParent + 1;
+    //varInParent = varInParent + 1;
+    //varInParent = varInParent + 1;
+    //varInParent = varInParent + 1;
+    //varInParent = varInParent + 1;
+    //varInParent = varInParent + 1;
 
     MessageBox("btn2 in testCHAIN2 varInParent = " + varInParent);
 }

@@ -3,13 +3,13 @@ function btn2@clicked(){
     //MessageBox("btn2 in script5");
     // varInParent = varInParent + 1;
     // varInParent++;
-    // varInParent += 3;
+    varInParent += 3;
 
-    varInParent = varInParent + 1;
-    varInParent = varInParent + 1;
-    varInParent = varInParent + 1;
-    varInParent = varInParent + 1;
-    varInParent = varInParent + 1;
+    //varInParent = varInParent + 1;
+    //varInParent = varInParent + 1;
+    //varInParent = varInParent + 1;
+    //varInParent = varInParent + 1;
+    //varInParent = varInParent + 1;
 
     MessageBox("btn2 in script5 varInParent = " + varInParent);
 }

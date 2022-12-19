@@ -77,9 +77,9 @@ namespace SplitAndMerge
             interpreter.RegisterFunction(Constants.SET_FOCUS, new SetFocusFunction());
             interpreter.RegisterFunction(Constants.LAST_OBJ, new LastObjFunction());
             interpreter.RegisterFunction(Constants.LAST_OBJ_CLICKED, new LastObjClickedFunction());
-            
+
             interpreter.RegisterFunction(Constants.STRINGS, new StringsFunction());
-            
+
             interpreter.RegisterFunction(Constants.STATUS_BAR, new StatusBarFunction());
 
             interpreter.RegisterFunction("OpenFile", new OpenFileFunction(false));
@@ -103,7 +103,7 @@ namespace SplitAndMerge
             interpreter.RegisterFunction("FillOutGrid", new FillOutGridFunction());
             interpreter.RegisterFunction("FillOutGridFromDB", new FillOutGridFunction(true));
             interpreter.RegisterFunction("BindSQL", new BindSQLFunction());
-            
+
             interpreter.RegisterFunction("NewBindSQL", new NewBindSQLFunction());
 
             interpreter.RegisterFunction("MessageBox", new MessageBoxFunction());
@@ -189,7 +189,7 @@ namespace SplitAndMerge
         public const string DATAGRID = "DataGrid";
 
         public const string RESET_FIELD = "ResetField";
-        
+
         public const string CO_GET = "COGet";
         public const string CO_SET = "COSet";
 
@@ -252,7 +252,7 @@ namespace SplitAndMerge
         public const string X_FONT_FORMAT = "XFontFormat";
         public const string X_BORDER = "XBorder";
         public const string X_PIVOT_TABLE_REFRESH = "XPivotTableRefresh";
-        
+
         public const string X_ERR = "XErr";
 
         public const string READ_XML_FILE = "readXmlFile";
@@ -261,9 +261,9 @@ namespace SplitAndMerge
         public const string SET_FOCUS = "SetFocus";
         public const string LAST_OBJ = "LastObj";
         public const string LAST_OBJ_CLICKED = "LastObjClick";
-        
+
         public const string STRINGS = "Strings";
-        
+
         public const string STATUS_BAR = "StatusBar";
 
         public const string DEFINE = "DEFINE";
@@ -691,13 +691,13 @@ namespace WpfCSCS
             }
 
             var widget = GetWidget(widgetName);
-            if (widget == null)
+            if (m_addingActions)
             {
-                var obj = bounded.Object;
+                var text = bounded.AsString();
+                newValue.String = string.IsNullOrWhiteSpace(text) ? newValue.AsString() : text;
             }
-            var text = newValue.AsString();
 
-            SetTextWidgetFunction.SetText(widget, text);
+            SetTextWidgetFunction.SetText(widget, newValue.AsString());
             m_boundVariables[widgetName] = newValue;
         }
 
@@ -728,13 +728,16 @@ namespace WpfCSCS
             System.Diagnostics.Trace.WriteLine(e.Output);
         }
 
+        static bool m_addingActions;
         public void AddActions(Window win, bool force = false, ParsingScript script = null)
         {
+            m_addingActions = true;
             var controls = CacheControls(win, force);
             foreach (var entry in controls)
             {
                 AddWidgetActions(entry);
             }
+            m_addingActions = false;
         }
 
         public Variable RunScript(string funcName, Window win, Variable arg1, Variable arg2 = null)
@@ -1106,7 +1109,7 @@ namespace WpfCSCS
             {
                 return;
             }
-            if(DEFINES.TryGetValue(widgetBindingName, out DefineVariable defVar))
+            if (DEFINES.TryGetValue(widgetBindingName, out DefineVariable defVar))
             {
                 var dateFormat = defVar.GetDateFormat();
                 ValueUpdated(funcName, widgetName, widget, new Variable(date.Value.ToString(dateFormat)));
@@ -1523,7 +1526,7 @@ namespace WpfCSCS
             {
                 return;
             }
-            if(((Control)e.NewFocus) != null)
+            if (((Control)e.NewFocus) != null)
                 LastObjWidgetName = ((Control)e.NewFocus).Name;
 
             if ((Control)sender is Button)
@@ -3572,7 +3575,7 @@ namespace WpfCSCS
             }
         }
     }
-    
+
     class StringsFunction : ParserFunction
     {
         protected override Variable Evaluate(ParsingScript script)
@@ -3582,7 +3585,7 @@ namespace WpfCSCS
 
             var gui = CSCS_GUI.GetInstance(script);
 
-            
+
 
             var widgetName = Utils.GetSafeString(args, 0);
             var option = Utils.GetSafeString(args, 1);
@@ -3591,7 +3594,7 @@ namespace WpfCSCS
             //var arg3 = Utils.GetSafeString(args, 4);
 
             var widget = gui.GetWidget(widgetName);
-            if(widget is MemoTextBox)
+            if (widget is MemoTextBox)
             {
                 var mtb = widget as MemoTextBox;
                 List<string> lines = mtb.Text.Split('\n').ToList();
@@ -3668,7 +3671,7 @@ namespace WpfCSCS
             return Variable.EmptyInstance;
         }
     }
-    
+
     class StatusBarFunction : ParserFunction
     {
         protected override Variable Evaluate(ParsingScript script)
@@ -3683,23 +3686,23 @@ namespace WpfCSCS
             var newText = Utils.GetSafeString(args, 2);
 
             var widget = gui.GetWidget(widgetName);
-            if(widget is StatusBar)
+            if (widget is StatusBar)
             {
                 var statusbar = widget as StatusBar;
 
                 var statusbarItems = statusbar.Items;
 
                 int x = 0;
-                for(int i = 0; i< statusbarItems.Count; i++)
+                for (int i = 0; i < statusbarItems.Count; i++)
                 {
                     if (statusbarItems[i] is Separator)
                         continue;
 
-                    if(position == x)
+                    if (position == x)
                     {
                         if (statusbar.Items[i] is StatusBarItem)
                         {
-                            if((statusbar.Items[i] as StatusBarItem).Content is TextBlock)
+                            if ((statusbar.Items[i] as StatusBarItem).Content is TextBlock)
                             {
                                 if (!string.IsNullOrEmpty(newText))
                                     ((statusbar.Items[i] as StatusBarItem).Content as TextBlock).Text = newText;
@@ -4105,7 +4108,7 @@ namespace WpfCSCS
 
             return result;
         }
-    
+
         static bool CheckScriptIsMain(string fileName)
         {
             var fullName = Path.GetFullPath(fileName);
@@ -4458,7 +4461,7 @@ namespace WpfCSCS
 
         Variable DisplayArrSetup(ParsingScript script, string name, string lineCounterStr, string actualElemsStr, string maxElemsStr)
         {
-            var gui = CSCS_GUI.GetInstance(script); 
+            var gui = CSCS_GUI.GetInstance(script);
             var gridVar = GetDatagridData(gui, name, out CSCS_GUI.WidgetData wd);
             if (gridVar == null)
             {
@@ -4984,7 +4987,6 @@ namespace WpfCSCS
             Gui.CacheWindow(wind, cscsFilename);
             Gui.CacheParentWindow(tag, parentWin);
 
-            CSCS_GUI.ChangingBoundVariable = true;
             var isMain = ChainFunction.CheckParentScriptIsMain(script);
             if (parentWin == null || isMain)
             {
@@ -4996,7 +4998,6 @@ namespace WpfCSCS
                 wind.Hide();
                 wind.ShowDialog();
             }
-            CSCS_GUI.ChangingBoundVariable = false;
             return modalwin;
         }
 
@@ -5939,11 +5940,6 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
             }
             return defVar;
         }
-    }
-
-    class MyIncrementDecrementFunction : AssignFunction
-    {
-
     }
 
     class MyAssignFunction : AssignFunction
