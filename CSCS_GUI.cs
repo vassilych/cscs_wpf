@@ -138,8 +138,13 @@ namespace SplitAndMerge
             interpreter.RegisterFunction(Constants.QUIT, new WpfQuitCommand());
 
             interpreter.AddAction(Constants.ASSIGNMENT, new MyAssignFunction());
+            interpreter.AddAction(Constants.INCREMENT, new MyAssignFunction(MyAssignFunction.MODE.INCREMENT));
+            interpreter.AddAction(Constants.DECREMENT, new MyAssignFunction(MyAssignFunction.MODE.DECREMENT));
             interpreter.AddAction(Constants.POINTER, new MyPointerFunction());
-
+            for (int i = 0; i < Constants.OPER_ACTIONS.Length; i++)
+            {
+                interpreter.AddAction(Constants.OPER_ACTIONS[i], new MyAssignFunction());
+            }
         }
     }
 
@@ -4979,6 +4984,7 @@ namespace WpfCSCS
             Gui.CacheWindow(wind, cscsFilename);
             Gui.CacheParentWindow(tag, parentWin);
 
+            CSCS_GUI.ChangingBoundVariable = true;
             var isMain = ChainFunction.CheckParentScriptIsMain(script);
             if (parentWin == null || isMain)
             {
@@ -4990,6 +4996,7 @@ namespace WpfCSCS
                 wind.Hide();
                 wind.ShowDialog();
             }
+            CSCS_GUI.ChangingBoundVariable = false;
             return modalwin;
         }
 
@@ -5495,6 +5502,20 @@ namespace WpfCSCS
         {
         }
 
+        public DefineVariable(DefineVariable other)
+        {
+            Name = other.Name;
+            Tuple = other.Tuple;
+            DefType = other.DefType;
+            Index = other.Index;
+            Object = other.Object;
+            Active = other.Active;
+            Value = other.Value;
+            String = other.String;
+            DateTime = other.DateTime;
+            Type = other.Type;
+        }
+
         public DefineVariable(string name, string type, Object obj, int index = -1)
         {
             Name = name.ToLower();
@@ -5920,16 +5941,29 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
         }
     }
 
+    class MyIncrementDecrementFunction : AssignFunction
+    {
+
+    }
+
     class MyAssignFunction : AssignFunction
     {
+        public enum MODE { ASSIGN, INCREMENT, DECREMENT, ASSIGNPLUS, ASSIGNMINUS, ASSIGNMULTIPLY, ASSIGNDIVIDE }
+
         bool m_pointerAssign;
         string m_originalName;
         int m_arrayIndex = -1;
+        bool m_prefix = true;
+        public MODE Mode { get; private set; }
 
         static Dictionary<string, ParsingScript> s_variableMap = new Dictionary<string, ParsingScript>();
         public MyAssignFunction(string name = "")
         {
             m_name = name;
+        }
+        public MyAssignFunction(MODE mode)
+        {
+            Mode = mode;
         }
         public static void AddVariableMap(string varName, ParsingScript parentScript)
         {
@@ -5954,20 +5988,27 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
 
         protected override Variable Evaluate(ParsingScript script)
         {
-            InterpreterInstance = script.InterpreterInstance;
-            DefineVariable defVar = IsDefinedVariable(script);
-            if (defVar != null)
+            var result = ProcessLocalAssign(script);
+            if (result != null)
             {
-                Variable varValue = Variable.EmptyInstance;
-                var result = DoAssign(script, m_name, defVar, ref varValue);
-                ProcessParentScript(script, m_name.ToLower(), varValue);
                 return result;
             }
-            var res = Assign(script, m_originalName);
-            return ResetNotDefined(res);
+            result = Assign(script, m_originalName);
+            return ResetNotDefined(result);
         }
 
         protected override async Task<Variable> EvaluateAsync(ParsingScript script)
+        {
+            var result = ProcessLocalAssign(script);
+            if (result != null)
+            {
+                return result;
+            }
+            result = await AssignAsync(script, m_originalName);
+            return ResetNotDefined(result);
+        }
+
+        Variable ProcessLocalAssign(ParsingScript script)
         {
             InterpreterInstance = script.InterpreterInstance;
             DefineVariable defVar = IsDefinedVariable(script);
@@ -5978,10 +6019,18 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                 ProcessParentScript(script, m_name, varValue);
                 return result;
             }
-            var res = await AssignAsync(script, m_originalName);
-            return ResetNotDefined(res);
+            if (Mode == MODE.INCREMENT || Mode == MODE.DECREMENT)
+            {
+                var result = IncrementDecrementFunction.ProcessAction(m_name, m_action, m_prefix, script);
+                return result;
+            }
+            if (m_action.Length > 1)
+            {
+                var result = OperatorAssignFunction.ProcessOperator(m_name, m_action, script);
+                return result;
+            }
+            return null;
         }
-
         Variable ResetNotDefined(Variable result)
         {
             DefineVariable defVar = result as DefineVariable;
@@ -5994,6 +6043,11 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
 
         protected DefineVariable IsDefinedVariable(ParsingScript script)
         {
+            m_prefix = string.IsNullOrWhiteSpace(m_name);
+            if (m_prefix)
+            {// If it is a prefix we do not have the variable name yet.
+                m_name = Utils.GetToken(script, Constants.TOKEN_SEPARATION);
+            }
             m_originalName = m_name;
             m_pointerAssign = m_name.StartsWith("&");
             var gui = CSCS_GUI.GetInstance(script);
@@ -6039,7 +6093,21 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
             var gui = CSCS_GUI.GetInstance(script);
 
             bool passedEmpty = varValue == Variable.EmptyInstance;
-            varValue = passedEmpty ? Utils.GetItem(script) : varValue;
+            if (passedEmpty)
+            {
+                if (Mode == MODE.INCREMENT)
+                {
+                    varValue.Value = ++defVar.Value;
+                }
+                else if (Mode == MODE.DECREMENT)
+                {
+                    varValue.Value = --defVar.Value;
+                }
+                else
+                {
+                    varValue = Utils.GetItem(script);
+                }
+            }
             if (m_pointerAssign)
             {
                 if (gui.DEFINES.TryGetValue(defVar.Pointer, out DefineVariable refValue))
@@ -6143,14 +6211,20 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
                     dg.Items.Refresh();
                     dg.UpdateLayout();
                 }
-                else if (defVar.DefType == "d")
-                {
-                    defVar.InitVariable(varValue, gui, script, false, m_arrayIndex);
-                    OnVariableChange(m_name, defVar, true);
-                }
                 else
                 {
-                    defVar.InitVariable(varValue, gui, script, false, m_arrayIndex);
+                    if (m_action != null && m_action.EndsWith("=") && m_action.Length > 1)
+                    { // an action like +=, *=, etc.
+                        var leftVar = new DefineVariable(defVar);
+                        OperatorAssignFunction.ProcessOperator(leftVar, varValue, m_action, script, m_name);
+                        defVar.InitVariable(leftVar, gui, script, false, m_arrayIndex);
+                        varValue = leftVar;
+                    }
+                    else
+                    {
+                        defVar.InitVariable(varValue, gui, script, false, m_arrayIndex);
+                    }
+
                     OnVariableChange(m_name, defVar, true);
                 }
             }
@@ -6158,6 +6232,13 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
             if (/*defVar.Object == null &&*/ defVar.Tuple == null)
             {
                 gui.Interpreter.AddGlobalOrLocalVariable(m_name, new GetVarFunction(varValue));
+            }
+
+            if ((Mode == MODE.INCREMENT || Mode == MODE.DECREMENT) && !m_prefix)
+            {
+                DefineVariable postfixVar = new DefineVariable(defVar);
+                postfixVar.Value = Mode == MODE.INCREMENT ? postfixVar.Value - 1 : postfixVar.Value + 1;
+                return postfixVar;
             }
             return defVar;
         }
@@ -6213,7 +6294,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
 
         override public ParserFunction NewInstance()
         {
-            return new MyAssignFunction();
+            return new MyAssignFunction(Mode);
         }
     }
 
