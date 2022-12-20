@@ -21,17 +21,12 @@ namespace SplitAndMerge
             NONE, UNDEFINED, INT, LONG, BOOL, DOUBLE, STRING, BYTE_ARRAY, ARRAY, DATE_TIME, OBJECT
         };
 
-        static int s_id;
-        public int Id { get; set; }
-        
         public Variable()
         {
-            Id = ++s_id;
             Reset();
         }
         public Variable(VarType type)
         {
-            Id = ++s_id;
             Type = type;
             if (Type == VarType.ARRAY)
             {
@@ -40,55 +35,46 @@ namespace SplitAndMerge
         }
         public Variable(double d)
         {
-            Id = ++s_id;
             Value = d;
             Original = OriginalType.DOUBLE;
         }
         public Variable(int d)
         {
-            Id = ++s_id;
             Value = d;
             Original = OriginalType.INT;
         }
         public Variable(long d)
         {
-            Id = ++s_id;
             Value = d;
             Original = OriginalType.LONG;
         }
         public Variable(bool d)
         {
-            Id = ++s_id;
             Value = d ? 1.0 : 0.0;
             Original = OriginalType.BOOL;
         }
         public Variable(string s)
         {
-            Id = ++s_id;
             String = s;
             Original = OriginalType.STRING;
         }
         public Variable(DateTime dt)
         {
-            Id = ++s_id;
             DateTime = dt;
             Original = OriginalType.DATE_TIME;
         }
         public Variable(byte[] ba)
         {
-            Id = ++s_id;
             ByteArray = ba;
             Original = OriginalType.BYTE_ARRAY;
         }
         public Variable(List<Variable> a)
         {
-            Id = ++s_id;
             this.Tuple = a;
             Original = OriginalType.ARRAY;
         }
         public Variable(List<string> a)
         {
-            Id = ++s_id;
             List<Variable> tuple = new List<Variable>(a.Count);
             for (int i = 0; i < a.Count; i++)
             {
@@ -99,7 +85,6 @@ namespace SplitAndMerge
         }
         public Variable(List<double> a)
         {
-            Id = ++s_id;
             List<Variable> tuple = new List<Variable>(a.Count);
             for (int i = 0; i < a.Count; i++)
             {
@@ -110,7 +95,6 @@ namespace SplitAndMerge
         }
         public Variable(Dictionary<string, string> a)
         {
-            Id = ++s_id;
             List<Variable> tuple = new List<Variable>(a.Count);
             foreach (string key in a.Keys)
             {
@@ -124,7 +108,6 @@ namespace SplitAndMerge
         }
         public Variable(Dictionary<string, double> a)
         {
-            Id = ++s_id;
             List<Variable> tuple = new List<Variable>(a.Count);
             foreach (string key in a.Keys)
             {
@@ -139,7 +122,6 @@ namespace SplitAndMerge
 
         public Variable(object o, Type t = null)
         {
-            Id = ++s_id;
             Object = o;
             Original = OriginalType.OBJECT;
             ObjectType = t == null ? o?.GetType() : t;
@@ -1440,12 +1422,19 @@ namespace SplitAndMerge
             {
                 try
                 {
+                    Type underlyingType = Nullable.GetUnderlyingType(conversionType);
+
                     if (value == null)
                     {
-                        if (Nullable.GetUnderlyingType(conversionType) == null)
-                            conversion = Conversion.Exact;
-                        else
+                        if (underlyingType == null && conversionType.IsValueType)
+                        {
                             conversion = Conversion.Mismatch;
+                        }
+                        else
+                        {
+                                conversion = Conversion.Exact;
+                        }
+
                         return value;
                     }
 
@@ -1456,20 +1445,39 @@ namespace SplitAndMerge
                         return value;
                     }
 
+                    if (t == underlyingType)
+                    {
+                        conversion = Conversion.Convertible;
+                        return value;
+                    }
+
                     if (conversionType.IsAssignableFrom(t))
                     {
                         conversion = Conversion.Assignable;
-                        return Convert.ChangeType(value, conversionType);
+                        return value;
+                    }
+
+                    if (underlyingType != null && underlyingType.IsAssignableFrom(t))
+                    {
+                        conversion = Conversion.Convertible;
+                        return value;
                     }
 
                     conversion = Conversion.Convertible;
                     if (conversionType.IsEnum)
                     {
                         if (value is string svalue)
-                            return Enum.Parse(conversionType, svalue, true);
+                        {
+                             return Enum.Parse(conversionType, svalue, true);
+                        }
+
                         if (value is double dvalue)
+                        {
                             return Enum.ToObject(conversionType, (long)dvalue);
+                        }
+
                         // Let's see if it's some other type that just happens to work
+                        conversion = Conversion.Mismatch;
                         return Enum.ToObject(conversionType, value);
                     }
 
@@ -1481,7 +1489,18 @@ namespace SplitAndMerge
                         return genericList;
                     }
 
-                    return Convert.ChangeType(value, conversionType);
+                    try
+                    {
+                        return Convert.ChangeType(value, conversionType);
+                    }
+
+                    catch (Exception)
+                    {
+                        if (underlyingType != null)
+                        {
+                            return Convert.ChangeType(value, underlyingType);
+                        }
+                    }
                 }
                 catch (InvalidCastException)
                 {

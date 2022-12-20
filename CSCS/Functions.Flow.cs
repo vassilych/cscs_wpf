@@ -93,12 +93,12 @@ namespace SplitAndMerge
         {
             List<Variable> args = script.GetFunctionArgs();
             var code = Utils.GetSafeInt(args, 0, 0);
-            Environment.Exit(code);
+            QuitFunction.QuitScript(script, code);
             return new Variable(Variable.VarType.QUIT);
         }
         public override string Description()
         {
-            return "Stops execution and exits process with the specified return code (default 0).";
+            return "Stops execution of the current interpreter with the specified return code (default 0).";
         }
     }
     class QuitFunction : ParserFunction
@@ -654,6 +654,36 @@ namespace SplitAndMerge
                     return false;
                 }
                 return true;
+            }
+
+            public bool ReferenceEquals(object obj)
+            {
+                return ReferenceEquals(obj, this);
+            }
+
+            public override bool Equals(object obj)
+            {
+
+                return obj is ClassInstance instance &&
+                       EqualityComparer<CSCSClass>.Default.Equals(m_cscsClass, instance.m_cscsClass) &&
+                       (m_properties.Count == instance.m_properties.Count) &&
+                       (m_properties.Count == instance.m_properties
+                       .Where(x => m_properties.ContainsKey(x.Key) && m_properties[x.Key].Equals(x.Value)).Count());
+            }
+
+            public static bool operator ==(ClassInstance instance1, ClassInstance instance2)
+            {
+                return (instance1 is null && instance2 is null)
+                    || ((!(instance1 is null || instance2 is null))
+                    && (instance1.Equals(instance2)
+                    || instance1.ReferenceEquals(instance2)));
+
+
+            }
+
+            public static bool operator !=(ClassInstance instance1, ClassInstance instance2)
+            {
+                return !(instance1 == instance2);
             }
         }
     }

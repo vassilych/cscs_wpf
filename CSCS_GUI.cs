@@ -135,6 +135,7 @@ namespace SplitAndMerge
             interpreter.RegisterFunction("FillWidget", new FillWidgetFunction());
 
             interpreter.RegisterFunction("AsyncCall", new AsyncCallFunction());
+            interpreter.RegisterFunction(Constants.EXIT, new TerminateFunction());
             interpreter.RegisterFunction(Constants.QUIT, new WpfQuitCommand());
 
             interpreter.AddAction(Constants.ASSIGNMENT, new MyAssignFunction());
