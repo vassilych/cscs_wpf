@@ -5440,7 +5440,7 @@ namespace WpfCSCS
 
         public bool LocalAssign { get; set; }
 
-        public static new DefineVariable EmptyInstance = new DefineVariable();
+        public static new readonly DefineVariable EmptyInstance = new DefineVariable();
 
         public override Variable Default()
         {
@@ -5964,16 +5964,17 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
         }
         public static void AddVariableMap(string varName, ParsingScript parentScript)
         {
-            s_variableMap[varName] = parentScript;
+            s_variableMap[varName.ToLower()] = parentScript;
         }
         public static bool ProcessParentScript(ParsingScript script, string varName, Variable varValue)
         {
-            if (!s_variableMap.TryGetValue(varName, out ParsingScript parentScript) ||
+            var lower = varName.ToLower();
+            if (!s_variableMap.TryGetValue(lower, out ParsingScript parentScript) ||
                 parentScript == script)
             {
                 return false;
             }
-            var assign = new MyAssignFunction(varName);
+            var assign = new MyAssignFunction(lower);
             DefineVariable defVar = assign.IsDefinedVariable(parentScript);
             if (defVar == null)
             {
@@ -6011,7 +6012,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
             DefineVariable defVar = IsDefinedVariable(script);
             if (defVar != null)
             {
-                Variable varValue = Variable.EmptyInstance;
+                Variable varValue = new Variable(Variable.VarType.NONE);
                 var result = DoAssign(script, m_name, defVar, ref varValue);
                 ProcessParentScript(script, m_name, varValue);
                 return result;
@@ -6089,7 +6090,7 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
             script.CurrentAssign = m_name;
             var gui = CSCS_GUI.GetInstance(script);
 
-            bool passedEmpty = varValue == Variable.EmptyInstance;
+            bool passedEmpty = varValue.Type == Variable.VarType.NONE;
             if (passedEmpty)
             {
                 if (Mode == MODE.INCREMENT)
