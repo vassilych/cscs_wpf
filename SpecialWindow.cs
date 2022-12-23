@@ -64,6 +64,10 @@ namespace WpfCSCS
             Instance = CreateWindow(filename);
 
             IsMain = CSCS_GUI.MainWindow == null;
+            if (!IsMain)
+            {
+                Instance.Owner = CSCS_GUI.MainWindow;
+            }
             s_windowCache[Instance] = this;
 
             Random rnd = new Random();

@@ -385,6 +385,15 @@ namespace WpfCSCS
             }
             return CSCS_GUI.MainWindow;
         }
+        public Window GetScriptWindow(ParsingScript script)
+        {
+            if (script != null && !string.IsNullOrWhiteSpace(script.Filename) &&
+                File2Window.TryGetValue(script.Filename, out Window win))
+            {
+                return win;
+            }
+            return CSCS_GUI.MainWindow;
+        }
 
         static int s_id;
         public int ID { get; private set; }
@@ -445,8 +454,8 @@ namespace WpfCSCS
         public Dictionary<string, FrameworkElement> Controls { get; set; } = new Dictionary<string, FrameworkElement>();
         public Dictionary<FrameworkElement, Window> Control2Window { get; set; } = new Dictionary<FrameworkElement, Window>();
 
-        public Dictionary<Window, string> Window2File { get; set; } = new Dictionary<Window, string>();
-        public Dictionary<string, Window> File2Window { get; set; } = new Dictionary<string, Window>();
+        public static Dictionary<Window, string> Window2File { get; set; } = new Dictionary<Window, string>();
+        public static Dictionary<string, Window> File2Window { get; set; } = new Dictionary<string, Window>();
 
         public Interpreter Interpreter { get; private set; }
 
@@ -4931,6 +4940,7 @@ namespace WpfCSCS
             if (m_mode == MODE.NEW || m_mode == MODE.MODAL)
             {
                 var parentWin = Gui.GetParentWindow(script);
+                var currWin = Gui.GetScriptWindow(script);
                 var winMode = m_mode == MODE.NEW ? SpecialWindow.MODE.NORMAL : //SpecialWindow.MODE.SPECIAL_MODAL;
                     parentWin == CSCS_GUI.MainWindow ? SpecialWindow.MODE.MODAL : SpecialWindow.MODE.SPECIAL_MODAL;
                 SpecialWindow modalwin = CreateNew(instanceName, parentWin, winMode, script);
