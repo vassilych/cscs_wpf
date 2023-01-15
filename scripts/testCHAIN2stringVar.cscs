@@ -4,7 +4,7 @@ function winWithButtons_OnStart(){
     varInParent = "lala";
     MessageBox("START CHAIN2 varInParent = " + varInParent);
 }
-CreateWindow("../../scripts/winWithButtons.xaml");
+CreateWindow("../../scripts/winWithButtons.xaml", "testChain2Strngvar");
 
 function btn1@clicked(){
     CHAIN "../../scripts/script4stringVar.cscs";

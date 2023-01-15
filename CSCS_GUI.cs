@@ -4941,9 +4941,11 @@ namespace WpfCSCS
             {
                 var parentWin = Gui.GetParentWindow(script);
                 var currWin = Gui.GetScriptWindow(script);
+                var title = Utils.GetSafeString(args, 1);
                 var winMode = m_mode == MODE.NEW ? SpecialWindow.MODE.NORMAL : //SpecialWindow.MODE.SPECIAL_MODAL;
                     parentWin == CSCS_GUI.MainWindow ? SpecialWindow.MODE.MODAL : SpecialWindow.MODE.SPECIAL_MODAL;
                 SpecialWindow modalwin = CreateNew(instanceName, parentWin, winMode, script);
+                modalwin.Instance.Title = string.IsNullOrWhiteSpace(title) ? modalwin.Instance.Title : title;
                 return new Variable(modalwin.Instance == null ? "" : modalwin.Instance.Tag.ToString());
             }
 
@@ -4985,7 +4987,8 @@ namespace WpfCSCS
         public SpecialWindow CreateNew(string instanceName, Window parentWin = null,
             SpecialWindow.MODE winMode = SpecialWindow.MODE.NORMAL, ParsingScript script = null)
         {
-            string cscsFilename = script == null ? "" : script.Filename;
+            var isMain = ChainFunction.CheckParentScriptIsMain(script);
+            winMode = isMain ? SpecialWindow.MODE.NORMAL : SpecialWindow.MODE.MODAL;
             SpecialWindow modalwin = new SpecialWindow(Gui, instanceName, winMode, parentWin);
             //winMode != SpecialWindow.MODE.NORMAL ? parentWin : null);
             var wind = modalwin.Instance;
@@ -4995,11 +4998,12 @@ namespace WpfCSCS
             s_windowType[instanceName] = tag;
             s_currentWindow = 0;
 
+            string cscsFilename = script == null ? "" : script.Filename;
             Gui.CacheWindow(wind, cscsFilename);
             Gui.CacheParentWindow(tag, parentWin);
 
-            var isMain = ChainFunction.CheckParentScriptIsMain(script);
-            if (parentWin == null || isMain)
+            wind.Show();
+            /*if (parentWin == null || isMain)
             {
                 wind.Show();
             }
@@ -5008,7 +5012,9 @@ namespace WpfCSCS
                 //parentWin.Hide();
                 wind.Hide();
                 wind.ShowDialog();
-            }
+            }*/
+
+            
             return modalwin;
         }
 

@@ -12,6 +12,6 @@ function winWithButtons_OnStart() {
 
     MessageBox("START4 varInParent = " + varInParent);
 }
-CreateWindow("../../scripts/winWithButtons.xaml");
+CreateWindow("../../scripts/winWithButtons.xaml", "script4stringvr");
 
 

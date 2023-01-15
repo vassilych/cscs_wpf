@@ -18,4 +18,4 @@ function winWithButtons_OnStart(){
     ResetField("testCHAIN2", "varInParent");
     MessageBox("START5 varInParent = " + varInParent);
 }
-CreateWindow("../../scripts/winWithButtons.xaml");
+CreateWindow("../../scripts/winWithButtons.xaml", "Window Script5");

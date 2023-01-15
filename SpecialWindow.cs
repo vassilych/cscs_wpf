@@ -77,6 +77,7 @@ namespace WpfCSCS
             Instance.SourceInitialized += Win_SourceInitialized;
             Instance.Activated += Win_Activated;
             Instance.Loaded += Win_Loaded;
+            Instance.Unloaded += Win_Unloaded;
             Instance.ContentRendered += Win_ContentRendered;
 
             Instance.Closing += Win_Closing;
@@ -110,14 +111,15 @@ namespace WpfCSCS
 
         public void Show()
         {
-            if (Mode == MODE.NORMAL)
+            Instance.Show(); 
+            /*if (Mode == MODE.NORMAL)
             {
                 Instance.Show();
             }
             else
             {
                 Instance.ShowDialog();
-            }
+            }*/
         }
 
         private void Win_SourceInitialized(object sender, EventArgs e)
@@ -154,6 +156,26 @@ namespace WpfCSCS
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnStart";
             Gui.RunScript(funcName, win, new Variable(win.Tag));
             Instance.Loaded -= Win_Loaded;
+            
+            if (Mode == MODE.MODAL && Owner != null)
+            {
+                Owner.IsEnabled = false;
+                Owner.Hide();
+            }
+        }
+        private void Win_Unloaded(object sender, RoutedEventArgs e)
+        {
+            Window win = sender as Window;
+            Gui.AddActions(win, true);
+
+            var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnUnload";
+            Gui.RunScript(funcName, win, new Variable(win.Tag));
+
+            if (Mode == MODE.MODAL && Owner != null)
+            {
+                Owner.IsEnabled = true;
+                Owner.Show();
+            }
         }
 
         private void Win_ContentRendered(object sender, EventArgs e)
@@ -164,7 +186,7 @@ namespace WpfCSCS
             Instance.ContentRendered -= Win_ContentRendered;
             if (Owner != null && Mode != MODE.NORMAL)
             {
-                //win.Owner = Owner;
+                win.Owner = Owner;
             }
         }
 
