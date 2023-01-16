@@ -31,6 +31,7 @@ namespace WpfCSCS
         public Window Instance { get; set; }
 
         public Window Owner { get; set; }
+        WindowStyle OwnerStyle { get; set; }
 
         public MODE Mode { get; set; }
 
@@ -60,6 +61,7 @@ namespace WpfCSCS
         {
             Mode = mode;
             Owner = owner;
+            OwnerStyle = owner == null ? WindowStyle.None : owner.WindowStyle;
             Gui = gui;
             Instance = CreateWindow(filename);
 
@@ -160,7 +162,8 @@ namespace WpfCSCS
             if (Mode == MODE.MODAL && Owner != null)
             {
                 Owner.IsEnabled = false;
-                Owner.Hide();
+                Owner.WindowStyle = WindowStyle.SingleBorderWindow;
+                //Owner.Hide();
             }
         }
         private void Win_Unloaded(object sender, RoutedEventArgs e)
@@ -174,7 +177,8 @@ namespace WpfCSCS
             if (Mode == MODE.MODAL && Owner != null)
             {
                 Owner.IsEnabled = true;
-                Owner.Show();
+                Owner.WindowStyle = OwnerStyle;
+                //Owner.Show();
             }
         }
 

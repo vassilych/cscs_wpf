@@ -23,7 +23,7 @@ function winWithButtons_OnStart() {
     if (!NameExists(varInParent)) {
       varInParent = 10;
     }
-    MessageBox("START4 varInParent = " + varInParent);
+    //MessageBox("START4 varInParent = " + varInParent);
 }
 CreateWindow("../../scripts/winWithButtons.xaml", "Window Script4");
 

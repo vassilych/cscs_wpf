@@ -2,7 +2,7 @@ DEFINE varInParent type i;
 
 function winWithButtons_OnStart(){
     varInParent = 0;
-    MessageBox("START CHAIN2 varInParent = " + varInParent);
+    //MessageBox("START CHAIN2 varInParent = " + varInParent);
 }
 CreateWindow("../../scripts/winWithButtons.xaml", "FirstWindow");
 
