@@ -111,6 +111,12 @@ namespace WpfCSCS
             return spec;
         }
 
+        public static bool RemoveInstance(Window win)
+        {
+            var result = s_windowCache.Remove(win);
+            return result;
+        }
+
         public void Show()
         {
             Instance.Show(); 
@@ -190,7 +196,11 @@ namespace WpfCSCS
             Instance.ContentRendered -= Win_ContentRendered;
             if (Owner != null && Mode != MODE.NORMAL)
             {
-                win.Owner = Owner;
+                try
+                {
+                    win.Owner = Owner;
+                }
+                catch { }
             }
         }
 

@@ -5021,6 +5021,7 @@ namespace WpfCSCS
         public static void RemoveWindow(Window wind)
         {
             s_windows.Remove(wind.Tag.ToString());
+            SpecialWindow.RemoveInstance(wind);
         }
 
         static void HideAll()
