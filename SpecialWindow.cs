@@ -25,13 +25,25 @@ namespace WpfCSCS
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool SetForegroundWindow(IntPtr hWnd);
 
+        private const int GWL_STYLE = -16;
+        private const int WS_SYSMENU = 0x80000;
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+        [DllImport("user32.dll")]
+        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+
+        private Window Owner { get; set; }
+
+        private SpecialWindow SpecOwner { get; set; }
+
+        private WindowStyle OwnerStyle { get; set; }
+        private int OwnerWindowlong { get; set; }
+        private bool IsDisabled { get; set; }
+
         public Action<bool?> ClosedCallBack;
         private bool? ModalDialogResult = null;
 
         public Window Instance { get; set; }
-
-        public Window Owner { get; set; }
-        WindowStyle OwnerStyle { get; set; }
 
         public MODE Mode { get; set; }
 
@@ -61,6 +73,7 @@ namespace WpfCSCS
         {
             Mode = mode;
             Owner = owner;
+            SpecOwner = GetInstance(owner);
             OwnerStyle = owner == null ? WindowStyle.None : owner.WindowStyle;
             Gui = gui;
             Instance = CreateWindow(filename);
@@ -104,7 +117,7 @@ namespace WpfCSCS
 
         public static SpecialWindow GetInstance(Window win)
         {
-            if (!s_windowCache.TryGetValue(win, out SpecialWindow spec))
+            if (win == null || !s_windowCache.TryGetValue(win, out SpecialWindow spec))
             {
                 return null;
             }
@@ -169,6 +182,14 @@ namespace WpfCSCS
             {
                 Owner.IsEnabled = false;
                 Owner.WindowStyle = WindowStyle.SingleBorderWindow;
+                // To get rid of the Close/Minimize in the owner:
+                //var hwnd = new WindowInteropHelper(Owner).Handle;
+                //OwnerWindowlong = GetWindowLong(hwnd, GWL_STYLE);
+                //SetWindowLong(hwnd, GWL_STYLE, OwnerWindowlong & ~WS_SYSMENU);
+                if (SpecOwner != null)
+                {
+                    SpecOwner.IsDisabled = true;
+                }
                 //Owner.Hide();
             }
         }
@@ -185,6 +206,14 @@ namespace WpfCSCS
                 Owner.IsEnabled = true;
                 Owner.WindowStyle = OwnerStyle;
                 //Owner.Show();
+                // To return back to the owner the Close/Minimize
+                //var hwnd = new WindowInteropHelper(Owner).Handle;
+                //SetWindowLong(hwnd, GWL_STYLE, OwnerWindowlong);
+                if (SpecOwner != null)
+                {
+                    SpecOwner.IsDisabled = false;
+                }
+                Owner.Focus();
             }
         }
 
@@ -236,6 +265,12 @@ namespace WpfCSCS
         private void Win_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Window win = sender as Window;
+            if (IsDisabled)
+            {
+                e.Cancel = true;
+                return;
+            }
+
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnClosing";
             var result = Gui.RunScript(funcName, win, new Variable(win.Tag));
             e.Cancel = result != null && result.AsBool();
@@ -253,6 +288,7 @@ namespace WpfCSCS
                 EnableWindow(ownerhandle, true);
                 ClosedCallBack(ModalDialogResult);
             }
+            Owner?.Focus();
         }
 
         public static Window CreateWindow(string filename)
