@@ -10,6 +10,10 @@ function btn1@clicked(){
     CHAIN "../../scripts/script4.cscs";
 }
 
+function btnQuit@clicked(){
+    quit;
+}
+
 function btn2@clicked(){
     // varInParent = varInParent + 1;
     // varInParent++;

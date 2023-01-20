@@ -15,6 +15,8 @@ namespace WpfControlsLibrary
         const string thousandsDelimiter = ".";
         const string decimalSign = ",";
 
+        public bool SkipTextChangedHandler = false;
+
         public Dictionary<string, List<object>> paramsForKeyTraps = new Dictionary<string, List<object>>();
 
         #region DependencyProperties
@@ -269,6 +271,12 @@ namespace WpfControlsLibrary
 
         private void NumericTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
+            if (SkipTextChangedHandler)
+            {
+                SkipTextChangedHandler = false;
+                return;
+            }
+
             var ntb = (e.Source as NumericTextBox);
 
             ntb.TextChanged -= NumericTextBox_TextChanged;

@@ -13,26 +13,32 @@
         VerticalAlignment="Top" HorizontalAlignment="Center"/> -->
         
         
-        <TextBox Name="tb1" DataContext="varInParent"
+        <!-- <TextBox Name="tb1" DataContext="varInParent"
         VerticalAlignment="Top" HorizontalAlignment="Center"
-        Margin="0,100,0,0"/>
+        Margin="0,100,0,0"/> -->
 
         <!-- <wcl:NumericBox Name="tb1" FieldName="varInParent" Size="10"
         VerticalAlignment="Top" HorizontalAlignment="Center"
         Margin="0,100,0,0"/> -->
 
         <!-- <wcl:EnterBox Name="tb1" FieldName="varInParent" Size="10"
-        VerticalAlignment="Top" HorizontalAlignment="Center" Case=""
+        VerticalAlignment="Top" HorizontalAlignment="Center"
         Margin="0,100,0,0"/> -->
 
-        <Button Content="CHAIN" Name="btn1"
+        <ComboBox Name="cb1" DataContext="variable"
+        VerticalAlignment="Top" HorizontalAlignment="Center"
+        Margin="0,100,0,0">
+            <ComboBoxItem>ComboBox Item #1</ComboBoxItem>
+            <ComboBoxItem IsSelected="True">ComboBox Item #2</ComboBoxItem>
+            <ComboBoxItem>ComboBox Item #3</ComboBoxItem>
+        </ComboBox>
+
+        <Button Content="BTN1" Name="btn1"
         VerticalAlignment="Center" HorizontalAlignment="Center"
         />
-        <Button Content="MSG" Name="btn2"
+        
+        <Button Content="BTN2" Name="btn2"
         VerticalAlignment="Bottom" HorizontalAlignment="Center"
-        />
-        <Button Content="MODAL" Name="btn3"
-        VerticalAlignment="Bottom" HorizontalAlignment="Left"
         />
         
         <Button Content="QUIT" Name="btnQuit"

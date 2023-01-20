@@ -180,8 +180,6 @@ namespace WpfControlsLibrary
         public NumericBox()
         {
             InitializeComponent();
-
-            
         }
 
 

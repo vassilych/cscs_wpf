@@ -182,7 +182,7 @@ namespace WpfControlsLibrary
                 TextChanged -= TimeEditer_TextChanged;
                 var selStart = te.SelectionStart;
                 te.Text = textBeforeChange;
-                te.SelectionStart = selStart - 1;
+                te.SelectionStart = selStart - 1 >= 0 ? selStart - 1 : 0;
                 TextChanged += TimeEditer_TextChanged;
             }
 

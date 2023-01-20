@@ -14,6 +14,8 @@ namespace WpfControlsLibrary
         public int Size;
         string textBeforeChange;
 
+        public bool SkipTextChangedHandler = false;
+
         public Dictionary<string, List<object>> paramsForKeyTraps = new Dictionary<string, List<object>>();
 
 
@@ -58,6 +60,12 @@ namespace WpfControlsLibrary
 
         private void this_TextChanged(object sender, TextChangedEventArgs e)
         {
+            if (SkipTextChangedHandler)
+            {
+                SkipTextChangedHandler = false;
+                return;
+            }
+
             var etb = e.Source as EnterTextBox;
 
             etb.TextChanged -= this_TextChanged;

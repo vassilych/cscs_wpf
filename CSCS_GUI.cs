@@ -1958,7 +1958,7 @@ namespace WpfCSCS
             {
                 widget.Name = enterBox.FieldName;
                 widget.DataContext = enterBox.FieldName;
-                if (DEFINES.TryGetValue(enterBox.FieldName.ToLower(), out DefineVariable defVar))
+                if (enterBox.FieldName != null && DEFINES.TryGetValue(enterBox.FieldName.ToLower(), out DefineVariable defVar))
                 {
                     if (defVar.Size < enterBox.Size)
                     {
@@ -2005,7 +2005,8 @@ namespace WpfCSCS
 
                         routedCommand.InputGestures.Add(new KeyGesture(key, modifier, keyFromXaml));
 
-                        (widget as EnterTextBox).paramsForKeyTraps.Add(keyFromXaml, new List<object>() { funcName, widget, enterBox.Name });
+                        if(!(widget as EnterTextBox).paramsForKeyTraps.Any(p=> p.Key == keyFromXaml))
+                            (widget as EnterTextBox).paramsForKeyTraps.Add(keyFromXaml, new List<object>() { funcName, widget, enterBox.Name });
 
                         widget.CommandBindings.Add(new CommandBinding(routedCommand, runFunctionHandler));
                     }
@@ -2102,7 +2103,7 @@ namespace WpfCSCS
             {
                 widget.Name = numBox.FieldName;
                 widget.DataContext = numBox.FieldName;
-                if (DEFINES.TryGetValue(numBox.FieldName.ToLower(), out DefineVariable defVar))
+                if (numBox.FieldName != null && DEFINES.TryGetValue(numBox.FieldName.ToLower(), out DefineVariable defVar))
                 {
                     if (defVar.Size < numBox.Size)
                     {
@@ -2135,7 +2136,8 @@ namespace WpfCSCS
 
                         routedCommand.InputGestures.Add(new KeyGesture(key, modifier, keyFromXaml));
 
-                        (widget as NumericTextBox).paramsForKeyTraps.Add(keyFromXaml, new List<object>() { funcName, widget, numBox.Name });
+                        if (!(widget as NumericTextBox).paramsForKeyTraps.Any(p => p.Key == keyFromXaml))
+                            (widget as NumericTextBox).paramsForKeyTraps.Add(keyFromXaml, new List<object>() { funcName, widget, numBox.Name });
 
                         widget.CommandBindings.Add(new CommandBinding(routedCommand, runFunctionHandler));
                     }
@@ -3116,7 +3118,17 @@ namespace WpfCSCS
                 var numericTextBox = widget as NumericTextBox;
                 dispatcher.Invoke(new Action(() =>
                 {
+                    numericTextBox.SkipTextChangedHandler = true;
                     numericTextBox.Text = text;
+                }));
+            }
+            else if (widget is EnterTextBox)
+            {
+                var enterTextBox = widget as EnterTextBox;
+                dispatcher.Invoke(new Action(() =>
+                {
+                    enterTextBox.SkipTextChangedHandler = true;
+                    enterTextBox.Text = text;
                 }));
             }
             else if (widget is TextBox)
@@ -4913,7 +4925,7 @@ namespace WpfCSCS
         }
 
         protected override Variable Evaluate(ParsingScript script)
-        {
+         {
             List<Variable> args = script.GetFunctionArgs();
             Gui = CSCS_GUI.GetInstance(script);
 

@@ -1,0 +1,41 @@
+// NumericBox
+DEFINE numBoxVar type n size 9 dec 2;
+
+function numbox1@clicked(){
+    MessageBox(variable1);
+}
+
+// EnterBox
+DEFINE entBoxVar type a size 15;
+
+function enterbox1@clicked(){
+    MessageBox(varijabla);
+}
+
+// DateEditer
+DEFINE date1 type d size 8;
+
+function dateBtn@clicked(){
+    MessageBox(date1);
+}
+
+// TimeEditer
+DEFINE time1 type t size 8;
+time1 = "12:12:12";
+
+function timeBtn@clicked(){
+    MessageBox(time1);
+}
+
+// ComboBox
+DEFINE cbVariable type a;
+function comboBtn@clicked(){
+    MessageBox(cbVariable);
+}
+
+//F3
+function nekidrugi(){
+    MessageBox("Neki Drugi!");
+}
+
+CreateWindow("../../scripts/testForm.xaml");

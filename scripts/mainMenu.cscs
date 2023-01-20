@@ -217,6 +217,18 @@ function mainMenuWindow_OnDisplay(){
     AddMenuSeparator("OtherDC");
 
     AddMenuItem("OtherDC", "testLocalDEFINES.cscs", "testLocalDEFINES", "runScript");
+    
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testCheckBox.cscs", "testCheckBox", "runScript");
+    
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testComboBox.cscs", "testComboBox", "runScript");
+    
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testForm.cscs", "testForm", "runScript");
     //------------------------------------   
 }
 

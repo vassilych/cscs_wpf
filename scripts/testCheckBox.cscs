@@ -1,0 +1,15 @@
+
+
+DEFINE variable type l;
+
+
+
+
+function testCheckBox_onDisplay(){
+    variable = true;
+}
+CreateWindow("../../scripts/testCheckBox.xaml");
+
+function btn1@clicked(){
+    MessageBox(variable);
+}
