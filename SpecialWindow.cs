@@ -19,18 +19,34 @@ namespace WpfCSCS
         public enum MODE { NORMAL, MODAL, SPECIAL_MODAL };
 
         [DllImport("user32.dll")]
+        static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
+
+        [DllImport("user32.dll")]
+        static extern bool EnableMenuItem(IntPtr hMenu, uint uIDEnableItem, uint uEnable);
+        [DllImport("user32.dll")]
         static extern bool EnableWindow(IntPtr hWnd, bool bEnable);
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool SetForegroundWindow(IntPtr hWnd);
-
-        private const int GWL_STYLE = -16;
-        private const int WS_SYSMENU = 0x80000;
         [DllImport("user32.dll", SetLastError = true)]
         private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
         [DllImport("user32.dll")]
         private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+
+
+        private const uint MF_BYCOMMAND = 0x00000000;
+        private const int WS_MAXIMIZEBOX = 0x10000; //maximize button
+        private const int WS_MINIMIZEBOX = 0x20000; //minimize button
+        private const int WS_SYSMENU = 0x80000;
+
+        private const uint MF_GRAYED = 0x00000001;
+        private const uint MF_ENABLED = 0x00000000;
+        private const uint SC_CLOSE = 0xF060;
+        private const uint SC_MINIMIZE = 0xF020;
+        private const uint SC_MAXIMIZE = 0xF030;
+
+        private const int GWL_STYLE = -16;
 
         private Window Owner { get; set; }
 
@@ -130,17 +146,20 @@ namespace WpfCSCS
             return result;
         }
 
-        public void Show()
+        public static void ShowHideButtons(Window win, bool show = true)
         {
-            Instance.Show(); 
-            /*if (Mode == MODE.NORMAL)
+            IntPtr hwnd = new WindowInteropHelper(win).Handle;
+            IntPtr hMenu = GetSystemMenu(hwnd, false);
+            if (hMenu != IntPtr.Zero)
             {
-                Instance.Show();
+                EnableMenuItem(hMenu, SC_CLOSE, show ? MF_BYCOMMAND : MF_BYCOMMAND | MF_GRAYED);
+                win.ResizeMode = !show ? ResizeMode.NoResize : ResizeMode.CanResize;
             }
-            else
-            {
-                Instance.ShowDialog();
-            }*/
+
+            var windowlong = GetWindowLong(hwnd, GWL_STYLE);
+            //SetWindowLong(hwnd, GWL_STYLE, show ? windowlong | WS_SYSMENU : windowlong & ~WS_SYSMENU);
+            SetWindowLong(hwnd, GWL_STYLE, show ? windowlong | WS_SYSMENU | WS_MAXIMIZEBOX | WS_MINIMIZEBOX :
+                windowlong & ~WS_SYSMENU & ~WS_MAXIMIZEBOX & ~WS_MINIMIZEBOX);
         }
 
         private void Win_SourceInitialized(object sender, EventArgs e)
@@ -182,10 +201,7 @@ namespace WpfCSCS
             {
                 Owner.IsEnabled = false;
                 Owner.WindowStyle = WindowStyle.SingleBorderWindow;
-                // To get rid of the Close/Minimize in the owner:
-                //var hwnd = new WindowInteropHelper(Owner).Handle;
-                //OwnerWindowlong = GetWindowLong(hwnd, GWL_STYLE);
-                //SetWindowLong(hwnd, GWL_STYLE, OwnerWindowlong & ~WS_SYSMENU);
+                ShowHideButtons(Owner, false);
                 if (SpecOwner != null)
                 {
                     SpecOwner.IsDisabled = true;
@@ -206,9 +222,7 @@ namespace WpfCSCS
                 Owner.IsEnabled = true;
                 Owner.WindowStyle = OwnerStyle;
                 //Owner.Show();
-                // To return back to the owner the Close/Minimize
-                //var hwnd = new WindowInteropHelper(Owner).Handle;
-                //SetWindowLong(hwnd, GWL_STYLE, OwnerWindowlong);
+                ShowHideButtons(Owner, true);
                 if (SpecOwner != null)
                 {
                     SpecOwner.IsDisabled = false;
