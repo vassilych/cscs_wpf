@@ -661,13 +661,19 @@ namespace WpfCSCS
         {
             CSCS_GUI.Dispatcher.Invoke((Action)delegate ()
             {
-                foreach (var win in Window2File.Keys)
+                var keys = Window2File.Keys.ToList();
+                foreach (var win in keys)
                 {
-                    if (win != CSCS_GUI.MainWindow)
+                    if (win == CSCS_GUI.MainWindow)
                     {
-                        win.Close();
+                        continue;
                     }
+                    var filename = Window2File[win];
+                    win.Close();
+                    Window2File.Remove(win);
+                    File2Window.Remove(filename);
                 }
+                var rest = Window2File.Count;
             }, null);
         }
 

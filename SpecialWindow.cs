@@ -102,7 +102,7 @@ namespace WpfCSCS
             s_windowCache[Instance] = this;
 
             Random rnd = new Random();
-            var inst = filename + "_" + rnd.Next(1000);
+            var inst = filename + "_" + rnd.Next(10000);
             Instance.Tag = ID = inst;
 
             Instance.SourceInitialized += Win_SourceInitialized;
@@ -114,6 +114,8 @@ namespace WpfCSCS
             Instance.Closing += Win_Closing;
             Instance.Deactivated += Win_Deactivated;
             Instance.Closed += Win_Closed;
+
+            Instance.StateChanged += Window_StateChanged;
 
             if (Mode == MODE.SPECIAL_MODAL && Owner != null)
             {
@@ -160,6 +162,31 @@ namespace WpfCSCS
             //SetWindowLong(hwnd, GWL_STYLE, show ? windowlong | WS_SYSMENU : windowlong & ~WS_SYSMENU);
             SetWindowLong(hwnd, GWL_STYLE, show ? windowlong | WS_SYSMENU | WS_MAXIMIZEBOX | WS_MINIMIZEBOX :
                 windowlong & ~WS_SYSMENU & ~WS_MAXIMIZEBOX & ~WS_MINIMIZEBOX);
+        }
+
+        bool m_minimizing;
+        private void Window_StateChanged(object sender, EventArgs e)
+        {
+            if (m_minimizing)
+            {
+                return;
+            }
+            Window win = sender as Window;
+            SpecialWindow inst = GetInstance(win);
+            if (inst == null || !inst.IsMain || win.WindowState != WindowState.Minimized)
+            {
+                return;
+            }
+            m_minimizing = true;
+            foreach (var entry in s_windowCache)
+            {
+                if (entry.Key == sender)
+                {
+                    continue;
+                }
+                entry.Key.WindowState = WindowState.Minimized;
+            }
+            m_minimizing = false;
         }
 
         private void Win_SourceInitialized(object sender, EventArgs e)
@@ -234,6 +261,10 @@ namespace WpfCSCS
         private void Win_ContentRendered(object sender, EventArgs e)
         {
             Window win = sender as Window;
+            if (win == null || Instance == null)
+            {
+                return;
+            }
             var funcName = Path.GetFileNameWithoutExtension(win.Tag.ToString()) + "_OnDisplay";
             Gui.RunScript(funcName, win, new Variable(win.Tag));
             Instance.ContentRendered -= Win_ContentRendered;
