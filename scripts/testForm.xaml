@@ -6,27 +6,28 @@
         xmlns:local="clr-namespace:WpfCSCS"
         xmlns:wcl="clr-namespace:WpfControlsLibrary;assembly=WpfControlsLibrary"
         mc:Ignorable="d"
+        
         Title="NumericBox" Height="600" Width="500">
     <Grid>
         <wcl:NumericBox
             KeyTraps="F2|numbox1@clicked|F3|nekidrugi"
-            ButtonSize="150" 
+            ButtonSize="30" 
             Size="9" Dec="2" 
-            MinValue="-1000"
-            MaxValue="1000"
-                         
+            MinValue="-999999999"
+            MaxValue="999999999"
             FieldName="numBoxVar"
             Name="numbox1"  
-            Thousands="True"
+            Thousands="False"
             Height="50"  Width="400"
             Margin="10,10,0,0"
             HorizontalAlignment="Left" VerticalAlignment="Top"
-            FontSize="25"/>
+            FontSize="25"
+            />
 
         <wcl:EnterBox 
             KeyTraps="F2|enterbox1@clicked|F3|nekidrugi"
             ButtonSize="30"
-            Size="10"
+            Size="20"
             Case="Normal"
             Text="lalalala33"
             FieldName="entBoxVar"
@@ -34,7 +35,8 @@
             Height="50"  Width="400"
             Margin="10,110,0,0"
             HorizontalAlignment="Left" VerticalAlignment="Top"
-            FontSize="25"/>
+            FontSize="25"
+            />
 
         <wcl:DateEditer 
             Name="de1" 
@@ -44,14 +46,16 @@
             HorizontalAlignment="Left" 
             Margin="10,210,0,0" 
             Width="100" 
-            Height="35"/>
+            Height="35"
+            />
         <Button 
             Name="dateBtn" 
             VerticalAlignment="Top" 
             HorizontalAlignment="Left" 
             Margin="150,210,0,0" 
             Width="50" 
-            Height="35"/>
+            Height="35"
+            />
 
         <wcl:TimeEditer
             Name="te1"
@@ -69,7 +73,8 @@
             HorizontalAlignment="Left" 
             Margin="150,310,0,0" 
             Width="50" 
-            Height="35"/>
+            Height="35"
+            />
 
 
         <ComboBox 
@@ -85,7 +90,8 @@
             VerticalAlignment="Top" HorizontalAlignment="Left"
             Margin="150,410,0,0" 
             Width="50" 
-            Height="35"/>
+            Height="35"
+            />
 
     </Grid>
 </Window>

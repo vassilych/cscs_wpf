@@ -199,6 +199,9 @@ namespace WpfControlsLibrary
             //numBoxButton.Name = ButtonName;
         }
 
-        
+        public void FormatNumericTextBox()
+        {
+            numBoxTextBox.FormatOnLostFocus();
+        }
     }
 }

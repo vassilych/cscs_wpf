@@ -105,6 +105,8 @@ namespace SplitAndMerge
             interpreter.RegisterFunction("BindSQL", new BindSQLFunction());
 
             interpreter.RegisterFunction("NewBindSQL", new NewBindSQLFunction());
+            
+            interpreter.RegisterFunction("WhoAmI", new WhoAmIFunction());
 
             interpreter.RegisterFunction("MessageBox", new MessageBoxFunction());
             interpreter.RegisterFunction("SendToPrinter", new PrintFunction());
@@ -1010,8 +1012,16 @@ namespace WpfCSCS
             m_PostHandlers[name] = action;
             textable.PreviewLostKeyboardFocus -= new KeyboardFocusChangedEventHandler(Widget_Post);
             textable.PreviewLostKeyboardFocus += new KeyboardFocusChangedEventHandler(Widget_Post);
+            
+            //textable.LostFocus -= Textable_LostFocus;
+            //textable.LostFocus += Textable_LostFocus;
 
             return true;
+        }
+
+        private void Textable_LostFocus(object sender, RoutedEventArgs e)
+        {
+            
         }
 
         public bool AddWidgetChangeHandler(string name, string action, FrameworkElement widget)
@@ -1226,6 +1236,18 @@ namespace WpfCSCS
                 result = new Variable(widgetName);
             }
 
+            if(widget is Button)
+            {
+                if(widget.Parent is Grid)
+                {
+                    if((widget.Parent as Grid).Parent is NumericBox)
+                    {
+                        var nb = (widget.Parent as Grid).Parent as NumericBox;
+                        nb.FormatNumericTextBox();
+                    }
+                }
+            }
+
             ValueUpdated(funcName, widgetName, widget, result);
         }
 
@@ -1314,10 +1336,60 @@ namespace WpfCSCS
                 return;
             }
 
-            m_updatingWidget.Add(widgetName);
+            //m_updatingWidget.Add(widgetName);
             var text = GetTextWidgetFunction.GetText(widget);
-            UpdateVariable(widget, text);
-            m_updatingWidget.Remove(widgetName);
+            //UpdateVariable(widget, text);
+            //m_updatingWidget.Remove(widgetName);
+            //
+            TextBoxBase widget2 = sender as TextBoxBase;
+            var widgetName2 = GetWidgetBindingName(widget2);
+            if (string.IsNullOrWhiteSpace(widgetName2) ||
+                m_updatingWidget.Contains(widgetName2))
+            {
+                return;
+            }
+
+            m_updatingWidget.Add(widgetName2);
+            //var text = GetTextWidgetFunction.GetText(widget2);
+            if (DEFINES.TryGetValue(widgetName2.ToLower(), out DefineVariable defVar))
+            {
+                switch (defVar.DefType)
+                {
+                    case "a":
+                        UpdateVariable(widget2, text);
+                        break;
+
+                    case "i":
+                    case "n":
+                    case "r":
+                    case "b":
+                        if (double.TryParse(text.AsString(), out double parsedDouble))
+                        {
+                            UpdateVariable(widget2, new Variable(parsedDouble));
+                        }
+                        break;
+
+                    case "d":
+
+                        break;
+                    case "t":
+                        //if (true)
+                        //{
+                        //    if (TimeSpan.TryParse(text.AsString(), out TimeSpan result))
+                        //    {
+                        //        UpdateVariable(widget2, text);
+                        //    }
+                        //}
+                        break;
+
+                    default:
+                        //UpdateVariable(widget2, text);
+                        break;
+                }
+            }
+
+            m_updatingWidget.Remove(widgetName2);
+
 
             string funcName;
             if (m_textChangedHandlers.TryGetValue(widgetName, out funcName))
@@ -1342,7 +1414,7 @@ namespace WpfCSCS
         }
 
         private void Widget_Hover(object sender, MouseEventArgs e)
-        {
+            {
             var widget = sender as FrameworkElement;
             var widgetName = GetWidgetBindingName(widget);
             if (string.IsNullOrWhiteSpace(widgetName))
@@ -1518,6 +1590,12 @@ namespace WpfCSCS
                     {
                         widgetToFocusTo.Focus();
                     }
+                    else
+                    {
+                        var request = new TraversalRequest(FocusNavigationDirection.Next);
+                        request.Wrapped = true;
+                        widget.MoveFocus(request);
+                    }
                 }
                 else
                 {
@@ -1659,6 +1737,52 @@ namespace WpfCSCS
                 {
                     e.Handled = true;
                     LastObjWidgetName = widgetName;
+                }
+                else
+                {
+                    //
+                    TextBoxBase widget2 = sender as TextBoxBase;
+                    var widgetName2 = GetWidgetBindingName(widget2);
+                    if (string.IsNullOrWhiteSpace(widgetName2) ||
+                        m_updatingWidget.Contains(widgetName2))
+                    {
+                        return;
+                    }
+
+                    m_updatingWidget.Add(widgetName2);
+                    var text = GetTextWidgetFunction.GetText(widget2);
+                    if (DEFINES.TryGetValue(widgetName2.ToLower(), out DefineVariable defVar))
+                    {
+                        switch (defVar.DefType)
+                        {
+                            case "a":
+                                //UpdateVariable(widget2, text);
+                                break;
+
+                            case "i":
+                            case "n":
+                            case "r":
+                            case "b":
+                                //if (double.TryParse(text.AsString(), out double parsedDouble))
+                                //{
+                                //    UpdateVariable(widget2, new Variable(parsedDouble));
+                                //}
+                                break;
+
+                            case "d":
+
+                                break;
+                            case "t":
+                                UpdateVariable(widget2, text);
+                                break;
+
+                            default:
+                                //UpdateVariable(widget2, text);
+                                break;
+                        }
+                    }
+
+                    m_updatingWidget.Remove(widgetName2);
                 }
             }
         }
@@ -1909,6 +2033,7 @@ namespace WpfCSCS
                     {
                         CacheEnterBoxChild(item as FrameworkElement, win, controls, enterBox);
                     }
+
                 }
                 else if (child is NumericBox)
                 {
@@ -2081,6 +2206,11 @@ namespace WpfCSCS
                 var toRunWidget = (FrameworkElement)parameters[1];
                 var toRunWidgetName = (string)parameters[2];
 
+                if (toRunFuncName.ToLower().EndsWith("@clicked"))
+                {
+                    thisTB.FormatOnLostFocus();
+                }
+                
                 Control2Window.TryGetValue(toRunWidget, out Window win);
                 RunScript(toRunFuncName, win, new Variable(toRunWidgetName), new Variable(toRunWidgetName));
             }
@@ -2107,7 +2237,7 @@ namespace WpfCSCS
         {
             if (widget is NumericTextBox)
             {
-                widget.Name = numBox.FieldName;
+                widget.Name += "_" + numBox.Name;
                 widget.DataContext = numBox.FieldName;
                 if (numBox.FieldName != null && DEFINES.TryGetValue(numBox.FieldName.ToLower(), out DefineVariable defVar))
                 {
@@ -2151,7 +2281,9 @@ namespace WpfCSCS
 
                 if (widget != null && !string.IsNullOrEmpty(numBox.FieldName))
                 {
-                    Controls[numBox.FieldName.ToString().ToLower()] = widget;
+                    //Controls[numBox.FieldName.ToString().ToLower()] = widget;
+                    //Controls[numBox.Name.ToString().ToLower()] = widget;
+                    Controls[widget.Name.ToLower()] = widget;
                     controls?.Add(widget);
                     if (win != null)
                     {
@@ -2160,7 +2292,9 @@ namespace WpfCSCS
                 }
                 if (widget != null && numBox.FieldName != null)
                 {
-                    Controls[numBox.FieldName.ToString().ToLower()] = widget;
+                    //Controls[numBox.FieldName.ToString().ToLower()] = widget;
+                    //Controls[numBox.Name.ToString().ToLower()] = widget;
+                    Controls[widget.Name.ToLower()] = widget;
 
                     if (controls != null && !controls.Contains(widget))
                         controls.Add(widget);
@@ -2173,11 +2307,13 @@ namespace WpfCSCS
             }
             else if (widget is Button)
             {
-                widget.Name = numBox.Name;
+                //widget.Name = numBox.Name;
+                widget.Name = "button_" + numBox.Name;
 
                 if (widget != null && !string.IsNullOrEmpty(numBox.Name))
                 {
-                    Controls[numBox.Name.ToString().ToLower()] = widget;
+                    //Controls[numBox.Name.ToString().ToLower()] = widget;
+                    Controls[widget.Name.ToString().ToLower()] = widget;
                     controls?.Add(widget);
                     if (win != null)
                     {
@@ -2256,10 +2392,15 @@ namespace WpfCSCS
                     string widgetPreAction = NumericBox.Name + "@Pre";
                     string widgetPostAction = NumericBox.Name + "@Post";
 
-                    AddTextChangedHandler(NumericBox.FieldName, textChangeAction, widget);
+                    //AddTextChangedHandler("numBoxTextBox_" + NumericBox.Name, textChangeAction, widget);
 
-                    AddWidgetPreHandler(NumericBox.FieldName, widgetPreAction, widget);
-                    AddWidgetPostHandler(NumericBox.FieldName, widgetPostAction, widget);
+                    //AddWidgetPreHandler("numBoxTextBox_" + NumericBox.Name, widgetPreAction, widget);
+                    //AddWidgetPostHandler(/*"numBoxTextBox_" + */NumericBox.Name, widgetPostAction, widget);
+                    
+                    AddTextChangedHandler(widget.Name, textChangeAction, widget);
+
+                    AddWidgetPreHandler(widget.Name, widgetPreAction, widget);
+                    AddWidgetPostHandler(widget.Name, widgetPostAction, widget);
 
                     //binding
                     var widgetBindingName = NumericBox.FieldName;
@@ -2276,10 +2417,15 @@ namespace WpfCSCS
                     string widgetPreAction = NumericBox.Name + "@Pre";
                     string widgetPostAction = NumericBox.Name + "@Post";
 
-                    AddActionHandler(NumericBox.Name, clickAction, widget);
+                    //AddActionHandler("button_" + NumericBox.Name, clickAction, widget);
 
-                    AddWidgetPreHandler(NumericBox.Name, widgetPreAction, widget);
-                    AddWidgetPostHandler(NumericBox.Name, widgetPostAction, widget);
+                    //AddWidgetPreHandler("button_" + NumericBox.Name, widgetPreAction, widget);
+                    //AddWidgetPostHandler("button_" + NumericBox.Name, widgetPostAction, widget);
+                    
+                    AddActionHandler(widget.Name, clickAction, widget);
+
+                    AddWidgetPreHandler(widget.Name, widgetPreAction, widget);
+                    AddWidgetPostHandler(widget.Name, widgetPostAction, widget);
                 }
             }
             else
@@ -2894,6 +3040,20 @@ namespace WpfCSCS
             return Variable.EmptyInstance;
         }
     }
+    
+    class WhoAmIFunction : ParserFunction
+    {
+
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 0, m_name, true);
+
+            var gui = CSCS_GUI.GetInstance(script);
+                   
+            return new Variable(Path.GetFileNameWithoutExtension(script.Filename));
+        }
+    }
 
     public class RunExecFunction : ParserFunction
     {
@@ -3124,7 +3284,7 @@ namespace WpfCSCS
                 var numericTextBox = widget as NumericTextBox;
                 dispatcher.Invoke(new Action(() =>
                 {
-                    numericTextBox.SkipTextChangedHandler = true;
+                    //numericTextBox.SkipTextChangedHandler = true;
                     numericTextBox.Text = text;
                 }));
             }
@@ -3133,7 +3293,7 @@ namespace WpfCSCS
                 var enterTextBox = widget as EnterTextBox;
                 dispatcher.Invoke(new Action(() =>
                 {
-                    enterTextBox.SkipTextChangedHandler = true;
+                    //enterTextBox.SkipTextChangedHandler = true;
                     enterTextBox.Text = text;
                 }));
             }
