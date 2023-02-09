@@ -13,6 +13,6 @@ function gbExit@clicked(){
     quit;
 }
 
-function opisTb@clicked(){
+function opisTb@header(){
     MessageBox("header clicked!");
 }

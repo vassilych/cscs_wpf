@@ -58,7 +58,7 @@
                                         Width="107">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox Tag="GK_AC_KONTO" />
+                            <TextBox Name="kontoTb" Tag="GK_AC_KONTO" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
