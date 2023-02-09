@@ -7,6 +7,7 @@ nkgkacct_hndl = openv('NKGKACCT');  //fnum nkgkacct_hndl  lock n
 
 function gbAAA@clicked(){
     DisplayTableSetup("List_acct", nkgkacct_hndl, "gk_ac_konto", "", "true", "gk_ac_konto != ''");
+    SetWidgetOptions("List_acct" , "EditMode");
 }
 
 function gbExit@clicked(){
