@@ -2945,6 +2945,8 @@ WHERE ID = {thisOpenv.currentRow}
 
             public void Save(bool noPrompt, OpenvTable thisOpenv, int tableHndlNum, bool noClr, ParsingScript script)
             {
+                Gui = CSCS_GUI.GetInstance(script);
+
                 bool clear = false;
 
                 if (!noPrompt)
