@@ -1146,6 +1146,8 @@ $@"EXECUTE sp_executesql N'
             interpreter.RegisterFunction(Constants.CO_GET, new COGetFunction());
             interpreter.RegisterFunction(Constants.CO_SET, new COSetFunction());
 
+            interpreter.RegisterFunction(Constants.COMMONDB_GET, new CommonDBGetFunction());
+
         }
 
         CSCS_GUI Gui { get; set; }
@@ -7214,6 +7216,21 @@ where ID = {rowId}
                 CSCS_GUI.DefaultDB = dbShortName;
 
                 return new Variable(true);
+            }
+        }
+        
+        class CommonDBGetFunction : ParserFunction
+        {
+            CSCS_GUI Gui;
+
+            protected override Variable Evaluate(ParsingScript script)
+            {
+                List<Variable> args = script.GetFunctionArgs();
+                Utils.CheckArgs(args.Count, 0, m_name);
+
+                //Gui = CSCS_GUI.GetInstance(script);
+
+                return new Variable(CSCS_GUI.CommonDB);
             }
         }
 

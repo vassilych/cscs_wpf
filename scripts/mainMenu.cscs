@@ -37,6 +37,9 @@ function mainMenuWindow_OnDisplay(){
         
     AddMenuSeparator("ScriptsDC");
     AddMenuItem("ScriptsDC", "ExcelDC", "Excel");
+        
+    AddMenuSeparator("ScriptsDC");
+    AddMenuItem("ScriptsDC", "ChartsDC", "Charts");
     
     AddMenuSeparator("ScriptsDC");
     AddMenuItem("ScriptsDC", "OtherDC", "Other");
@@ -121,7 +124,14 @@ function mainMenuWindow_OnDisplay(){
 
     AddMenuItem("ExcelDC", "TestExcel.cscs", "TestExcel", "runScript");
     
+    //------ CHARTS ------------------------------
+    
+    AddMenuItem("ChartsDC", "testGraphs.cscs", "testGraphs", "runScript");
+    
+    AddMenuSeparator("ChartsDC");
 
+    AddMenuItem("ChartsDC", "WKPRDASH.cscs", "WKPRDASH", "runScript");
+   
     //------- OTHER -----------------------------
 
     AddMenuItem("OtherDC", "editDatabases.cscs", "editDatabases - using FillOutGrid", "runScript"); // ?
@@ -237,6 +247,8 @@ function mainMenuWindow_OnDisplay(){
     AddMenuSeparator("OtherDC");
 
     AddMenuItem("OtherDC", "testWhoAmI.cscs", "testWhoAmI", "runScript");
+    
+
     //------------------------------------   
 }
 

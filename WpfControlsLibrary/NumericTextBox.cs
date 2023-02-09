@@ -64,8 +64,8 @@ namespace WpfControlsLibrary
 
         public int Size;
         public int Dec;
-        public double MinValue;
-        public double MaxValue;
+        public double MinValue = double.MinValue;
+        public double MaxValue = double.MaxValue;
 
         public bool Thousands;
 

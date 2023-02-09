@@ -31,6 +31,14 @@ using CSCS.InterpreterManager;
 using WpfCSCS;
 using SplitAndMerge;
 using static SplitAndMerge.CSCSClass;
+using LiveChartsCore.SkiaSharpView.WPF;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView.Drawing;
+using LiveChartsCore.VisualElements;
+using LiveChartsCore.SkiaSharpView.VisualElements;
+using LiveChartsCore.SkiaSharpView.Painting;
+using SkiaSharp;
 
 namespace SplitAndMerge
 {
@@ -81,6 +89,8 @@ namespace SplitAndMerge
             interpreter.RegisterFunction(Constants.STRINGS, new StringsFunction());
 
             interpreter.RegisterFunction(Constants.STATUS_BAR, new StatusBarFunction());
+            
+            interpreter.RegisterFunction(Constants.CHART, new ChartFunction());
 
             interpreter.RegisterFunction("OpenFile", new OpenFileFunction(false));
             interpreter.RegisterFunction("OpenFileContents", new OpenFileFunction(true));
@@ -195,6 +205,8 @@ namespace SplitAndMerge
 
         public const string CO_GET = "COGet";
         public const string CO_SET = "COSet";
+        
+        public const string COMMONDB_GET = "CommonDBGet";
 
         public const string FLERR = "Flerr";
 
@@ -268,6 +280,8 @@ namespace SplitAndMerge
         public const string STRINGS = "Strings";
 
         public const string STATUS_BAR = "StatusBar";
+        
+        public const string CHART = "Chart";
 
         public const string DEFINE = "DEFINE";
         public const string DISPLAY_ARRAY = "DISPLAYARR";
@@ -449,6 +463,7 @@ namespace WpfCSCS
         public static bool ChangingBoundVariable { get; set; }
         public static string RequireDEFINE { get; set; }
         public static string DefaultDB { get; set; }
+        public static string CommonDB { get; set; }
         public static int MaxCacheSize { get; set; }
 
         bool m_initialized;
@@ -559,6 +574,7 @@ namespace WpfCSCS
 
             RequireDEFINE = App.GetConfiguration("Require_Define", "false");
             DefaultDB = App.GetConfiguration("DefaultDB", "ad");
+            CommonDB = App.GetConfiguration("CommonDB", "");
 
             if (int.TryParse(App.GetConfiguration("MaxCacheSize", "300"), out int cacheSize))
             {
@@ -901,6 +917,7 @@ namespace WpfCSCS
                 return false;
             }
             m_actionHandlers[name] = action;
+            clickable.Click -= new RoutedEventHandler(Widget_Click);
             clickable.Click += new RoutedEventHandler(Widget_Click);
             return true;
         }
@@ -1414,7 +1431,7 @@ namespace WpfCSCS
         }
 
         private void Widget_Hover(object sender, MouseEventArgs e)
-            {
+        {
             var widget = sender as FrameworkElement;
             var widgetName = GetWidgetBindingName(widget);
             if (string.IsNullOrWhiteSpace(widgetName))
@@ -2016,6 +2033,25 @@ namespace WpfCSCS
                                             var content2 = tabItem.Content as Grid;
                                             foreach (var child2 in content2.Children)
                                             {
+                                                if (child2 is EnterBox)
+                                                {
+                                                    var enterBox = child2 as EnterBox;
+                                                    var enterBoxGrid = enterBox.Content as Grid;
+                                                    foreach (var item4 in enterBoxGrid.Children)
+                                                    {
+                                                        CacheEnterBoxChild(item4 as FrameworkElement, win, controls, enterBox);
+                                                    }
+
+                                                }
+                                                else if (child2 is NumericBox)
+                                                {
+                                                    var numBox = child2 as NumericBox;
+                                                    var numBoxGrid = numBox.Content as Grid;
+                                                    foreach (var item5 in numBoxGrid.Children)
+                                                    {
+                                                        CacheNumericBoxChild(item5 as FrameworkElement, win, controls, numBox);
+                                                    }
+                                                }
                                                 CacheControl(child2 as FrameworkElement, win, controls);
                                             }
                                         }
@@ -2096,9 +2132,9 @@ namespace WpfCSCS
                         enterBox.Size = defVar.Size;
                     }
                 }
-                if (enterBox.Case.ToLower() != "up" && enterBox.Case.ToLower() != "down")
+                if (enterBox.Case?.ToLower() != "up" && enterBox.Case?.ToLower() != "down")
                 {
-                    if (DEFINES.TryGetValue(enterBox.FieldName.ToLower(), out DefineVariable defVar2))
+                    if (enterBox.FieldName != null && DEFINES.TryGetValue(enterBox.FieldName.ToLower(), out DefineVariable defVar2))
                     {
                         if (defVar2.Up)
                         {
@@ -2922,9 +2958,14 @@ namespace WpfCSCS
 
                 //--------------------
 
-                gridsHeaders.Add(widgetName.ToLower(), new List<string>());
-                gridsTags.Add(widgetName.ToLower(), new List<string>());
-                gridsTypes.Add(widgetName.ToLower(), new List<Variable.VarType>());
+                if(!gridsHeaders.ContainsKey(widgetName.ToLower()))
+                    gridsHeaders[widgetName.ToLower()] = new List<string>();
+
+                if (!gridsTags.ContainsKey(widgetName.ToLower()))
+                    gridsTags[widgetName.ToLower()] = new List<string>();
+
+                if (!gridsTypes.ContainsKey(widgetName.ToLower()))
+                    gridsTypes[widgetName.ToLower()] = new List<Variable.VarType>();
 
                 var dgColumns = dg.Columns;
                 for (int i = 0; i < dgColumns.Count; i++)
@@ -3904,6 +3945,112 @@ namespace WpfCSCS
                     {
                         x++;
                     }
+                }
+            }
+
+            return Variable.EmptyInstance;
+        }
+    }
+    
+    class ChartFunction : ParserFunction
+    {
+        static Dictionary<string, string> chartsTypes = new Dictionary<string, string>();
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 2, m_name);
+
+            var gui = CSCS_GUI.GetInstance(script);
+
+            var widgetName = Utils.GetSafeString(args, 0).ToLower();
+            var optionString = Utils.GetSafeString(args, 1).ToLower();
+            var valueVariable = Utils.GetSafeVariable(args, 2);
+            var value2Variable = Utils.GetSafeVariable(args, 3);
+            if (value2Variable == null)
+                value2Variable = new Variable();
+                    
+            var widget = gui.GetWidget(widgetName);            
+            if (widget is CartesianChart)                      
+            {
+                var cartesianWidget = widget as CartesianChart;
+                
+                if (optionString == "seriestype")
+                {
+                    chartsTypes[widgetName] = valueVariable.String.ToLower();
+                }
+                else if (optionString == "init")
+                {
+                    cartesianWidget.Series = new ISeries[]{};
+                }
+                else if (optionString == "values")
+                {
+                    if(valueVariable.Tuple.Count > 0)
+                    {
+                        List<double> newList = new List<double>();
+
+                        foreach (var item in valueVariable.Tuple)
+                        {
+                            newList.Add(item.Value);
+                        }
+
+                        var temp = cartesianWidget.Series.ToList();
+                        if (chartsTypes[widgetName] == "columnseries")
+                        {
+                            temp.Add(new ColumnSeries<double>() { Values = newList }); 
+                        }
+                        else if (chartsTypes[widgetName] == "lineseries")
+                        {
+                            temp.Add(new LineSeries<double>()
+                            {
+                                Values = newList,
+                                //TooltipLabelFormatter = (chartPoint) => $"{newList[(int)chartPoint.Context.Series.Name.SecondaryValue]}" + $": chartPoint.Context.Series.Name}: {chartPoint.PrimaryValue:C0}"
+                                //TooltipLabelFormatter = (chartPoint) => $"{chartPoint.Context.Series.Name} - {} - {newList[(int)chartPoint.SecondaryValue]}"
+                                TooltipLabelFormatter = (chartPoint) => $"{newList[(int)chartPoint.SecondaryValue]}",
+                                //Fill = new SolidColorPaint(SKColors.Transparent)
+                                Fill = null,
+                                //GeometryFill = null,
+                                //GeometryStroke = null,
+                                GeometrySize = 7
+                                
+                            });
+                        }
+                        if (!string.IsNullOrEmpty(value2Variable.String))
+                        {
+                            temp.Last().Name = value2Variable.String;
+                        }
+
+                        cartesianWidget.Series = temp;
+                    }
+                }
+                else if (optionString == "xaxisname")
+                {
+                    cartesianWidget.XAxes.First().Name = valueVariable.String;
+                }
+                else if (optionString == "yaxisname")
+                {
+                    cartesianWidget.YAxes.First().Name = valueVariable.String;
+                }
+                else if (optionString == "labels")
+                {
+                    cartesianWidget.XAxes.First().Labels = valueVariable.Tuple.Select(p=>p.String).ToList();
+                }
+                else if (optionString == "xlabelsrotation")
+                {
+                    cartesianWidget.XAxes.First().LabelsRotation = valueVariable.Value;
+                }
+                else if (optionString == "ylabelsrotation")
+                {
+                    cartesianWidget.YAxes.First().LabelsRotation = valueVariable.Value;
+                }
+                else if (optionString == "title")
+                {
+                    cartesianWidget.Title = new LabelVisual()
+                    {
+                        Text = valueVariable.String,
+                        TextSize = 25,
+                        Padding = new LiveChartsCore.Drawing.Padding(15),
+                        Paint = new SolidColorPaint(SKColors.DarkSlateGray)
+                    };
                 }
             }
 

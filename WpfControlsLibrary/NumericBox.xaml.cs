@@ -47,12 +47,12 @@ namespace WpfControlsLibrary
             }
         }
         
-        public static readonly DependencyProperty MinValueProperty = DependencyProperty.Register("MinValue", typeof(double), typeof(NumericBox));
-        public double MinValue
+        public static readonly DependencyProperty MinValueProperty = DependencyProperty.Register("MinValue", typeof(double?), typeof(NumericBox));
+        public double? MinValue
         {
             get
             {
-                return (double)base.GetValue(MinValueProperty);
+                return (double?)base.GetValue(MinValueProperty);
             }
             set
             {
@@ -60,12 +60,12 @@ namespace WpfControlsLibrary
             }
         }
 
-        public static readonly DependencyProperty MaxValueProperty = DependencyProperty.Register("MaxValue", typeof(double), typeof(NumericBox));
-        public double MaxValue
+        public static readonly DependencyProperty MaxValueProperty = DependencyProperty.Register("MaxValue", typeof(double?), typeof(NumericBox));
+        public double? MaxValue
         {
             get
             {
-                return (double)base.GetValue(MaxValueProperty);
+                return (double?)base.GetValue(MaxValueProperty);
             }
             set
             {
@@ -187,8 +187,8 @@ namespace WpfControlsLibrary
         {
             numBoxTextBox.Size = Size;
             numBoxTextBox.Dec = Dec;
-            numBoxTextBox.MinValue = MinValue;
-            numBoxTextBox.MaxValue = MaxValue;
+            numBoxTextBox.MinValue = MinValue != null ? (double)MinValue : double.MinValue;
+            numBoxTextBox.MaxValue = MaxValue != null ? (double)MaxValue : double.MaxValue;
             numBoxTextBox.Text = Text;
             numBoxTextBox.Thousands = Thousands;
             numBoxButton.Width = ButtonSize;
