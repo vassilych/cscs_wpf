@@ -43,6 +43,9 @@ function mainMenuWindow_OnDisplay(){
     
     AddMenuSeparator("ScriptsDC");
     AddMenuItem("ScriptsDC", "OtherDC", "Other");
+    
+    AddMenuSeparator("ScriptsDC");
+    AddMenuItem("ScriptsDC", "IvanDC", "Ivan");
 
     //------------ BTRIEVE ------------------------
 
@@ -249,7 +252,12 @@ function mainMenuWindow_OnDisplay(){
     AddMenuItem("OtherDC", "testWhoAmI.cscs", "testWhoAmI", "runScript");
     
 
-    //------------------------------------   
+    //----- IVAN -------------------------------  
+
+    // AddMenuSeparator("IvanDC");
+
+    AddMenuItem("IvanDC", "Ivan_select_table_primjer.cscs", "Ivan_select_table_primjer", "runScript");
+    //----------------------   
 }
 
 StartDebugger();
