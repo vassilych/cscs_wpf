@@ -1,0 +1,18 @@
+CreateWindow("../../scripts/Ivan_select_table_primjer.xaml");
+
+define nkgkacct_hndl,NKSYCCYR_hndl type i;
+define sifra type a size 50;
+
+nkgkacct_hndl = openv('NKGKACCT');  //fnum nkgkacct_hndl  lock n
+
+function gbAAA@clicked(){
+    DisplayTableSetup("List_acct", nkgkacct_hndl, "gk_ac_konto", "", "true", "gk_ac_konto != ''");
+}
+
+function gbExit@clicked(){
+    quit;
+}
+
+function opisTb@header(){
+    MessageBox("header clicked!");
+}
