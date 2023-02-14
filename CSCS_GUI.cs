@@ -961,6 +961,22 @@ namespace WpfCSCS
         }
         public bool AddTextChangedHandler(string name, string action, FrameworkElement widget)
         {
+            if(widget is DateEditer)
+            {
+                var dateEditer = widget as DateEditer;
+                if (dateEditer == null)
+                {
+                    return false;
+                }
+
+                m_textChangedHandlers[name] = action;
+                // x2
+                dateEditer.SelectedDateChanged -= new EventHandler<SelectionChangedEventArgs>(Widget_DateChanged);
+                dateEditer.SelectedDateChanged += new EventHandler<SelectionChangedEventArgs>(Widget_DateChanged);
+
+                return true;
+            }
+
             var textable = widget as TextBoxBase;
             if (textable == null)
             {
@@ -1417,6 +1433,65 @@ namespace WpfCSCS
             }
         }
 
+        private void Widget_DateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var widget = sender as DateEditer;
+            var widgetName = GetWidgetBindingName(widget);
+
+            var text = GetTextWidgetFunction.GetText(widget);
+
+            m_updatingWidget.Add(widgetName);
+            //var text = GetTextWidgetFunction.GetText(widget2);
+            if (DEFINES.TryGetValue(widgetName.ToLower(), out DefineVariable defVar))
+            {
+                switch (defVar.DefType)
+                {
+                    case "a":
+                        UpdateVariable(widget, text);
+                        break;
+
+                    case "i":
+                    case "n":
+                    case "r":
+                    case "b":
+                        if (double.TryParse(text.AsString(), out double parsedDouble))
+                        {
+                            UpdateVariable(widget, new Variable(parsedDouble));
+                        }
+                        break;
+
+                    case "d":
+                        UpdateVariable(widget, new Variable(text));
+                        break;
+                    case "t":
+                        //if (true)
+                        //{
+                        //    if (TimeSpan.TryParse(text.AsString(), out TimeSpan result))
+                        //    {
+                        //        UpdateVariable(widget2, text);
+                        //    }
+                        //}
+                        break;
+
+                    default:
+                        //UpdateVariable(widget2, text);
+                        break;
+                }
+            }
+
+            m_updatingWidget.Remove(widgetName);
+
+            //var widget = sender as Selector;
+            //var widgetName = GetWidgetBindingName(widget);
+            //if (m_selChangedHandlers.TryGetValue(widgetName, out string funcName))
+            //{
+            //    var item = e.AddedItems.Count > 0 ? e.AddedItems[0].ToString() : e.RemovedItems.Count > 0 ? e.RemovedItems[0].ToString() : "";
+            //    Control2Window.TryGetValue(widget, out Window win);
+            //    Interpreter.Run(funcName, new Variable(widgetName), new Variable(item),
+            //        Variable.EmptyInstance, GetScript(win));
+            //}
+        }
+        
         private void Widget_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var widget = sender as Selector;
@@ -2089,7 +2164,14 @@ namespace WpfCSCS
                         var items = parent.Items;
                         if (items != null && items.Count > 0)
                         {
-                            CacheChildren(items.Cast<UIElement>().ToList(), controls, win);
+                            try
+                            {
+                                CacheChildren(items.Cast<UIElement>().ToList(), controls, win);
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show("Vassili help needed");
+                            }
                         }
                     }
                 }
