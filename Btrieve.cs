@@ -4981,6 +4981,8 @@ $@"EXECUTE sp_executesql N'
                 idColumn.ColumnName = "ID";
                 idColumn.Caption = "ID";
                 idColumn.ReadOnly = true;
+                //idColumn.AutoIncrement = true;
+                idColumn.DefaultValue = 0;
 
                 gridsDataTables[gridName].Columns.Add(idColumn);
 
