@@ -88,14 +88,22 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <TextBox Name="tb1" DataContext="invoiceNumber" HorizontalAlignment="Left" Height="23" Margin="30,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
-        <TextBox Name="tb2" DataContext="invoiceLineNumber" HorizontalAlignment="Left" Height="23" Margin="160,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
-        <TextBox Name="tb3" DataContext="productNumber" HorizontalAlignment="Left" Height="23" Margin="290,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
-        <TextBox Name="tb4" DataContext="amount" HorizontalAlignment="Left" Height="23" Margin="420,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+        <TextBox Name="tb1" DataContext="invoiceNumber" HorizontalAlignment="Left" Height="23" Margin="30,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="60"/>
+        <TextBox Name="tb2" DataContext="invoiceLineNumber" HorizontalAlignment="Left" Height="23" Margin="100,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="60"/>
+        <TextBox Name="tb3" DataContext="productNumber" HorizontalAlignment="Left" Height="23" Margin="170,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="60"/>
+        <TextBox Name="tb4" DataContext="amount" HorizontalAlignment="Left" Height="23" Margin="240,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="60"/>
+        <TextBox Name="tb5" DataContext="price" HorizontalAlignment="Left" Height="23" Margin="310,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="60"/>
+        <CheckBox Name="tb6" DataContext="bitcolumn" HorizontalAlignment="Left" Height="23" Margin="380,435,0,0"  Content="bitcolumn" VerticalAlignment="Top" Width="60"/>
+        <TextBox Name="tb7" DataContext="stringColumn" HorizontalAlignment="Left" Height="23" Margin="450,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="60"/>
+        <wcl:DateEditer Name="tb8" DisplaySize="10" DataContext="dateColumn" HorizontalAlignment="Left" Height="23" Margin="520,435,0,0"  Text="TextBox" VerticalAlignment="Top" Width="120"/>
+        <wcl:TimeEditer Name="tb9" DisplaySize="8" DataContext="timeColumn" HorizontalAlignment="Left" Height="23" Margin="650,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+        
+
 
         <Button Content="E/S" Name="btnES" HorizontalAlignment="Left" Margin="1290,440,0,0" VerticalAlignment="Top" Width="75"/>
         <Button Content="Add Row" Name="btnAdd" HorizontalAlignment="Left" Margin="925,440,0,0" VerticalAlignment="Top" Width="75"/>
         <Button Content="Delete Row" Name="btnDel" HorizontalAlignment="Left" Margin="1020,440,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button Content="Save Row" Name="btnSave" HorizontalAlignment="Left" Margin="1115,440,0,0" VerticalAlignment="Top" Width="75"/>
 
     </Grid>
 </Window>

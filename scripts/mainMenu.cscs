@@ -254,9 +254,14 @@ function mainMenuWindow_OnDisplay(){
 
     //----- IVAN -------------------------------  
 
-    // AddMenuSeparator("IvanDC");
-
     AddMenuItem("IvanDC", "Ivan_select_table_primjer.cscs", "Ivan_select_table_primjer", "runScript");
+
+    AddMenuSeparator("IvanDC");
+
+     AddMenuItem("IvanDC", "Ivan_select_table_primjer2.cscs", "Ivan_select_table_primjer2", "runScript");
+
+
+
     //----------------------   
 }
 

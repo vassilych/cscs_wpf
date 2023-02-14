@@ -3045,7 +3045,7 @@ VALUES ({valuesStringBuilder})
                     setStringBuilder.AppendLine("");
                     setStringBuilder.Append(field + " = ");
 
-                    var bufferVar = Gui.DEFINES[field.ToLower()];
+                     var bufferVar = Gui.DEFINES[field.ToLower()];
                     if (bufferVar.DefType == "a" || bufferVar.DefType == "t" || bufferVar.DefType == "d")
                     {
                         var bufferVarAsString = bufferVar.AsString();
@@ -4973,12 +4973,19 @@ $@"EXECUTE sp_executesql N'
                 }
 
                 gridsDataTables[gridName] = new DataTable();
+
+                var keys = new DataColumn[1];
+
                 var idColumn = new DataColumn();
                 idColumn.DataType = System.Type.GetType("System.Int32");
                 idColumn.ColumnName = "ID";
                 idColumn.Caption = "ID";
                 idColumn.ReadOnly = true;
+
                 gridsDataTables[gridName].Columns.Add(idColumn);
+
+                keys[0] = idColumn;
+                gridsDataTables[gridName].PrimaryKey = keys;
 
                 newTagsAndTypes = new Dictionary<string, Type>();
                 foreach (var item in tagsAndTypes)
@@ -5069,6 +5076,8 @@ $@"EXECUTE sp_executesql N'
                 dg.RowEditEnding += Dg_RowEditEnding;
 
                 dg.SelectedCellsChanged += Dg_SelectedCellsChanged;
+
+                dg.BeginningEdit += Dg_BeginningEdit;
                 //-------------------------------------------------------------------------------
 
                 //grids[gridName] = new DisplayArrayClass()
@@ -5084,13 +5093,14 @@ $@"EXECUTE sp_executesql N'
                 gridsTableClass[gridName].KeyClass = KeyClass;
                 gridsTableClass[gridName].Script = Script;
 
-                fillDataTable(gridName);
+                fillDataTable(gridName, Gui);
 
                 return Variable.EmptyInstance;
             }
 
-            public void fillDataTable(string gridName)
+            public void fillDataTable(string gridName, CSCS_GUI Gui)
             {
+
                 gridsDataTables[gridName].Rows.Clear();
 
                 var startString = gridsTableClass[gridName].startString;
@@ -5503,7 +5513,7 @@ $@"EXECUTE sp_executesql N'
                     else if (e.PropertyType == typeof(bool))
                     {
                         // Create The Column
-                        DataGridTemplateColumn stringColumn = new DataGridTemplateColumn();
+                        DataGridTemplateColumn boolColumn = new DataGridTemplateColumn();
 
                         Binding bind = new Binding(e.Column.Header.ToString());
                         bind.Mode = BindingMode.TwoWay;
@@ -5513,22 +5523,84 @@ $@"EXECUTE sp_executesql N'
                         // Create the TextBlock
                         FrameworkElementFactory checkBoxFactory = new FrameworkElementFactory(typeof(CheckBox));
                         checkBoxFactory.SetBinding(CheckBox.IsCheckedProperty, bind);
+
+                        //checkBoxFactory.AddHandler(CheckBox.ClickEvent, new RoutedEventHandler(checkBoxClick));
+
+                        checkBoxFactory.SetValue(CheckBox.IsHitTestVisibleProperty, false);
+
+                        checkBoxFactory.SetValue(CheckBox.FocusableProperty, false);
+
                         checkBoxFactory.SetValue(CheckBox.HorizontalAlignmentProperty, HorizontalAlignment.Center);
                         checkBoxFactory.SetValue(CheckBox.NameProperty, tagsAndNames[tag]);
+
+                        //editing
+                        FrameworkElementFactory checkBoxEditingFactory = new FrameworkElementFactory(typeof(CheckBox));
+                        checkBoxEditingFactory.SetBinding(CheckBox.IsCheckedProperty, bind);
+
+                        ////////bind Focusable to DataGrid's IsReadOnly
+                        //////checkBoxFactory.SetBinding(CheckBox.FocusableProperty, dataGridsIsReadOnlyPropertyBind);
+
+                        //for disabling of checkBox toggling is the DataGrid is in Read Only mode
+                        //checkBoxEditingFactory.AddHandler(CheckBox.ClickEvent, new RoutedEventHandler(checkboxChecked));
+
+                        checkBoxEditingFactory.SetValue(CheckBox.HorizontalAlignmentProperty, HorizontalAlignment.Center);
+                        checkBoxEditingFactory.SetValue(CheckBox.NameProperty, tagsAndNames[tag]);
+
+
 
                         DataTemplate checkBoxTemplate = new DataTemplate();
                         checkBoxTemplate.VisualTree = checkBoxFactory;
 
-                        // Set the Templates to the Column
-                        stringColumn.CellTemplate = checkBoxTemplate;
-                        stringColumn.CellEditingTemplate = checkBoxTemplate;
+                        DataTemplate checkBoxEditingTemplate = new DataTemplate();
+                        checkBoxEditingTemplate.VisualTree = checkBoxEditingFactory;
 
-                        e.Column = stringColumn;
+                        // Set the Templates to the Column
+                        boolColumn.CellTemplate = checkBoxTemplate;
+                        boolColumn.CellEditingTemplate = checkBoxEditingTemplate;
+
+                        e.Column = boolColumn;
                     }
 
                     e.Column.Header = realHeader;
                 }
             }
+
+            private void Dg_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
+            {
+
+            }
+
+            //private void checkBoxClick(object sender, RoutedEventArgs e)
+            //{
+            //    DependencyObject current = (e.Source as FrameworkElement);
+
+            //    while (current != null)
+            //    {
+            //        if (current.GetType() == typeof(DataGrid))
+            //        {
+            //            var dg = (current as DataGrid);
+            //            if (dg.IsReadOnly)
+            //            {
+            //                var cb = (e.Source as CheckBox);
+            //                cb.IsChecked = !cb.IsChecked;
+            //                return;
+            //            }
+            //            else
+            //            {
+            //                //edit mode
+            //                var cb = (e.Source as CheckBox);
+            //                cb.IsChecked = !cb.IsChecked;
+            //                dg.BeginEdit();
+            //                //cb.IsChecked = !cb.IsChecked;
+
+            //                //rowAfterEdit = dg. dg.SelectedIndex
+            //                //var asdrowAfterEdit = (dg.CurrentItem as DataRowView).Row.ItemArray;
+            //                return;
+            //            }
+            //        }
+            //        current = VisualTreeHelper.GetParent(current);
+            //    }
+            //}
 
             private void Dg_AutoGeneratedColumns(object sender, EventArgs e)
             {
@@ -5578,41 +5650,66 @@ $@"EXECUTE sp_executesql N'
                             var asdk = dg.Items[0];
                         }
                     }
-                    var currentItemArray = (dg.SelectedItem as DataRowView).Row.ItemArray;
-
-                    var currentRowIndex = dg.SelectedIndex;//dg.Items.IndexOf(dg.SelectedItem);
-                    if (currentRowIndex != lastRowIndex || dataGridUpdated)
+                    if(dg.SelectedItem is DataRowView)
                     {
-                        dataGridUpdated = false;
+                        var currentItemArray = (dg.SelectedItem as DataRowView).Row.ItemArray;
 
-                        lastRowIndex = currentRowIndex;
-                        rowBeforeEdit = currentItemArray;
-
-                        var currRow = (dg.SelectedItem as DataRowView).Row;
-                        for (int i = 1; i < currRow.Table.Columns.Count; i++)
+                        var currentRowIndex = dg.SelectedIndex;//dg.Items.IndexOf(dg.SelectedItem);
+                        if (currentRowIndex != lastRowIndex || dataGridUpdated)
                         {
-                            if (currentItemArray[i] is DateTime)
-                            {
-                                var currentItemAsDateTime = currentItemArray[i] as DateTime?;
-                                string initForDefine = "";
-                                switch (timeAndDateEditerTagsAndSizes[currRow.Table.Columns[i].ColumnName])
-                                {
-                                    case 10:
-                                        initForDefine = currentItemAsDateTime.Value.ToString("dd/MM/yyyy");
-                                        break;
-                                    case 8:
-                                        initForDefine = currentItemAsDateTime.Value.ToString("dd/MM/yy");
-                                        break;
-                                }
+                            dataGridUpdated = false;
 
-                                Gui.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable(initForDefine), Gui);
-                                Gui.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable(initForDefine), true);
-                            }
-                            else
+                            lastRowIndex = currentRowIndex;
+                            rowBeforeEdit = currentItemArray;
+
+                            var currRow = (dg.SelectedItem as DataRowView).Row;
+                            for (int i = 1; i < currRow.Table.Columns.Count; i++)
                             {
-                                Gui.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable(currentItemArray[i]), Gui);
-                                Gui.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable(currentItemArray[i]), true);
+                                if (currentItemArray[i] is DateTime)
+                                {
+                                    var currentItemAsDateTime = currentItemArray[i] as DateTime?;
+                                    string initForDefine = "";
+                                    switch (timeAndDateEditerTagsAndSizes[currRow.Table.Columns[i].ColumnName])
+                                    {
+                                        case 10:
+                                            initForDefine = currentItemAsDateTime.Value.ToString("dd/MM/yyyy");
+                                            break;
+                                        case 8:
+                                            initForDefine = currentItemAsDateTime.Value.ToString("dd/MM/yy");
+                                            break;
+                                    }
+
+                                    Gui.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable(initForDefine), Gui);
+                                    Gui.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable(initForDefine), true);
+                                }
+                                else if (currentItemArray[i] is string)
+                                {
+                                    Gui.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable((string)currentItemArray[i]), Gui);
+                                    Gui.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable((string)currentItemArray[i]), true);
+                                }
+                                else if (currentItemArray[i] is int)
+                                {
+                                    Gui.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable((int)currentItemArray[i]), Gui);
+                                    Gui.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable((int)currentItemArray[i]), true);
+                                }
+                                else if (currentItemArray[i] is double)
+                                {
+                                    Gui.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable((double)currentItemArray[i]), Gui);
+                                    Gui.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable((double)currentItemArray[i]), true);
+                                }
+                                else if (currentItemArray[i] is bool)
+                                {
+                                    Gui.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable((bool)currentItemArray[i]), Gui);
+                                    Gui.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable((bool)currentItemArray[i]), true);
+                                }
+                                else if (currentItemArray[i] is TimeSpan)
+                                {
+                                    Gui.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable((TimeSpan)currentItemArray[i]), Gui);
+                                    Gui.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable((TimeSpan)currentItemArray[i]), true);
+                                }
                             }
+                            gridsTableClass[gridName].selectedRowId = (int)currentItemArray[0];
+                            thisOpenv.currentRow = (int)currentItemArray[0];
                         }
                     }
                 }
@@ -5766,7 +5863,7 @@ $@"EXECUTE sp_executesql N'
                 if (redisplay)
                 {
                     //dg.Items.Clear();
-                    fillDataTable(gridName);
+                    fillDataTable(gridName, Gui);
                 }
             }
 
@@ -5807,6 +5904,8 @@ $@"EXECUTE sp_executesql N'
             public KeyClass KeyClass;
 
             public ParsingScript Script;
+
+            public int selectedRowId;
         }
         class DisplayTableWhereClass
         {
@@ -6829,24 +6928,24 @@ $@"EXECUTE sp_executesql N'
 
                 switch (option)
                 {
-                    case "updatecurrent":
+                    //case "updatecurrent":
 
-                        if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable lineCntrDefVar))
-                        {
-                            var itemArray = gridsDataTables[gridName].Rows[(int)lineCntrDefVar.Value].ItemArray;
-                            for (int i = 0; i < itemArray.Length; i++)
-                            {
+                    //    if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable lineCntrDefVar))
+                    //    {
+                    //        var itemArray = gridsDataTables[gridName].Rows[(int)lineCntrDefVar.Value].ItemArray;
+                    //        for (int i = 0; i < itemArray.Length; i++)
+                    //        {
 
-                                if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].tags[i].ToLower(), out DefineVariable defVar))
-                                {
-                                    itemArray[i] = defVar.Tuple[(int)lineCntrDefVar.Value].AsString();
-                                }
-                            }
+                    //            if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].tags[i].ToLower(), out DefineVariable defVar))
+                    //            {
+                    //                itemArray[i] = defVar.Tuple[(int)lineCntrDefVar.Value].AsString();
+                    //            }
+                    //        }
 
-                            gridsDataTables[gridName].Rows[(int)lineCntrDefVar.Value].ItemArray = itemArray;
-                        }
+                    //        gridsDataTables[gridName].Rows[(int)lineCntrDefVar.Value].ItemArray = itemArray;
+                    //    }
 
-                        break;
+                    //    break;
 
                     case "redisplayfromtop":
 
@@ -6866,8 +6965,14 @@ $@"EXECUTE sp_executesql N'
 
                         var currentIndex = dg.SelectedIndex;
 
+                        var currentID = gridsTableClass[gridName].selectedRowId;
+
                         gridsDataTables[gridName].Rows.Clear();
-                        new DisplayTableSetupFunction().fillDataTable(gridName);
+                        new DisplayTableSetupFunction().fillDataTable(gridName, Gui);
+
+                        var currentDataRow = gridsDataTables[gridName].Rows.Find(currentID);
+                        var currentDataRowIndex = gridsDataTables[gridName].Rows.IndexOf(currentDataRow);
+                        //var currentDataRowIndex = dg.Items((object)currentDataRow.ItemArray);
 
                         DisplayTableSetupFunction.dataGridUpdated = true;
 
@@ -6877,9 +6982,57 @@ $@"EXECUTE sp_executesql N'
                         }
                         if (dg.Items.Count > 0)
                         {
-                            dg.ScrollIntoView(dg.Items.GetItemAt(currentIndex));
-                            dg.SelectedIndex = currentIndex;
+                            
+                            //dg.ScrollIntoView(dg.Items.GetItemAt(currentIndex));
+                            
+                            dg.SelectedIndex = currentDataRowIndex;
+                            dg.ScrollIntoView(dg.Items.GetItemAt(currentDataRowIndex));
                         }
+
+                        break;
+                        
+                    case "refreshrecord":
+
+                        //var currentIndex = dg.SelectedIndex;
+
+                        //gridsDataTables[gridName].Rows.Clear();
+                        //new DisplayTableSetupFunction().fillDataTable(gridName);
+
+                        //DisplayTableSetupFunction.dataGridUpdated = true;
+
+                        //if (currentIndex < 0 || currentIndex > dg.Items.Count - 1)
+                        //{
+                        //    currentIndex = 0;
+                        //}
+                        //if (dg.Items.Count > 0)
+                        //{
+                        //    dg.ScrollIntoView(dg.Items.GetItemAt(currentIndex));
+                        //    dg.SelectedIndex = currentIndex;
+                        //}
+
+
+
+
+                        //gridsTableClass[gridName].selectedRowId
+
+
+
+                        var itemArray = gridsDataTables[gridName].Rows[dg.SelectedIndex].ItemArray;
+                        //itemArray[0] = gridsTableClass[gridName].selectedRowId;
+
+                        for (int i = 1; i < itemArray.Length; i++)
+                        {
+
+                            if (Gui.DEFINES.TryGetValue(gridsTableClass[gridName].tags[i - 1].ToLower(), out DefineVariable defVar))
+                            {
+                                itemArray[i] = defVar.AsString();//[gridsTableClass[gridName].selectedRowId].AsString();
+                                gridsDataTables[gridName].Rows[dg.SelectedIndex].ItemArray[i] = itemArray[i];
+                                
+                            }
+                        }
+
+                        gridsDataTables[gridName].Rows[dg.SelectedIndex].ItemArray = itemArray;
+                        
 
                         break;
 
