@@ -5770,7 +5770,7 @@ $@"EXECUTE sp_executesql N'
             {
                 bool redisplay = false;
 
-                if (rowItemArray[0] is int)
+                if (rowItemArray[0] is int && (int)rowItemArray[0] != 0)
                 {
                     //UPDATE sql
                     //fill buffer with current row
@@ -5781,7 +5781,7 @@ $@"EXECUTE sp_executesql N'
                     //INSERT sql
                     rowItemArray[0] = 0;
                     thisOpenv.currentRow = 0;
-                    new ClrFunction().Clear(tableHndlNum, "b", Script);
+                    new ClrFunction().Clear(tableHndlNum, "buff", Script);
                     redisplay = true;
                 }
 
