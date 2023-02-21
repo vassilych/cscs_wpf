@@ -234,6 +234,8 @@
     <Compile Include="CSCS\InterpreterManagerFunctions.cs" />
     <Compile Include="CSCS\InterpreterManagerInstance.cs" />
     <Compile Include="CSCS\InterpreterManagerModule.cs" />
+    <Compile Include="DataGridCollectionView.cs" />
+    <Compile Include="EventArgs.cs" />
     <Compile Include="Excel.cs" />
     <Compile Include="Locking.cs" />
     <Compile Include="NavigatorClass.cs" />

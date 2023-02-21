@@ -9,7 +9,7 @@
         
         Title="NumericBox" Height="600" Width="500">
     <Grid>
-        <wcl:NumericBox
+        <wcl:ASNumericBox
             KeyTraps="F2|numbox1@clicked|F3|nekidrugi"
             ButtonSize="30" 
             Size="9" Dec="2" 
@@ -24,7 +24,7 @@
             FontSize="25"
             />
 
-        <wcl:EnterBox 
+        <wcl:ASEnterBox 
             KeyTraps="F2|enterbox1@clicked|F3|nekidrugi"
             ButtonSize="30"
             Size="20"
@@ -38,7 +38,7 @@
             FontSize="25"
             />
 
-        <wcl:DateEditer 
+        <wcl:ASDateEditer 
             Name="de1" 
             DisplaySize="8" 
             DataContext="date1" 
@@ -57,7 +57,7 @@
             Height="35"
             />
 
-        <wcl:TimeEditer
+        <wcl:ASTimeEditer
             Name="te1"
             VerticalAlignment="Top" 
             HorizontalAlignment="Left" 

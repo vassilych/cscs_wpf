@@ -49,18 +49,19 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EnterBox.xaml.cs">
-      <DependentUpon>EnterBox.xaml</DependentUpon>
+    <Compile Include="ASGridCell.cs" />
+    <Compile Include="ASEnterBox.xaml.cs">
+      <DependentUpon>ASEnterBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MemoTextBox.cs" />
-    <Compile Include="EnterTextBox.cs" />
-    <Compile Include="Navigator.xaml.cs">
-      <DependentUpon>Navigator.xaml</DependentUpon>
+    <Compile Include="ASMemoBox.cs" />
+    <Compile Include="ASEnterTextBox.cs" />
+    <Compile Include="ASNavigator.xaml.cs">
+      <DependentUpon>ASNavigator.xaml</DependentUpon>
     </Compile>
-    <Compile Include="NumericBox.xaml.cs">
-      <DependentUpon>NumericBox.xaml</DependentUpon>
+    <Compile Include="ASNumericBox.xaml.cs">
+      <DependentUpon>ASNumericBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="NumericTextBox.cs" />
+    <Compile Include="ASNumericTextBox.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -74,12 +75,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="TextBoxDoubleConverter.cs" />
-    <Compile Include="DateEditer.cs" />
-    <Compile Include="TimeEditer.cs" />
-    <Compile Include="TextBoxIntConverter.cs" />
-    <Compile Include="DateEditerConverter.cs" />
-    <Compile Include="TimeEditerConverter.cs" />
+    <Compile Include="ASTextBoxDoubleConverter.cs" />
+    <Compile Include="ASDateEditer.cs" />
+    <Compile Include="ASTimeEditer.cs" />
+    <Compile Include="ASTextBoxIntConverter.cs" />
+    <Compile Include="ASDateEditerConverter.cs" />
+    <Compile Include="ASTimeEditerConverter.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -90,15 +91,15 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="EnterBox.xaml">
+    <Page Include="ASEnterBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Navigator.xaml">
+    <Page Include="ASNavigator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="NumericBox.xaml">
+    <Page Include="ASNumericBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

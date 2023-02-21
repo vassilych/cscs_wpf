@@ -16,13 +16,13 @@ using System.Windows.Shapes;
 namespace WpfControlsLibrary
 {
     /// <summary>
-    /// Interaction logic for EnterBox.xaml
+    /// Interaction logic for ASEnterBox.xaml
     /// </summary>
     /// 
 
-    public partial class EnterBox : UserControl
+    public partial class ASEnterBox : UserControl
     {
-        public static readonly DependencyProperty SizeProperty = DependencyProperty.Register("Size", typeof(int), typeof(EnterBox));
+        public static readonly DependencyProperty SizeProperty = DependencyProperty.Register("Size", typeof(int), typeof(ASEnterBox));
         public int Size
         {
             get
@@ -35,7 +35,7 @@ namespace WpfControlsLibrary
             }
         }
 
-        public static readonly DependencyProperty ButtonSizeProperty = DependencyProperty.Register("ButtonSize", typeof(int), typeof(EnterBox));
+        public static readonly DependencyProperty ButtonSizeProperty = DependencyProperty.Register("ButtonSize", typeof(int), typeof(ASEnterBox));
         public int ButtonSize
         {
             get
@@ -48,7 +48,7 @@ namespace WpfControlsLibrary
             }
         }
 
-        public static readonly DependencyProperty FieldNameProperty = DependencyProperty.Register("FieldName", typeof(string), typeof(EnterBox));
+        public static readonly DependencyProperty FieldNameProperty = DependencyProperty.Register("FieldName", typeof(string), typeof(ASEnterBox));
         public string FieldName
         {
             get
@@ -61,7 +61,7 @@ namespace WpfControlsLibrary
             }
         }
 
-        public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(EnterBox));
+        public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(ASEnterBox));
         public string Text
         {
             get
@@ -74,7 +74,7 @@ namespace WpfControlsLibrary
             }
         }
 
-        public static readonly DependencyProperty CaseProperty = DependencyProperty.Register("Case", typeof(string), typeof(EnterBox));
+        public static readonly DependencyProperty CaseProperty = DependencyProperty.Register("Case", typeof(string), typeof(ASEnterBox));
         public string Case
         {
             get
@@ -87,7 +87,7 @@ namespace WpfControlsLibrary
             }
         }
         
-        public static readonly DependencyProperty KeyTrapsProperty = DependencyProperty.Register("KeyTraps", typeof(string), typeof(EnterBox));
+        public static readonly DependencyProperty KeyTrapsProperty = DependencyProperty.Register("KeyTraps", typeof(string), typeof(ASEnterBox));
         public string KeyTraps
         {
             get
@@ -100,7 +100,20 @@ namespace WpfControlsLibrary
             }
         }
 
-        public EnterBox()
+        public static readonly DependencyProperty FontWeightProperty = DependencyProperty.Register("FontWeight", typeof(FontWeight), typeof(ASEnterBox));
+        public FontWeight FontWeight
+        {
+            get
+            {
+                return (FontWeight)base.GetValue(FontWeightProperty);
+            }
+            set
+            {
+                base.SetValue(FontWeightProperty, value);
+            }
+        }
+
+        public ASEnterBox()
         {
             InitializeComponent();
         }
@@ -112,6 +125,7 @@ namespace WpfControlsLibrary
             enterBoxTextBox.Size = Size == 0? Int32.MaxValue : Size;
             enterBoxTextBox.Text = Text;
             enterBoxTextBox.CharacterCasing = Case?.ToLower() == "up"? CharacterCasing.Upper : (Case?.ToLower() == "down"? CharacterCasing.Lower : CharacterCasing.Normal);
+            enterBoxTextBox.FontWeight = FontWeight;
 
             enterBoxButton.Width = ButtonSize;
         }

@@ -16,7 +16,7 @@
                 <DataGridTemplateColumn Header="Invoice Number">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox Tag="invoiceNumber"/>
+                            <wcl:ASGridCell FieldName="invoiceNumber"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -24,7 +24,7 @@
                 <DataGridTemplateColumn Header="Invoice Line Number">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox Tag="invoiceLineNumber"/>
+                            <wcl:ASGridCell FieldName="invoiceLineNumber"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -32,7 +32,7 @@
                 <DataGridTemplateColumn Header="Product Number">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox Tag="productNumber"/>
+                            <wcl:ASGridCell FieldName="productNumber"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -40,7 +40,7 @@
                 <DataGridTemplateColumn Header="Amount">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox Tag="amount"/>
+                            <wcl:ASGridCell FieldName="amount"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -48,7 +48,7 @@
                 <DataGridTemplateColumn Header="Price">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox Tag="price"/>
+                            <wcl:ASGridCell FieldName="price"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -56,7 +56,7 @@
                 <DataGridTemplateColumn Header="Bit Column">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <CheckBox Tag="bitcolumn"/>
+                            <wcl:ASGridCell FieldName="bitcolumn"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -64,7 +64,7 @@
                 <DataGridTemplateColumn Header="String Column">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox Tag="stringColumn"/>
+                            <wcl:ASGridCell FieldName="stringColumn"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -72,7 +72,7 @@
                 <DataGridTemplateColumn Header="Date Column">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <wcl:DateEditer Tag="dateColumn" DisplaySize="10"/>
+                            <wcl:ASGridCell FieldName="dateColumn" EditLength="10"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -80,7 +80,7 @@
                 <DataGridTemplateColumn Header="Time Column">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <wcl:TimeEditer Tag="timeColumn" DisplaySize="8"/>
+                            <wcl:ASGridCell FieldName="timeColumn" EditLength="8"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -95,8 +95,8 @@
         <TextBox Name="tb5" DataContext="price" HorizontalAlignment="Left" Height="23" Margin="310,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="60"/>
         <CheckBox Name="tb6" DataContext="bitcolumn" HorizontalAlignment="Left" Height="23" Margin="380,435,0,0"  Content="bitcolumn" VerticalAlignment="Top" Width="60"/>
         <TextBox Name="tb7" DataContext="stringColumn" HorizontalAlignment="Left" Height="23" Margin="450,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="60"/>
-        <wcl:DateEditer Name="tb8" DisplaySize="10" DataContext="dateColumn" HorizontalAlignment="Left" Height="23" Margin="520,435,0,0"  Text="TextBox" VerticalAlignment="Top" Width="120"/>
-        <wcl:TimeEditer Name="tb9" DisplaySize="8" DataContext="timeColumn" HorizontalAlignment="Left" Height="23" Margin="650,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+        <wcl:ASDateEditer Name="tb8" DisplaySize="10" DataContext="dateColumn" HorizontalAlignment="Left" Height="23" Margin="520,435,0,0"  Text="TextBox" VerticalAlignment="Top" Width="120"/>
+        <wcl:ASTimeEditer Name="tb9" DisplaySize="8" DataContext="timeColumn" HorizontalAlignment="Left" Height="23" Margin="650,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
         
 
 

@@ -16,12 +16,12 @@ using System.Windows.Shapes;
 namespace WpfControlsLibrary
 {
     /// <summary>
-    /// Interaction logic for NumericBox.xaml
+    /// Interaction logic for ASNumericBox.xaml
     /// </summary>
-    public partial class NumericBox : UserControl
+    public partial class ASNumericBox : UserControl
     {
 
-        public static readonly DependencyProperty SizeProperty = DependencyProperty.Register("Size", typeof(int), typeof(NumericBox));
+        public static readonly DependencyProperty SizeProperty = DependencyProperty.Register("Size", typeof(int), typeof(ASNumericBox));
         public int Size
         {
             get
@@ -34,7 +34,7 @@ namespace WpfControlsLibrary
             }
         }
 
-        public static readonly DependencyProperty DecProperty = DependencyProperty.Register("Dec", typeof(int), typeof(NumericBox));
+        public static readonly DependencyProperty DecProperty = DependencyProperty.Register("Dec", typeof(int), typeof(ASNumericBox));
         public int Dec
         {
             get
@@ -47,7 +47,7 @@ namespace WpfControlsLibrary
             }
         }
         
-        public static readonly DependencyProperty MinValueProperty = DependencyProperty.Register("MinValue", typeof(double?), typeof(NumericBox));
+        public static readonly DependencyProperty MinValueProperty = DependencyProperty.Register("MinValue", typeof(double?), typeof(ASNumericBox));
         public double? MinValue
         {
             get
@@ -60,7 +60,7 @@ namespace WpfControlsLibrary
             }
         }
 
-        public static readonly DependencyProperty MaxValueProperty = DependencyProperty.Register("MaxValue", typeof(double?), typeof(NumericBox));
+        public static readonly DependencyProperty MaxValueProperty = DependencyProperty.Register("MaxValue", typeof(double?), typeof(ASNumericBox));
         public double? MaxValue
         {
             get
@@ -73,7 +73,7 @@ namespace WpfControlsLibrary
             }
         }
 
-        public static readonly DependencyProperty ButtonSizeProperty = DependencyProperty.Register("ButtonSize", typeof(int), typeof(NumericBox));
+        public static readonly DependencyProperty ButtonSizeProperty = DependencyProperty.Register("ButtonSize", typeof(int), typeof(ASNumericBox));
         public int ButtonSize
         {
             get
@@ -86,7 +86,7 @@ namespace WpfControlsLibrary
             }
         }
         
-        public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(NumericBox));
+        public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(ASNumericBox));
         public string Text
         {
             get
@@ -99,7 +99,7 @@ namespace WpfControlsLibrary
             }
         }
 
-        public static readonly DependencyProperty ThousandsProperty = DependencyProperty.Register("Thousands", typeof(bool), typeof(NumericBox));
+        public static readonly DependencyProperty ThousandsProperty = DependencyProperty.Register("Thousands", typeof(bool), typeof(ASNumericBox));
         public bool Thousands
         {
             get
@@ -112,7 +112,7 @@ namespace WpfControlsLibrary
             }
         }
 
-        //public static readonly DependencyProperty TextBoxDCProperty = DependencyProperty.Register("TextBoxDC", typeof(string), typeof(NumericBox));
+        //public static readonly DependencyProperty TextBoxDCProperty = DependencyProperty.Register("TextBoxDC", typeof(string), typeof(ASNumericBox));
         //public string TextBoxDC
         //{
         //    get
@@ -125,7 +125,7 @@ namespace WpfControlsLibrary
         //    }
         //}
         
-        //public static readonly DependencyProperty TextBoxNameProperty = DependencyProperty.Register("TextBoxName", typeof(string), typeof(NumericBox));
+        //public static readonly DependencyProperty TextBoxNameProperty = DependencyProperty.Register("TextBoxName", typeof(string), typeof(ASNumericBox));
         //public string TextBoxName
         //{
         //    get
@@ -138,7 +138,7 @@ namespace WpfControlsLibrary
         //    }
         //}
         
-        public static readonly DependencyProperty FieldNameProperty = DependencyProperty.Register("FieldName", typeof(string), typeof(NumericBox));
+        public static readonly DependencyProperty FieldNameProperty = DependencyProperty.Register("FieldName", typeof(string), typeof(ASNumericBox));
         public string FieldName
         {
             get
@@ -151,7 +151,7 @@ namespace WpfControlsLibrary
             }
         }
 
-        public static readonly DependencyProperty KeyTrapsProperty = DependencyProperty.Register("KeyTraps", typeof(string), typeof(NumericBox));
+        public static readonly DependencyProperty KeyTrapsProperty = DependencyProperty.Register("KeyTraps", typeof(string), typeof(ASNumericBox));
         public string KeyTraps
         {
             get
@@ -164,7 +164,20 @@ namespace WpfControlsLibrary
             }
         }
 
-        //public static readonly DependencyProperty ButtonNameProperty = DependencyProperty.Register("ButtonName", typeof(string), typeof(NumericBox));
+        public static readonly DependencyProperty FontWeightProperty = DependencyProperty.Register("FontWeight", typeof(FontWeight), typeof(ASNumericBox));
+        public FontWeight FontWeight
+        {
+            get
+            {
+                return (FontWeight)base.GetValue(FontWeightProperty);
+            }
+            set
+            {
+                base.SetValue(FontWeightProperty, value);
+            }
+        }
+
+        //public static readonly DependencyProperty ButtonNameProperty = DependencyProperty.Register("ButtonName", typeof(string), typeof(ASNumericBox));
         //public string ButtonName
         //{
         //    get
@@ -177,7 +190,7 @@ namespace WpfControlsLibrary
         //    }
         //}
 
-        public NumericBox()
+        public ASNumericBox()
         {
             InitializeComponent();
         }
@@ -192,6 +205,7 @@ namespace WpfControlsLibrary
             numBoxTextBox.Text = Text;
             numBoxTextBox.Thousands = Thousands;
             numBoxButton.Width = ButtonSize;
+            numBoxTextBox.FontWeight = FontWeight;
 
             //numBoxTextBox.DataContext = TextBoxDC;
 

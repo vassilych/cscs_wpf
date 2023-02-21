@@ -9,19 +9,19 @@ using System.Windows.Data;
 
 namespace WpfControlsLibrary
 {
-    public class DateEditerConverter : IValueConverter
+    public class ASTimeEditerConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             int size = (int)parameter;
-            DateTime dateTime = new DateTime(1,1,1);
+            TimeSpan timeSpan = new TimeSpan(0, 0, 0);
             try
             {
-                dateTime = (DateTime)value;
-                if (size == 8)
-                    return dateTime.ToString("dd/MM/yy");
-                else if (size == 10)
-                    return dateTime.ToString("dd/MM/yyyy");
+                timeSpan = (TimeSpan)value;
+                if (size == 5)
+                    return timeSpan.ToString("hh\\:mm");
+                else if (size == 8)
+                    return timeSpan.ToString("hh\\:mm\\:ss");
             }
             catch
             {
@@ -32,19 +32,18 @@ namespace WpfControlsLibrary
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             string strValue = value as string;
-            DateTime resultTimeSpan;
-
+            TimeSpan resultTimeSpan;
             int size = (int)parameter;
-            if (size == 8)
+            if (size == 5)
             {
-                if (DateTime.TryParseExact(strValue, "dd/MM/yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out resultTimeSpan))
+                if (TimeSpan.TryParseExact(strValue, "hh\\:mm", CultureInfo.InvariantCulture, out resultTimeSpan))
                 {
                     return resultTimeSpan;
                 }
             }
-            else if (size == 10)
+            else if (size == 8)
             {
-                if (DateTime.TryParseExact(strValue, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out resultTimeSpan))
+                if (TimeSpan.TryParseExact(strValue, "hh\\:mm\\:ss", CultureInfo.InvariantCulture, out resultTimeSpan))
                 {
                     return resultTimeSpan;
                 }
