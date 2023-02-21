@@ -13,7 +13,7 @@ using System.Windows.Input;
 
 namespace WpfControlsLibrary
 {
-    public class DateEditer : DatePicker
+    public class ASDateEditer : DatePicker
     {
         string textBeforeChange;
 
@@ -25,7 +25,9 @@ namespace WpfControlsLibrary
             if (textBox != null)
             {
                 var dptb = textBox as DatePickerTextBox;
-                
+
+                dptb.FontWeight = FontWeight;
+
                 dptb.PreviewTextInput += dptb_PreviewTextInput;
 
                 dptb.PreviewKeyDown += dptb_PreviewKeyDown;
@@ -40,7 +42,7 @@ namespace WpfControlsLibrary
         }
 
         
-        public static readonly DependencyProperty DisplaySizeProperty = DependencyProperty.Register("DisplaySize", typeof(int), typeof(DateEditer));
+        public static readonly DependencyProperty DisplaySizeProperty = DependencyProperty.Register("DisplaySize", typeof(int), typeof(ASDateEditer));
         public int DisplaySize
         {
             get
@@ -50,6 +52,19 @@ namespace WpfControlsLibrary
             set
             {
                 base.SetValue(DisplaySizeProperty, value);
+            }
+        }
+        
+        public static readonly DependencyProperty FontWeightProperty = DependencyProperty.Register("FontWeight", typeof(FontWeight), typeof(ASDateEditer));
+        public FontWeight FontWeight
+        {
+            get
+            {
+                return (FontWeight)base.GetValue(FontWeightProperty);
+            }
+            set
+            {
+                base.SetValue(FontWeightProperty, value);
             }
         }
 

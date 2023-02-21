@@ -11,7 +11,9 @@ function gbAAA@clicked(){
 }
 
 function gbExit@clicked(){
-    quit;
+    SetWidgetOptions("List_acct", "selectmode");
+    DataGrid("List_acct", "addRow");
+    //quit;
 }
 
 function opisTb@header(){

@@ -43,6 +43,7 @@ function enterbox1@clicked(){
 
 // DateEditer
 DEFINE date1 type d size 8;
+//date1 = "12/12/12";
 
 function dateBtn@clicked(){
     MessageBox(date1);

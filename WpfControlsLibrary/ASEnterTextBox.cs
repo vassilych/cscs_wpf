@@ -9,7 +9,7 @@ using System.Windows.Input;
 
 namespace WpfControlsLibrary
 {
-    public class EnterTextBox : TextBox
+    public class ASEnterTextBox : TextBox
     {
         public int Size;
         string textBeforeChange;
@@ -53,7 +53,7 @@ namespace WpfControlsLibrary
 
         private void this_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            var etb = e.Source as EnterTextBox;
+            var etb = e.Source as ASEnterTextBox;
 
             textBeforeChange = etb.Text;
         }
@@ -66,7 +66,7 @@ namespace WpfControlsLibrary
                 return;
             }
 
-            var etb = e.Source as EnterTextBox;
+            var etb = e.Source as ASEnterTextBox;
 
             etb.TextChanged -= this_TextChanged;
 
@@ -86,7 +86,7 @@ namespace WpfControlsLibrary
 
         private void this_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            var etb = e.Source as EnterTextBox;
+            var etb = e.Source as ASEnterTextBox;
 
             if (etb.Text.Length + e.Text.Length - etb.SelectionLength > Size)
             {

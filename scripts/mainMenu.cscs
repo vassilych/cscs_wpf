@@ -258,7 +258,7 @@ function mainMenuWindow_OnDisplay(){
 
     AddMenuSeparator("IvanDC");
 
-     AddMenuItem("IvanDC", "Ivan_select_table_primjer2.cscs", "Ivan_select_table_primjer2", "runScript");
+     AddMenuItem("IvanDC", "Ivan_save_red_wlistf.cscs", "Ivan_save_red_wlistf", "runScript");
 
 
 

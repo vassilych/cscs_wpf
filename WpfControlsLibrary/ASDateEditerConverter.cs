@@ -9,19 +9,19 @@ using System.Windows.Data;
 
 namespace WpfControlsLibrary
 {
-    public class TimeEditerConverter : IValueConverter
+    public class ASDateEditerConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             int size = (int)parameter;
-            TimeSpan timeSpan = new TimeSpan(0, 0, 0);
+            DateTime dateTime = new DateTime(1,1,1);
             try
             {
-                timeSpan = (TimeSpan)value;
-                if (size == 5)
-                    return timeSpan.ToString("hh\\:mm");
-                else if (size == 8)
-                    return timeSpan.ToString("hh\\:mm\\:ss");
+                dateTime = (DateTime)value;
+                if (size == 8)
+                    return dateTime.ToString("dd/MM/yy");
+                else if (size == 10)
+                    return dateTime.ToString("dd/MM/yyyy");
             }
             catch
             {
@@ -32,18 +32,19 @@ namespace WpfControlsLibrary
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             string strValue = value as string;
-            TimeSpan resultTimeSpan;
+            DateTime resultTimeSpan;
+
             int size = (int)parameter;
-            if (size == 5)
+            if (size == 8)
             {
-                if (TimeSpan.TryParseExact(strValue, "hh\\:mm", CultureInfo.InvariantCulture, out resultTimeSpan))
+                if (DateTime.TryParseExact(strValue, "dd/MM/yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out resultTimeSpan))
                 {
                     return resultTimeSpan;
                 }
             }
-            else if (size == 8)
+            else if (size == 10)
             {
-                if (TimeSpan.TryParseExact(strValue, "hh\\:mm\\:ss", CultureInfo.InvariantCulture, out resultTimeSpan))
+                if (DateTime.TryParseExact(strValue, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out resultTimeSpan))
                 {
                     return resultTimeSpan;
                 }

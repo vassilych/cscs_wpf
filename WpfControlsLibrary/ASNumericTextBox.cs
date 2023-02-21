@@ -10,7 +10,7 @@ using System.Windows;
 
 namespace WpfControlsLibrary
 {
-    public class NumericTextBox : TextBox
+    public class ASNumericTextBox : TextBox
     {
         const string thousandsDelimiter = ".";
         const string decimalSign = ",";
@@ -21,7 +21,7 @@ namespace WpfControlsLibrary
 
         #region DependencyProperties
 
-        //public static readonly DependencyProperty SizeProperty = DependencyProperty.Register("Size", typeof(int), typeof(NumericTextBox));
+        //public static readonly DependencyProperty SizeProperty = DependencyProperty.Register("Size", typeof(int), typeof(ASNumericTextBox));
         //public int Size
         //{
         //    get
@@ -34,7 +34,7 @@ namespace WpfControlsLibrary
         //    }
         //}
 
-        //public static readonly DependencyProperty DecProperty = DependencyProperty.Register("Dec", typeof(int), typeof(NumericTextBox));
+        //public static readonly DependencyProperty DecProperty = DependencyProperty.Register("Dec", typeof(int), typeof(ASNumericTextBox));
         //public int Dec
         //{
         //    get
@@ -47,7 +47,7 @@ namespace WpfControlsLibrary
         //    }
         //}
 
-        //public static readonly DependencyProperty ThousandsProperty = DependencyProperty.Register("Thousands", typeof(bool), typeof(NumericTextBox));
+        //public static readonly DependencyProperty ThousandsProperty = DependencyProperty.Register("Thousands", typeof(bool), typeof(ASNumericTextBox));
         //public bool Thousands
         //{
         //    get
@@ -99,7 +99,7 @@ namespace WpfControlsLibrary
 
         private void NumericTextBox_Loaded(object sender, RoutedEventArgs e)
         {
-            var ntb = (e.Source as NumericTextBox);
+            var ntb = (e.Source as ASNumericTextBox);
 
             ntb.TextChanged -= NumericTextBox_TextChanged;
 
@@ -177,7 +177,7 @@ namespace WpfControlsLibrary
 
             this.TextChanged += NumericTextBox_TextChanged;
 
-            //var ntb = (e.Source as NumericTextBox);
+            //var ntb = (e.Source as ASNumericTextBox);
 
             //ntb.TextChanged -= NumericTextBox_TextChanged;
 
@@ -252,7 +252,7 @@ namespace WpfControlsLibrary
 
         public void FormatOnLostFocus()
         {
-            //var ntb = (e.Source as NumericTextBox);
+            //var ntb = (e.Source as ASNumericTextBox);
 
             this.TextChanged -= NumericTextBox_TextChanged;
 
@@ -334,7 +334,7 @@ namespace WpfControlsLibrary
 
         private void NumericTextBox_GotFocus(object sender, RoutedEventArgs e)
         {
-            var ntb = (e.Source as NumericTextBox);
+            var ntb = (e.Source as ASNumericTextBox);
 
             ntb.TextChanged -= NumericTextBox_TextChanged;
 
@@ -368,7 +368,7 @@ namespace WpfControlsLibrary
                 return;
             }
 
-            var ntb = (e.Source as NumericTextBox);
+            var ntb = (e.Source as ASNumericTextBox);
 
             ntb.TextChanged -= NumericTextBox_TextChanged;
 
@@ -399,7 +399,7 @@ namespace WpfControlsLibrary
                     formatThousandsDelimiter(ntb);
         }
 
-        private void formatThousandsDelimiter(NumericTextBox ntb)
+        private void formatThousandsDelimiter(ASNumericTextBox ntb)
         {
             numOfThousandsDelimiters = 0;
 
@@ -449,7 +449,7 @@ namespace WpfControlsLibrary
 
         private void this_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            var ntb = (e.Source as NumericTextBox);
+            var ntb = (e.Source as ASNumericTextBox);
 
             textBeforeChange = ntb.Text;
             SelectionStartBeforeChange = ntb.SelectionStart;
@@ -457,7 +457,7 @@ namespace WpfControlsLibrary
 
         private void this_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            var ntb = e.Source as NumericTextBox;
+            var ntb = e.Source as ASNumericTextBox;
 
             if (ntb.SelectionStart == 0 && e.Text.Equals("-"))
             {
