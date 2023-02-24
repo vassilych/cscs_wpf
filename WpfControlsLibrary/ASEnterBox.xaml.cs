@@ -113,6 +113,32 @@ namespace WpfControlsLibrary
             }
         }
 
+        public static readonly DependencyProperty BackgroundProperty = DependencyProperty.Register("Background", typeof(Brush), typeof(ASEnterBox));
+        public Brush Background
+        {
+            get
+            {
+                return (Brush)base.GetValue(BackgroundProperty);
+            }
+            set
+            {
+                base.SetValue(BackgroundProperty, value);
+            }
+        }
+        
+        public static readonly DependencyProperty ForegroundProperty = DependencyProperty.Register("Foreground", typeof(Brush), typeof(ASEnterBox));
+        public Brush Foreground
+        {
+            get
+            {
+                return (Brush)base.GetValue(ForegroundProperty);
+            }
+            set
+            {
+                base.SetValue(ForegroundProperty, value);
+            }
+        }
+
         public ASEnterBox()
         {
             InitializeComponent();
@@ -126,6 +152,9 @@ namespace WpfControlsLibrary
             enterBoxTextBox.Text = Text;
             enterBoxTextBox.CharacterCasing = Case?.ToLower() == "up"? CharacterCasing.Upper : (Case?.ToLower() == "down"? CharacterCasing.Lower : CharacterCasing.Normal);
             enterBoxTextBox.FontWeight = FontWeight;
+
+            enterBoxTextBox.Background = Background == null? new SolidColorBrush() { Color = Colors.White} : Background;
+            enterBoxTextBox.Foreground = Foreground == null? new SolidColorBrush() { Color = Colors.Black} : Foreground;
 
             enterBoxButton.Width = ButtonSize;
         }

@@ -90,6 +90,10 @@ function mainMenuWindow_OnDisplay(){
     AddMenuSeparator("BtrieveDC");
     
     AddMenuItem("BtrieveDC", "testCompiledFindvNext.cscs", "testCompiledFindvNext", "runScript"); // Crashes
+    
+    AddMenuSeparator("BtrieveDC");
+    
+    AddMenuItem("BtrieveDC", "testNext.cscs", "testNext", "runScript"); // Crashes
 
     
     //------------- DATA GRID -----------------------

@@ -1182,6 +1182,7 @@ $@"EXECUTE sp_executesql N'
             if (Gui.SQLInstance.SqlServerConnection.State != System.Data.ConnectionState.Open)
             {
                 Gui.SQLInstance.SqlServerConnection.Open();
+                //SetArithabortOn();
             }
 
             //
@@ -1243,6 +1244,13 @@ $@"EXECUTE sp_executesql N'
             SetFlerr(0, thisFnum);
 
             return new Variable((long)thisFnum);
+        }
+
+        private void SetArithabortOn()
+        {
+            var queryString = "SET ARITHABORT ON";
+            SqlCommand command = new SqlCommand(queryString, Gui.SQLInstance.SqlServerConnection);
+            command.ExecuteNonQuery();
         }
 
         public class FINDVClass
@@ -1355,7 +1363,7 @@ $@"EXECUTE sp_executesql N'
                         }
                         else
                         {
-                            return findNextOrPreviousWithoutCacheing(FindvOption.Next);
+                               return findNextOrPreviousWithoutCacheing(FindvOption.Next);
                         }
                     case "p":
                         if (thisOpenv.lockingType == "a")
@@ -1450,6 +1458,12 @@ $@"EXECUTE sp_executesql N'
 
                     cachedColumnsToSelect[tableHndlNum] = columns;
                 }
+                //if(columns == "*")
+                //{
+                //    columns = "ID, " + string.Join(", ", thisOpenv.FieldNames);
+
+                //    cachedColumnsToSelect[tableHndlNum] = columns;
+                //}
 
                 string sqlForString = "";
                 if (!string.IsNullOrEmpty(forString))
@@ -1639,9 +1653,9 @@ order by {orderByString}
                     case "M":// memo
                         return "";// it's not beeing used
                     case "B":// byte
-                        return "int";
+                        return "tinyInt";
                     case "I":// int
-                        return "int";
+                        return "smallInt";
                     case "V":// overlay
                         return "";// it's not beeing used
                     default:
@@ -1755,11 +1769,13 @@ order by {orderByString}
 
                 for (int i = 0; i < keySegmentsOrdered.Count; i++)
                 {
-                    pvStringBuilder.Append("\'" + thisOpenv.CurrentKey.KeyColumns[keySegmentsOrdered[i]] + "\', ");
+                    //pvStringBuilder.Append("\'" + thisOpenv.CurrentKey.KeyColumns[keySegmentsOrdered[i]] + "\', ");
+                    pvStringBuilder.Append(thisOpenv.CurrentKey.KeyColumns[keySegmentsOrdered[i]] + ", ");
                 }
                 if (KeyClass.Unique == false || KeyClass.KeyNum == 0)
                 {
-                    pvStringBuilder.Append("\'" + thisOpenv.currentRow + "\', ");
+                    //pvStringBuilder.Append("\'" + thisOpenv.currentRow + "\', ");
+                    pvStringBuilder.Append(thisOpenv.currentRow + ", ");
                 }
                 pvStringBuilder.Remove(pvStringBuilder.Length - 2, 2); // remove last ", "
 
@@ -2282,8 +2298,8 @@ N'{paramsDeclaration}', ";
                                 if (firstPass)
                                     currentSqlId = (int)reader["ID"];
 
-                                int currentFieldNum = 1;
-                                while (currentFieldNum < reader.FieldCount)
+                                //int currentFieldNum = 1;
+                                for (int currentFieldNum = 1; currentFieldNum < reader.FieldCount; currentFieldNum++)
                                 {
                                     var currentColumnName = reader.GetName(currentFieldNum);
                                     if (KeyClass.KeyColumns.Keys.Any(p => p.ToUpper() == currentColumnName.ToUpper()))
@@ -2306,23 +2322,49 @@ N'{paramsDeclaration}', ";
                                     }
                                     else
                                     {
-                                        if (reader.GetFieldType(currentFieldNum) == typeof(DateTime))
+                                        //if (reader.GetFieldType(currentFieldNum) == typeof(DateTime))
+                                        //{
+                                        //    //DateTime fieldValue = (DateTime)reader[currentColumnName];
+                                        //    //var dateFormat = Gui.DEFINES[loweredCurrentColumnName].GetDateFormat();
+                                        //    //var newVar = new Variable(fieldValue.ToString(dateFormat));
+                                        //    //Gui.DEFINES[loweredCurrentColumnName].InitVariable(newVar, Gui);
+                                        //    //Gui.OnVariableChange(loweredCurrentColumnName, newVar, true);
+                                        //}
+                                        //else
+                                        //{
+                                        //string fieldValue = reader[currentColumnName].ToString().TrimEnd();
+                                        //Gui.DEFINES[loweredCurrentColumnName].InitVariable(new Variable(fieldValue).Clone(), Gui);
+                                        switch (Gui.DEFINES[loweredCurrentColumnName].DefType)
                                         {
-                                            DateTime fieldValue = (DateTime)reader[currentColumnName];
-                                            var dateFormat = Gui.DEFINES[loweredCurrentColumnName].GetDateFormat();
-                                            var newVar = new Variable(fieldValue.ToString(dateFormat));
-                                            Gui.DEFINES[loweredCurrentColumnName].InitVariable(newVar, Gui);
-                                            Gui.OnVariableChange(loweredCurrentColumnName, newVar, true);
+                                            case "a":
+                                                Gui.DEFINES[loweredCurrentColumnName].String = reader[currentColumnName].ToString().TrimEnd();
+                                                break;
+                                            case "i":
+                                            case "n":
+                                            case "r":
+                                            case "b":
+                                            case "l":
+                                                double result;
+                                                if (double.TryParse(reader[currentColumnName].ToString(), out result))
+                                                {
+                                                    Gui.DEFINES[loweredCurrentColumnName].Value = result;
+                                                }
+                                                break;
+                                            case "d":
+                                                Gui.DEFINES[loweredCurrentColumnName].DateTime = (DateTime)reader[currentColumnName];
+                                                break;
+                                            case "t":
+                                                var time = (TimeSpan)reader[currentColumnName];
+                                                Gui.DEFINES[loweredCurrentColumnName].DateTime = new DateTime(1, 1, 1, time.Hours, time.Minutes, time.Seconds);
+                                                break;
+                                            default:
+                                                break;
                                         }
-                                        else
-                                        {
-                                            string fieldValue = reader[currentColumnName].ToString().TrimEnd();
-                                            Gui.DEFINES[loweredCurrentColumnName].InitVariable(new Variable(fieldValue).Clone(), Gui);
-                                            Gui.OnVariableChange(loweredCurrentColumnName, new Variable(fieldValue), true);
-                                        }
+                                        //Gui.OnVariableChange(loweredCurrentColumnName, new Variable(fieldValue), true);
+                                        //}
                                     }
 
-                                    currentFieldNum++;
+                                    //currentFieldNum++;
                                 }
 
                                 firstPass = false;
