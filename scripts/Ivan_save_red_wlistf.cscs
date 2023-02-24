@@ -7,7 +7,7 @@ nkgkacct_hndl = openv('NKGKACCT', "BD1", "a");  //fnum nkgkacct_hndl  lock n
 //nkgkacct_hndl = openv('NKGKACCT');  //fnum nkgkacct_hndl  lock n
 
 function gbScan@clicked(){
-    DisplayTableSetup("List_acct", nkgkacct_hndl, "gk_ac_konto", "0", "gk_ac_konto != '01'", "");
+    DisplayTableSetup("List_acct", nkgkacct_hndl, "gk_ac_konto", "0", "true", ""); //gk_ac_konto != '01'
     //SetWidgetOptions("List_acct" , "EditMode");
 }
 

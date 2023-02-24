@@ -9,7 +9,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace WpfControlsLibrary
 {
@@ -21,12 +24,30 @@ namespace WpfControlsLibrary
         {
             base.OnApplyTemplate();
 
+            //this.Padding = new Thickness(0, 0, 0, 0);
+            //this.Resources.
+
+            var root = this.Template.FindName("PART_Root", this) as Grid;
+            if (root != null)
+            {
+            }
+            
             var textBox = this.Template.FindName("PART_TextBox", this) as UIElement;
             if (textBox != null)
             {
                 var dptb = textBox as DatePickerTextBox;
 
                 dptb.FontWeight = FontWeight;
+                dptb.Background = Background == null ? new SolidColorBrush() { Color = Colors.White } : Background;
+                dptb.Foreground = Foreground == null ? new SolidColorBrush() { Color = Colors.Black } : Foreground;
+
+                dptb.Margin = new Thickness(-2);
+                dptb.Padding = new Thickness(0);
+
+
+                dptb.Height = this.Height;
+                dptb.Width = this.Width - this.ButtonWidth + 2;
+                dptb.HorizontalAlignment = HorizontalAlignment.Left;
 
                 dptb.PreviewTextInput += dptb_PreviewTextInput;
 
@@ -38,6 +59,32 @@ namespace WpfControlsLibrary
                 dptb.Loaded += Dptb_Loaded;
 
                 dptb.Focus();
+            }
+
+            var button = this.Template.FindName("PART_Button", this) as Button;
+            if (button != null)
+            {
+                button.Width = ButtonWidth;
+                button.Margin = new Thickness(-2, 0, -4, 0);
+                button.Padding = new Thickness(0);
+
+                button.HorizontalContentAlignment = HorizontalAlignment.Center;
+                button.VerticalContentAlignment = VerticalAlignment.Center;
+
+                button.HorizontalAlignment = HorizontalAlignment.Right;
+                button.VerticalAlignment = VerticalAlignment.Center;
+
+                button.Background = Brushes.Red;
+
+                Style MyButtonStyle = new Style();
+
+                ControlTemplate templateButton = new ControlTemplate(typeof(Button));
+                
+                FrameworkElementFactory elemFactory = new FrameworkElementFactory(typeof(Image));
+                elemFactory.SetValue(Image.SourceProperty, new BitmapImage(new Uri("settings.png", UriKind.Relative)));
+                templateButton.VisualTree = elemFactory;
+
+                button.Template = templateButton;
             }
         }
 
@@ -65,6 +112,45 @@ namespace WpfControlsLibrary
             set
             {
                 base.SetValue(FontWeightProperty, value);
+            }
+        }
+        
+        public static readonly DependencyProperty ButtonWidthProperty = DependencyProperty.Register("ButtonWidth", typeof(int), typeof(ASDateEditer));
+        public int ButtonWidth
+        {
+            get
+            {
+                return (int)base.GetValue(ButtonWidthProperty);
+            }
+            set
+            {
+                base.SetValue(ButtonWidthProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty BackgroundProperty = DependencyProperty.Register("Background", typeof(Brush), typeof(ASDateEditer));
+        public Brush Background
+        {
+            get
+            {
+                return (Brush)base.GetValue(BackgroundProperty);
+            }
+            set
+            {
+                base.SetValue(BackgroundProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty ForegroundProperty = DependencyProperty.Register("Foreground", typeof(Brush), typeof(ASDateEditer));
+        public Brush Foreground
+        {
+            get
+            {
+                return (Brush)base.GetValue(ForegroundProperty);
+            }
+            set
+            {
+                base.SetValue(ForegroundProperty, value);
             }
         }
 

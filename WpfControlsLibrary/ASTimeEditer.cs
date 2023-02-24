@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace WpfControlsLibrary
 {
@@ -28,8 +29,8 @@ namespace WpfControlsLibrary
             }
         }
 
-        public static readonly DependencyProperty FontWeightProperty = DependencyProperty.Register("FontWeight", typeof(FontWeight), typeof(ASTimeEditer));
-        public FontWeight FontWeight
+        public static new readonly DependencyProperty FontWeightProperty = DependencyProperty.Register("FontWeight", typeof(FontWeight), typeof(ASTimeEditer));
+        public new FontWeight FontWeight
         {
             get
             {
@@ -41,11 +42,39 @@ namespace WpfControlsLibrary
             }
         }
 
+        public static readonly DependencyProperty BackgroundProperty = DependencyProperty.Register("Background", typeof(Brush), typeof(ASTimeEditer));
+        public Brush Background
+        {
+            get
+            {
+                return (Brush)base.GetValue(BackgroundProperty);
+            }
+            set
+            {
+                base.SetValue(BackgroundProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty ForegroundProperty = DependencyProperty.Register("Foreground", typeof(Brush), typeof(ASTimeEditer));
+        public Brush Foreground
+        {
+            get
+            {
+                return (Brush)base.GetValue(ForegroundProperty);
+            }
+            set
+            {
+                base.SetValue(ForegroundProperty, value);
+            }
+        }
+
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
 
-            this.FontWeight = FontWeight;
+            base.FontWeight = FontWeight;
+            base.Background = Background == null ? new SolidColorBrush() { Color = Colors.White } : Background;
+            base.Foreground = Foreground == null ? new SolidColorBrush() { Color = Colors.Black } : Foreground;
         }
 
         public ASTimeEditer()

@@ -177,6 +177,32 @@ namespace WpfControlsLibrary
             }
         }
 
+        public static readonly DependencyProperty BackgroundProperty = DependencyProperty.Register("Background", typeof(Brush), typeof(ASNumericBox));
+        public Brush Background
+        {
+            get
+            {
+                return (Brush)base.GetValue(BackgroundProperty);
+            }
+            set
+            {
+                base.SetValue(BackgroundProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty ForegroundProperty = DependencyProperty.Register("Foreground", typeof(Brush), typeof(ASNumericBox));
+        public Brush Foreground
+        {
+            get
+            {
+                return (Brush)base.GetValue(ForegroundProperty);
+            }
+            set
+            {
+                base.SetValue(ForegroundProperty, value);
+            }
+        }
+
         //public static readonly DependencyProperty ButtonNameProperty = DependencyProperty.Register("ButtonName", typeof(string), typeof(ASNumericBox));
         //public string ButtonName
         //{
@@ -206,7 +232,8 @@ namespace WpfControlsLibrary
             numBoxTextBox.Thousands = Thousands;
             numBoxButton.Width = ButtonSize;
             numBoxTextBox.FontWeight = FontWeight;
-
+            numBoxTextBox.Background = Background == null ? new SolidColorBrush() { Color = Colors.White } : Background;
+            numBoxTextBox.Foreground = Foreground == null ? new SolidColorBrush() { Color = Colors.Black } : Foreground;
             //numBoxTextBox.DataContext = TextBoxDC;
 
             //numBoxTextBox.Name = TextBoxName;

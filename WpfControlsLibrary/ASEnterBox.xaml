@@ -13,8 +13,13 @@
             <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
 
-        <local:ASEnterTextBox x:Name="enterBoxTextBox" Grid.Column="0" HorizontalAlignment="Stretch" Background="Transparent"/>
-        <Button Focusable="False" x:Name="enterBoxButton" Grid.Column="1" Height="auto"/>
+        <local:ASEnterTextBox x:Name="enterBoxTextBox" Grid.Column="0" HorizontalAlignment="Stretch" Background="White"/>
+        <Button Focusable="False" x:Name="enterBoxButton" Grid.Column="1" Height="auto">
+            <Viewbox>
+                <Image Source="search.png"/>
+            </Viewbox>
+            
+        </Button>
 
     </Grid>
 </UserControl>
