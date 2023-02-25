@@ -5,7 +5,10 @@ define mainMenuDC type a;
 
 CreateWindow("../../scripts/mainMenuWindow.xaml");
 
-
+myTest("It works!");
+function myTest(txt){
+    MessageBox(txt);   
+}
 
 function runScript(sender, load){
     //MessageBox("sender = " + sender + ", load = "  + load);   
