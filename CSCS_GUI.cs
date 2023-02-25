@@ -2372,10 +2372,11 @@ namespace WpfCSCS
                 EncodeFileFunction.EncodeDecode(fileName, true);
             }
 
+            PreprocessScripts();
+
             Variable result = null;
             try
             {
-                PreprocessScripts();
                 result = Interpreter.Process(script, fileName, false, this);
             }
             catch (Exception exc)
@@ -2396,48 +2397,28 @@ namespace WpfCSCS
 
         void PreprocessScripts()
         {
-            var scriptsDirStr = App.GetConfiguration("ScriptsPath", "");
+            var doPreprocess = App.GetConfiguration("Preprocess", "");
+            var tokensStr = App.GetConfiguration("PreprocessTokens", "");
             var filesStr = App.GetConfiguration("PreprocessFiles", "");
-            if (string.IsNullOrWhiteSpace(scriptsDirStr) || string.IsNullOrWhiteSpace(filesStr))
+            if (string.IsNullOrWhiteSpace(tokensStr) || string.IsNullOrWhiteSpace(filesStr) ||
+                !string.Equals(doPreprocess, "true", StringComparison.OrdinalIgnoreCase))
             {
                 return;
+            }
+            var scriptsDirStr = App.GetConfiguration("ScriptsPath", "");
+
+            var tokenSet = new HashSet<string>();
+            var tokens = tokensStr.Split(',');
+            foreach (var token in tokens)
+            {
+                tokenSet.Add(token);
             }
 
             var files = filesStr.Split(',');
             foreach (var file in files)
             {
-                var fileName = Path.Combine(scriptsDirStr, file);
-                if (string.IsNullOrWhiteSpace(file) || !File.Exists(fileName))
-                {
-                    throw new ArgumentException("Preprocessing file not found: [" + fileName + "]");
-                }
-                string script = Utils.GetFileContents(fileName);
-                Preprocess(script, fileName);
+                Utils.PreprocessScriptFile(file, tokenSet, scriptsDirStr, this);
             }
-        }
-
-        public void Preprocess(string script, string fileName = "")
-        {
-            Dictionary<int, int> char2Line;
-            string data = Utils.ConvertToScript(Interpreter.LastInstance, script, out char2Line, fileName);
-            if (string.IsNullOrWhiteSpace(data))
-            {
-                return;
-            }
-
-            ParsingScript toParse = new ParsingScript(Interpreter.LastInstance, data, 0, char2Line);
-            toParse.OriginalScript = script;
-            toParse.Filename = fileName;
-            toParse.Context = Interpreter.LastInstance;
-
-            var tokens = new HashSet<string>() { "function", "csfunction", "dllfunction", "dllsub", "importdll", "define" };
-            var firstScript = Utils.GetSubscript(toParse, tokens);
-            if (string.IsNullOrWhiteSpace(firstScript))
-            {
-                return;
-            }
-
-            Interpreter.Process(firstScript, fileName, false, this);
         }
     }
 
@@ -4184,6 +4165,7 @@ namespace WpfCSCS
             MainWindow[fullName] = isMain;
             return isMain;
         }
+
         public static bool CheckParentScriptIsMain(ParsingScript script)
         {
             var fileName = script != null && script.ParentScript != null ? script.ParentScript.Filename : null;
