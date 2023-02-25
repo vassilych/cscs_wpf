@@ -2375,6 +2375,7 @@ namespace WpfCSCS
             Variable result = null;
             try
             {
+                PreprocessScripts();
                 result = Interpreter.Process(script, fileName, false, this);
             }
             catch (Exception exc)
@@ -2391,6 +2392,52 @@ namespace WpfCSCS
             }
 
             return result;
+        }
+
+        void PreprocessScripts()
+        {
+            var scriptsDirStr = App.GetConfiguration("ScriptsPath", "");
+            var filesStr = App.GetConfiguration("PreprocessFiles", "");
+            if (string.IsNullOrWhiteSpace(scriptsDirStr) || string.IsNullOrWhiteSpace(filesStr))
+            {
+                return;
+            }
+
+            var files = filesStr.Split(',');
+            foreach (var file in files)
+            {
+                var fileName = Path.Combine(scriptsDirStr, file);
+                if (string.IsNullOrWhiteSpace(file) || !File.Exists(fileName))
+                {
+                    throw new ArgumentException("Preprocessing file not found: [" + fileName + "]");
+                }
+                string script = Utils.GetFileContents(fileName);
+                Preprocess(script, fileName);
+            }
+        }
+
+        public void Preprocess(string script, string fileName = "")
+        {
+            Dictionary<int, int> char2Line;
+            string data = Utils.ConvertToScript(Interpreter.LastInstance, script, out char2Line, fileName);
+            if (string.IsNullOrWhiteSpace(data))
+            {
+                return;
+            }
+
+            ParsingScript toParse = new ParsingScript(Interpreter.LastInstance, data, 0, char2Line);
+            toParse.OriginalScript = script;
+            toParse.Filename = fileName;
+            toParse.Context = Interpreter.LastInstance;
+
+            var tokens = new HashSet<string>() { "function", "csfunction", "dllfunction", "dllsub", "importdll", "define" };
+            var firstScript = Utils.GetSubscript(toParse, tokens);
+            if (string.IsNullOrWhiteSpace(firstScript))
+            {
+                return;
+            }
+
+            Interpreter.Process(firstScript, fileName, false, this);
         }
     }
 
