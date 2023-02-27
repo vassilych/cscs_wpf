@@ -2650,6 +2650,8 @@ namespace WpfCSCS
                 EncodeFileFunction.EncodeDecode(fileName, true);
             }
 
+            PreprocessScripts();
+
             Variable result = null;
             try
             {
@@ -2669,6 +2671,32 @@ namespace WpfCSCS
             }
 
             return result;
+        }
+
+        void PreprocessScripts()
+        {
+            var doPreprocess = App.GetConfiguration("Preprocess", "");
+            var tokensStr = App.GetConfiguration("PreprocessTokens", "");
+            var filesStr = App.GetConfiguration("PreprocessFiles", "");
+            if (string.IsNullOrWhiteSpace(tokensStr) || string.IsNullOrWhiteSpace(filesStr) ||
+                !string.Equals(doPreprocess, "true", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+            var scriptsDirStr = App.GetConfiguration("ScriptsPath", "");
+
+            var tokenSet = new HashSet<string>();
+            var tokens = tokensStr.Split(',');
+            foreach (var token in tokens)
+            {
+                tokenSet.Add(token);
+            }
+
+            var files = filesStr.Split(',');
+            foreach (var file in files)
+            {
+                Utils.PreprocessScriptFile(file, tokenSet, scriptsDirStr, this);
+            }
         }
     }
 
@@ -4550,6 +4578,7 @@ namespace WpfCSCS
             MainWindow[fullName] = isMain;
             return isMain;
         }
+
         public static bool CheckParentScriptIsMain(ParsingScript script)
         {
             var fileName = script != null && script.ParentScript != null ? script.ParentScript.Filename : null;

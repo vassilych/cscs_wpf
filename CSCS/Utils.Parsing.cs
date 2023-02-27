@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -1254,6 +1255,114 @@ namespace SplitAndMerge
                 sb.Remove(sb.Length - 1, 1);
             }
             return sb.ToString();
+        }
+
+        public static void PreprocessScriptFile(string file, HashSet<string> tokens, string scriptsDirStr = "", object context = null)
+        {
+            var fileName = Path.IsPathRooted(file) ? file :
+                (!string.IsNullOrWhiteSpace(scriptsDirStr) ?
+                    Path.Combine(scriptsDirStr, file) : Path.GetFullPath(file));
+            if (!File.Exists(fileName))
+            {
+                fileName = Path.GetFullPath(file);
+            }
+            if (string.IsNullOrWhiteSpace(file) || !File.Exists(fileName))
+            {
+                throw new ArgumentException("Preprocessing file not found: [" + fileName + "]");
+            }
+            string script = Utils.GetFileContents(fileName);
+            PreprocessScript(script, tokens, fileName, context);
+        }
+
+        public static void PreprocessScript(string script, HashSet<string> tokens, string fileName = "", object context = null)
+        {
+            Dictionary<int, int> char2Line;
+            string data = Utils.ConvertToScript(Interpreter.LastInstance, script, out char2Line, fileName);
+            if (string.IsNullOrWhiteSpace(data))
+            {
+                return;
+            }
+
+            ParsingScript toParse = new ParsingScript(Interpreter.LastInstance, data, 0, char2Line);
+            toParse.OriginalScript = script;
+            toParse.Filename = fileName;
+            toParse.Context = Interpreter.LastInstance;
+
+            var firstScript = Utils.GetSubscript(toParse, tokens);
+            if (string.IsNullOrWhiteSpace(firstScript))
+            {
+                return;
+            }
+
+            Interpreter.LastInstance.Process(firstScript, fileName, false, context);
+        }
+
+        public static string GetSubscript(ParsingScript script, HashSet<string> tokens)
+        {
+            var start = script.Pointer;
+            var sb = new StringBuilder();
+            while (script.StillValid() )
+            {
+                var token = GetNextToken(script).ToLower();
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    script.Forward();
+                    continue;
+                }
+                var needed = tokens.Contains(token);
+                string extracted = token;
+                if (!needed)
+                {
+                    extracted += GetBodyBetween(script, Constants.START_ARG, Constants.END_ARG, Constants.END_STATEMENT);
+                }
+                else
+                {
+                    extracted += script.TryCurrent();
+                }
+                if (script.Current == Constants.END_STATEMENT)
+                {
+                    extracted += script.CurrentAndForward();
+                    if (needed)
+                    {
+                        sb.Append(extracted);
+                    }
+                    continue;
+                }
+
+                if (script.Current == Constants.SPACE)
+                {
+                    script.Forward();
+                    var token2 = GetNextToken(script);
+                    extracted += token2 + script.CurrentAndForward();
+                }
+                if (script.Current == Constants.SPACE)
+                {
+                    extracted += GetBodyBetween(script, Constants.START_ARG, Constants.END_ARG, Constants.END_STATEMENT);
+                }
+                if (script.Prev == Constants.START_ARG)
+                {
+                    extracted += GetBodyBetween(script, Constants.START_ARG, Constants.END_ARG, Constants.END_ARG);
+                    extracted += script.StillValid() ? script.CurrentAndForward() : Constants.EMPTY;
+                }
+
+                var startBody = script.Current == Constants.START_GROUP ? Constants.START_GROUP : Constants.SPACE;
+                var endBody = script.Current == Constants.START_GROUP ? Constants.END_GROUP : Constants.END_STATEMENT;
+                var endExtract = endBody == Constants.END_STATEMENT ? Constants.END_STATEMENT : Constants.EMPTY;
+                extracted += script.StillValid() ? script.CurrentAndForward() : Constants.EMPTY;
+                extracted += GetBodyBetween(script, startBody, endBody, endExtract);
+                extracted += script.StillValid() ? script.CurrentAndForward() : Constants.EMPTY;
+                if (script.Current == Constants.END_GROUP || script.Current == Constants.END_STATEMENT)
+                {
+                    extracted += script.StillValid() ? script.CurrentAndForward() : Constants.EMPTY;
+                }
+                if (needed)
+                {
+                    sb.Append(extracted);
+                }
+            }
+            script.Pointer = start;
+            var result = sb.ToString();
+            return result;
         }
 
         public static string GetBodySize(ParsingScript script, string endToken1, string endToken2 = null)
