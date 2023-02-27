@@ -18,7 +18,7 @@
                            Width="50"
                            Height="30"
                            Margin="10,10,0,0" />
-                    <wcl:NumericBox Name="skladisteNumericBox"
+                    <wcl:ASNumericBox Name="skladisteNumericBox"
                                     ButtonSize="35"
                                     Size="5"
                                     FieldName="skladisteField"
@@ -33,7 +33,7 @@
                            Width="50"
                            Height="30"
                            Margin="10,50,0,0" />
-                    <wcl:EnterBox Name="artiklEnterBox"
+                    <wcl:ASEnterBox Name="artiklEnterBox"
                                   ButtonSize="35"
                                   Size="50"
                                   FieldName="artiklField"
@@ -48,7 +48,7 @@
                            Width="50"
                            Height="30"
                            Margin="10,90,0,0" />
-                    <wcl:EnterBox Name="kupacEnterBox"
+                    <wcl:ASEnterBox Name="kupacEnterBox"
                                   ButtonSize="35"
                                   Size="50"
                                   FieldName="kupacField"
@@ -63,7 +63,7 @@
                            Width="50"
                            Height="50"
                            Margin="10,130,0,0" />
-                    <wcl:EnterBox Name="regijaEnterBox"
+                    <wcl:ASEnterBox Name="regijaEnterBox"
                                   ButtonSize="35"
                                   Size="50"
                                   FieldName="regijaField"

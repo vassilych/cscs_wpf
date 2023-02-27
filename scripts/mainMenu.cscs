@@ -1,11 +1,16 @@
 #MAINMENU;
-//#WINFORM not working
+#WINFORM mainMenuWindow.xaml;
+//CreateWindow("../../scripts/mainMenuWindow.xaml");
 
 define mainMenuDC type a;
 
-CreateWindow("../../scripts/mainMenuWindow.xaml");
 
-myTest("It works!");
+function mainMenuWindow_onOpen(){
+    MessageBox("asduhaskd");
+}
+
+//myTest("It works!");
+
 function myTest(txt){
     MessageBox(txt);   
 }
@@ -269,12 +274,18 @@ function mainMenuWindow_OnDisplay(){
 
     AddMenuSeparator("IvanDC");
 
-     AddMenuItem("IvanDC", "Ivan_save_red_wlistf.cscs", "Ivan_save_red_wlistf", "runScript");
+    AddMenuItem("IvanDC", "Ivan_save_red_wlistf.cscs", "Ivan_save_red_wlistf", "runScript");
 
+    AddMenuSeparator("IvanDC");
+
+    AddMenuItem("IvanDC", "test.cscs", "test", "runScript");
 
 
     //----------------------   
 }
 
 StartDebugger();
+
+DEFINE var1 type a;
+
 
