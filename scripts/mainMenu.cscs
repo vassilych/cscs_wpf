@@ -255,6 +255,10 @@ function mainMenuWindow_OnDisplay(){
 
     AddMenuItem("OtherDC", "testWhoAmI.cscs", "testWhoAmI", "runScript");
     
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testRadioButton.cscs", "testRadioButton", "runScript");
+    
 
     //----- IVAN -------------------------------  
 
