@@ -18,8 +18,6 @@
             <Viewbox>
                 <Image Source="search.png"/>
             </Viewbox>
-            
         </Button>
-
     </Grid>
 </UserControl>

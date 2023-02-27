@@ -2155,6 +2155,16 @@ namespace WpfCSCS
                         CacheNumericBoxChild(item as FrameworkElement, win, controls, numBox);
                     }
                 }
+                else if (child is GroupBox)//for RadioButtons
+                {
+                    var groupBox = child as GroupBox;
+                    var groupBoxGrid = groupBox.Content as Grid;
+                    foreach (var item in groupBoxGrid.Children)
+                    {
+                        if(item is RadioButton)
+                            CacheControl(item as FrameworkElement, win, controls);
+                    }
+                }
                 else
                 {
                     CacheControl(child as FrameworkElement, win, controls);
@@ -2575,7 +2585,9 @@ namespace WpfCSCS
                     string widgetMoveAction = widgetName + "@Move";
                     string widgetSelectAction = widgetName + "@Select";
 
-
+                    RadioButton asd = new RadioButton();
+                    //asd.Checked
+                    //asd.Unchecked
 
                     AddActionHandler(widgetName, clickAction, widget);
                     AddPreActionHandler(widgetName, preClickAction, widget);
