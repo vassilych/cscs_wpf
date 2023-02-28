@@ -1,0 +1,54 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TestiranjeTextboxEvenata"
+        xmlns:wcl="clr-namespace:WpfControlsLibrary;assembly=WpfControlsLibrary"
+        mc:Ignorable="d"
+        Title="Window1"
+        Height="450"
+        Width="800">
+    <Grid>
+        <DataGrid IsReadOnly="True"
+                  Name="List_Acct"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  Width="300"
+                  AutoGenerateColumns="False"
+                  DataContext="grid1"
+                  Margin="10"
+                  AreRowDetailsFrozen="True">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Header 1">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell FieldName="array_field" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <!-- <DataGridTemplateColumn Header="header 1">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell 
+                                     Tag="CodeArray" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Attach">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell 
+                                     Tag="" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn> -->
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button Name="gbAAA"
+                Content="ucitaj"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Width="100"
+                Margin="385,15,0,0" />
+    </Grid>
+</Window>

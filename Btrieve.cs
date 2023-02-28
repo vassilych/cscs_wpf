@@ -5170,8 +5170,8 @@ $@"EXECUTE sp_executesql N'
                 return Variable.EmptyInstance;
             }
 
-            public DataGridCollectionView TableSource { get; set; }
-            int Count = 1000;
+            //public DataGridCollectionView TableSource { get; set; }
+            //int Count = 1000;
 
             //private void OnItemsCount(DataGridCollectionView arg1, CountEventArgs arg2)
             //{
@@ -6104,9 +6104,15 @@ $@"EXECUTE sp_executesql N'
         class DisplayArrayClass
         {
             public DataGrid dg;
+
             public string lineCntrVarName;
+
             public string actCntrVarName;
+            public int actCntrValue;
+
             public string maxElemsVarName;
+            public int maxElemsValue;
+
             public List<string> tags;
             public Dictionary<string, Type> tagsAndTypes;
             public Dictionary<string, Type> newTagsAndTypes;
@@ -6188,7 +6194,7 @@ $@"EXECUTE sp_executesql N'
                     if (gridsArrayClass.TryGetValue(gridName, out DisplayArrayClass dac))
                     {
                         // updates lineCntr variable
-                        if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar))
+                        if (gridsArrayClass[gridName].lineCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar))
                         {
                             defVar.Value = value;
                         }
@@ -6215,10 +6221,10 @@ $@"EXECUTE sp_executesql N'
 
             string tableKey;
 
-            int maxRows;
-            int actCntr;
-            string lineCntrVarName;
-            string actCntrVarName;
+            //int maxRows;
+            //int actCntr;
+            Variable lineCntrVarName;
+            Variable actCntrVar;
             OpenvTable thisOpenv;
 
             ParsingScript Script;
@@ -6241,43 +6247,61 @@ $@"EXECUTE sp_executesql N'
                 Utils.CheckArgs(args.Count, 4, m_name);
 
                 gridName = Utils.GetSafeString(args, 0).ToLower();
-                lineCntrVarName = Utils.GetSafeString(args, 1);
-                actCntrVarName = Utils.GetSafeString(args, 2);
-                string maxRowsVarName = Utils.GetSafeString(args, 3);
+                lineCntrVarName = Utils.GetSafeVariable(args, 1);
+                actCntrVar = Utils.GetSafeVariable(args, 2);
+                Variable maxRowsVar = Utils.GetSafeVariable(args, 3);
 
                 //------------------------------------------------------------------------
 
                 gridsArrayClass[gridName] = new DisplayArrayClass();
 
-                gridsArrayClass[gridName].lineCntrVarName = lineCntrVarName;
-                gridsArrayClass[gridName].actCntrVarName = actCntrVarName;
-                gridsArrayClass[gridName].maxElemsVarName = maxRowsVarName;
+                gridsArrayClass[gridName].lineCntrVarName = lineCntrVarName.Type == Variable.VarType.STRING ? actCntrVar.String : null;
+                gridsArrayClass[gridName].actCntrVarName = actCntrVar.Type == Variable.VarType.STRING ? actCntrVar.String : null;
+                gridsArrayClass[gridName].maxElemsVarName = maxRowsVar.Type == Variable.VarType.STRING ? maxRowsVar.String : null;
 
                 //------------------------------------------------------------------------
 
-                if (Gui.DEFINES.TryGetValue(maxRowsVarName.ToLower(), out DefineVariable defVar))
+                // maxRows
+                if (maxRowsVar.Type == Variable.VarType.STRING)// -> varName
                 {
-                    if (defVar.Type == Variable.VarType.NUMBER)
+                    if (Gui.DEFINES.TryGetValue(maxRowsVar.String.ToLower(), out DefineVariable defVar))
                     {
-                        int.TryParse(defVar.Value.ToString(), out maxRows);
+                        if (defVar.Type == Variable.VarType.NUMBER)
+                        {
+                            int.TryParse(defVar.Value.ToString(), out gridsArrayClass[gridName].maxElemsValue);
+                        }
+                    }
+                    else
+                    {
+                        //throw error
                     }
                 }
-                else
+                else if (maxRowsVar.Type == Variable.VarType.NUMBER)
                 {
-                    //throw error
+                    gridsArrayClass[gridName].maxElemsValue = (int)maxRowsVar.Value;
                 }
+                
 
-                if (Gui.DEFINES.TryGetValue(actCntrVarName.ToLower(), out DefineVariable defVar2))
+                // actCntr
+                if(actCntrVar.Type == Variable.VarType.STRING)// -> varName
                 {
-                    if (defVar2.Type == Variable.VarType.NUMBER)
+                    if (Gui.DEFINES.TryGetValue(actCntrVar.String.ToLower(), out DefineVariable defVar2))
                     {
-                        int.TryParse(defVar2.Value.ToString(), out actCntr);
+                        if (defVar2.Type == Variable.VarType.NUMBER)
+                        {
+                            int.TryParse(defVar2.Value.ToString(), out gridsArrayClass[gridName].actCntrValue);
+                        }
+                    }
+                    else
+                    {
+                        //throw error
                     }
                 }
-                else
+                else if(actCntrVar.Type == Variable.VarType.NUMBER)
                 {
-                    //throw error
+                    gridsArrayClass[gridName].actCntrValue = (int)actCntrVar.Value;
                 }
+                
 
                 //------------------------------------------------------------------------
 
@@ -6300,48 +6324,59 @@ $@"EXECUTE sp_executesql N'
                         var dgtc = column as DataGridTemplateColumn;
 
                         var cell = dgtc.CellTemplate.LoadContent();
-                        if (cell is ASTimeEditer)
+                        if (cell is ASGridCell)
                         {
-                            var te = cell as ASTimeEditer;
-                            if (te.Tag != null)
+                            var asgc = cell as ASGridCell;
+                            if (asgc.FieldName != null)
                             {
-                                gridsArrayClass[gridName].tagsAndTypes.Add(te.Tag.ToString(), typeof(TimeSpan));
-                                tagsAndHeaders.Add(te.Tag.ToString(), dgtc.Header.ToString());
-                                timeAndDateEditerTagsAndSizes[te.Tag.ToString()] = te.DisplaySize;
-                                tagsAndNames[te.Tag.ToString()] = te.Name;
+                                gridsArrayClass[gridName].tagsAndTypes.Add(asgc.FieldName.ToString(), typeof(object));
+                                tagsAndHeaders.Add(asgc.FieldName.ToString(), dgtc.Header.ToString());
+                                timeAndDateEditerTagsAndSizes[asgc.FieldName.ToString()] = asgc.EditLength;
+                                tagsAndNames[asgc.FieldName.ToString()] = asgc.Name;
                             }
                         }
-                        else if (cell is ASDateEditer)
-                        {
-                            var de = cell as ASDateEditer;
-                            if (de.Tag != null)
-                            {
-                                gridsArrayClass[gridName].tagsAndTypes.Add(de.Tag.ToString(), typeof(DateTime));
-                                tagsAndHeaders.Add(de.Tag.ToString(), dgtc.Header.ToString());
-                                timeAndDateEditerTagsAndSizes[de.Tag.ToString()] = de.DisplaySize;
-                                tagsAndNames[de.Tag.ToString()] = de.Name;
-                            }
-                        }
-                        else if (cell is CheckBox)
-                        {
-                            var cb = cell as CheckBox;
-                            if (cb.Tag != null)
-                            {
-                                gridsArrayClass[gridName].tagsAndTypes.Add(cb.Tag.ToString(), typeof(bool));
-                                tagsAndHeaders.Add(cb.Tag.ToString(), dgtc.Header.ToString());
-                                tagsAndNames[cb.Tag.ToString()] = cb.Name;
-                            }
-                        }
-                        else if (cell is TextBox)
-                        {
-                            var tb = cell as TextBox;
-                            if (tb.Tag != null)
-                            {
-                                gridsArrayClass[gridName].tagsAndTypes.Add(tb.Tag.ToString(), typeof(string));
-                                tagsAndHeaders.Add(tb.Tag.ToString(), dgtc.Header.ToString());
-                                tagsAndNames[tb.Tag.ToString()] = tb.Name;
-                            }
-                        }
+                        //if (cell is ASTimeEditer)
+                        //{
+                        //    var te = cell as ASTimeEditer;
+                        //    if (te.Tag != null)
+                        //    {
+                        //        gridsArrayClass[gridName].tagsAndTypes.Add(te.Tag.ToString(), typeof(TimeSpan));
+                        //        tagsAndHeaders.Add(te.Tag.ToString(), dgtc.Header.ToString());
+                        //        timeAndDateEditerTagsAndSizes[te.Tag.ToString()] = te.DisplaySize;
+                        //        tagsAndNames[te.Tag.ToString()] = te.Name;
+                        //    }
+                        //}
+                        //else if (cell is ASDateEditer)
+                        //{
+                        //    var de = cell as ASDateEditer;
+                        //    if (de.Tag != null)
+                        //    {
+                        //        gridsArrayClass[gridName].tagsAndTypes.Add(de.Tag.ToString(), typeof(DateTime));
+                        //        tagsAndHeaders.Add(de.Tag.ToString(), dgtc.Header.ToString());
+                        //        timeAndDateEditerTagsAndSizes[de.Tag.ToString()] = de.DisplaySize;
+                        //        tagsAndNames[de.Tag.ToString()] = de.Name;
+                        //    }
+                        //}
+                        //else if (cell is CheckBox)
+                        //{
+                        //    var cb = cell as CheckBox;
+                        //    if (cb.Tag != null)
+                        //    {
+                        //        gridsArrayClass[gridName].tagsAndTypes.Add(cb.Tag.ToString(), typeof(bool));
+                        //        tagsAndHeaders.Add(cb.Tag.ToString(), dgtc.Header.ToString());
+                        //        tagsAndNames[cb.Tag.ToString()] = cb.Name;
+                        //    }
+                        //}
+                        //else if (cell is TextBox)
+                        //{
+                        //    var tb = cell as TextBox;
+                        //    if (tb.Tag != null)
+                        //    {
+                        //        gridsArrayClass[gridName].tagsAndTypes.Add(tb.Tag.ToString(), typeof(string));
+                        //        tagsAndHeaders.Add(tb.Tag.ToString(), dgtc.Header.ToString());
+                        //        tagsAndNames[tb.Tag.ToString()] = tb.Name;
+                        //    }
+                        //}
                     }
                 }
 
@@ -6486,17 +6521,27 @@ $@"EXECUTE sp_executesql N'
                     lastArrayCount = thisArrCount;
                 }
 
-                if (!Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable maxrows))
+                int maxElements;
+                if (gridsArrayClass[gridName].maxElemsVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable maxrows))
                 {
-                    return;
+                    maxElements = (int)maxrows.Value;
+                }
+                else
+                {
+                    maxElements = gridsArrayClass[gridName].maxElemsValue;
                 }
 
-                if (!Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable actelems))
+                int activeElements;
+                if (gridsArrayClass[gridName].actCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable actelems))
                 {
-                    return;
+                    activeElements = (int)actelems.Value;
+                }
+                else
+                {
+                    activeElements = gridsArrayClass[gridName].actCntrValue;
                 }
 
-                for (int i = 0; i < (int)maxrows.Value && i < lastArrayCount && i < (int)actelems.Value; i++)
+                for (int i = 0; i < maxElements && i < lastArrayCount && i < activeElements; i++)
                 {
                     var currentRow = gridsDataTables[gridName].NewRow();
 
@@ -6902,7 +6947,10 @@ $@"EXECUTE sp_executesql N'
 
                 dg.BeginEdit();
 
-                Gui.DEFINES[lineCntrVarName.ToLower()].InitVariable(new Variable(currentRowIndex), Gui);
+                if(gridsArrayClass[gridName].lineCntrVarName != null)
+                {
+                    Gui.DEFINES[gridsArrayClass[gridName].lineCntrVarName.ToLower()].InitVariable(new Variable(currentRowIndex), Gui);
+                }
             }
 
             private void Dg_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
@@ -6950,7 +6998,7 @@ $@"EXECUTE sp_executesql N'
                 }
                 (sender as DataGrid).RowEditEnding += Dg_RowEditEnding;
 
-                if (dg.Items.Count - 1 >= maxRows)
+                if (dg.Items.Count - 1 >= gridsArrayClass[gridName].maxElemsValue)
                 {
                     dg.CanUserAddRows = false;
                 }
@@ -7030,7 +7078,7 @@ $@"EXECUTE sp_executesql N'
 
                 var gridName = Utils.GetSafeString(args, 0);
 
-                if (gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar))
+                if (gridsArrayClass[gridName].lineCntrVarName != null && gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar))
                 {
                     gridsArrayClass[gridName].dg.SelectedIndex = (int)defVar.Value;
                     gridsArrayClass[gridName].dg.ScrollIntoView(gridsArrayClass[gridName].dg.SelectedItem);
@@ -7070,7 +7118,7 @@ $@"EXECUTE sp_executesql N'
                 {
                     case "updatecurrent":
 
-                        if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable lineCntrDefVar))
+                        if (gridsArrayClass[gridName].lineCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable lineCntrDefVar))
                         {
                             var itemArray = gridsDataTables[gridName].Rows[(int)lineCntrDefVar.Value].ItemArray;
                             for (int i = 0; i < itemArray.Length; i++)
@@ -7316,9 +7364,17 @@ $@"EXECUTE sp_executesql N'
                                     var currentRowCount = dg.Items.Count;
 
                                     // check for max length
-                                    if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable defVar))
+                                    if (gridsArrayClass[gridName].maxElemsVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable defVar))
                                     {
                                         if (currentRowCount + 1 > defVar.Value)
+                                        {
+                                            MessageBox.Show("Maximum elements reached.");
+                                            return Variable.EmptyInstance;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (currentRowCount + 1 > gridsArrayClass[gridName].maxElemsValue)
                                         {
                                             MessageBox.Show("Maximum elements reached.");
                                             return Variable.EmptyInstance;
@@ -7345,16 +7401,18 @@ $@"EXECUTE sp_executesql N'
 
 
                                     // fill linCntr with new element index
-                                    if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar3))
+                                    if (gridsArrayClass[gridName].lineCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar3))
                                     {
                                         defVar3.InitVariable(new Variable(currentRowCount), Gui);
                                     }
 
                                     // increment active elements variable
-                                    if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar4))
+                                    if (gridsArrayClass[gridName].actCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar4))
                                     {
                                         defVar4.InitVariable(new Variable(defVar4.Value + 1), Gui);
                                     }
+
+                                    gridsArrayClass[gridName].actCntrValue++;
 
                                     // add new grid row
                                     var newRow = gridsDataTables[gridName].NewRow();
@@ -7413,12 +7471,17 @@ $@"EXECUTE sp_executesql N'
                                         }
 
                                         // decrement active elements variable
-                                        if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar5))
+                                        if (gridsArrayClass[gridName].actCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar5))
                                         {
                                             if ((int)defVar5.Value > 1)
                                             {
                                                 defVar5.InitVariable(new Variable(defVar5.Value - 1), Gui);
                                             }
+                                        }
+
+                                        if (gridsArrayClass[gridName].actCntrValue > 1)
+                                        {
+                                            gridsArrayClass[gridName].actCntrValue--;
                                         }
                                     }
                                 }
@@ -7434,9 +7497,17 @@ $@"EXECUTE sp_executesql N'
                                 else if (gridsArrayClass.Keys.Contains(gridName)) // -> wlistM
                                 {
                                     // check for max length
-                                    if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable defVar6))
+                                    if (gridsArrayClass[gridName].maxElemsVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable defVar6))
                                     {
                                         if (dg.Items.Count + 1 > defVar6.Value)
+                                        {
+                                            MessageBox.Show("Maximum elements reached.");
+                                            return Variable.EmptyInstance;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (dg.Items.Count + 1 > gridsArrayClass[gridName].maxElemsValue)
                                         {
                                             MessageBox.Show("Maximum elements reached.");
                                             return Variable.EmptyInstance;
@@ -7450,10 +7521,12 @@ $@"EXECUTE sp_executesql N'
                                             gridsDataTables[gridName].Rows.InsertAt(gridsDataTables[gridName].NewRow(), dg.SelectedIndex + 1);
 
                                             // increment active elements variable
-                                            if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar7))
+                                            if (gridsArrayClass[gridName].actCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar7))
                                             {
                                                 defVar7.InitVariable(new Variable(defVar7.Value + 1), Gui);
                                             }
+
+                                            gridsArrayClass[gridName].actCntrValue++;
 
                                             dg.SelectedIndex++;
                                             dg.ScrollIntoView(dg.SelectedItem);

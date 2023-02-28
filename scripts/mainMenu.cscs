@@ -6,7 +6,7 @@ define mainMenuDC type a;
 
 
 function mainMenuWindow_onOpen(){
-    MessageBox("asduhaskd");
+    //MessageBox("asduhaskd");
 }
 
 //myTest("It works!");
@@ -267,6 +267,10 @@ function mainMenuWindow_OnDisplay(){
 
     AddMenuItem("OtherDC", "testRadioButton.cscs", "testRadioButton", "runScript");
     
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testArray.cscs", "testArray", "runScript");
+    
 
     //----- IVAN -------------------------------  
 
@@ -276,9 +280,9 @@ function mainMenuWindow_OnDisplay(){
 
     AddMenuItem("IvanDC", "Ivan_save_red_wlistf.cscs", "Ivan_save_red_wlistf", "runScript");
 
-    AddMenuSeparator("IvanDC");
+    // AddMenuSeparator("IvanDC");
 
-    AddMenuItem("IvanDC", "test.cscs", "test", "runScript");
+    // AddMenuItem("IvanDC", "test.cscs", "test", "runScript");
 
 
     //----------------------   
