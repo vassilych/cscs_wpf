@@ -1,0 +1,11 @@
+CreateWindow("../../scripts/testTwoButtons.xaml");
+
+function btn1@clicked(){
+    MessageBox("X");
+    btn2@clicked();
+}
+
+function btn2@clicked(){
+    MessageBox("X");
+}
+

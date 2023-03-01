@@ -1,0 +1,11 @@
+MessageBox("Going to label1...");
+
+goto(label1);
+
+
+MessageBox("asjlkdaslkdjklasd");
+
+label1:
+MessageBox("label1");
+
+quit;

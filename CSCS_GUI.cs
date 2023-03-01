@@ -2365,7 +2365,7 @@ namespace WpfCSCS
         {
             if (widget is ASNumericTextBox)
             {
-                widget.Name += "_" + numBox.Name;
+                widget.Name = numBox.FieldName; // "_" + numBox.Name;
                 widget.DataContext = numBox.FieldName;
                 if (numBox.FieldName != null && DEFINES.TryGetValue(numBox.FieldName.ToLower(), out DefineVariable defVar))
                 {
@@ -2436,7 +2436,7 @@ namespace WpfCSCS
             else if (widget is Button)
             {
                 //widget.Name = numBox.Name;
-                widget.Name = "button_" + numBox.Name;
+                widget.Name = numBox.Name; //"button_" + numBox.Name;
 
                 if (widget != null && !string.IsNullOrEmpty(numBox.Name))
                 {
@@ -2525,10 +2525,17 @@ namespace WpfCSCS
                     //AddWidgetPreHandler("numBoxTextBox_" + ASNumericBox.Name, widgetPreAction, widget);
                     //AddWidgetPostHandler(/*"numBoxTextBox_" + */ASNumericBox.Name, widgetPostAction, widget);
                     
-                    AddTextChangedHandler(widget.Name, textChangeAction, widget);
+                    /////////
+                    
+                    //AddTextChangedHandler(widget.Name, textChangeAction, widget);
 
-                    AddWidgetPreHandler(widget.Name, widgetPreAction, widget);
-                    AddWidgetPostHandler(widget.Name, widgetPostAction, widget);
+                    //AddWidgetPreHandler(widget.Name, widgetPreAction, widget);
+                    //AddWidgetPostHandler(widget.Name, widgetPostAction, widget);
+                    
+                    AddTextChangedHandler(ASNumericBox.FieldName, textChangeAction, widget);
+
+                    AddWidgetPreHandler(ASNumericBox.FieldName, widgetPreAction, widget);
+                    AddWidgetPostHandler(ASNumericBox.FieldName, widgetPostAction, widget);
 
                     //binding
                     var widgetBindingName = ASNumericBox.FieldName;

@@ -4,16 +4,18 @@
 
 define mainMenuDC type a;
 
+// MessageBox(var1);
 
-function mainMenuWindow_onOpen(){
-    //MessageBox("asduhaskd");
-}
 
-//myTest("It works!");
+// function mainMenuWindow_onOpen(){
+//     //MessageBox("asduhaskd");
+// }
 
-function myTest(txt){
-    MessageBox(txt);   
-}
+// myTest("It works!");
+
+// function myTest(txt){
+//     MessageBox(txt);   
+// }
 
 function runScript(sender, load){
     //MessageBox("sender = " + sender + ", load = "  + load);   
@@ -146,6 +148,10 @@ function mainMenuWindow_OnDisplay(){
     AddMenuSeparator("ChartsDC");
 
     AddMenuItem("ChartsDC", "WKPRDASH.cscs", "WKPRDASH", "runScript");
+    
+    AddMenuSeparator("ChartsDC");
+
+    AddMenuItem("ChartsDC", "WKPRDASH2.cscs", "WKPRDASH2", "runScript");
    
     //------- OTHER -----------------------------
 
@@ -270,6 +276,14 @@ function mainMenuWindow_OnDisplay(){
     AddMenuSeparator("OtherDC");
 
     AddMenuItem("OtherDC", "testArray.cscs", "testArray", "runScript");
+    
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testTwoButtons.cscs", "testTwoButtons", "runScript");
+    
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testGoto.cscs", "testGoto", "runScript");
     
 
     //----- IVAN -------------------------------  
