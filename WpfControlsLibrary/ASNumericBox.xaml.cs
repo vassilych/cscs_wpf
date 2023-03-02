@@ -202,6 +202,19 @@ namespace WpfControlsLibrary
                 base.SetValue(ForegroundProperty, value);
             }
         }
+        
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(ASNumericBox));
+        public bool IsReadOnly
+        {
+            get
+            {
+                return (bool)base.GetValue(IsReadOnlyProperty);
+            }
+            set
+            {
+                base.SetValue(IsReadOnlyProperty, value);
+            }
+        }
 
         //public static readonly DependencyProperty ButtonNameProperty = DependencyProperty.Register("ButtonName", typeof(string), typeof(ASNumericBox));
         //public string ButtonName
@@ -235,6 +248,8 @@ namespace WpfControlsLibrary
             numBoxTextBox.Background = Background == null ? new SolidColorBrush() { Color = Colors.White } : Background;
             numBoxTextBox.Foreground = Foreground == null ? new SolidColorBrush() { Color = Colors.Black } : Foreground;
             //numBoxTextBox.DataContext = TextBoxDC;
+
+            numBoxTextBox.IsReadOnly = IsReadOnly;
 
             //numBoxTextBox.Name = TextBoxName;
             //numBoxButton.Name = ButtonName;

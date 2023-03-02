@@ -139,6 +139,20 @@ namespace WpfControlsLibrary
             }
         }
 
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(ASEnterBox));
+        public bool IsReadOnly
+        {
+            get
+            {
+                return (bool)base.GetValue(IsReadOnlyProperty);
+            }
+            set
+            {
+                base.SetValue(IsReadOnlyProperty, value);
+            }
+        }
+
+
         public ASEnterBox()
         {
             InitializeComponent();
@@ -152,6 +166,8 @@ namespace WpfControlsLibrary
             enterBoxTextBox.Text = Text;
             enterBoxTextBox.CharacterCasing = Case?.ToLower() == "up"? CharacterCasing.Upper : (Case?.ToLower() == "down"? CharacterCasing.Lower : CharacterCasing.Normal);
             enterBoxTextBox.FontWeight = FontWeight;
+
+            enterBoxTextBox.IsReadOnly = IsReadOnly;
 
             enterBoxTextBox.Background = Background == null? new SolidColorBrush() { Color = Colors.White} : Background;
             enterBoxTextBox.Foreground = Foreground == null? new SolidColorBrush() { Color = Colors.Black} : Foreground;

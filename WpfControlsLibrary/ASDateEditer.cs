@@ -44,6 +44,7 @@ namespace WpfControlsLibrary
                 dptb.Margin = new Thickness(-2);
                 dptb.Padding = new Thickness(0);
 
+                dptb.IsReadOnly = IsReadOnly;
 
                 dptb.Height = this.Height;
                 dptb.Width = this.Width - this.ButtonWidth + 2;
@@ -151,6 +152,19 @@ namespace WpfControlsLibrary
             set
             {
                 base.SetValue(ForegroundProperty, value);
+            }
+        }
+        
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register("IsReadOnly", typeof(bool), typeof(ASDateEditer));
+        public bool IsReadOnly
+        {
+            get
+            {
+                return (bool)base.GetValue(IsReadOnlyProperty);
+            }
+            set
+            {
+                base.SetValue(IsReadOnlyProperty, value);
             }
         }
 
