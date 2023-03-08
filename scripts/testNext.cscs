@@ -1,0 +1,105 @@
+/*         
+CreateWindow( "../../scripts/Ivan_save_red_wlistf.xaml");
+include("kp60.cscs");
+
+define nkgkacct_hndl type i;
+define sifra type a size 50;
+function save_red_wflist_onOpen()
+{
+if ( test_openf('nkgkacct') == false )
+ {
+ 
+ }
+
+}
+nkgkacct_hndl = openv('NKGKACCT');
+function open_out()
+{
+    //quit_ok=.t.
+    MessageBox("OPEN_OUT");
+quit;
+
+}
+function gbscan@clicked()
+{
+
+
+}
+                    
+DisplayTableSetup("List_Acct", nkgkacct_hndl, "gk_ac_konto", "", "true", "");
+function gbinsert@clicked()
+{
+if ( gk_ac_konto != "" && gk_ac_opis != "" )
+ {
+ if ( gk_ac_konto != "" )
+ {
+ 
+ }
+save(nkgkacct_hndl, true);
+MessageBox("uspije?no spremljeno ");
+ }
+
+}
+                    
+function gbnovi@clicked()
+{
+SetWidgetOptions('List_Acct', "EditMode");
+DateGrid('List_Acct', "AddRow");
+SetWidgetOptions('List_Acct', "SelectMode");
+
+}
+                    
+function gbExit@clicked()
+{
+quit;
+
+}
+         */           
+
+
+
+
+
+// DEFINE hndl type i;
+
+// hndl = OPENV("nkprinv", "bd1");
+
+// MessageBox("start");
+
+// findv(hndl, "f", "nkpr_gl_num");
+// //MessageBox(nkpr_gl_num);
+
+// for(i = 0; i< 1000;i++){
+//     findv(hndl, "N"); 
+//     //MessageBox(nkpr_gl_num);
+// }
+
+
+DEFINE hndl type i;
+
+hndl = OPENV("nkprinvl", "bd1");
+
+MessageBox("start");
+//start = PsTime();
+
+findv(hndl, "f", "NKPR_LN_NUMLN");
+//MessageBox(nkpr_gl_num);
+
+// a = 0;
+
+for(i = 0; i< 20000; i++){
+    // a++;
+    findv(hndl, "n");
+    // findv(hndl, "f", "NKPR_LN_NUMLN");
+    //MessageBox(nkpr_gl_num);
+}
+
+
+
+// MessageBox("end. a = " + a);
+//end = PsTime();
+//MessageBox("Total CPU time of: " + (end-start) + "ms.");
+MessageBox("end");
+// MessageBox(NKPR_LN_INVNM);
+quit;
+

@@ -1,14 +1,21 @@
 #MAINMENU;
-//#WINFORM not working
+#WINFORM mainMenuWindow.xaml;
+//CreateWindow("../../scripts/mainMenuWindow.xaml");
 
 define mainMenuDC type a;
 
-CreateWindow("../../scripts/mainMenuWindow.xaml");
+// MessageBox(var1);
 
-myTest("It works!");
-function myTest(txt){
-    MessageBox(txt);   
-}
+
+// function mainMenuWindow_onOpen(){
+//     //MessageBox("asduhaskd");
+// }
+
+// myTest("It works!");
+
+// function myTest(txt){
+//     MessageBox(txt);   
+// }
 
 function runScript(sender, load){
     //MessageBox("sender = " + sender + ", load = "  + load);   
@@ -40,9 +47,15 @@ function mainMenuWindow_OnDisplay(){
         
     AddMenuSeparator("ScriptsDC");
     AddMenuItem("ScriptsDC", "ExcelDC", "Excel");
+        
+    AddMenuSeparator("ScriptsDC");
+    AddMenuItem("ScriptsDC", "ChartsDC", "Charts");
     
     AddMenuSeparator("ScriptsDC");
     AddMenuItem("ScriptsDC", "OtherDC", "Other");
+    
+    AddMenuSeparator("ScriptsDC");
+    AddMenuItem("ScriptsDC", "IvanDC", "Ivan");
 
     //------------ BTRIEVE ------------------------
 
@@ -87,6 +100,10 @@ function mainMenuWindow_OnDisplay(){
     AddMenuSeparator("BtrieveDC");
     
     AddMenuItem("BtrieveDC", "testCompiledFindvNext.cscs", "testCompiledFindvNext", "runScript"); // Crashes
+    
+    AddMenuSeparator("BtrieveDC");
+    
+    AddMenuItem("BtrieveDC", "testNext.cscs", "testNext", "runScript"); // Crashes
 
     
     //------------- DATA GRID -----------------------
@@ -124,7 +141,18 @@ function mainMenuWindow_OnDisplay(){
 
     AddMenuItem("ExcelDC", "TestExcel.cscs", "TestExcel", "runScript");
     
+    //------ CHARTS ------------------------------
+    
+    AddMenuItem("ChartsDC", "testGraphs.cscs", "testGraphs", "runScript");
+    
+    AddMenuSeparator("ChartsDC");
 
+    AddMenuItem("ChartsDC", "WKPRDASH.cscs", "WKPRDASH", "runScript");
+    
+    AddMenuSeparator("ChartsDC");
+
+    AddMenuItem("ChartsDC", "WKPRDASH2.cscs", "WKPRDASH2", "runScript");
+   
     //------- OTHER -----------------------------
 
     AddMenuItem("OtherDC", "editDatabases.cscs", "editDatabases - using FillOutGrid", "runScript"); // ?
@@ -220,8 +248,62 @@ function mainMenuWindow_OnDisplay(){
     AddMenuSeparator("OtherDC");
 
     AddMenuItem("OtherDC", "testLocalDEFINES.cscs", "testLocalDEFINES", "runScript");
-    //------------------------------------   
+    
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testCheckBox.cscs", "testCheckBox", "runScript");
+    
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testComboBox.cscs", "testComboBox", "runScript");
+    
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testForm.cscs", "testForm", "runScript");
+    
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testTBAndNumeric.cscs", "testTBAndNumeric", "runScript");
+    
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testWhoAmI.cscs", "testWhoAmI", "runScript");
+    
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testRadioButton.cscs", "testRadioButton", "runScript");
+    
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testArray.cscs", "testArray", "runScript");
+    
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testTwoButtons.cscs", "testTwoButtons", "runScript");
+    
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testGoto.cscs", "testGoto", "runScript");
+    
+
+    //----- IVAN -------------------------------  
+
+    AddMenuItem("IvanDC", "Ivan_select_table_primjer.cscs", "Ivan_select_table_primjer", "runScript");
+
+    AddMenuSeparator("IvanDC");
+
+    AddMenuItem("IvanDC", "Ivan_save_red_wlistf.cscs", "Ivan_save_red_wlistf", "runScript");
+
+    // AddMenuSeparator("IvanDC");
+
+    // AddMenuItem("IvanDC", "test.cscs", "test", "runScript");
+
+
+    //----------------------   
 }
 
 StartDebugger();
+
+DEFINE var1 type a;
+
 

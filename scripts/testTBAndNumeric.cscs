@@ -1,0 +1,11 @@
+// DEFINE var1 type n size 6 dec 2;
+DEFINE var1 type n size 6 dec 2;
+
+function btn1@clicked(){
+    MessageBox(var1 + 1);
+}
+
+function testTBAndNumeric_onStart(){
+    var1 = 5.2;
+}
+CreateWindow("../../scripts/testTBAndNumeric.xaml");

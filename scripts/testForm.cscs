@@ -1,0 +1,77 @@
+
+// NumericBox
+DEFINE numBoxVar type n size 6 dec 2;
+// DEFINE numBoxVar type a;
+// DEFINE numBoxVar type r size 9;
+numBoxVar = 444;
+
+function numbox1@clicked(){
+    MessageBox(numBoxVar);
+}
+
+a = 1;
+function numbox1@post(){
+    //return false;
+    // a++;
+    // if(a % 2 == 0){
+    // // if(Size(string(numBoxVar)) > 4){
+    //     return false;
+    // }
+    // else{
+    //     return true;
+    // }
+}
+
+b = 1;
+function numbox1@pre(){
+    return false;
+    // b++;
+    // if(b % 2 == 0){
+    //     return false;
+    // }
+    // else{
+    //     return true;
+    // }
+}
+
+// EnterBox
+DEFINE entBoxVar type a size 15;
+
+function enterbox1@clicked(){
+    MessageBox(entBoxVar);
+}
+
+// DateEditer
+DEFINE date1 type d size 8;
+//date1 = "12/12/12";
+
+function dateBtn@clicked(){
+    MessageBox(date1);
+}
+
+// TimeEditer
+DEFINE time1 type t size 8;
+time1 = "12:12:12";
+
+function timeBtn@clicked(){
+    MessageBox(time1);
+}
+
+// ComboBox
+DEFINE cbVariable type a;
+function comboBtn@clicked(){
+    MessageBox(cbVariable);
+}
+
+//F3
+function nekidrugi(){
+    //MessageBox("Neki Drugi!");
+    MessageBox("setFocus");
+
+    SetFocus("te1");
+}
+
+function testForm_onStart(){
+    numBoxVar = 555;
+}
+CreateWindow("../../scripts/testForm.xaml");

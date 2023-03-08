@@ -1,4 +1,4 @@
-DEFINE varInParent type a;
+DEFINE varInParent type a size 10;
 
 function winWithButtons_OnStart(){
     varInParent = "lala";

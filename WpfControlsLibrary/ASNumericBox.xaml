@@ -1,11 +1,10 @@
-﻿<UserControl x:Class="WpfControlsLibrary.NumericBox"
+﻿<UserControl x:Class="WpfControlsLibrary.ASNumericBox"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WpfControlsLibrary"
              mc:Ignorable="d" 
-             
              Loaded="UserControl_Loaded"
              
              >
@@ -15,7 +14,7 @@
             <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
             
-        <local:NumericTextBox x:Name="numBoxTextBox" Grid.Column="0" HorizontalAlignment="Stretch" />
+        <local:ASNumericTextBox x:Name="numBoxTextBox" Grid.Column="0" HorizontalAlignment="Stretch" />
         <Button Focusable="False" x:Name="numBoxButton" Grid.Column="1" Height="auto" />
         
     </Grid>

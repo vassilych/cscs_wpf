@@ -7,15 +7,16 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace WpfControlsLibrary
 {
-    public class TimeEditer : TextBox
+    public class ASTimeEditer : TextBox
     {
         string textBeforeChange;
         public bool valueChanged;
 
-        public static readonly DependencyProperty DisplaySizeProperty = DependencyProperty.Register("DisplaySize", typeof(int), typeof(TimeEditer));
+        public static readonly DependencyProperty DisplaySizeProperty = DependencyProperty.Register("DisplaySize", typeof(int), typeof(ASTimeEditer));
         public int DisplaySize
         {
             get
@@ -28,7 +29,55 @@ namespace WpfControlsLibrary
             }
         }
 
-        public TimeEditer()
+        public static new readonly DependencyProperty FontWeightProperty = DependencyProperty.Register("FontWeight", typeof(FontWeight), typeof(ASTimeEditer));
+        public new FontWeight FontWeight
+        {
+            get
+            {
+                return (FontWeight)base.GetValue(FontWeightProperty);
+            }
+            set
+            {
+                base.SetValue(FontWeightProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty BackgroundProperty = DependencyProperty.Register("Background", typeof(Brush), typeof(ASTimeEditer));
+        public Brush Background
+        {
+            get
+            {
+                return (Brush)base.GetValue(BackgroundProperty);
+            }
+            set
+            {
+                base.SetValue(BackgroundProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty ForegroundProperty = DependencyProperty.Register("Foreground", typeof(Brush), typeof(ASTimeEditer));
+        public Brush Foreground
+        {
+            get
+            {
+                return (Brush)base.GetValue(ForegroundProperty);
+            }
+            set
+            {
+                base.SetValue(ForegroundProperty, value);
+            }
+        }
+
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+
+            base.FontWeight = FontWeight;
+            base.Background = Background == null ? new SolidColorBrush() { Color = Colors.White } : Background;
+            base.Foreground = Foreground == null ? new SolidColorBrush() { Color = Colors.Black } : Foreground;
+        }
+
+        public ASTimeEditer()
         {
             Loaded += TimeEditer_Loaded;
             PreviewTextInput += TimeEditer_PreviewTextInput;
@@ -44,7 +93,7 @@ namespace WpfControlsLibrary
 
         private void TimeEditer_Loaded(object sender, RoutedEventArgs e)
         {
-            var te = (e.Source as TimeEditer);
+            var te = (e.Source as ASTimeEditer);
 
             te.SelectionChanged -= TimeEditer_SelectionChanged;
             te.TextChanged -= TimeEditer_TextChanged;
@@ -66,7 +115,7 @@ namespace WpfControlsLibrary
 
         private void TimeEditer_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            var te = (e.Source as TimeEditer);
+            var te = (e.Source as ASTimeEditer);
             te.SelectionChanged -= TimeEditer_SelectionChanged;
             te.SelectAll();
             te.SelectionChanged += TimeEditer_SelectionChanged;
@@ -75,7 +124,7 @@ namespace WpfControlsLibrary
         private void TimeEditer_GotKeyboardFocus(object sender, System.Windows.Input.KeyboardFocusChangedEventArgs e)
         {
             loaded = false;
-            var te = (e.Source as TimeEditer);
+            var te = (e.Source as ASTimeEditer);
             te.SelectionChanged -= TimeEditer_SelectionChanged;
             te.SelectAll();
             te.SelectionChanged += TimeEditer_SelectionChanged;
@@ -83,7 +132,7 @@ namespace WpfControlsLibrary
         bool loaded = false;
         private void TimeEditer_SelectionChanged(object sender, RoutedEventArgs e)
         {
-            var te = (e.Source as TimeEditer);
+            var te = (e.Source as ASTimeEditer);
 
             try
             {
@@ -123,7 +172,7 @@ namespace WpfControlsLibrary
 
         private void TimeEditer_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            var te = (e.Source as TimeEditer);
+            var te = (e.Source as ASTimeEditer);
 
             if (e.Key == System.Windows.Input.Key.Delete || e.Key == System.Windows.Input.Key.Back)
             {
@@ -172,7 +221,7 @@ namespace WpfControlsLibrary
 
         private void TimeEditer_TextChanged(object sender, TextChangedEventArgs e)
         {
-            var te = (e.Source as TimeEditer);
+            var te = (e.Source as ASTimeEditer);
 
             var text = te.Text;
             
@@ -182,7 +231,7 @@ namespace WpfControlsLibrary
                 TextChanged -= TimeEditer_TextChanged;
                 var selStart = te.SelectionStart;
                 te.Text = textBeforeChange;
-                te.SelectionStart = selStart - 1;
+                te.SelectionStart = selStart - 1 >= 0 ? selStart - 1 : 0;
                 TextChanged += TimeEditer_TextChanged;
             }
 

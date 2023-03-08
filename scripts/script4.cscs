@@ -1,4 +1,7 @@
 
+function btnQuit@clicked(){
+    quit;
+}
 
 function btn1@clicked(){
     CHAIN "../../scripts/script5.cscs";
@@ -8,6 +11,10 @@ function btn2@clicked(){
     //MessageBox("btn2 in script4");
     // varInParent = varInParent + 1;
     varInParent++;
+    ++varInParent;
+    varInParent--;
+    --varInParent;
+    varInParent *= 2;
 
     //varInParent = varInParent + 1;  
     //varInParent = varInParent + 1;

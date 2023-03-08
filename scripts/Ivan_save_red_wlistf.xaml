@@ -1,0 +1,214 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:wcl="clr-namespace:WpfControlsLibrary;assembly=WpfControlsLibrary"
+        mc:Ignorable="d"
+        xmlns:local="clr-namespace:save_red_wflist"
+        Title="Lista Kontnog plana"
+        Height="408"
+        Width="568">
+    <Window.Resources />
+    <Grid Background="#FFB4B4B4">
+        <TextBlock HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Height="16"
+                   Width="34"
+                   Margin="18,273,0,0"
+                   FontFamily="Arial"
+                   Name="Label1"
+                   FontSize="10"
+                   Foreground="Black"
+                   Text="Konto" />
+        <TextBlock HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Height="13"
+                   Width="75"
+                   Margin="10,324,0,0"
+                   FontFamily="MS Sans Serif"
+                   Name="Label2"
+                   FontSize="10"
+                   Foreground="Black"
+                   Text="Pretraživanje" />
+        <TextBlock HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Height="13"
+                   Width="26"
+                   Margin="210,274,0,0"
+                   FontFamily="MS Sans Serif"
+                   Name="Label3"
+                   FontSize="10"
+                   Foreground="Black"
+                   Text="Opis" />
+        <DataGrid HorizontalAlignment="Left"
+                  VerticalAlignment="Top"
+                  Height="263"
+                  Width="560"
+                  Margin="1,1,0,0"
+                  IsReadOnly="true"
+                  Name="List_acct"
+                  HorizontalScrollBarVisibility="Auto"
+                  VerticalScrollBarVisibility="Auto"
+                  Background="White"
+                  TabIndex="1">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Oznaka konta"
+                                        Width="107">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell FieldName="GK_AC_KONTO"
+                                            Editor="edDefault"
+                                            EditLength="0" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Opis"
+                                        Width="170">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell FieldName="GK_AC_OPIS"
+                                            Editor="edDefault"
+                                            EditLength="0" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Datum"
+                                        Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell FieldName="GK_AC_DATE"
+                                            Editor="edDefault"
+                                            EditLength="0" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <wcl:ASEnterBox HorizontalAlignment="Left"
+                        FontWeight="Bold"
+                        VerticalAlignment="Top"
+                        Margin="8,340,0,0"
+                        Name="sifra"
+                        FieldName="GK_AC_KONTO"
+                        FontSize="8"
+                        Foreground="black"
+                        Background="White"
+                        Height="21"
+                        Width="104"
+                        TabIndex="0" />
+        <Button HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Height="32"
+                Margin="448,329,0,0"
+                FontFamily="Arial"
+                Width="72"
+                Visibility="Visible"
+                Name="gbExit">
+            <StackPanel Orientation="Horizontal">
+                <Image Source="Images\cancel.png"
+                       Stretch="UniformToFill"
+                       Margin="5" />
+                <TextBlock FontSize="11"
+                           Foreground="Black"
+                           VerticalAlignment="Center"
+                           Text="Odustani" />
+            </StackPanel>
+        </Button>
+        <Button HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Height="32"
+                Margin="208,329,0,0"
+                FontFamily="Arial"
+                Width="72"
+                Visibility="Visible"
+                Name="gbScan">
+            <StackPanel Orientation="Horizontal">
+                <Image Source="Images\check.png"
+                       Stretch="UniformToFill"
+                       Margin="5" />
+                <TextBlock FontSize="11"
+                           Foreground="Black"
+                           VerticalAlignment="Center"
+                           Text="SCAN" />
+            </StackPanel>
+        </Button>
+        <wcl:ASEnterBox HorizontalAlignment="Left"
+                        FontWeight="Bold"
+                        VerticalAlignment="Top"
+                        FieldName="GK_AC_OPIS"
+                        Margin="207,293,0,0"
+                        Name="TASENTER1"
+                        FontSize="10"
+                        Foreground="Black"
+                        Background="White"
+                        Height="21"
+                        Width="121"
+                        TabIndex="4" />
+        <wcl:ASEnterBox HorizontalAlignment="Left"
+                        FontWeight="Bold"
+                        VerticalAlignment="Top"
+                        Margin="15,293,0,0"
+                        Name="TASENTER2"
+                        FontSize="10"
+                        Foreground="Black"
+                        Background="White"
+                        Height="21"
+                        Width="121"
+                        TabIndex="5" />
+        <Button HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Height="32"
+                Margin="368,329,0,0"
+                FontFamily="Arial"
+                Width="72"
+                Visibility="Visible"
+                Name="gbinsert">
+            <StackPanel Orientation="Horizontal">
+                <Image Source="Images\check.png"
+                       Stretch="UniformToFill"
+                       Margin="5" />
+                <TextBlock FontSize="11"
+                           Foreground="Black"
+                           VerticalAlignment="Center"
+                           Text="Insert" />
+            </StackPanel>
+        </Button>
+        <Button HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Height="32"
+                Margin="288,329,0,0"
+                FontFamily="Arial"
+                Width="72"
+                Visibility="Visible"
+                Name="gbnovi">
+            <StackPanel Orientation="Horizontal">
+                <Image Source="Images\check.png"
+                       Stretch="UniformToFill"
+                       Margin="5" />
+                <TextBlock FontSize="11"
+                           Foreground="Black"
+                           VerticalAlignment="Center"
+                           Text="Novi red" />
+            </StackPanel>
+        </Button>
+        <!-- <wcl:ASTimeEditer HorizontalAlignment="Left"
+                          VerticalAlignment="Top"
+                          Height="22"
+                          DisplaySize="5"
+                          Width="120"
+                          Margin="343,293,0,0"
+                          FontWeight="Bold"
+                          Name="TASDateEdit1" /> -->
+        <wcl:ASDateEditer ButtonWidth="20"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Top"
+                          Height="22"
+                          DisplaySize="8"
+                          Width="100"
+                          Margin="343,293,0,0"
+                          FontWeight="Bold"
+                          Name="TASDateEdit1"
+                          DataContext="GK_ac_date" />
+    </Grid>
+</Window>

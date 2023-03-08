@@ -9,9 +9,9 @@ using System.Windows.Input;
 
 namespace WpfControlsLibrary
 {
-    public class MemoTextBox : TextBox
+    public class ASMemoBox : TextBox
     {
-        public static readonly DependencyProperty SizeProperty = DependencyProperty.Register("Size", typeof(int), typeof(MemoTextBox));
+        public static readonly DependencyProperty SizeProperty = DependencyProperty.Register("Size", typeof(int), typeof(ASMemoBox));
         public int Size
         {
             get
@@ -21,6 +21,19 @@ namespace WpfControlsLibrary
             set
             {
                 base.SetValue(SizeProperty, value);
+            }
+        }
+        
+        public static readonly DependencyProperty FontWeightProperty = DependencyProperty.Register("FontWeight", typeof(FontWeight), typeof(ASMemoBox));
+        public FontWeight FontWeight
+        {
+            get
+            {
+                return (FontWeight)base.GetValue(FontWeightProperty);
+            }
+            set
+            {
+                base.SetValue(FontWeightProperty, value);
             }
         }
 
@@ -43,6 +56,8 @@ namespace WpfControlsLibrary
             HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
 
             base.OnApplyTemplate();
+
+            this.FontWeight = FontWeight;
 
             this.PreviewTextInput += this_PreviewTextInput;
 
@@ -72,14 +87,14 @@ namespace WpfControlsLibrary
 
         private void this_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            var etb = e.Source as MemoTextBox;
+            var etb = e.Source as ASMemoBox;
 
             textBeforeChange = etb.Text;
         }
 
         private void this_TextChanged(object sender, TextChangedEventArgs e)
         {
-            var etb = e.Source as MemoTextBox;
+            var etb = e.Source as ASMemoBox;
 
             etb.TextChanged -= this_TextChanged;
 
@@ -99,7 +114,7 @@ namespace WpfControlsLibrary
 
         private void this_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            var etb = e.Source as MemoTextBox;
+            var etb = e.Source as ASMemoBox;
 
             if (etb.Text.Length + e.Text.Length - etb.SelectionLength > Size)
             {

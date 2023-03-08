@@ -10,23 +10,20 @@
     <Grid>
         <TextBox Margin="50,20,0,0"
         Height="60"  Width="400"
-        
-         DataContext="var2" Name="tb2"
-            FontSize="25"
-                                HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        Name="tb2"
+        FontSize="25"
+        HorizontalAlignment="Left" VerticalAlignment="Top"/>
         <wcl:EnterBox 
-
-                        KeyTraps="F2|enterbox1@clicked|F3|nekidrugi"
-
-                        ButtonSize="30" 
-                        Size="10"
-                        Case="Normal"
-                        Text="lalalala33"
-                        FieldName="varijabla"
-                        Name="enterbox1"  
-                        Height="30"  Width="400"
-                        Margin="50,100,0,0"
-                        HorizontalAlignment="Left" VerticalAlignment="Top"
-                        FontSize="25"/>
+            KeyTraps="F2|enterbox1@clicked|F3|nekidrugi"
+            ButtonSize="30"
+            Size="10"
+            Case="Normal"
+            Text="lalalala33"
+            FieldName="varijabla"
+            Name="enterbox1"  
+            Height="30"  Width="400"
+            Margin="50,100,0,0"
+            HorizontalAlignment="Left" VerticalAlignment="Top"
+            FontSize="25"/>
     </Grid>
 </Window>

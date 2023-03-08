@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="WpfControlsLibrary.EnterBox"
+﻿<UserControl x:Class="WpfControlsLibrary.ASEnterBox"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -13,8 +13,11 @@
             <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
 
-        <local:EnterTextBox x:Name="enterBoxTextBox" Grid.Column="0" HorizontalAlignment="Stretch" />
-        <Button Focusable="False" x:Name="enterBoxButton" Grid.Column="1" Height="auto"/>
-
+        <local:ASEnterTextBox x:Name="enterBoxTextBox" Grid.Column="0" HorizontalAlignment="Stretch" Background="White"/>
+        <Button Focusable="False" x:Name="enterBoxButton" Grid.Column="1" Height="auto">
+            <Viewbox>
+                <Image Source="search.png"/>
+            </Viewbox>
+        </Button>
     </Grid>
 </UserControl>

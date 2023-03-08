@@ -19,13 +19,13 @@ namespace WpfControlsLibrary
     {
         First, Previous, Next, Last
     }
-    public partial class Navigator : UserControl
+    public partial class ASNavigator : UserControl
     {
         RoutedCommand trapF5 = new RoutedCommand();
         RoutedCommand trapF6 = new RoutedCommand();
         RoutedCommand trapF7 = new RoutedCommand();
         RoutedCommand trapF8 = new RoutedCommand();
-        public Navigator()
+        public ASNavigator()
         {
             InitializeComponent();
 

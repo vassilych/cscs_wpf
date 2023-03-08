@@ -18,3 +18,4 @@ ourScripts/
 *.vsidx
 *.vsidx
 *.v2
+.vs/slnx.sqlite

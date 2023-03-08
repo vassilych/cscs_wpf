@@ -1,0 +1,50 @@
+// CreateWindow("../../scripts/testArray.xaml");
+// Define array_field type a size 10 array 10;
+
+// DEFINE lineCntr type i;
+
+// function gbAAA@clicked()
+// {
+//     array_field[1 -1] = "aaa";
+//     array_field[2 -1] = "bbb";
+//     array_field[3 -1] = "ccc";
+//     array_field[4 -1] = "ddd";
+//     array_field[5 -1] = "eee";
+//     array_field[6 -1] = "fff";
+
+//     DisplayArraySetup('List_Acct', /*counter_fld*/  6, /*active_elements*/ 6, /*Max_elements*/ 6 + 1);
+    
+//     MessageBox("Line counter = " + lineCntr); // -1
+
+//     return;
+// }
+                    
+// function gbExit@clicked()
+// {
+//     quit;
+//     return;
+// }
+
+
+CreateWindow( "../../scripts/testArray.xaml");
+Define array_field type a size 10 array 10;
+function gbAAA@clicked()
+{
+ array_field[1 -1] = "aaa";
+//aaaaaaaaaa
+ array_field[2 -1] = "bbb";
+ array_field[3 -1] = "ccc";
+ array_field[4 -1] = "ddd";
+ array_field[5 -1] = "eee";
+ array_field[6 -1] = "fff";
+//DisplayArraySetup('List_Acct' ,  / * counter_fld * /  6 ,  / * active_elements * / 6 ,  / * Max_elements * / 6  +  1);
+DisplayArraySetup("List_Acct", 6,  6,  7);
+return;
+
+}
+                    
+function gbExit@clicked()
+{
+    quit;
+    return;
+} 

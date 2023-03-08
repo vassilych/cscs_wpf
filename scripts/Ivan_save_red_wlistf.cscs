@@ -1,0 +1,28 @@
+CreateWindow("../../scripts/Ivan_save_red_wlistf.xaml");
+
+define nkgkacct_hndl,NKSYCCYR_hndl type i;
+define sifra type a size 50;
+
+nkgkacct_hndl = openv('NKGKACCT', "BD1", "a");  //fnum nkgkacct_hndl  lock n
+//nkgkacct_hndl = openv('NKGKACCT');  //fnum nkgkacct_hndl  lock n
+
+function gbScan@clicked(){
+    DisplayTableSetup("List_acct", nkgkacct_hndl, "gk_ac_konto", "0", "true", ""); //gk_ac_konto != '01'
+    //SetWidgetOptions("List_acct" , "EditMode");
+}
+
+function gbExit@clicked(){
+    quit;
+}
+
+// addrow
+function gbnovi@clicked(){
+    SetWidgetOptions("List_acct", "editmode");
+    DataGrid("List_acct", "addRow");
+    SetWidgetOptions("List_acct", "selectmode");
+}
+
+//save
+function gbinsert@clicked(){
+    
+}

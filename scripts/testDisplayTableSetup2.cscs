@@ -9,10 +9,12 @@ if(flerr() != 0){
 }
 
 
-//// switch commented and uncommented for checkbox filter
 
+
+
+//// switch commented and uncommented for checkbox filter
 //DisplayTableSetup("grid1", table_hndl, "InvoiceLine_invoiceLineNumber", "1|1", "invoiceNumber < 40", "bitcolumn = 0");
-DisplayTableSetup("grid1", table_hndl, "InvoiceLine_invoiceLineNumber", "1|1", "invoiceNumber < 40", "");
+DisplayTableSetup("grid1", fnum: table_hndl, key: "InvoiceLine_invoiceLineNumber", start: "1|1", whileString: "invoiceNumber<13", forString: "");
 
 i = 2;
 function btnES@Clicked(){
@@ -38,3 +40,12 @@ function btnDel@clicked(){
     DataGrid("grid1", "DeleteRow");
 }
 
+// function grid1@Move(s, l){
+//     MessageBox("move-d");
+// }
+
+function btnSave@clicked(){
+    //MessageBox("price = " + price);
+    Save(table_hndl, true, true);
+    DisplayTable("grid1", "RedisplayActive");
+}

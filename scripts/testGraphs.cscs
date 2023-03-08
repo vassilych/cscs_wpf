@@ -1,0 +1,119 @@
+
+CreateWindow("../../scripts/testGraphs.xaml");
+
+//-- PRVI TEST
+
+DEFINE array1 type i array 5;
+array1[0] = 0;
+array1[1] = 1;
+array1[2] = 2;
+array1[3] = 3;
+array1[4] = 4;
+
+DEFINE array2 type i array 5;
+array2[0] = 10;
+array2[1] = 11;
+array2[2] = 12;
+array2[3] = 13;
+array2[4] = 14;
+
+Chart("CartesianChart1", "init");
+Chart("CartesianChart1", "title", "Naslov grafa");
+Chart("CartesianChart1", "XAxisName", "naziv osi X");
+Chart("CartesianChart1", "YAxisName", "naziv osi Y");
+Chart("CartesianChart1", "seriesType", "columnSeries");
+Chart("CartesianChart1", "labels", {"april", "maj", "juni", "juli", "oktober"});
+Chart("CartesianChart1", "xlabelsRotation", -45);
+Chart("CartesianChart1", "ylabelsRotation", -45);
+
+Chart("CartesianChart1", "values", array1, "2019");
+Chart("CartesianChart1", "values", { 5, 6, 7, 8, 9 }, "2020");
+Chart("CartesianChart1", "values", { 15, 16, 17, 18, 19 }, "2021");
+Chart("CartesianChart1", "values", { 25, 26, 27, 28, 29 }, "2022");
+Chart("CartesianChart1", "values", { 0, 2, 4, 8, 16 }, "2023");
+
+//--- TEST IZ BAZE ---
+
+sqlQueryString = "SELECT 
+[wk_YYYYMM] as yyyymm, 
+Sales=ISNULL(SUM(CASE WHEN b.nkpr_gl_dviza= 'D' THEN b.nkpr_gl_tecaj*d.nkpr_ln_amt ELSE d.nkpr_ln_amt END), 0)+ISNULL(SUM(CASE WHEN c.nkpr_gl_dviza= 'D' THEN c.nkpr_gl_tecaj*e.nkpr_ln_amt ELSE e.nkpr_ln_amt END), 0) 
+
+FROM 
+K__DATAX__B.dbo.Kalendar a 
+LEFT JOIN 
+K__DATAX_D1__BD1.dbo.nkprinv b 
+	ON 
+	a.[Wk_Date] = DATEADD(month, DATEDIFF(month, 0, b.nkpr_gl_datem), 0) 
+	AND 
+	year(b.nkpr_gl_datem)= 2021 
+	
+LEFT JOIN 
+K__DATAX_D2__BD2.dbo.nkprinv c 
+	ON 
+	a.[Wk_Date] = DATEADD(month, DATEDIFF(month, 0, c.nkpr_gl_datem), 0) 
+	AND 
+	year(c.nkpr_gl_datem)= 2022 
+LEFT JOIN K__DATAX_D2__BD2.dbo.nkprinvl e 
+	ON 
+	c.nkpr_gl_num= e.nkpr_ln_invnm 
+LEFT JOIN K__DATAX_D1__BD1.dbo.nkprinvl d 
+	ON b.nkpr_gl_num= d.nkpr_ln_invnm 
+	
+WHERE [wk_Date] BETWEEN '2021-01-01' AND '2022-12-31' 
+AND [wk_Day] = 1 
+GROUP BY [Wk_YYYYMM] 
+ORDER BY wk_yyyymm";
+
+
+queryResult = sqlquery(sqlQueryString);
+//MessageBox(queryResult);
+
+array2021 = {};
+array2022 = {};
+
+for(i = 1; i < 13; i++){
+    array2021.add(queryResult[i][1]);
+}
+
+for(i = 13; i < 25; i++){
+    array2022.add(queryResult[i][1]);
+}
+
+Chart("CartesianChart2", "init");
+Chart("CartesianChart2", "seriesType", "lineSeries");
+Chart("CartesianChart2", "title", "Naslov grafa");
+Chart("CartesianChart2", "labels", {"Siječanj", "Veljača", "Ožujak", "Travanj", "Svibanj", "Lipanj", "Srpanj", "Kolovoz", "Rujan", "Listopad", "Studeni", "Prosinac"});
+Chart("CartesianChart2", "xlabelsRotation", -90);
+Chart("CartesianChart2", "values", array2021, "2021");
+Chart("CartesianChart2", "values", array2022, "2022");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

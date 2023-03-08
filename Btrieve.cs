@@ -1146,6 +1146,8 @@ $@"EXECUTE sp_executesql N'
             interpreter.RegisterFunction(Constants.CO_GET, new COGetFunction());
             interpreter.RegisterFunction(Constants.CO_SET, new COSetFunction());
 
+            interpreter.RegisterFunction(Constants.COMMONDB_GET, new CommonDBGetFunction());
+
         }
 
         CSCS_GUI Gui { get; set; }
@@ -1180,6 +1182,7 @@ $@"EXECUTE sp_executesql N'
             if (Gui.SQLInstance.SqlServerConnection.State != System.Data.ConnectionState.Open)
             {
                 Gui.SQLInstance.SqlServerConnection.Open();
+                //SetArithabortOn();
             }
 
             //
@@ -1241,6 +1244,13 @@ $@"EXECUTE sp_executesql N'
             SetFlerr(0, thisFnum);
 
             return new Variable((long)thisFnum);
+        }
+
+        private void SetArithabortOn()
+        {
+            var queryString = "SET ARITHABORT ON";
+            SqlCommand command = new SqlCommand(queryString, Gui.SQLInstance.SqlServerConnection);
+            command.ExecuteNonQuery();
         }
 
         public class FINDVClass
@@ -1353,7 +1363,7 @@ $@"EXECUTE sp_executesql N'
                         }
                         else
                         {
-                            return findNextOrPreviousWithoutCacheing(FindvOption.Next);
+                               return findNextOrPreviousWithoutCacheing(FindvOption.Next);
                         }
                     case "p":
                         if (thisOpenv.lockingType == "a")
@@ -1448,6 +1458,12 @@ $@"EXECUTE sp_executesql N'
 
                     cachedColumnsToSelect[tableHndlNum] = columns;
                 }
+                //if(columns == "*")
+                //{
+                //    columns = "ID, " + string.Join(", ", thisOpenv.FieldNames);
+
+                //    cachedColumnsToSelect[tableHndlNum] = columns;
+                //}
 
                 string sqlForString = "";
                 if (!string.IsNullOrEmpty(forString))
@@ -1612,7 +1628,10 @@ order by {orderByString}
 
             private string getFieldType(string fieldName)
             {
-                var fieldType = CSCS_GUI.Adictionary.SY_FIELDSList.Where(p => p.SYTD_FIELD == fieldName).Select(p => p.SYTD_TYPE).First();
+                //var fieldType = CSCS_GUI.Adictionary.SY_FIELDSList.Where(p => p.SYTD_FIELD == fieldName).Select(p => p.SYTD_TYPE).First();
+                var field = CSCS_GUI.Adictionary.SY_FIELDSList.Where(p => p.SYTD_FIELD == fieldName).FirstOrDefault();//.Select(p => p.SYTD_TYPE).First();
+                var fieldType = field.SYTD_TYPE;
+                var fieldSize = field.SYTD_SIZE;
 
                 switch (fieldType)
                 {
@@ -1623,7 +1642,8 @@ order by {orderByString}
                     case "N":// numeric(with decimal)
                         return "float";
                     case "A":// alphanumeric
-                        return "varchar(max)";
+                        //return "varchar(max)";
+                        return $"char({fieldSize.ToString()})";
                     case "D":// date
                         return "date";
                     case "L":// logic
@@ -1633,9 +1653,9 @@ order by {orderByString}
                     case "M":// memo
                         return "";// it's not beeing used
                     case "B":// byte
-                        return "int";
+                        return "tinyInt";
                     case "I":// int
-                        return "int";
+                        return "smallInt";
                     case "V":// overlay
                         return "";// it's not beeing used
                     default:
@@ -1749,11 +1769,13 @@ order by {orderByString}
 
                 for (int i = 0; i < keySegmentsOrdered.Count; i++)
                 {
-                    pvStringBuilder.Append("\'" + thisOpenv.CurrentKey.KeyColumns[keySegmentsOrdered[i]] + "\', ");
+                    //pvStringBuilder.Append("\'" + thisOpenv.CurrentKey.KeyColumns[keySegmentsOrdered[i]] + "\', ");
+                    pvStringBuilder.Append(thisOpenv.CurrentKey.KeyColumns[keySegmentsOrdered[i]] + ", ");
                 }
                 if (KeyClass.Unique == false || KeyClass.KeyNum == 0)
                 {
-                    pvStringBuilder.Append("\'" + thisOpenv.currentRow + "\', ");
+                    //pvStringBuilder.Append("\'" + thisOpenv.currentRow + "\', ");
+                    pvStringBuilder.Append(thisOpenv.currentRow + ", ");
                 }
                 pvStringBuilder.Remove(pvStringBuilder.Length - 2, 2); // remove last ", "
 
@@ -2276,8 +2298,8 @@ N'{paramsDeclaration}', ";
                                 if (firstPass)
                                     currentSqlId = (int)reader["ID"];
 
-                                int currentFieldNum = 1;
-                                while (currentFieldNum < reader.FieldCount)
+                                //int currentFieldNum = 1;
+                                for (int currentFieldNum = 1; currentFieldNum < reader.FieldCount; currentFieldNum++)
                                 {
                                     var currentColumnName = reader.GetName(currentFieldNum);
                                     if (KeyClass.KeyColumns.Keys.Any(p => p.ToUpper() == currentColumnName.ToUpper()))
@@ -2306,17 +2328,51 @@ N'{paramsDeclaration}', ";
                                             var dateFormat = Gui.DEFINES[loweredCurrentColumnName].GetDateFormat();
                                             var newVar = new Variable(fieldValue.ToString(dateFormat));
                                             Gui.DEFINES[loweredCurrentColumnName].InitVariable(newVar, Gui);
-                                            Gui.OnVariableChange(loweredCurrentColumnName, newVar, true);
+                                            //Gui.OnVariableChange(loweredCurrentColumnName, newVar, true);
                                         }
                                         else
                                         {
                                             string fieldValue = reader[currentColumnName].ToString().TrimEnd();
-                                            Gui.DEFINES[loweredCurrentColumnName].InitVariable(new Variable(fieldValue).Clone(), Gui);
-                                            Gui.OnVariableChange(loweredCurrentColumnName, new Variable(fieldValue), true);
+
+                                            //Gui.DEFINES[loweredCurrentColumnName].InitVariable(new Variable(fieldValue).Clone(), Gui);
+
+
+                                            switch (Gui.DEFINES[loweredCurrentColumnName].DefType)
+                                            {
+                                                case "a":
+                                                    Gui.DEFINES[loweredCurrentColumnName].String = reader[currentColumnName].ToString().TrimEnd();
+                                                    break;
+                                                case "i":
+                                                case "n":
+                                                case "r":
+                                                case "b":
+                                                case "l":
+                                                    double result;
+                                                    if (double.TryParse(reader[currentColumnName].ToString(), out result))
+                                                    {
+                                                        Gui.DEFINES[loweredCurrentColumnName].Value = result;
+                                                    }
+                                                    break;
+                                                case "d":
+                                                    Gui.DEFINES[loweredCurrentColumnName].DateTime = (DateTime)reader[currentColumnName];
+                                                    break;
+                                                case "t":
+                                                    var time = (TimeSpan)reader[currentColumnName];
+                                                    Gui.DEFINES[loweredCurrentColumnName].DateTime = new DateTime(1, 1, 1, time.Hours, time.Minutes, time.Seconds);
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
+
+                                            Gui.Interpreter.AddGlobalOrLocalVariable(loweredCurrentColumnName, new GetVarFunction(Gui.DEFINES[loweredCurrentColumnName]), script);
+                                            Gui.DEFINES[loweredCurrentColumnName] = Gui.DEFINES[loweredCurrentColumnName];
+
+
+                                            //Gui.OnVariableChange(loweredCurrentColumnName, new Variable(fieldValue), true);
                                         }
                                     }
 
-                                    currentFieldNum++;
+                                    //currentFieldNum++;
                                 }
 
                                 firstPass = false;
@@ -2943,6 +2999,8 @@ WHERE ID = {thisOpenv.currentRow}
 
             public void Save(bool noPrompt, OpenvTable thisOpenv, int tableHndlNum, bool noClr, ParsingScript script)
             {
+                Gui = CSCS_GUI.GetInstance(script);
+
                 bool clear = false;
 
                 if (!noPrompt)
@@ -3041,7 +3099,7 @@ VALUES ({valuesStringBuilder})
                     setStringBuilder.AppendLine("");
                     setStringBuilder.Append(field + " = ");
 
-                    var bufferVar = Gui.DEFINES[field.ToLower()];
+                     var bufferVar = Gui.DEFINES[field.ToLower()];
                     if (bufferVar.DefType == "a" || bufferVar.DefType == "t" || bufferVar.DefType == "d")
                     {
                         var bufferVarAsString = bufferVar.AsString();
@@ -4128,9 +4186,9 @@ WHERE ID = {thisOpenv.currentRow}
                         var dgtc = column as DataGridTemplateColumn;
 
                         var cell = dgtc.CellTemplate.LoadContent();
-                        if (cell is TimeEditer)
+                        if (cell is ASTimeEditer)
                         {
-                            var te = cell as TimeEditer;
+                            var te = cell as ASTimeEditer;
                             if (te.Tag != null)
                             {
                                 tagsAndTypes.Add(te.Tag.ToString(), typeof(TimeSpan));
@@ -4138,9 +4196,9 @@ WHERE ID = {thisOpenv.currentRow}
                                 timeAndDateEditerTagsAndSizes[te.Tag.ToString()] = te.DisplaySize;
                             }
                         }
-                        else if (cell is DateEditer)
+                        else if (cell is ASDateEditer)
                         {
-                            var de = cell as DateEditer;
+                            var de = cell as ASDateEditer;
                             if (de.Tag != null)
                             {
                                 tagsAndTypes.Add(de.Tag.ToString(), typeof(DateTime));
@@ -4384,7 +4442,7 @@ $@"EXECUTE sp_executesql N'
                         //bind.StringFormat = "dd/MM/yy";
                         //if(timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 10)
                         //{
-                        //    bind.Converter = new DateEditerConverter();
+                        //    bind.Converter = new ASDateEditerConverter();
                         //    bind.StringFormat = "dd/MM/yyyy";
                         //}
 
@@ -4398,7 +4456,7 @@ $@"EXECUTE sp_executesql N'
                             //ci.DateTimeFormat.LongDatePattern = "dd/MM/yyyy HH:mm:ss";
                             Thread.CurrentThread.CurrentCulture = ci;
 
-                            bind.Converter = new DateEditerConverter();
+                            bind.Converter = new ASDateEditerConverter();
                             bind.ConverterParameter = 8; //size
                             bind.StringFormat = "dd/MM/yy";
                         }
@@ -4409,7 +4467,7 @@ $@"EXECUTE sp_executesql N'
                             //ci.DateTimeFormat.LongDatePattern = "dd/MM/yyyy HH:mm:ss";
                             Thread.CurrentThread.CurrentCulture = ci;
 
-                            bind.Converter = new DateEditerConverter();
+                            bind.Converter = new ASDateEditerConverter();
                             bind.ConverterParameter = 10; //size
                             bind.StringFormat = "dd/MM/yyyy";
                         }
@@ -4422,9 +4480,9 @@ $@"EXECUTE sp_executesql N'
                         textBlockTemplate.VisualTree = textBlockFactory;
 
                         // Create the DatePicker
-                        FrameworkElementFactory datePickerFactory = new FrameworkElementFactory(typeof(DateEditer));
-                        datePickerFactory.SetBinding(DateEditer.TextProperty, bind);
-                        datePickerFactory.SetValue(DateEditer.DisplaySizeProperty, timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()]);
+                        FrameworkElementFactory datePickerFactory = new FrameworkElementFactory(typeof(ASDateEditer));
+                        datePickerFactory.SetBinding(ASDateEditer.TextProperty, bind);
+                        datePickerFactory.SetValue(ASDateEditer.DisplaySizeProperty, timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()]);
 
 
                         DataTemplate datePickerTemplate = new DataTemplate();
@@ -4446,12 +4504,12 @@ $@"EXECUTE sp_executesql N'
                         bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
                         if (timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 5)
                         {
-                            bind.Converter = new TimeEditerConverter();
+                            bind.Converter = new ASTimeEditerConverter();
                             bind.ConverterParameter = 5;
                         }
                         else if (timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 8)
                         {
-                            bind.Converter = new TimeEditerConverter();
+                            bind.Converter = new ASTimeEditerConverter();
                             bind.ConverterParameter = 8;
                         }
 
@@ -4463,10 +4521,10 @@ $@"EXECUTE sp_executesql N'
                         DataTemplate textBlockTemplate = new DataTemplate();
                         textBlockTemplate.VisualTree = textBlockFactory;
 
-                        // Create the TimeEditer
-                        FrameworkElementFactory timeEditerFactory = new FrameworkElementFactory(typeof(TimeEditer));
-                        timeEditerFactory.SetBinding(TimeEditer.TextProperty, bind);
-                        timeEditerFactory.SetValue(TimeEditer.DisplaySizeProperty, timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()]);
+                        // Create the ASTimeEditer
+                        FrameworkElementFactory timeEditerFactory = new FrameworkElementFactory(typeof(ASTimeEditer));
+                        timeEditerFactory.SetBinding(ASTimeEditer.TextProperty, bind);
+                        timeEditerFactory.SetValue(ASTimeEditer.DisplaySizeProperty, timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()]);
 
                         DataTemplate timeEditerTemplate = new DataTemplate();
                         timeEditerTemplate.VisualTree = timeEditerFactory;
@@ -4514,7 +4572,7 @@ $@"EXECUTE sp_executesql N'
                         Binding bind = new Binding(e.Column.Header.ToString());
                         bind.Mode = BindingMode.TwoWay;
                         bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-                        bind.Converter = new TextBoxIntConverter();
+                        bind.Converter = new ASTextBoxIntConverter();
 
                         // Create the TextBlock
                         FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
@@ -4544,7 +4602,7 @@ $@"EXECUTE sp_executesql N'
                         Binding bind = new Binding(e.Column.Header.ToString());
                         bind.Mode = BindingMode.TwoWay;
                         bind.UpdateSourceTrigger = UpdateSourceTrigger.LostFocus;
-                        bind.Converter = new TextBoxDoubleConverter();
+                        bind.Converter = new ASTextBoxDoubleConverter();
 
                         // Create the TextBlock
                         FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
@@ -4574,7 +4632,7 @@ $@"EXECUTE sp_executesql N'
                         Binding bind = new Binding(e.Column.Header.ToString());
                         bind.Mode = BindingMode.TwoWay;
                         bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-                        //bind.Converter = new TextBoxDoubleConverter();
+                        //bind.Converter = new ASTextBoxDoubleConverter();
 
                         // Create the TextBlock
                         FrameworkElementFactory checkBoxFactory = new FrameworkElementFactory(typeof(CheckBox));
@@ -4835,6 +4893,10 @@ $@"EXECUTE sp_executesql N'
             Dictionary<string, Type> tagsAndTypes;
             Dictionary<string, Type> newTagsAndTypes;
             Dictionary<string, int> timeAndDateEditerTagsAndSizes = new Dictionary<string, int>();
+            Dictionary<string, string> tagsAndEditors = new Dictionary<string, string>();
+
+            Dictionary<string, string> tagsAndNames = new Dictionary<string, string>();
+            Dictionary<string, int> tagsAndPositions = new Dictionary<string, int>();
 
             DataGrid dg;
             protected override Variable Evaluate(ParsingScript script)
@@ -4845,17 +4907,71 @@ $@"EXECUTE sp_executesql N'
                 Utils.CheckArgs(args.Count, 3, m_name);
 
                 gridName = Utils.GetSafeString(args, 0).ToLower();
-                tableHndlNum = Utils.GetSafeInt(args, 1);
-                tableKey = Utils.GetSafeString(args, 2);
+
+                var tableHndlNumVar = args.FirstOrDefault(p => p.CurrentAssign.ToLower() == "fnum");
+                if (tableHndlNumVar != null)
+                {
+                    tableHndlNum = (int)tableHndlNumVar.AsDouble();
+                }
+                else
+                {
+                    tableHndlNum = 0;
+                }
+                
+                var tableKeyVar = args.FirstOrDefault(p => p.CurrentAssign.ToLower() == "key");
+                if (tableKeyVar != null)
+                {
+                    tableKey = tableKeyVar.AsString();
+                }
+                else
+                {
+                    tableKey = "";
+                }
+
+                //tableHndlNum = Utils.GetSafeInt(args, 1);
+                //tableKey = Utils.GetSafeString(args, 2);
 
                 //startString = Utils.GetSafeString(args, 3);
                 //whileString = Utils.GetSafeString(args, 4).ToLower();
                 //forString = Utils.GetSafeString(args, 5).ToLower();
 
                 gridsTableClass[gridName] = new DisplayTableClass();
-                gridsTableClass[gridName].startString = script.GetTempScript(args[3].AsString()); //Utils.GetSafeString(args, 3);
-                gridsTableClass[gridName].whileString = script.GetTempScript(args[4].AsString()); //Utils.GetSafeString(args, 4).ToLower();
-                gridsTableClass[gridName].forString = Utils.GetSafeString(args, 5).ToLower();
+                //gridsTableClass[gridName].startString = script.GetTempScript(args[3].AsString()); //Utils.GetSafeString(args, 3);
+                //gridsTableClass[gridName].whileString = script.GetTempScript(args[4].AsString()); //Utils.GetSafeString(args, 4).ToLower();
+                //gridsTableClass[gridName].forString = Utils.GetSafeString(args, 5).ToLower();
+
+                var startStringVar = args.FirstOrDefault(p => p.CurrentAssign.ToLower() == "start");
+                if (startStringVar != null)
+                {
+                    gridsTableClass[gridName].startString = script.GetTempScript(startStringVar.AsString());
+                }
+                else
+                {
+                    //gridsTableClass[gridName].startString = script.GetTempScript();
+                    gridsTableClass[gridName].startString = script.GetTempScript("");
+                }
+
+                var whileStringVar = args.FirstOrDefault(p => p.CurrentAssign.ToLower() == "whilestring");
+                if (whileStringVar != null)
+                {
+                    gridsTableClass[gridName].whileString = script.GetTempScript(whileStringVar.AsString());
+                }
+                else
+                {
+                    //gridsTableClass[gridName].whileString = script.GetTempScript();
+                    gridsTableClass[gridName].whileString = script.GetTempScript("true");
+                }
+
+                var forStringVar = args.FirstOrDefault(p => p.CurrentAssign.ToLower() == "forstring");
+                if (forStringVar != null)
+                {
+                    gridsTableClass[gridName].forString = forStringVar.AsString();
+                }
+                else
+                {
+                    gridsTableClass[gridName].forString = "";
+                }
+
 
                 //------------------------------------------------------------------------
 
@@ -4920,55 +5036,80 @@ $@"EXECUTE sp_executesql N'
                         var dgtc = column as DataGridTemplateColumn;
 
                         var cell = dgtc.CellTemplate.LoadContent();
-                        if (cell is TimeEditer)
+                        if(cell is ASGridCell)
                         {
-                            var te = cell as TimeEditer;
-                            if (te.Tag != null)
+                            var asgc = cell as ASGridCell;
+                            if (asgc.FieldName != null)
                             {
-                                tagsAndTypes.Add(te.Tag.ToString(), typeof(TimeSpan));
-                                tagsAndHeaders.Add(te.Tag.ToString(), dgtc.Header.ToString());
-                                timeAndDateEditerTagsAndSizes[te.Tag.ToString()] = te.DisplaySize;
+                                tagsAndTypes.Add(asgc.FieldName.ToString(), typeof(object));
+                                tagsAndHeaders.Add(asgc.FieldName.ToString(), dgtc.Header.ToString());
+                                timeAndDateEditerTagsAndSizes[asgc.FieldName.ToString()] = asgc.EditLength;
+                                tagsAndNames[asgc.FieldName.ToString()] = asgc.Name;
+                                tagsAndPositions[asgc.FieldName.ToString()] = i + 1;
+                                tagsAndEditors[asgc.FieldName.ToString()] = asgc.Editor;
                             }
                         }
-                        else if (cell is DateEditer)
-                        {
-                            var de = cell as DateEditer;
-                            if (de.Tag != null)
-                            {
-                                tagsAndTypes.Add(de.Tag.ToString(), typeof(DateTime));
-                                tagsAndHeaders.Add(de.Tag.ToString(), dgtc.Header.ToString());
-                                timeAndDateEditerTagsAndSizes[de.Tag.ToString()] = de.DisplaySize;
-                            }
-                        }
-                        else if (cell is CheckBox)
-                        {
-                            var cb = cell as CheckBox;
-                            if (cb.Tag != null)
-                            {
-                                tagsAndTypes.Add(cb.Tag.ToString(), typeof(bool));
-                                tagsAndHeaders.Add(cb.Tag.ToString(), dgtc.Header.ToString());
-                            }
-                        }
-                        else if (cell is TextBox)
-                        {
-
-                            var tb = cell as TextBox;
-                            if (tb.Tag != null)
-                            {
-                                tagsAndTypes.Add(tb.Tag.ToString(), typeof(string));
-                                tagsAndHeaders.Add(tb.Tag.ToString(), dgtc.Header.ToString());
-                            }
-                        }
+                                        //else if (cell is ASTimeEditer)
+                                        //{
+                                        //    var te = cell as ASTimeEditer;
+                                        //    if (te.Tag != null)
+                                        //    {
+                                        //        tagsAndTypes.Add(te.Tag.ToString(), typeof(TimeSpan));
+                                        //        tagsAndHeaders.Add(te.Tag.ToString(), dgtc.Header.ToString());
+                                        //        timeAndDateEditerTagsAndSizes[te.Tag.ToString()] = te.DisplaySize;
+                                        //        tagsAndNames[te.Tag.ToString()] = te.Name;
+                                        //    }
+                                        //}
+                                        //else if (cell is ASDateEditer)
+                                        //{
+                                        //    var de = cell as ASDateEditer;
+                                        //    if (de.Tag != null)
+                                        //    {
+                                        //        tagsAndTypes.Add(de.Tag.ToString(), typeof(DateTime));
+                                        //        tagsAndHeaders.Add(de.Tag.ToString(), dgtc.Header.ToString());
+                                        //        timeAndDateEditerTagsAndSizes[de.Tag.ToString()] = de.DisplaySize;
+                                        //        tagsAndNames[de.Tag.ToString()] = de.Name;
+                                        //    }
+                                        //}
+                                        //else if (cell is CheckBox)
+                                        //{
+                                        //    var cb = cell as CheckBox;
+                                        //    if (cb.Tag != null)
+                                        //    {
+                                        //        tagsAndTypes.Add(cb.Tag.ToString(), typeof(bool));
+                                        //        tagsAndHeaders.Add(cb.Tag.ToString(), dgtc.Header.ToString());
+                                        //        tagsAndNames[cb.Tag.ToString()] = cb.Name;
+                                        //    }
+                                        //}
+                                        //else if (cell is TextBox)
+                                        //{
+                                        //    var tb = cell as TextBox;
+                                        //    if (tb.Tag != null)
+                                        //    {
+                                        //        tagsAndTypes.Add(tb.Tag.ToString(), typeof(string));
+                                        //        tagsAndHeaders.Add(tb.Tag.ToString(), dgtc.Header.ToString());
+                                        //        tagsAndNames[tb.Tag.ToString()] = tb.Name;
+                                        //    }
+                                        //}
                     }
                 }
 
                 gridsDataTables[gridName] = new DataTable();
+
+                var keys = new DataColumn[1];
+
                 var idColumn = new DataColumn();
                 idColumn.DataType = System.Type.GetType("System.Int32");
                 idColumn.ColumnName = "ID";
                 idColumn.Caption = "ID";
                 idColumn.ReadOnly = true;
+                //idColumn.AutoIncrement = true;
+                idColumn.DefaultValue = 0;
+
                 gridsDataTables[gridName].Columns.Add(idColumn);
+
+                keys[0] = idColumn;
+                gridsDataTables[gridName].PrimaryKey = keys;
 
                 newTagsAndTypes = new Dictionary<string, Type>();
                 foreach (var item in tagsAndTypes)
@@ -5044,11 +5185,20 @@ $@"EXECUTE sp_executesql N'
 
                 dg.AutoGenerateColumns = true;
                 dg.AutoGeneratingColumn += DataGrid_OnAutoGeneratingColumn;
+                dg.AutoGeneratedColumns += Dg_AutoGeneratedColumns;
 
                 dg.SelectionMode = DataGridSelectionMode.Single;
                 dg.SelectionUnit = DataGridSelectionUnit.FullRow;
 
+                //DataGridCollectionView dataGridCollectionView = new DataGridCollectionView(gridsDataTables[gridName]);
+                //dataGridCollectionView.ItemsCount += OnItemsCount;
+                //dataGridCollectionView.ItemsRequest += OnItemsRequest;
+                //TableSource = dataGridCollectionView;
+                //dg.ItemsSource = TableSource;
+
                 dg.ItemsSource = gridsDataTables[gridName].AsDataView();
+
+
                 //dg.ItemsSource = gridSource.DefaultView;
 
                 //dg.SelectionChanged += Dg_SelectionChanged;
@@ -5058,6 +5208,8 @@ $@"EXECUTE sp_executesql N'
                 dg.RowEditEnding += Dg_RowEditEnding;
 
                 dg.SelectedCellsChanged += Dg_SelectedCellsChanged;
+
+                dg.BeginningEdit += Dg_BeginningEdit;
                 //-------------------------------------------------------------------------------
 
                 //grids[gridName] = new DisplayArrayClass()
@@ -5073,13 +5225,147 @@ $@"EXECUTE sp_executesql N'
                 gridsTableClass[gridName].KeyClass = KeyClass;
                 gridsTableClass[gridName].Script = Script;
 
-                fillDataTable(gridName);
+                fillDataTable(gridName, Gui);
+                //fillDataTableQuery()
+                //startDataTable(gridName, Gui);
 
                 return Variable.EmptyInstance;
             }
 
-            public void fillDataTable(string gridName)
+            //public DataGridCollectionView TableSource { get; set; }
+            //int Count = 1000;
+
+            //private void OnItemsCount(DataGridCollectionView arg1, CountEventArgs arg2)
+            //{
+            //    arg2.Count = Count;
+            //}
+
+            //private void OnItemsRequest(DataGridCollectionView arg1, ItemsEventArgs arg2)
+            //{
+            //    int startIndex = arg2.StartIndex;
+            //    int count = arg2.RequestedItemsCount;
+
+            //    List<object> items = new List<object>();
+
+            //    for (int i = startIndex; i < startIndex + count; i++)
+            //    {
+            //        var whileString = gridsTableClass[gridName].whileString;
+            //        var forString = gridsTableClass[gridName].forString;
+
+            //        bool whileIsSet = false;
+            //        if (!string.IsNullOrEmpty(whileString.String))
+            //            whileIsSet = true;
+
+            //        bool forIsSet = false;
+            //        if (!string.IsNullOrEmpty(forString))
+            //            forIsSet = true;
+
+            //        if (!whileIsSet || Script.GetTempScript(whileString.String).Execute(new char[] { '"' }, 0).AsBool())
+            //        {
+            //            if (forIsSet && !Script.GetTempScript(forString).Execute(new char[] { '"' }, 0).AsBool())
+            //            {
+            //                new Btrieve.FINDVClass(Script, tableHndlNum, "n").FINDV();
+            //                continue;
+            //            }
+
+            //            var currentRow = gridsDataTables[gridName].NewRow();
+
+            //            currentRow["ID"] = thisOpenv.currentRow;
+
+            //            foreach (var column in tagsAndTypes)
+            //            {
+            //                if (Gui.DEFINES.TryGetValue(column.Key.ToLower(), out DefineVariable defVar))
+            //                {
+            //                    currentRow[column.Key] = defVar.AsString();
+            //                }
+            //            }
+                        
+            //            items.Add(currentRow);
+
+            //            new Btrieve.FINDVClass(Script, tableHndlNum, "n").FINDV();
+            //            if (LastFlerrsOfFnums[tableHndlNum] == 3)
+            //            {
+            //                SetFlerr(0, tableHndlNum);
+            //                break;
+            //            }
+            //        }
+            //    }
+
+            //    arg2.SetItems(items);
+            //}
+
+            //// for virtualized grid
+            //public void startDataTable(string gridName, CSCS_GUI Gui)
+            //{
+
+            //    gridsDataTables[gridName].Rows.Clear();
+
+            //    var startString = gridsTableClass[gridName].startString;
+            //    var tableHndlNum = gridsTableClass[gridName].tableHndlNum;
+            //    var tableKey = gridsTableClass[gridName].tableKey;
+            //    var KeyClass = gridsTableClass[gridName].KeyClass;
+            //    var thisOpenv = OPENVs[gridsTableClass[gridName].tableHndlNum];
+
+            //    var whileString = gridsTableClass[gridName].whileString;
+            //    var forString = gridsTableClass[gridName].forString;
+
+            //    var Script = gridsTableClass[gridName].Script;
+
+            //    var tagsAndTypes = gridsTableClass[gridName].tagsAndTypes;
+
+            //    if (!string.IsNullOrEmpty(startString.String))
+            //    {
+            //        // if has start string
+            //        var startParts = startString.String.Split('|');
+            //        var startStringResult = "";
+            //        foreach (var startPart in startParts)
+            //        {
+            //            var part = Script.GetTempScript(startPart).Execute(null, 0).AsString();
+            //            startStringResult += part;
+            //            startStringResult += "|";
+            //        }
+            //        startStringResult = startStringResult.Remove(startStringResult.Length - 1, 1);
+
+            //        new Btrieve.FINDVClass(Script, tableHndlNum, "g", tableKey, startStringResult).FINDV();
+            //    }
+            //    else
+            //    {
+            //        // doesn't have start string
+            //        string currentStart = "";
+
+            //        if (KeyClass.KeyNum != 0)
+            //        {
+            //            var segmentsOrdered = CSCS_GUI.Adictionary.SY_INDEXESList.Where(p => p.SYKI_KEYNAME == KeyClass.KeyName).OrderBy(p => p.SYKI_SEGNUM).Select(p => p.SYKI_FIELD).ToArray();
+
+            //            for (int i = 0; i < segmentsOrdered.Count(); i++)
+            //            {
+            //                if (Gui.DEFINES.TryGetValue(segmentsOrdered[i].ToLower(), out DefineVariable bufferVar))
+            //                {
+            //                    currentStart += bufferVar.AsString();
+            //                    currentStart += "|";
+            //                }
+            //            }
+            //            currentStart = currentStart.TrimEnd('|');
+            //        }
+            //        else
+            //        {
+            //            // key @0
+            //            currentStart = thisOpenv.currentRow.ToString();
+            //        }
+
+            //        new Btrieve.FINDVClass(Script, tableHndlNum, "g", tableKey, currentStart).FINDV();
+            //    }
+
+            //    //---------------------------------------------------------------------------
+
+            //    //gridsDataTables[gridName].Rows.Clear(); // BRIŠE PRVI RED -> g opcija ???
+
+               
+            //}
+            
+            public void fillDataTable(string gridName, CSCS_GUI Gui)
             {
+
                 gridsDataTables[gridName].Rows.Clear();
 
                 var startString = gridsTableClass[gridName].startString;
@@ -5178,109 +5464,120 @@ $@"EXECUTE sp_executesql N'
                         SetFlerr(0, tableHndlNum);
                         break;
                     }
+
+                    //var nasInvoiceNumber = Gui.DEFINES["invoicenumber"];
                 }
             }
 
-            //            private void fillDataTableQuery()
-            //            {
-            //                int startId = 1;
+//            private void fillDataTableQuery(string gridName)
+//            {
+//                var startString = gridsTableClass[gridName].startString;
+//                var tableHndlNum = gridsTableClass[gridName].tableHndlNum;
+//                var tableKey = gridsTableClass[gridName].tableKey;
+//                var KeyClass = gridsTableClass[gridName].KeyClass;
+//                var thisOpenv = OPENVs[gridsTableClass[gridName].tableHndlNum];
 
-            //                if (!string.IsNullOrEmpty(startString))
-            //                {
-            //                    // if has start string
-            //                    new Btrieve.FINDVClass(tableHndlNum, "g", tableKey, startString).FINDV();
-            //                    startId = new RcnGetFunction().RcnGet(thisOpenv).AsInt();
-            //                }
+//                var whileString = gridsTableClass[gridName].whileString;
+//                var forString = gridsTableClass[gridName].forString;
 
-            //                StringBuilder columnsSB = new StringBuilder();
-            //                columnsSB.Append("ID, ");
-            //                foreach (var columnName in tagsAndTypes.Keys)
-            //                {
-            //                    columnsSB.Append(columnName + ", ");
-            //                }
-            //                columnsSB.Remove(columnsSB.Length - 2, 2); // removes last ", "
+//                int startId = 1;
 
-            //                StringBuilder whereSB = new StringBuilder();
-            //                if (!string.IsNullOrEmpty(whileString) || !string.IsNullOrEmpty(forString))
-            //                {
-            //                    whereSB.Append("WHERE (");
-            //                }
-            //                if (!string.IsNullOrEmpty(whileString))
-            //                {
-            //                    whereSB.Append(whileString);
-            //                }
-            //                if (!string.IsNullOrEmpty(whileString) && !string.IsNullOrEmpty(forString))
-            //                {
-            //                    whereSB.Append(") AND (");
-            //                }
-            //                if (!string.IsNullOrEmpty(forString))
-            //                {
-            //                    whereSB.Append(forString);
-            //                }
-            //                if (!string.IsNullOrEmpty(whileString) || !string.IsNullOrEmpty(whileString))
-            //                {
-            //                    whereSB.Append(")");
-            //                }
-            //                if (startId > 1)
-            //                {
-            //                    if (string.IsNullOrEmpty(whereSB.ToString()))
-            //                    {
-            //                        whereSB.Append("WHERE (");
-            //                    }
-            //                    else
-            //                    {
-            //                        whereSB.Append("AND (");
-            //                    }
-            //                    whereSB.Append("ID >= " + startId);
-            //                    whereSB.Append(")");
-            //                }
+//                if (!string.IsNullOrEmpty(startString))
+//                {
+//                    // if has start string
+//                    new Btrieve.FINDVClass(Script, tableHndlNum, "g", tableKey, startString).FINDV();
+//                    startId = new RcnGetFunction().RcnGet(thisOpenv).AsInt();
+//                }
 
-            //                StringBuilder orderBySB = new StringBuilder();
-            //                foreach (var keyColumn in KeyClass.KeyColumns)
-            //                {
-            //                    orderBySB.Append(keyColumn.Key + ", ");
-            //                }
-            //                if (!KeyClass.Unique)
-            //                {
-            //                    orderBySB.Append("ID, ");
-            //                }
-            //                orderBySB.Remove(orderBySB.Length - 2, 2); // removes last ", "
+//                StringBuilder columnsSB = new StringBuilder();
+//                columnsSB.Append("ID, ");
+//                foreach (var columnName in tagsAndTypes.Keys)
+//                {
+//                    columnsSB.Append(columnName + ", ");
+//                }
+//                columnsSB.Remove(columnsSB.Length - 2, 2); // removes last ", "
 
+//                StringBuilder whereSB = new StringBuilder();
+//                if (!string.IsNullOrEmpty(whileString) || !string.IsNullOrEmpty(forString))
+//                {
+//                    whereSB.Append("WHERE (");
+//                }
+//                if (!string.IsNullOrEmpty(whileString))
+//                {
+//                    whereSB.Append(whileString);
+//                }
+//                if (!string.IsNullOrEmpty(whileString) && !string.IsNullOrEmpty(forString))
+//                {
+//                    whereSB.Append(") AND (");
+//                }
+//                if (!string.IsNullOrEmpty(forString))
+//                {
+//                    whereSB.Append(forString);
+//                }
+//                if (!string.IsNullOrEmpty(whileString) || !string.IsNullOrEmpty(whileString))
+//                {
+//                    whereSB.Append(")");
+//                }
+//                if (startId > 1)
+//                {
+//                    if (string.IsNullOrEmpty(whereSB.ToString()))
+//                    {
+//                        whereSB.Append("WHERE (");
+//                    }
+//                    else
+//                    {
+//                        whereSB.Append("AND (");
+//                    }
+//                    whereSB.Append("ID >= " + startId);
+//                    whereSB.Append(")");
+//                }
 
-            //                var query =
-            //$@"EXECUTE sp_executesql N'
-            //select 
-            //{columnsSB}
-            //from {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
-            //with (nolock)
-            //{whereSB}
-            //order by {orderBySB}
-            //'";
-
-            //                using (SqlConnection con = new SqlConnection(CSCS_SQL.ConnectionString))
-            //                {
-            //                    using (SqlCommand cmd = new SqlCommand(query, con))
-            //                    {
-            //                        con.Open();
-            //                        using (SqlDataReader reader = cmd.ExecuteReader())
-            //                        {
-            //                            if (!reader.HasRows)
-            //                            {
-            //                                SetFlerr(3, tableHndlNum);
-            //                                return;
-            //                            }
-            //                            else
-            //                            {
-            //                                gridsDataTables[gridName].Rows.Clear();
-            //                                gridsDataTables[gridName].Load(reader);
-            //                            }
-            //                        }
-            //                    }
-            //                }
-            //            }
+//                StringBuilder orderBySB = new StringBuilder();
+//                foreach (var keyColumn in KeyClass.KeyColumns)
+//                {
+//                    orderBySB.Append(keyColumn.Key + ", ");
+//                }
+//                if (!KeyClass.Unique)
+//                {
+//                    orderBySB.Append("ID, ");
+//                }
+//                orderBySB.Remove(orderBySB.Length - 2, 2); // removes last ", "
 
 
-            private void DataGrid_OnAutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
+//                var query =
+//$@"EXECUTE sp_executesql N'
+//            select 
+//            {columnsSB}
+//            from {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
+//            with (nolock)
+//            {whereSB}
+//            order by {orderBySB}
+//            '";
+
+//                using (SqlConnection con = new SqlConnection(CSCS_SQL.ConnectionString))
+//                {
+//                    using (SqlCommand cmd = new SqlCommand(query, con))
+//                    {
+//                        con.Open();
+//                        using (SqlDataReader reader = cmd.ExecuteReader())
+//                        {
+//                            if (!reader.HasRows)
+//                            {
+//                                SetFlerr(3, tableHndlNum);
+//                                return;
+//                            }
+//                            else
+//                            {
+//                                gridsDataTables[gridName].Rows.Clear();
+//                                gridsDataTables[gridName].Load(reader);
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+
+
+            private void  DataGrid_OnAutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
             {
                 if (e.PropertyName == "ID")
                 {
@@ -5288,7 +5585,8 @@ $@"EXECUTE sp_executesql N'
                 }
                 else
                 {
-                    var realHeader = tagsAndHeaders[e.Column.Header.ToString()];
+                    var tag = e.Column.Header.ToString();
+                    var realHeader = tagsAndHeaders[tag];
 
                     if (e.PropertyType == typeof(DateTime))
                     {
@@ -5301,47 +5599,63 @@ $@"EXECUTE sp_executesql N'
                         //bind.StringFormat = "dd/MM/yy";
                         //if(timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 10)
                         //{
-                        //    bind.Converter = new DateEditerConverter();
+                        //    bind.Converter = new ASDateEditerConverter();
                         //    bind.StringFormat = "dd/MM/yyyy";
                         //}
 
                         Binding bind = new Binding(e.Column.Header.ToString());
+                        //Binding bind = new Binding("ItemArray[" + tagsAndPositions[e.Column.Header.ToString()] + "]");
                         bind.Mode = BindingMode.TwoWay;
                         bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+
+                        string dateFormat = "";
                         if (timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 8)
                         {
-                            CultureInfo ci = CultureInfo.CreateSpecificCulture(CultureInfo.CurrentCulture.Name);
-                            ci.DateTimeFormat.ShortDatePattern = "dd/MM/yy";
-                            //ci.DateTimeFormat.LongDatePattern = "dd/MM/yyyy HH:mm:ss";
-                            Thread.CurrentThread.CurrentCulture = ci;
-
-                            bind.Converter = new DateEditerConverter();
-                            bind.ConverterParameter = 8; //size
-                            bind.StringFormat = "dd/MM/yy";
+                            dateFormat = "dd/MM/yy";
                         }
                         else if (timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 10)
                         {
-                            CultureInfo ci = CultureInfo.CreateSpecificCulture(CultureInfo.CurrentCulture.Name);
-                            ci.DateTimeFormat.ShortDatePattern = "dd/MM/yyyy";
-                            //ci.DateTimeFormat.LongDatePattern = "dd/MM/yyyy HH:mm:ss";
-                            Thread.CurrentThread.CurrentCulture = ci;
-
-                            bind.Converter = new DateEditerConverter();
-                            bind.ConverterParameter = 10; //size
-                            bind.StringFormat = "dd/MM/yyyy";
+                            dateFormat = "dd/MM/yyyy";
                         }
+                        else
+                        {
+                            if (Gui.DEFINES.TryGetValue(e.Column.Header.ToString().ToLower(), out DefineVariable defVar))
+                            {
+                                if(defVar.DefType == "d")
+                                {
+                                    timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] = defVar.Size;
+                                    if (timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 8)
+                                    {
+                                        dateFormat = "dd/MM/yy";
+                                    }
+                                    else if (timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 10)
+                                    {
+                                        dateFormat = "dd/MM/yyyy";
+                                    }
+                                }
+                            }
+                        }
+                        CultureInfo ci = CultureInfo.CreateSpecificCulture(CultureInfo.CurrentCulture.Name);
+                        ci.DateTimeFormat.ShortDatePattern = dateFormat;
+                        Thread.CurrentThread.CurrentCulture = ci;
+
+                        bind.Converter = new ASDateEditerConverter();
+                        bind.ConverterParameter = timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()]; //size
+                        bind.StringFormat = dateFormat;
+
 
                         // Create the TextBlock
                         FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                         textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
+                        textBlockFactory.SetValue(ASDateEditer.NameProperty, tagsAndNames[tag]);
 
                         DataTemplate textBlockTemplate = new DataTemplate();
                         textBlockTemplate.VisualTree = textBlockFactory;
 
                         // Create the DatePicker
-                        FrameworkElementFactory datePickerFactory = new FrameworkElementFactory(typeof(DateEditer));
-                        datePickerFactory.SetBinding(DateEditer.TextProperty, bind);
-                        datePickerFactory.SetValue(DateEditer.DisplaySizeProperty, timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()]);
+                        FrameworkElementFactory datePickerFactory = new FrameworkElementFactory(typeof(ASDateEditer));
+                        datePickerFactory.SetBinding(ASDateEditer.TextProperty, bind);
+                        datePickerFactory.SetValue(ASDateEditer.DisplaySizeProperty, timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()]);
 
 
                         DataTemplate datePickerTemplate = new DataTemplate();
@@ -5359,16 +5673,17 @@ $@"EXECUTE sp_executesql N'
                         DataGridTemplateColumn timeColumn = new DataGridTemplateColumn();
 
                         Binding bind = new Binding(e.Column.Header.ToString());
+                        //Binding bind = new Binding("ItemArray[" + tagsAndPositions[e.Column.Header.ToString()] + "]");
                         bind.Mode = BindingMode.TwoWay;
                         bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
                         if (timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 5)
                         {
-                            bind.Converter = new TimeEditerConverter();
+                            bind.Converter = new ASTimeEditerConverter();
                             bind.ConverterParameter = 5;
                         }
                         else if (timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 8)
                         {
-                            bind.Converter = new TimeEditerConverter();
+                            bind.Converter = new ASTimeEditerConverter();
                             bind.ConverterParameter = 8;
                         }
 
@@ -5376,14 +5691,15 @@ $@"EXECUTE sp_executesql N'
                         FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                         textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
                         //textBlockFactory.AddHandler(TextBlock.GotKeyboardFocusEvent, new KeyboardFocusChangedEventHandler(textBlockGotKeyboardFocus));
+                        textBlockFactory.SetValue(ASDateEditer.NameProperty, tagsAndNames[tag]);
 
                         DataTemplate textBlockTemplate = new DataTemplate();
                         textBlockTemplate.VisualTree = textBlockFactory;
 
-                        // Create the TimeEditer
-                        FrameworkElementFactory timeEditerFactory = new FrameworkElementFactory(typeof(TimeEditer));
-                        timeEditerFactory.SetBinding(TimeEditer.TextProperty, bind);
-                        timeEditerFactory.SetValue(TimeEditer.DisplaySizeProperty, timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()]);
+                        // Create the ASTimeEditer
+                        FrameworkElementFactory timeEditerFactory = new FrameworkElementFactory(typeof(ASTimeEditer));
+                        timeEditerFactory.SetBinding(ASTimeEditer.TextProperty, bind);
+                        timeEditerFactory.SetValue(ASTimeEditer.DisplaySizeProperty, timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()]);
 
                         DataTemplate timeEditerTemplate = new DataTemplate();
                         timeEditerTemplate.VisualTree = timeEditerFactory;
@@ -5400,12 +5716,14 @@ $@"EXECUTE sp_executesql N'
                         DataGridTemplateColumn stringColumn = new DataGridTemplateColumn();
 
                         Binding bind = new Binding(e.Column.Header.ToString());
+                        //Binding bind = new Binding("ItemArray[" + tagsAndPositions[e.Column.Header.ToString()] + "]");
                         bind.Mode = BindingMode.TwoWay;
                         bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
 
                         // Create the TextBlock
                         FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                         textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
+                        textBlockFactory.SetValue(ASDateEditer.NameProperty, tagsAndNames[tag]);
 
                         DataTemplate textBlockTemplate = new DataTemplate();
                         textBlockTemplate.VisualTree = textBlockFactory;
@@ -5429,13 +5747,15 @@ $@"EXECUTE sp_executesql N'
                         DataGridTemplateColumn stringColumn = new DataGridTemplateColumn();
 
                         Binding bind = new Binding(e.Column.Header.ToString());
+                        //Binding bind = new Binding("ItemArray[" + tagsAndPositions[e.Column.Header.ToString()] + "]");
                         bind.Mode = BindingMode.TwoWay;
                         bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-                        bind.Converter = new TextBoxIntConverter();
+                        bind.Converter = new ASTextBoxIntConverter();
 
                         // Create the TextBlock
                         FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                         textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
+                        textBlockFactory.SetValue(ASDateEditer.NameProperty, tagsAndNames[tag]);
 
                         DataTemplate textBlockTemplate = new DataTemplate();
                         textBlockTemplate.VisualTree = textBlockFactory;
@@ -5459,13 +5779,15 @@ $@"EXECUTE sp_executesql N'
                         DataGridTemplateColumn stringColumn = new DataGridTemplateColumn();
 
                         Binding bind = new Binding(e.Column.Header.ToString());
+                        //Binding bind = new Binding("ItemArray[" + tagsAndPositions[e.Column.Header.ToString()] + "]");
                         bind.Mode = BindingMode.TwoWay;
                         bind.UpdateSourceTrigger = UpdateSourceTrigger.LostFocus;
-                        bind.Converter = new TextBoxDoubleConverter();
+                        bind.Converter = new ASTextBoxDoubleConverter();
 
                         // Create the TextBlock
                         FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                         textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
+                        textBlockFactory.SetValue(ASDateEditer.NameProperty, tagsAndNames[tag]);
 
                         DataTemplate textBlockTemplate = new DataTemplate();
                         textBlockTemplate.VisualTree = textBlockFactory;
@@ -5486,31 +5808,121 @@ $@"EXECUTE sp_executesql N'
                     else if (e.PropertyType == typeof(bool))
                     {
                         // Create The Column
-                        DataGridTemplateColumn stringColumn = new DataGridTemplateColumn();
+                        DataGridTemplateColumn boolColumn = new DataGridTemplateColumn();
 
                         Binding bind = new Binding(e.Column.Header.ToString());
+                        //Binding bind = new Binding("ItemArray[" + tagsAndPositions[e.Column.Header.ToString()] + "]");
                         bind.Mode = BindingMode.TwoWay;
                         bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-                        //bind.Converter = new TextBoxDoubleConverter();
+                        //bind.Converter = new ASTextBoxDoubleConverter();
 
                         // Create the TextBlock
                         FrameworkElementFactory checkBoxFactory = new FrameworkElementFactory(typeof(CheckBox));
                         checkBoxFactory.SetBinding(CheckBox.IsCheckedProperty, bind);
+
+                        //checkBoxFactory.AddHandler(CheckBox.ClickEvent, new RoutedEventHandler(checkBoxClick));
+
+                        checkBoxFactory.SetValue(CheckBox.IsHitTestVisibleProperty, false);
+
+                        checkBoxFactory.SetValue(CheckBox.FocusableProperty, false);
+
                         checkBoxFactory.SetValue(CheckBox.HorizontalAlignmentProperty, HorizontalAlignment.Center);
+                        checkBoxFactory.SetValue(CheckBox.NameProperty, tagsAndNames[tag]);
+
+                        //editing
+                        FrameworkElementFactory checkBoxEditingFactory = new FrameworkElementFactory(typeof(CheckBox));
+                        checkBoxEditingFactory.SetBinding(CheckBox.IsCheckedProperty, bind);
+
+                        ////////bind Focusable to DataGrid's IsReadOnly
+                        //////checkBoxFactory.SetBinding(CheckBox.FocusableProperty, dataGridsIsReadOnlyPropertyBind);
+
+                        //for disabling of checkBox toggling is the DataGrid is in Read Only mode
+                        //checkBoxEditingFactory.AddHandler(CheckBox.ClickEvent, new RoutedEventHandler(checkboxChecked));
+
+                        checkBoxEditingFactory.SetValue(CheckBox.HorizontalAlignmentProperty, HorizontalAlignment.Center);
+                        checkBoxEditingFactory.SetValue(CheckBox.NameProperty, tagsAndNames[tag]);
+
+
 
                         DataTemplate checkBoxTemplate = new DataTemplate();
                         checkBoxTemplate.VisualTree = checkBoxFactory;
 
-                        // Set the Templates to the Column
-                        stringColumn.CellTemplate = checkBoxTemplate;
-                        stringColumn.CellEditingTemplate = checkBoxTemplate;
+                        DataTemplate checkBoxEditingTemplate = new DataTemplate();
+                        checkBoxEditingTemplate.VisualTree = checkBoxEditingFactory;
 
-                        e.Column = stringColumn;
+                        // Set the Templates to the Column
+                        boolColumn.CellTemplate = checkBoxTemplate;
+                        boolColumn.CellEditingTemplate = checkBoxEditingTemplate;
+
+                        e.Column = boolColumn;
                     }
 
                     e.Column.Header = realHeader;
                 }
             }
+
+            private void Dg_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
+            {
+
+            }
+
+            //private void checkBoxClick(object sender, RoutedEventArgs e)
+            //{
+            //    DependencyObject current = (e.Source as FrameworkElement);
+
+            //    while (current != null)
+            //    {
+            //        if (current.GetType() == typeof(DataGrid))
+            //        {
+            //            var dg = (current as DataGrid);
+            //            if (dg.IsReadOnly)
+            //            {
+            //                var cb = (e.Source as CheckBox);
+            //                cb.IsChecked = !cb.IsChecked;
+            //                return;
+            //            }
+            //            else
+            //            {
+            //                //edit mode
+            //                var cb = (e.Source as CheckBox);
+            //                cb.IsChecked = !cb.IsChecked;
+            //                dg.BeginEdit();
+            //                //cb.IsChecked = !cb.IsChecked;
+
+            //                //rowAfterEdit = dg. dg.SelectedIndex
+            //                //var asdrowAfterEdit = (dg.CurrentItem as DataRowView).Row.ItemArray;
+            //                return;
+            //            }
+            //        }
+            //        current = VisualTreeHelper.GetParent(current);
+            //    }
+            //}
+
+            private void Dg_AutoGeneratedColumns(object sender, EventArgs e)
+            {
+                (sender as DataGrid).AddHandler(GridViewColumnHeader.ClickEvent, new RoutedEventHandler(AddCSCSHeaderClickHandler));
+            }
+            private void AddCSCSHeaderClickHandler(object sender, RoutedEventArgs e)
+            {
+                var dg = sender as DataGrid;
+                DataGridColumnHeader dgch = e.OriginalSource as DataGridColumnHeader;
+                if (dgch == null)
+                    return;
+                var tabIndex = dgch.TabIndex;
+
+                var widgetName = (dg.Columns[tabIndex] as DataGridTemplateColumn).CellTemplate.LoadContent().GetValue(FrameworkElement.NameProperty);
+                if (string.IsNullOrWhiteSpace(widgetName.ToString()))
+                {
+                    return;
+                }
+
+                string funcName = widgetName + "@Header";
+
+                Gui.Control2Window.TryGetValue(dgch, out Window win);
+                Gui.Interpreter.Run(funcName, new Variable(widgetName), null,
+                    Variable.EmptyInstance, Gui.GetScript(win));
+            }
+
 
             int lastRowIndex = -1;
             object[] rowBeforeEdit/* = new object[] { }*/;
@@ -5534,41 +5946,66 @@ $@"EXECUTE sp_executesql N'
                             var asdk = dg.Items[0];
                         }
                     }
-                    var currentItemArray = (dg.SelectedItem as DataRowView).Row.ItemArray;
-
-                    var currentRowIndex = dg.SelectedIndex;//dg.Items.IndexOf(dg.SelectedItem);
-                    if (currentRowIndex != lastRowIndex || dataGridUpdated)
+                    if(dg.SelectedItem is DataRowView)
                     {
-                        dataGridUpdated = false;
+                        var currentItemArray = (dg.SelectedItem as DataRowView).Row.ItemArray;
 
-                        lastRowIndex = currentRowIndex;
-                        rowBeforeEdit = currentItemArray;
-
-                        var currRow = (dg.SelectedItem as DataRowView).Row;
-                        for (int i = 1; i < currRow.Table.Columns.Count; i++)
+                        var currentRowIndex = dg.SelectedIndex;//dg.Items.IndexOf(dg.SelectedItem);
+                        if (currentRowIndex != lastRowIndex || dataGridUpdated)
                         {
-                            if (currentItemArray[i] is DateTime)
-                            {
-                                var currentItemAsDateTime = currentItemArray[i] as DateTime?;
-                                string initForDefine = "";
-                                switch (timeAndDateEditerTagsAndSizes[currRow.Table.Columns[i].ColumnName])
-                                {
-                                    case 10:
-                                        initForDefine = currentItemAsDateTime.Value.ToString("dd/MM/yyyy");
-                                        break;
-                                    case 8:
-                                        initForDefine = currentItemAsDateTime.Value.ToString("dd/MM/yy");
-                                        break;
-                                }
+                            dataGridUpdated = false;
 
-                                Gui.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable(initForDefine), Gui);
-                                Gui.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable(initForDefine), true);
-                            }
-                            else
+                            lastRowIndex = currentRowIndex;
+                            rowBeforeEdit = currentItemArray;
+
+                            var currRow = (dg.SelectedItem as DataRowView).Row;
+                            for (int i = 1; i < currRow.Table.Columns.Count; i++)
                             {
-                                Gui.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable(currentItemArray[i]), Gui);
-                                Gui.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable(currentItemArray[i]), true);
+                                if (currentItemArray[i] is DateTime)
+                                {
+                                    var currentItemAsDateTime = currentItemArray[i] as DateTime?;
+                                    string initForDefine = "";
+                                    switch (timeAndDateEditerTagsAndSizes[currRow.Table.Columns[i].ColumnName])
+                                    {
+                                        case 10:
+                                            initForDefine = currentItemAsDateTime.Value.ToString("dd/MM/yyyy");
+                                            break;
+                                        case 8:
+                                            initForDefine = currentItemAsDateTime.Value.ToString("dd/MM/yy");
+                                            break;
+                                    }
+
+                                    Gui.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable(initForDefine), Gui);
+                                    Gui.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable(initForDefine), true);
+                                }
+                                else if (currentItemArray[i] is string)
+                                {
+                                    Gui.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable((string)currentItemArray[i]), Gui);
+                                    Gui.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable((string)currentItemArray[i]), true);
+                                }
+                                else if (currentItemArray[i] is int)
+                                {
+                                    Gui.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable((int)currentItemArray[i]), Gui);
+                                    Gui.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable((int)currentItemArray[i]), true);
+                                }
+                                else if (currentItemArray[i] is double)
+                                {
+                                    Gui.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable((double)currentItemArray[i]), Gui);
+                                    Gui.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable((double)currentItemArray[i]), true);
+                                }
+                                else if (currentItemArray[i] is bool)
+                                {
+                                    Gui.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable((bool)currentItemArray[i]), Gui);
+                                    Gui.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable((bool)currentItemArray[i]), true);
+                                }
+                                else if (currentItemArray[i] is TimeSpan)
+                                {
+                                    Gui.DEFINES[currRow.Table.Columns[i].ColumnName.ToLower()].InitVariable(new Variable((TimeSpan)currentItemArray[i]), Gui);
+                                    Gui.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable((TimeSpan)currentItemArray[i]), true);
+                                }
                             }
+                            gridsTableClass[gridName].selectedRowId = (int)currentItemArray[0];
+                            thisOpenv.currentRow = (int)currentItemArray[0];
                         }
                     }
                 }
@@ -5627,7 +6064,7 @@ $@"EXECUTE sp_executesql N'
             {
                 bool redisplay = false;
 
-                if (rowItemArray[0] is int)
+                if (rowItemArray[0] is int && (int)rowItemArray[0] != 0)
                 {
                     //UPDATE sql
                     //fill buffer with current row
@@ -5638,7 +6075,7 @@ $@"EXECUTE sp_executesql N'
                     //INSERT sql
                     rowItemArray[0] = 0;
                     thisOpenv.currentRow = 0;
-                    new ClrFunction().Clear(tableHndlNum, "b", Script);
+                    new ClrFunction().Clear(tableHndlNum, "buff", Script);
                     redisplay = true;
                 }
 
@@ -5722,7 +6159,7 @@ $@"EXECUTE sp_executesql N'
                 if (redisplay)
                 {
                     //dg.Items.Clear();
-                    fillDataTable(gridName);
+                    fillDataTable(gridName, Gui);
                 }
             }
 
@@ -5731,9 +6168,15 @@ $@"EXECUTE sp_executesql N'
         class DisplayArrayClass
         {
             public DataGrid dg;
+
             public string lineCntrVarName;
+
             public string actCntrVarName;
+            public int actCntrValue;
+
             public string maxElemsVarName;
+            public int maxElemsValue;
+
             public List<string> tags;
             public Dictionary<string, Type> tagsAndTypes;
             public Dictionary<string, Type> newTagsAndTypes;
@@ -5763,6 +6206,8 @@ $@"EXECUTE sp_executesql N'
             public KeyClass KeyClass;
 
             public ParsingScript Script;
+
+            public int selectedRowId;
         }
         class DisplayTableWhereClass
         {
@@ -5813,7 +6258,7 @@ $@"EXECUTE sp_executesql N'
                     if (gridsArrayClass.TryGetValue(gridName, out DisplayArrayClass dac))
                     {
                         // updates lineCntr variable
-                        if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar))
+                        if (gridsArrayClass[gridName].lineCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar))
                         {
                             defVar.Value = value;
                         }
@@ -5840,10 +6285,10 @@ $@"EXECUTE sp_executesql N'
 
             string tableKey;
 
-            int maxRows;
-            int actCntr;
-            string lineCntrVarName;
-            string actCntrVarName;
+            //int maxRows;
+            //int actCntr;
+            Variable lineCntrVarName;
+            Variable actCntrVar;
             OpenvTable thisOpenv;
 
             ParsingScript Script;
@@ -5866,43 +6311,61 @@ $@"EXECUTE sp_executesql N'
                 Utils.CheckArgs(args.Count, 4, m_name);
 
                 gridName = Utils.GetSafeString(args, 0).ToLower();
-                lineCntrVarName = Utils.GetSafeString(args, 1);
-                actCntrVarName = Utils.GetSafeString(args, 2);
-                string maxRowsVarName = Utils.GetSafeString(args, 3);
+                lineCntrVarName = Utils.GetSafeVariable(args, 1);
+                actCntrVar = Utils.GetSafeVariable(args, 2);
+                Variable maxRowsVar = Utils.GetSafeVariable(args, 3);
 
                 //------------------------------------------------------------------------
 
                 gridsArrayClass[gridName] = new DisplayArrayClass();
 
-                gridsArrayClass[gridName].lineCntrVarName = lineCntrVarName;
-                gridsArrayClass[gridName].actCntrVarName = actCntrVarName;
-                gridsArrayClass[gridName].maxElemsVarName = maxRowsVarName;
+                gridsArrayClass[gridName].lineCntrVarName = lineCntrVarName.Type == Variable.VarType.STRING ? actCntrVar.String : null;
+                gridsArrayClass[gridName].actCntrVarName = actCntrVar.Type == Variable.VarType.STRING ? actCntrVar.String : null;
+                gridsArrayClass[gridName].maxElemsVarName = maxRowsVar.Type == Variable.VarType.STRING ? maxRowsVar.String : null;
 
                 //------------------------------------------------------------------------
 
-                if (Gui.DEFINES.TryGetValue(maxRowsVarName.ToLower(), out DefineVariable defVar))
+                // maxRows
+                if (maxRowsVar.Type == Variable.VarType.STRING)// -> varName
                 {
-                    if (defVar.Type == Variable.VarType.NUMBER)
+                    if (Gui.DEFINES.TryGetValue(maxRowsVar.String.ToLower(), out DefineVariable defVar))
                     {
-                        int.TryParse(defVar.Value.ToString(), out maxRows);
+                        if (defVar.Type == Variable.VarType.NUMBER)
+                        {
+                            int.TryParse(defVar.Value.ToString(), out gridsArrayClass[gridName].maxElemsValue);
+                        }
+                    }
+                    else
+                    {
+                        //throw error
                     }
                 }
-                else
+                else if (maxRowsVar.Type == Variable.VarType.NUMBER)
                 {
-                    //throw error
+                    gridsArrayClass[gridName].maxElemsValue = (int)maxRowsVar.Value;
                 }
+                
 
-                if (Gui.DEFINES.TryGetValue(actCntrVarName.ToLower(), out DefineVariable defVar2))
+                // actCntr
+                if(actCntrVar.Type == Variable.VarType.STRING)// -> varName
                 {
-                    if (defVar2.Type == Variable.VarType.NUMBER)
+                    if (Gui.DEFINES.TryGetValue(actCntrVar.String.ToLower(), out DefineVariable defVar2))
                     {
-                        int.TryParse(defVar2.Value.ToString(), out actCntr);
+                        if (defVar2.Type == Variable.VarType.NUMBER)
+                        {
+                            int.TryParse(defVar2.Value.ToString(), out gridsArrayClass[gridName].actCntrValue);
+                        }
+                    }
+                    else
+                    {
+                        //throw error
                     }
                 }
-                else
+                else if(actCntrVar.Type == Variable.VarType.NUMBER)
                 {
-                    //throw error
+                    gridsArrayClass[gridName].actCntrValue = (int)actCntrVar.Value;
                 }
+                
 
                 //------------------------------------------------------------------------
 
@@ -5925,48 +6388,59 @@ $@"EXECUTE sp_executesql N'
                         var dgtc = column as DataGridTemplateColumn;
 
                         var cell = dgtc.CellTemplate.LoadContent();
-                        if (cell is TimeEditer)
+                        if (cell is ASGridCell)
                         {
-                            var te = cell as TimeEditer;
-                            if (te.Tag != null)
+                            var asgc = cell as ASGridCell;
+                            if (asgc.FieldName != null)
                             {
-                                gridsArrayClass[gridName].tagsAndTypes.Add(te.Tag.ToString(), typeof(TimeSpan));
-                                tagsAndHeaders.Add(te.Tag.ToString(), dgtc.Header.ToString());
-                                timeAndDateEditerTagsAndSizes[te.Tag.ToString()] = te.DisplaySize;
-                                tagsAndNames[te.Tag.ToString()] = te.Name;
+                                gridsArrayClass[gridName].tagsAndTypes.Add(asgc.FieldName.ToString(), typeof(object));
+                                tagsAndHeaders.Add(asgc.FieldName.ToString(), dgtc.Header.ToString());
+                                timeAndDateEditerTagsAndSizes[asgc.FieldName.ToString()] = asgc.EditLength;
+                                tagsAndNames[asgc.FieldName.ToString()] = asgc.Name;
                             }
                         }
-                        else if (cell is DateEditer)
-                        {
-                            var de = cell as DateEditer;
-                            if (de.Tag != null)
-                            {
-                                gridsArrayClass[gridName].tagsAndTypes.Add(de.Tag.ToString(), typeof(DateTime));
-                                tagsAndHeaders.Add(de.Tag.ToString(), dgtc.Header.ToString());
-                                timeAndDateEditerTagsAndSizes[de.Tag.ToString()] = de.DisplaySize;
-                                tagsAndNames[de.Tag.ToString()] = de.Name;
-                            }
-                        }
-                        else if (cell is CheckBox)
-                        {
-                            var cb = cell as CheckBox;
-                            if (cb.Tag != null)
-                            {
-                                gridsArrayClass[gridName].tagsAndTypes.Add(cb.Tag.ToString(), typeof(bool));
-                                tagsAndHeaders.Add(cb.Tag.ToString(), dgtc.Header.ToString());
-                                tagsAndNames[cb.Tag.ToString()] = cb.Name;
-                            }
-                        }
-                        else if (cell is TextBox)
-                        {
-                            var tb = cell as TextBox;
-                            if (tb.Tag != null)
-                            {
-                                gridsArrayClass[gridName].tagsAndTypes.Add(tb.Tag.ToString(), typeof(string));
-                                tagsAndHeaders.Add(tb.Tag.ToString(), dgtc.Header.ToString());
-                                tagsAndNames[tb.Tag.ToString()] = tb.Name;
-                            }
-                        }
+                        //if (cell is ASTimeEditer)
+                        //{
+                        //    var te = cell as ASTimeEditer;
+                        //    if (te.Tag != null)
+                        //    {
+                        //        gridsArrayClass[gridName].tagsAndTypes.Add(te.Tag.ToString(), typeof(TimeSpan));
+                        //        tagsAndHeaders.Add(te.Tag.ToString(), dgtc.Header.ToString());
+                        //        timeAndDateEditerTagsAndSizes[te.Tag.ToString()] = te.DisplaySize;
+                        //        tagsAndNames[te.Tag.ToString()] = te.Name;
+                        //    }
+                        //}
+                        //else if (cell is ASDateEditer)
+                        //{
+                        //    var de = cell as ASDateEditer;
+                        //    if (de.Tag != null)
+                        //    {
+                        //        gridsArrayClass[gridName].tagsAndTypes.Add(de.Tag.ToString(), typeof(DateTime));
+                        //        tagsAndHeaders.Add(de.Tag.ToString(), dgtc.Header.ToString());
+                        //        timeAndDateEditerTagsAndSizes[de.Tag.ToString()] = de.DisplaySize;
+                        //        tagsAndNames[de.Tag.ToString()] = de.Name;
+                        //    }
+                        //}
+                        //else if (cell is CheckBox)
+                        //{
+                        //    var cb = cell as CheckBox;
+                        //    if (cb.Tag != null)
+                        //    {
+                        //        gridsArrayClass[gridName].tagsAndTypes.Add(cb.Tag.ToString(), typeof(bool));
+                        //        tagsAndHeaders.Add(cb.Tag.ToString(), dgtc.Header.ToString());
+                        //        tagsAndNames[cb.Tag.ToString()] = cb.Name;
+                        //    }
+                        //}
+                        //else if (cell is TextBox)
+                        //{
+                        //    var tb = cell as TextBox;
+                        //    if (tb.Tag != null)
+                        //    {
+                        //        gridsArrayClass[gridName].tagsAndTypes.Add(tb.Tag.ToString(), typeof(string));
+                        //        tagsAndHeaders.Add(tb.Tag.ToString(), dgtc.Header.ToString());
+                        //        tagsAndNames[tb.Tag.ToString()] = tb.Name;
+                        //    }
+                        //}
                     }
                 }
 
@@ -6111,17 +6585,27 @@ $@"EXECUTE sp_executesql N'
                     lastArrayCount = thisArrCount;
                 }
 
-                if (!Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable maxrows))
+                int maxElements;
+                if (gridsArrayClass[gridName].maxElemsVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable maxrows))
                 {
-                    return;
+                    maxElements = (int)maxrows.Value;
+                }
+                else
+                {
+                    maxElements = gridsArrayClass[gridName].maxElemsValue;
                 }
 
-                if (!Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable actelems))
+                int activeElements;
+                if (gridsArrayClass[gridName].actCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable actelems))
                 {
-                    return;
+                    activeElements = (int)actelems.Value;
+                }
+                else
+                {
+                    activeElements = gridsArrayClass[gridName].actCntrValue;
                 }
 
-                for (int i = 0; i < (int)maxrows.Value && i < lastArrayCount && i < (int)actelems.Value; i++)
+                for (int i = 0; i < maxElements && i < lastArrayCount && i < activeElements; i++)
                 {
                     var currentRow = gridsDataTables[gridName].NewRow();
 
@@ -6199,7 +6683,7 @@ $@"EXECUTE sp_executesql N'
                         //ci.DateTimeFormat.LongDatePattern = "dd/MM/yyyy HH:mm:ss";
                         Thread.CurrentThread.CurrentCulture = ci;
 
-                        bind.Converter = new DateEditerConverter();
+                        bind.Converter = new ASDateEditerConverter();
                         bind.ConverterParameter = 8; //size
                         bind.StringFormat = "dd/MM/yy";
                     }
@@ -6210,7 +6694,7 @@ $@"EXECUTE sp_executesql N'
                         //ci.DateTimeFormat.LongDatePattern = "dd/MM/yyyy HH:mm:ss";
                         Thread.CurrentThread.CurrentCulture = ci;
 
-                        bind.Converter = new DateEditerConverter();
+                        bind.Converter = new ASDateEditerConverter();
                         bind.ConverterParameter = 10; //size
                         bind.StringFormat = "dd/MM/yyyy";
                     }
@@ -6218,15 +6702,15 @@ $@"EXECUTE sp_executesql N'
                     // Create the TextBlock
                     FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                     textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
-                    textBlockFactory.SetValue(DateEditer.NameProperty, tagsAndNames[tag]);
+                    textBlockFactory.SetValue(ASDateEditer.NameProperty, tagsAndNames[tag]);
 
                     DataTemplate textBlockTemplate = new DataTemplate();
                     textBlockTemplate.VisualTree = textBlockFactory;
 
                     // Create the DatePicker
-                    FrameworkElementFactory datePickerFactory = new FrameworkElementFactory(typeof(DateEditer));
-                    datePickerFactory.SetBinding(DateEditer.TextProperty, bind);
-                    datePickerFactory.SetValue(DateEditer.DisplaySizeProperty, timeAndDateEditerTagsAndSizes[tag]);
+                    FrameworkElementFactory datePickerFactory = new FrameworkElementFactory(typeof(ASDateEditer));
+                    datePickerFactory.SetBinding(ASDateEditer.TextProperty, bind);
+                    datePickerFactory.SetValue(ASDateEditer.DisplaySizeProperty, timeAndDateEditerTagsAndSizes[tag]);
 
 
                     DataTemplate datePickerTemplate = new DataTemplate();
@@ -6248,12 +6732,12 @@ $@"EXECUTE sp_executesql N'
                     bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
                     if (timeAndDateEditerTagsAndSizes[tag] == 5)
                     {
-                        bind.Converter = new TimeEditerConverter();
+                        bind.Converter = new ASTimeEditerConverter();
                         bind.ConverterParameter = 5;
                     }
                     else if (timeAndDateEditerTagsAndSizes[tag] == 8)
                     {
-                        bind.Converter = new TimeEditerConverter();
+                        bind.Converter = new ASTimeEditerConverter();
                         bind.ConverterParameter = 8;
                     }
 
@@ -6261,15 +6745,15 @@ $@"EXECUTE sp_executesql N'
                     FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                     textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
                     //textBlockFactory.AddHandler(TextBlock.GotKeyboardFocusEvent, new KeyboardFocusChangedEventHandler(textBlockGotKeyboardFocus));
-                    textBlockFactory.SetValue(DateEditer.NameProperty, tagsAndNames[tag]);
+                    textBlockFactory.SetValue(ASDateEditer.NameProperty, tagsAndNames[tag]);
 
                     DataTemplate textBlockTemplate = new DataTemplate();
                     textBlockTemplate.VisualTree = textBlockFactory;
 
-                    // Create the TimeEditer
-                    FrameworkElementFactory timeEditerFactory = new FrameworkElementFactory(typeof(TimeEditer));
-                    timeEditerFactory.SetBinding(TimeEditer.TextProperty, bind);
-                    timeEditerFactory.SetValue(TimeEditer.DisplaySizeProperty, timeAndDateEditerTagsAndSizes[tag]);
+                    // Create the ASTimeEditer
+                    FrameworkElementFactory timeEditerFactory = new FrameworkElementFactory(typeof(ASTimeEditer));
+                    timeEditerFactory.SetBinding(ASTimeEditer.TextProperty, bind);
+                    timeEditerFactory.SetValue(ASTimeEditer.DisplaySizeProperty, timeAndDateEditerTagsAndSizes[tag]);
 
                     DataTemplate timeEditerTemplate = new DataTemplate();
                     timeEditerTemplate.VisualTree = timeEditerFactory;
@@ -6292,7 +6776,7 @@ $@"EXECUTE sp_executesql N'
                     // Create the TextBlock
                     FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                     textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
-                    textBlockFactory.SetValue(DateEditer.NameProperty, tagsAndNames[tag]);
+                    textBlockFactory.SetValue(ASDateEditer.NameProperty, tagsAndNames[tag]);
 
                     DataTemplate textBlockTemplate = new DataTemplate();
                     textBlockTemplate.VisualTree = textBlockFactory;
@@ -6318,12 +6802,12 @@ $@"EXECUTE sp_executesql N'
                     Binding bind = new Binding(tag);
                     bind.Mode = BindingMode.TwoWay;
                     bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-                    bind.Converter = new TextBoxIntConverter();
+                    bind.Converter = new ASTextBoxIntConverter();
 
                     // Create the TextBlock
                     FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                     textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
-                    textBlockFactory.SetValue(DateEditer.NameProperty, tagsAndNames[tag]);
+                    textBlockFactory.SetValue(ASDateEditer.NameProperty, tagsAndNames[tag]);
 
                     DataTemplate textBlockTemplate = new DataTemplate();
                     textBlockTemplate.VisualTree = textBlockFactory;
@@ -6349,12 +6833,12 @@ $@"EXECUTE sp_executesql N'
                     Binding bind = new Binding(tag);
                     bind.Mode = BindingMode.TwoWay;
                     bind.UpdateSourceTrigger = UpdateSourceTrigger.LostFocus;
-                    bind.Converter = new TextBoxDoubleConverter();
+                    bind.Converter = new ASTextBoxDoubleConverter();
 
                     // Create the TextBlock
                     FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                     textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
-                    textBlockFactory.SetValue(DateEditer.NameProperty, tagsAndNames[tag]);
+                    textBlockFactory.SetValue(ASDateEditer.NameProperty, tagsAndNames[tag]);
 
                     DataTemplate textBlockTemplate = new DataTemplate();
                     textBlockTemplate.VisualTree = textBlockFactory;
@@ -6380,7 +6864,7 @@ $@"EXECUTE sp_executesql N'
                     Binding bind = new Binding(tag);
                     bind.Mode = BindingMode.TwoWay;
                     bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-                    //bind.Converter = new TextBoxDoubleConverter();
+                    //bind.Converter = new ASTextBoxDoubleConverter();
 
                     FrameworkElementFactory checkBoxFactory = new FrameworkElementFactory(typeof(CheckBox));
                     checkBoxFactory.SetBinding(CheckBox.IsCheckedProperty, bind);
@@ -6527,7 +7011,10 @@ $@"EXECUTE sp_executesql N'
 
                 dg.BeginEdit();
 
-                Gui.DEFINES[lineCntrVarName.ToLower()].InitVariable(new Variable(currentRowIndex), Gui);
+                if(gridsArrayClass[gridName].lineCntrVarName != null)
+                {
+                    Gui.DEFINES[gridsArrayClass[gridName].lineCntrVarName.ToLower()].InitVariable(new Variable(currentRowIndex), Gui);
+                }
             }
 
             private void Dg_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
@@ -6575,7 +7062,7 @@ $@"EXECUTE sp_executesql N'
                 }
                 (sender as DataGrid).RowEditEnding += Dg_RowEditEnding;
 
-                if (dg.Items.Count - 1 >= maxRows)
+                if (dg.Items.Count - 1 >= gridsArrayClass[gridName].maxElemsValue)
                 {
                     dg.CanUserAddRows = false;
                 }
@@ -6655,7 +7142,7 @@ $@"EXECUTE sp_executesql N'
 
                 var gridName = Utils.GetSafeString(args, 0);
 
-                if (gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar))
+                if (gridsArrayClass[gridName].lineCntrVarName != null && gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar))
                 {
                     gridsArrayClass[gridName].dg.SelectedIndex = (int)defVar.Value;
                     gridsArrayClass[gridName].dg.ScrollIntoView(gridsArrayClass[gridName].dg.SelectedItem);
@@ -6695,7 +7182,7 @@ $@"EXECUTE sp_executesql N'
                 {
                     case "updatecurrent":
 
-                        if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable lineCntrDefVar))
+                        if (gridsArrayClass[gridName].lineCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable lineCntrDefVar))
                         {
                             var itemArray = gridsDataTables[gridName].Rows[(int)lineCntrDefVar.Value].ItemArray;
                             for (int i = 0; i < itemArray.Length; i++)
@@ -6785,24 +7272,24 @@ $@"EXECUTE sp_executesql N'
 
                 switch (option)
                 {
-                    case "updatecurrent":
+                    //case "updatecurrent":
 
-                        if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable lineCntrDefVar))
-                        {
-                            var itemArray = gridsDataTables[gridName].Rows[(int)lineCntrDefVar.Value].ItemArray;
-                            for (int i = 0; i < itemArray.Length; i++)
-                            {
+                    //    if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable lineCntrDefVar))
+                    //    {
+                    //        var itemArray = gridsDataTables[gridName].Rows[(int)lineCntrDefVar.Value].ItemArray;
+                    //        for (int i = 0; i < itemArray.Length; i++)
+                    //        {
 
-                                if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].tags[i].ToLower(), out DefineVariable defVar))
-                                {
-                                    itemArray[i] = defVar.Tuple[(int)lineCntrDefVar.Value].AsString();
-                                }
-                            }
+                    //            if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].tags[i].ToLower(), out DefineVariable defVar))
+                    //            {
+                    //                itemArray[i] = defVar.Tuple[(int)lineCntrDefVar.Value].AsString();
+                    //            }
+                    //        }
 
-                            gridsDataTables[gridName].Rows[(int)lineCntrDefVar.Value].ItemArray = itemArray;
-                        }
+                    //        gridsDataTables[gridName].Rows[(int)lineCntrDefVar.Value].ItemArray = itemArray;
+                    //    }
 
-                        break;
+                    //    break;
 
                     case "redisplayfromtop":
 
@@ -6822,8 +7309,14 @@ $@"EXECUTE sp_executesql N'
 
                         var currentIndex = dg.SelectedIndex;
 
+                        var currentID = gridsTableClass[gridName].selectedRowId;
+
                         gridsDataTables[gridName].Rows.Clear();
-                        new DisplayTableSetupFunction().fillDataTable(gridName);
+                        new DisplayTableSetupFunction().fillDataTable(gridName, Gui);
+
+                        var currentDataRow = gridsDataTables[gridName].Rows.Find(currentID);
+                        var currentDataRowIndex = gridsDataTables[gridName].Rows.IndexOf(currentDataRow);
+                        //var currentDataRowIndex = dg.Items((object)currentDataRow.ItemArray);
 
                         DisplayTableSetupFunction.dataGridUpdated = true;
 
@@ -6833,9 +7326,57 @@ $@"EXECUTE sp_executesql N'
                         }
                         if (dg.Items.Count > 0)
                         {
-                            dg.ScrollIntoView(dg.Items.GetItemAt(currentIndex));
-                            dg.SelectedIndex = currentIndex;
+                            
+                            //dg.ScrollIntoView(dg.Items.GetItemAt(currentIndex));
+                            
+                            dg.SelectedIndex = currentDataRowIndex;
+                            dg.ScrollIntoView(dg.Items.GetItemAt(currentDataRowIndex));
                         }
+
+                        break;
+                        
+                    case "refreshrecord":
+
+                        //var currentIndex = dg.SelectedIndex;
+
+                        //gridsDataTables[gridName].Rows.Clear();
+                        //new DisplayTableSetupFunction().fillDataTable(gridName);
+
+                        //DisplayTableSetupFunction.dataGridUpdated = true;
+
+                        //if (currentIndex < 0 || currentIndex > dg.Items.Count - 1)
+                        //{
+                        //    currentIndex = 0;
+                        //}
+                        //if (dg.Items.Count > 0)
+                        //{
+                        //    dg.ScrollIntoView(dg.Items.GetItemAt(currentIndex));
+                        //    dg.SelectedIndex = currentIndex;
+                        //}
+
+
+
+
+                        //gridsTableClass[gridName].selectedRowId
+
+
+
+                        var itemArray = gridsDataTables[gridName].Rows[dg.SelectedIndex].ItemArray;
+                        //itemArray[0] = gridsTableClass[gridName].selectedRowId;
+
+                        for (int i = 1; i < itemArray.Length; i++)
+                        {
+
+                            if (Gui.DEFINES.TryGetValue(gridsTableClass[gridName].tags[i - 1].ToLower(), out DefineVariable defVar))
+                            {
+                                itemArray[i] = defVar.AsString();//[gridsTableClass[gridName].selectedRowId].AsString();
+                                gridsDataTables[gridName].Rows[dg.SelectedIndex].ItemArray[i] = itemArray[i];
+                                
+                            }
+                        }
+
+                        gridsDataTables[gridName].Rows[dg.SelectedIndex].ItemArray = itemArray;
+                        
 
                         break;
 
@@ -6872,18 +7413,32 @@ $@"EXECUTE sp_executesql N'
                         {
                             case "addrow":
 
-                                if (gridsArrayClass[gridName].tableOrArray == "table")
+                                if (gridsTableClass.Keys.Contains(gridName)) // -> wlistF
                                 {
-                                    //
+                                    // add new grid row
+                                    var newRow = gridsDataTables[gridName].NewRow();
+                                    gridsDataTables[gridName].Rows.Add(newRow);
+
+                                    dg.SelectedIndex = dg.Items.Count - 1;
+                                    //dg.ScrollIntoView(dg.Items.GetItemAt(dg.Items.Count - 1));
+                                    dg.ScrollIntoView(dg.SelectedItem);
                                 }
-                                else if (gridsArrayClass[gridName].tableOrArray == "array")
+                                else if (gridsArrayClass.Keys.Contains(gridName)) // -> wlistM
                                 {
                                     var currentRowCount = dg.Items.Count;
 
                                     // check for max length
-                                    if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable defVar))
+                                    if (gridsArrayClass[gridName].maxElemsVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable defVar))
                                     {
                                         if (currentRowCount + 1 > defVar.Value)
+                                        {
+                                            MessageBox.Show("Maximum elements reached.");
+                                            return Variable.EmptyInstance;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (currentRowCount + 1 > gridsArrayClass[gridName].maxElemsValue)
                                         {
                                             MessageBox.Show("Maximum elements reached.");
                                             return Variable.EmptyInstance;
@@ -6910,16 +7465,18 @@ $@"EXECUTE sp_executesql N'
 
 
                                     // fill linCntr with new element index
-                                    if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar3))
+                                    if (gridsArrayClass[gridName].lineCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar3))
                                     {
                                         defVar3.InitVariable(new Variable(currentRowCount), Gui);
                                     }
 
                                     // increment active elements variable
-                                    if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar4))
+                                    if (gridsArrayClass[gridName].actCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar4))
                                     {
                                         defVar4.InitVariable(new Variable(defVar4.Value + 1), Gui);
                                     }
+
+                                    gridsArrayClass[gridName].actCntrValue++;
 
                                     // add new grid row
                                     var newRow = gridsDataTables[gridName].NewRow();
@@ -6933,14 +7490,14 @@ $@"EXECUTE sp_executesql N'
 
                             case "deleterow":
 
-                                if (gridsArrayClass[gridName].tableOrArray == "table")
+                                if (gridsTableClass.Keys.Contains(gridName)) // -> wlistF
                                 {
                                     if (deleteFromDB(gridsDataTables[gridName].Rows[dg.SelectedIndex].ItemArray[0].ToString(), gridsOpenvs[gridName]))
                                     {
                                         gridsDataTables[gridName].Rows.RemoveAt(dg.SelectedIndex);
                                     }
                                 }
-                                else if (gridsArrayClass[gridName].tableOrArray == "array")
+                                else if (gridsArrayClass.Keys.Contains(gridName)) // -> wlistM
                                 {
                                     if (deleteFromArrays(dg.SelectedIndex, gridsArrayClass[gridName]))
                                     {
@@ -6978,12 +7535,17 @@ $@"EXECUTE sp_executesql N'
                                         }
 
                                         // decrement active elements variable
-                                        if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar5))
+                                        if (gridsArrayClass[gridName].actCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar5))
                                         {
                                             if ((int)defVar5.Value > 1)
                                             {
                                                 defVar5.InitVariable(new Variable(defVar5.Value - 1), Gui);
                                             }
+                                        }
+
+                                        if (gridsArrayClass[gridName].actCntrValue > 1)
+                                        {
+                                            gridsArrayClass[gridName].actCntrValue--;
                                         }
                                     }
                                 }
@@ -6992,16 +7554,24 @@ $@"EXECUTE sp_executesql N'
 
                             case "insertrow":
 
-                                if (gridsArrayClass[gridName].tableOrArray == "table")
+                                if (gridsTableClass.Keys.Contains(gridName)) // -> wlistF
                                 {
                                     //
                                 }
-                                else if (gridsArrayClass[gridName].tableOrArray == "array")
+                                else if (gridsArrayClass.Keys.Contains(gridName)) // -> wlistM
                                 {
                                     // check for max length
-                                    if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable defVar6))
+                                    if (gridsArrayClass[gridName].maxElemsVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable defVar6))
                                     {
                                         if (dg.Items.Count + 1 > defVar6.Value)
+                                        {
+                                            MessageBox.Show("Maximum elements reached.");
+                                            return Variable.EmptyInstance;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (dg.Items.Count + 1 > gridsArrayClass[gridName].maxElemsValue)
                                         {
                                             MessageBox.Show("Maximum elements reached.");
                                             return Variable.EmptyInstance;
@@ -7015,10 +7585,12 @@ $@"EXECUTE sp_executesql N'
                                             gridsDataTables[gridName].Rows.InsertAt(gridsDataTables[gridName].NewRow(), dg.SelectedIndex + 1);
 
                                             // increment active elements variable
-                                            if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar7))
+                                            if (gridsArrayClass[gridName].actCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar7))
                                             {
                                                 defVar7.InitVariable(new Variable(defVar7.Value + 1), Gui);
                                             }
+
+                                            gridsArrayClass[gridName].actCntrValue++;
 
                                             dg.SelectedIndex++;
                                             dg.ScrollIntoView(dg.SelectedItem);
@@ -7214,6 +7786,21 @@ where ID = {rowId}
                 CSCS_GUI.DefaultDB = dbShortName;
 
                 return new Variable(true);
+            }
+        }
+        
+        class CommonDBGetFunction : ParserFunction
+        {
+            CSCS_GUI Gui;
+
+            protected override Variable Evaluate(ParsingScript script)
+            {
+                List<Variable> args = script.GetFunctionArgs();
+                Utils.CheckArgs(args.Count, 0, m_name);
+
+                //Gui = CSCS_GUI.GetInstance(script);
+
+                return new Variable(CSCS_GUI.CommonDB);
             }
         }
 

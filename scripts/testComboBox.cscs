@@ -1,0 +1,10 @@
+
+
+DEFINE variable type a;
+
+
+CreateWindow("../../scripts/testComboBox.xaml");
+
+function btn1@clicked(){
+    MessageBox(variable);
+}

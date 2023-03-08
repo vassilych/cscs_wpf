@@ -9,33 +9,30 @@ using System.Windows.Data;
 
 namespace WpfControlsLibrary
 {
-    public class TextBoxDoubleConverter : IValueConverter
+    public class ASTextBoxIntConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            double doubleValue = 0;
+            int intValue = 0;
             try
             {
-                doubleValue = (double)value;
-                
+                intValue = (int)value;
+
             }
             catch
             {
 
             }
-            return doubleValue.ToString();
-
-
-
+            return intValue.ToString();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             string strValue = value as string;
-            double resultDouble;
-            if (double.TryParse(strValue, out resultDouble))
+            int resultInt;
+            if (int.TryParse(strValue, out resultInt))
             {
-                return resultDouble;
+                return resultInt;
             }
             return DependencyProperty.UnsetValue;
         }
