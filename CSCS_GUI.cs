@@ -398,7 +398,7 @@ namespace WpfCSCS
         static int s_id;
         public int ID { get; private set; }
 
-        public ParsingScript Script { get; private set; }
+        public ParsingScript Script { get; set; }
         public CSCS_GUI(ParsingScript script = null)
         {
             LastInstance = this;
@@ -2397,28 +2397,38 @@ namespace WpfCSCS
 
         void PreprocessScripts()
         {
-            var doPreprocess = App.GetConfiguration("Preprocess", "");
-            var tokensStr = App.GetConfiguration("PreprocessTokens", "");
             var filesStr = App.GetConfiguration("PreprocessFiles", "");
-            if (string.IsNullOrWhiteSpace(tokensStr) || string.IsNullOrWhiteSpace(filesStr) ||
-                !string.Equals(doPreprocess, "true", StringComparison.OrdinalIgnoreCase))
+            var tokenSet = GetPreprocessTokens();
+            if (string.IsNullOrWhiteSpace(filesStr) || tokenSet.Count == 0)
             {
                 return;
             }
             var scriptsDirStr = App.GetConfiguration("ScriptsPath", "");
-
-            var tokenSet = new HashSet<string>();
-            var tokens = tokensStr.Split(',');
-            foreach (var token in tokens)
-            {
-                tokenSet.Add(token);
-            }
 
             var files = filesStr.Split(',');
             foreach (var file in files)
             {
                 Utils.PreprocessScriptFile(file, tokenSet, scriptsDirStr, this);
             }
+        }
+
+        public static HashSet<string> GetPreprocessTokens()
+        {
+            var tokenSet = new HashSet<string>();
+            var tokensStr = App.GetConfiguration("PreprocessTokens", "");
+            var doPreprocess = App.GetConfiguration("Preprocess", "");
+            if (string.IsNullOrWhiteSpace(tokensStr) ||
+                !string.Equals(doPreprocess, "true", StringComparison.OrdinalIgnoreCase))
+            {
+                return tokenSet;
+            }
+
+            var tokens = tokensStr.Split(',');
+            foreach (var token in tokens)
+            {
+                tokenSet.Add(token);
+            }
+            return tokenSet;
         }
     }
 
@@ -4117,15 +4127,29 @@ namespace WpfCSCS
                 return result;
             }
 
-            ParsingScript chainScript = tempScript.GetIncludeFileScript(chainName);
+            Gui = new CSCS_GUI();
+            Gui.Init();
+
+            ParsingScript chainScript = null;
+            var tokenSet = CSCS_GUI.GetPreprocessTokens();
+            if (tokenSet.Count > 0)
+            {
+                var toProcess = Utils.PreprocessScriptFile(chainName, tokenSet, script.PWD, script.Context);
+                chainScript = new ParsingScript(InterpreterInstance, toProcess);
+                chainScript.Filename = script.GetFilePath(chainName);
+            }
+            else
+            {
+                chainScript = tempScript.GetIncludeFileScript(chainName);
+            }
+
             chainScript.StackLevel = Gui.Interpreter.AddStackLevel(chainScript.Filename);
             chainScript.CurrentModule = chainName;
             chainScript.ParentScript = script;
             CheckScriptIsMain(chainName);
             Chains[chainScript.Filename] = chainScript;
+            Gui.Script = chainScript;
 
-            Gui = new CSCS_GUI(chainScript);
-            Gui.Init();
             chainScript.SetInterpreter(CSCS_GUI.InterpreterManager.CurrentInterpreter);
             //chainScript.Context = script.Context;
 

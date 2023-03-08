@@ -1257,9 +1257,9 @@ namespace SplitAndMerge
             return sb.ToString();
         }
 
-        public static void PreprocessScriptFile(string file, HashSet<string> tokens, string scriptsDirStr = "", object context = null)
+        public static string File2String(string file, out string fileName, string scriptsDirStr = "")
         {
-            var fileName = Path.IsPathRooted(file) ? file :
+            fileName = Path.IsPathRooted(file) ? file :
                 (!string.IsNullOrWhiteSpace(scriptsDirStr) ?
                     Path.Combine(scriptsDirStr, file) : Path.GetFullPath(file));
             if (!File.Exists(fileName))
@@ -1271,36 +1271,71 @@ namespace SplitAndMerge
                 throw new ArgumentException("Preprocessing file not found: [" + fileName + "]");
             }
             string script = Utils.GetFileContents(fileName);
-            PreprocessScript(script, tokens, fileName, context);
+            return script;
         }
 
-        public static void PreprocessScript(string script, HashSet<string> tokens, string fileName = "", object context = null)
+        public static ParsingScript ConvertString2Script(string script, string fileName = "", object context = null)
         {
-            Dictionary<int, int> char2Line;
-            string data = Utils.ConvertToScript(Interpreter.LastInstance, script, out char2Line, fileName);
+            string data = Utils.ConvertToScript(Interpreter.LastInstance, script,
+                out Dictionary<int, int> char2Line, fileName);
+            if (string.IsNullOrWhiteSpace(data))
+            {
+                return null;
+            }
+
+            var toParse = new ParsingScript(Interpreter.LastInstance, data, 0, char2Line);
+            toParse.OriginalScript = script;
+            toParse.Filename = fileName;
+            toParse.Context = context;
+            return toParse;
+        }
+        public static ParsingScript ConvertFile2Script(string file, string scriptsDirStr = "", object context = null)
+        {
+            string script = Utils.File2String(file, out string fileName, scriptsDirStr);
+            return ConvertString2Script(script, fileName, context);
+        }
+
+        public static string PreprocessScriptFile(string file, HashSet<string> tokens, string scriptsDirStr = "", object context = null)
+        {
+            string script = Utils.File2String(file, out string fileName, scriptsDirStr);
+            return PreprocessScript(script, tokens, fileName, context);
+        }
+
+        public static string PreprocessScript(string script, HashSet<string> tokens, string fileName = "", object context = null)
+        {
+            SplitScript(script, tokens, out string step1, out string step2, fileName, context);
+            Interpreter.LastInstance.Process(step1, fileName, false, context);
+            return step2;
+        }
+
+        public static void SplitScriptFile(string file, HashSet<string> tokens, out string split1, out string split2,
+            string scriptsDirStr = "", object context = null)
+        {
+            string script = Utils.File2String(file, out string fileName, scriptsDirStr);
+            SplitScript(script, tokens, out split1, out split2, fileName, context);
+        }
+
+        public static void SplitScript(string script, HashSet<string> tokens,
+            out string split1, out string split2,
+            string fileName = "", object context = null)
+        {
+            split1 = script;
+            split2 = "";
+            string data = Utils.ConvertToScript(Interpreter.LastInstance, script, out _, fileName);
             if (string.IsNullOrWhiteSpace(data))
             {
                 return;
             }
 
-            ParsingScript toParse = new ParsingScript(Interpreter.LastInstance, data, 0, char2Line);
-            toParse.OriginalScript = script;
-            toParse.Filename = fileName;
-            toParse.Context = Interpreter.LastInstance;
-
-            var firstScript = Utils.GetSubscript(toParse, tokens);
-            if (string.IsNullOrWhiteSpace(firstScript))
-            {
-                return;
-            }
-
-            Interpreter.LastInstance.Process(firstScript, fileName, false, context);
+            ParsingScript toParse = ConvertString2Script(script, fileName, context);
+            Utils.GetSubscript(toParse, tokens, out split1, out split2);
         }
 
-        public static string GetSubscript(ParsingScript script, HashSet<string> tokens)
+        public static void GetSubscript(ParsingScript script, HashSet<string> tokens, out string step1, out string step2)
         {
             var start = script.Pointer;
-            var sb = new StringBuilder();
+            var step1sb = new StringBuilder();
+            var step2sb = new StringBuilder();
             while (script.StillValid() )
             {
                 var token = GetNextToken(script).ToLower();
@@ -1310,6 +1345,19 @@ namespace SplitAndMerge
                     continue;
                 }
                 var needed = tokens.Contains(token);
+
+                if (token == Constants.INCLUDE)
+                {
+                    script.Forward();
+                    var args = script.GetFunctionArgs();
+                    var includeFile = Utils.GetSafeString(args, 0);
+                    var includeScript = ConvertFile2Script(includeFile, Path.GetDirectoryName(script.Filename), script.Context);
+                    GetSubscript(includeScript, tokens, out string st1, out string st2);
+                    step1sb.Append(st1);
+                    step2sb.Append(st2);
+                    script.MoveForwardIf(Constants.END_STATEMENT);
+                    continue;
+                }
                 string extracted = token;
                 if (!needed)
                 {
@@ -1324,7 +1372,11 @@ namespace SplitAndMerge
                     extracted += script.CurrentAndForward();
                     if (needed)
                     {
-                        sb.Append(extracted);
+                        step1sb.Append(extracted);
+                    }
+                    else
+                    {
+                        step2sb.Append(extracted);
                     }
                     continue;
                 }
@@ -1339,8 +1391,12 @@ namespace SplitAndMerge
                 {
                     extracted += GetBodyBetween(script, Constants.START_ARG, Constants.END_ARG, Constants.END_STATEMENT);
                 }
-                if (script.Prev == Constants.START_ARG)
+                if (script.Prev == Constants.START_ARG || script.Current == Constants.START_ARG)
                 {
+                    if (extracted.Last() == Constants.START_ARG && script.Current == Constants.START_ARG)
+                    {
+                        extracted = extracted.Substring(0, extracted.Length - 1);
+                    }
                     extracted += GetBodyBetween(script, Constants.START_ARG, Constants.END_ARG, Constants.END_ARG);
                     extracted += script.StillValid() ? script.CurrentAndForward() : Constants.EMPTY;
                 }
@@ -1357,12 +1413,16 @@ namespace SplitAndMerge
                 }
                 if (needed)
                 {
-                    sb.Append(extracted);
+                    step1sb.Append(extracted);
+                }
+                else
+                {
+                    step2sb.Append(extracted);
                 }
             }
             script.Pointer = start;
-            var result = sb.ToString();
-            return result;
+            step1 = step1sb.ToString();
+            step2 = step2sb.ToString();
         }
 
         public static string GetBodySize(ParsingScript script, string endToken1, string endToken2 = null)
