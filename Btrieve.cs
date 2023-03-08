@@ -2322,46 +2322,54 @@ N'{paramsDeclaration}', ";
                                     }
                                     else
                                     {
-                                        //if (reader.GetFieldType(currentFieldNum) == typeof(DateTime))
-                                        //{
-                                        //    //DateTime fieldValue = (DateTime)reader[currentColumnName];
-                                        //    //var dateFormat = Gui.DEFINES[loweredCurrentColumnName].GetDateFormat();
-                                        //    //var newVar = new Variable(fieldValue.ToString(dateFormat));
-                                        //    //Gui.DEFINES[loweredCurrentColumnName].InitVariable(newVar, Gui);
-                                        //    //Gui.OnVariableChange(loweredCurrentColumnName, newVar, true);
-                                        //}
-                                        //else
-                                        //{
-                                        //string fieldValue = reader[currentColumnName].ToString().TrimEnd();
-                                        //Gui.DEFINES[loweredCurrentColumnName].InitVariable(new Variable(fieldValue).Clone(), Gui);
-                                        switch (Gui.DEFINES[loweredCurrentColumnName].DefType)
+                                        if (reader.GetFieldType(currentFieldNum) == typeof(DateTime))
                                         {
-                                            case "a":
-                                                Gui.DEFINES[loweredCurrentColumnName].String = reader[currentColumnName].ToString().TrimEnd();
-                                                break;
-                                            case "i":
-                                            case "n":
-                                            case "r":
-                                            case "b":
-                                            case "l":
-                                                double result;
-                                                if (double.TryParse(reader[currentColumnName].ToString(), out result))
-                                                {
-                                                    Gui.DEFINES[loweredCurrentColumnName].Value = result;
-                                                }
-                                                break;
-                                            case "d":
-                                                Gui.DEFINES[loweredCurrentColumnName].DateTime = (DateTime)reader[currentColumnName];
-                                                break;
-                                            case "t":
-                                                var time = (TimeSpan)reader[currentColumnName];
-                                                Gui.DEFINES[loweredCurrentColumnName].DateTime = new DateTime(1, 1, 1, time.Hours, time.Minutes, time.Seconds);
-                                                break;
-                                            default:
-                                                break;
+                                            DateTime fieldValue = (DateTime)reader[currentColumnName];
+                                            var dateFormat = Gui.DEFINES[loweredCurrentColumnName].GetDateFormat();
+                                            var newVar = new Variable(fieldValue.ToString(dateFormat));
+                                            Gui.DEFINES[loweredCurrentColumnName].InitVariable(newVar, Gui);
+                                            //Gui.OnVariableChange(loweredCurrentColumnName, newVar, true);
                                         }
-                                        //Gui.OnVariableChange(loweredCurrentColumnName, new Variable(fieldValue), true);
-                                        //}
+                                        else
+                                        {
+                                            string fieldValue = reader[currentColumnName].ToString().TrimEnd();
+
+                                            //Gui.DEFINES[loweredCurrentColumnName].InitVariable(new Variable(fieldValue).Clone(), Gui);
+
+
+                                            switch (Gui.DEFINES[loweredCurrentColumnName].DefType)
+                                            {
+                                                case "a":
+                                                    Gui.DEFINES[loweredCurrentColumnName].String = reader[currentColumnName].ToString().TrimEnd();
+                                                    break;
+                                                case "i":
+                                                case "n":
+                                                case "r":
+                                                case "b":
+                                                case "l":
+                                                    double result;
+                                                    if (double.TryParse(reader[currentColumnName].ToString(), out result))
+                                                    {
+                                                        Gui.DEFINES[loweredCurrentColumnName].Value = result;
+                                                    }
+                                                    break;
+                                                case "d":
+                                                    Gui.DEFINES[loweredCurrentColumnName].DateTime = (DateTime)reader[currentColumnName];
+                                                    break;
+                                                case "t":
+                                                    var time = (TimeSpan)reader[currentColumnName];
+                                                    Gui.DEFINES[loweredCurrentColumnName].DateTime = new DateTime(1, 1, 1, time.Hours, time.Minutes, time.Seconds);
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
+
+                                            Gui.Interpreter.AddGlobalOrLocalVariable(loweredCurrentColumnName, new GetVarFunction(Gui.DEFINES[loweredCurrentColumnName]), script);
+                                            Gui.DEFINES[loweredCurrentColumnName] = Gui.DEFINES[loweredCurrentColumnName];
+
+
+                                            //Gui.OnVariableChange(loweredCurrentColumnName, new Variable(fieldValue), true);
+                                        }
                                     }
 
                                     //currentFieldNum++;
@@ -4899,17 +4907,71 @@ $@"EXECUTE sp_executesql N'
                 Utils.CheckArgs(args.Count, 3, m_name);
 
                 gridName = Utils.GetSafeString(args, 0).ToLower();
-                tableHndlNum = Utils.GetSafeInt(args, 1);
-                tableKey = Utils.GetSafeString(args, 2);
+
+                var tableHndlNumVar = args.FirstOrDefault(p => p.CurrentAssign.ToLower() == "fnum");
+                if (tableHndlNumVar != null)
+                {
+                    tableHndlNum = (int)tableHndlNumVar.AsDouble();
+                }
+                else
+                {
+                    tableHndlNum = 0;
+                }
+                
+                var tableKeyVar = args.FirstOrDefault(p => p.CurrentAssign.ToLower() == "key");
+                if (tableKeyVar != null)
+                {
+                    tableKey = tableKeyVar.AsString();
+                }
+                else
+                {
+                    tableKey = "";
+                }
+
+                //tableHndlNum = Utils.GetSafeInt(args, 1);
+                //tableKey = Utils.GetSafeString(args, 2);
 
                 //startString = Utils.GetSafeString(args, 3);
                 //whileString = Utils.GetSafeString(args, 4).ToLower();
                 //forString = Utils.GetSafeString(args, 5).ToLower();
 
                 gridsTableClass[gridName] = new DisplayTableClass();
-                gridsTableClass[gridName].startString = script.GetTempScript(args[3].AsString()); //Utils.GetSafeString(args, 3);
-                gridsTableClass[gridName].whileString = script.GetTempScript(args[4].AsString()); //Utils.GetSafeString(args, 4).ToLower();
-                gridsTableClass[gridName].forString = Utils.GetSafeString(args, 5).ToLower();
+                //gridsTableClass[gridName].startString = script.GetTempScript(args[3].AsString()); //Utils.GetSafeString(args, 3);
+                //gridsTableClass[gridName].whileString = script.GetTempScript(args[4].AsString()); //Utils.GetSafeString(args, 4).ToLower();
+                //gridsTableClass[gridName].forString = Utils.GetSafeString(args, 5).ToLower();
+
+                var startStringVar = args.FirstOrDefault(p => p.CurrentAssign.ToLower() == "start");
+                if (startStringVar != null)
+                {
+                    gridsTableClass[gridName].startString = script.GetTempScript(startStringVar.AsString());
+                }
+                else
+                {
+                    //gridsTableClass[gridName].startString = script.GetTempScript();
+                    gridsTableClass[gridName].startString = script.GetTempScript("");
+                }
+
+                var whileStringVar = args.FirstOrDefault(p => p.CurrentAssign.ToLower() == "whilestring");
+                if (whileStringVar != null)
+                {
+                    gridsTableClass[gridName].whileString = script.GetTempScript(whileStringVar.AsString());
+                }
+                else
+                {
+                    //gridsTableClass[gridName].whileString = script.GetTempScript();
+                    gridsTableClass[gridName].whileString = script.GetTempScript("true");
+                }
+
+                var forStringVar = args.FirstOrDefault(p => p.CurrentAssign.ToLower() == "forstring");
+                if (forStringVar != null)
+                {
+                    gridsTableClass[gridName].forString = forStringVar.AsString();
+                }
+                else
+                {
+                    gridsTableClass[gridName].forString = "";
+                }
+
 
                 //------------------------------------------------------------------------
 
@@ -5402,6 +5464,8 @@ $@"EXECUTE sp_executesql N'
                         SetFlerr(0, tableHndlNum);
                         break;
                     }
+
+                    //var nasInvoiceNumber = Gui.DEFINES["invoicenumber"];
                 }
             }
 

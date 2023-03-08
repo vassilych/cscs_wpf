@@ -234,30 +234,37 @@ namespace WpfControlsLibrary
             InitializeComponent();
         }
 
-
+        bool loaded = false;
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            numBoxTextBox.Size = Size;
-            numBoxTextBox.Dec = Dec;
-            numBoxTextBox.MinValue = MinValue != null ? (double)MinValue : double.MinValue;
-            numBoxTextBox.MaxValue = MaxValue != null ? (double)MaxValue : double.MaxValue;
-            numBoxTextBox.Text = Text;
-            numBoxTextBox.Thousands = Thousands;
-            numBoxButton.Width = ButtonSize;
-            numBoxTextBox.FontWeight = FontWeight;
-            numBoxTextBox.Background = Background == null ? new SolidColorBrush() { Color = Colors.White } : Background;
-            numBoxTextBox.Foreground = Foreground == null ? new SolidColorBrush() { Color = Colors.Black } : Foreground;
-            //numBoxTextBox.DataContext = TextBoxDC;
+            if (!loaded)
+            {
+                numBoxTextBox.Size = Size;
+                numBoxTextBox.Dec = Dec;
+                numBoxTextBox.MinValue = MinValue != null ? (double)MinValue : double.MinValue;
+                numBoxTextBox.MaxValue = MaxValue != null ? (double)MaxValue : double.MaxValue;
+                numBoxTextBox.Text = Text;
+                numBoxTextBox.Thousands = Thousands;
+                numBoxButton.Width = ButtonSize;
+                numBoxTextBox.FontWeight = FontWeight;
+                numBoxTextBox.Background = Background == null ? new SolidColorBrush() { Color = Colors.White } : Background;
+                numBoxTextBox.Foreground = Foreground == null ? new SolidColorBrush() { Color = Colors.Black } : Foreground;
+                //numBoxTextBox.DataContext = TextBoxDC;
 
-            numBoxTextBox.IsReadOnly = IsReadOnly;
+                numBoxTextBox.IsReadOnly = IsReadOnly;
 
-            //numBoxTextBox.Name = TextBoxName;
-            //numBoxButton.Name = ButtonName;
+                //numBoxTextBox.Name = TextBoxName;
+                //numBoxButton.Name = ButtonName;
+
+                loaded = true;
+            }
+
         }
 
         public void FormatNumericTextBox()
         {
             numBoxTextBox.FormatOnLostFocus();
         }
+
     }
 }

@@ -1,3 +1,4 @@
+
 DEFINE skladisteField type a size 5;
 DEFINE artiklField type a size 50;
 DEFINE kupacField type a size 50;

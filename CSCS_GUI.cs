@@ -31,14 +31,6 @@ using CSCS.InterpreterManager;
 using WpfCSCS;
 using SplitAndMerge;
 using static SplitAndMerge.CSCSClass;
-using LiveChartsCore.SkiaSharpView.WPF;
-using LiveChartsCore.SkiaSharpView;
-using LiveChartsCore;
-using LiveChartsCore.SkiaSharpView.Drawing;
-using LiveChartsCore.VisualElements;
-using LiveChartsCore.SkiaSharpView.VisualElements;
-using LiveChartsCore.SkiaSharpView.Painting;
-using SkiaSharp;
 
 namespace SplitAndMerge
 {
@@ -508,6 +500,7 @@ namespace WpfCSCS
         internal CSCS_SQL SQLInstance { get; set; } = new CSCS_SQL();
         internal Btrieve BtrieveInstance { get; set; } = new Btrieve();
         internal Charts ChartsInstance { get; set; } = new Charts();
+        internal Commands CommandsInstance { get; set; } = new Commands();
 
         static public InterpreterManagerModule InterpreterManager = new InterpreterManagerModule();
 
@@ -596,6 +589,7 @@ namespace WpfCSCS
             ReportFunction.Init(Interpreter);
             Excel.Init(Interpreter);
             NavigatorClass.Init(Interpreter);
+            CommandsInstance.Init(this);
         }
 
         private static void InterpreterCreated(object sender, EventArgs e)
@@ -4642,6 +4636,7 @@ namespace WpfCSCS
         protected override Variable Evaluate(ParsingScript script)
         {
             var objectName = m_processFirstToken ? Utils.GetToken(script, new char[] { ' ', '}', ')', ';' }) : "";
+            
             Name = Name.ToUpper();
             Gui = CSCS_GUI.GetInstance(script);
 

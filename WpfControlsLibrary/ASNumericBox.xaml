@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:WpfControlsLibrary"
              mc:Ignorable="d" 
              Loaded="UserControl_Loaded"
+             
              >
     <Grid HorizontalAlignment="Stretch">
         <Grid.ColumnDefinitions>

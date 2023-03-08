@@ -80,7 +80,7 @@ DEFINE hndl type i;
 hndl = OPENV("nkprinvl", "bd1");
 
 MessageBox("start");
-start = PsTime();
+//start = PsTime();
 
 findv(hndl, "f", "NKPR_LN_NUMLN");
 //MessageBox(nkpr_gl_num);
@@ -97,9 +97,9 @@ for(i = 0; i< 20000; i++){
 
 
 // MessageBox("end. a = " + a);
-end = PsTime();
-MessageBox("Total CPU time of: " + (end-start) + "ms.");
-// MessageBox("end");
+//end = PsTime();
+//MessageBox("Total CPU time of: " + (end-start) + "ms.");
+MessageBox("end");
 // MessageBox(NKPR_LN_INVNM);
 quit;
 

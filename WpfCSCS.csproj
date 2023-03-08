@@ -228,6 +228,7 @@
     <Compile Include="AdictionaryLocal\SY_TABLES.cs" />
     <Compile Include="Btrieve.cs" />
     <Compile Include="Charts.cs" />
+    <Compile Include="Commands.cs" />
     <Compile Include="CSCS\DllCreator.cs" />
     <Compile Include="CSCS\Functions.SQL.cs" />
     <Compile Include="CSCS\ICscsModule.cs" />
