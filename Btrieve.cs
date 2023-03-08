@@ -4889,14 +4889,8 @@ $@"EXECUTE sp_executesql N'
             CSCS_GUI Gui;
 
             //DataTable gridSource;
-            Dictionary<string, string> tagsAndHeaders;
-            Dictionary<string, Type> tagsAndTypes;
-            Dictionary<string, Type> newTagsAndTypes;
-            Dictionary<string, int> timeAndDateEditerTagsAndSizes = new Dictionary<string, int>();
-            Dictionary<string, string> tagsAndEditors = new Dictionary<string, string>();
-
-            Dictionary<string, string> tagsAndNames = new Dictionary<string, string>();
-            Dictionary<string, int> tagsAndPositions = new Dictionary<string, int>();
+            
+            //Dictionary<string, int> tagsAndPositions = new Dictionary<string, int>();
 
             DataGrid dg;
             protected override Variable Evaluate(ParsingScript script)
@@ -5021,10 +5015,10 @@ $@"EXECUTE sp_executesql N'
                 //tagsAndTypes = new Dictionary<string, Type>();
                 //tagsAndHeaders = new Dictionary<string, string>();
 
-                if (tagsAndTypes == null)
-                    tagsAndTypes = new Dictionary<string, Type>();
-                if (tagsAndHeaders == null)
-                    tagsAndHeaders = new Dictionary<string, string>();
+                if (gridsTableClass[gridName].tagsAndTypes == null)
+                    gridsTableClass[gridName].tagsAndTypes = new Dictionary<string, Type>();
+                if (gridsTableClass[gridName].tagsAndHeaders == null)
+                    gridsTableClass[gridName].tagsAndHeaders = new Dictionary<string, string>();
 
                 var columns = dg.Columns;
                 for (int i = 0; i < columns.Count; i++)
@@ -5041,12 +5035,12 @@ $@"EXECUTE sp_executesql N'
                             var asgc = cell as ASGridCell;
                             if (asgc.FieldName != null)
                             {
-                                tagsAndTypes.Add(asgc.FieldName.ToString(), typeof(object));
-                                tagsAndHeaders.Add(asgc.FieldName.ToString(), dgtc.Header.ToString());
-                                timeAndDateEditerTagsAndSizes[asgc.FieldName.ToString()] = asgc.EditLength;
-                                tagsAndNames[asgc.FieldName.ToString()] = asgc.Name;
-                                tagsAndPositions[asgc.FieldName.ToString()] = i + 1;
-                                tagsAndEditors[asgc.FieldName.ToString()] = asgc.Editor;
+                                gridsTableClass[gridName].tagsAndTypes.Add(asgc.FieldName.ToString(), typeof(object));
+                                gridsTableClass[gridName].tagsAndHeaders.Add(asgc.FieldName.ToString(), dgtc.Header.ToString());
+                                gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[asgc.FieldName.ToString()] = asgc.EditLength;
+                                gridsTableClass[gridName].tagsAndNames[asgc.FieldName.ToString()] = asgc.Name;
+                                //tagsAndPositions[asgc.FieldName.ToString()] = i + 1;
+                                gridsTableClass[gridName].tagsAndEditors[asgc.FieldName.ToString()] = asgc.Editor;
                             }
                         }
                                         //else if (cell is ASTimeEditer)
@@ -5111,8 +5105,8 @@ $@"EXECUTE sp_executesql N'
                 keys[0] = idColumn;
                 gridsDataTables[gridName].PrimaryKey = keys;
 
-                newTagsAndTypes = new Dictionary<string, Type>();
-                foreach (var item in tagsAndTypes)
+                gridsTableClass[gridName].newTagsAndTypes = new Dictionary<string, Type>();
+                foreach (var item in gridsTableClass[gridName].tagsAndTypes)
                 {
 
                     var newColumn = new DataColumn();
@@ -5128,32 +5122,32 @@ $@"EXECUTE sp_executesql N'
                             case "R":
                                 newColumn.DataType = typeof(int);
                                 //tagsAndTypes[item.Key] = typeof(int);
-                                newTagsAndTypes[item.Key] = typeof(int);
+                                gridsTableClass[gridName].newTagsAndTypes[item.Key] = typeof(int);
                                 break;
                             case "N":
                                 newColumn.DataType = typeof(double);
                                 //tagsAndTypes[item.Key] = typeof(double);
-                                newTagsAndTypes[item.Key] = typeof(double);
+                                gridsTableClass[gridName].newTagsAndTypes[item.Key] = typeof(double);
                                 break;
                             case "A":
                                 newColumn.DataType = typeof(string);
                                 //tagsAndTypes[item.Key] = typeof(string);
-                                newTagsAndTypes[item.Key] = typeof(string);
+                                gridsTableClass[gridName].newTagsAndTypes[item.Key] = typeof(string);
                                 break;
                             case "L":
                                 newColumn.DataType = typeof(bool);
                                 //tagsAndTypes[item.Key] = typeof(bool);
-                                newTagsAndTypes[item.Key] = typeof(bool);
+                                gridsTableClass[gridName].newTagsAndTypes[item.Key] = typeof(bool);
                                 break;
                             case "D":
                                 newColumn.DataType = typeof(DateTime);
                                 //tagsAndTypes[item.Key] = typeof(DateTime);
-                                newTagsAndTypes[item.Key] = typeof(DateTime);
+                                gridsTableClass[gridName].newTagsAndTypes[item.Key] = typeof(DateTime);
                                 break;
                             case "T":
                                 newColumn.DataType = typeof(TimeSpan);
                                 //tagsAndTypes[item.Key] = typeof(TimeSpan);
-                                newTagsAndTypes[item.Key] = typeof(TimeSpan);
+                                gridsTableClass[gridName].newTagsAndTypes[item.Key] = typeof(TimeSpan);
                                 break;
                             default:
                                 break;
@@ -5161,7 +5155,7 @@ $@"EXECUTE sp_executesql N'
                     }
 
 
-                    newColumn.Caption = tagsAndHeaders[item.Key];
+                    newColumn.Caption = gridsTableClass[gridName].tagsAndHeaders[item.Key];
                     gridsDataTables[gridName].Columns.Add(newColumn);
                 }
 
@@ -5218,10 +5212,10 @@ $@"EXECUTE sp_executesql N'
                 //};
                 gridsTableClass[gridName].dg = dg;
                 gridsTableClass[gridName].tableOrArray = "table";
-                gridsTableClass[gridName].tags = tagsAndHeaders.Keys.ToList();
+                gridsTableClass[gridName].tags = gridsTableClass[gridName].tagsAndHeaders.Keys.ToList();
                 gridsTableClass[gridName].tableHndlNum = tableHndlNum;
                 gridsTableClass[gridName].tableKey = tableKey;
-                gridsTableClass[gridName].tagsAndTypes = tagsAndTypes;
+                gridsTableClass[gridName].tagsAndTypes = gridsTableClass[gridName].tagsAndTypes;
                 gridsTableClass[gridName].KeyClass = KeyClass;
                 gridsTableClass[gridName].Script = Script;
 
@@ -5585,8 +5579,10 @@ $@"EXECUTE sp_executesql N'
                 }
                 else
                 {
+                    var gridName = (sender as DataGrid).Name.ToLower();
+
                     var tag = e.Column.Header.ToString();
-                    var realHeader = tagsAndHeaders[tag];
+                    var realHeader = gridsTableClass[gridName].tagsAndHeaders[tag];
 
                     if (e.PropertyType == typeof(DateTime))
                     {
@@ -5609,11 +5605,11 @@ $@"EXECUTE sp_executesql N'
                         bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
 
                         string dateFormat = "";
-                        if (timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 8)
+                        if (gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 8)
                         {
                             dateFormat = "dd/MM/yy";
                         }
-                        else if (timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 10)
+                        else if (gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 10)
                         {
                             dateFormat = "dd/MM/yyyy";
                         }
@@ -5623,12 +5619,12 @@ $@"EXECUTE sp_executesql N'
                             {
                                 if(defVar.DefType == "d")
                                 {
-                                    timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] = defVar.Size;
-                                    if (timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 8)
+                                    gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] = defVar.Size;
+                                    if (gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 8)
                                     {
                                         dateFormat = "dd/MM/yy";
                                     }
-                                    else if (timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 10)
+                                    else if (gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 10)
                                     {
                                         dateFormat = "dd/MM/yyyy";
                                     }
@@ -5640,14 +5636,14 @@ $@"EXECUTE sp_executesql N'
                         Thread.CurrentThread.CurrentCulture = ci;
 
                         bind.Converter = new ASDateEditerConverter();
-                        bind.ConverterParameter = timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()]; //size
+                        bind.ConverterParameter = gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()]; //size
                         bind.StringFormat = dateFormat;
 
 
                         // Create the TextBlock
                         FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                         textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
-                        textBlockFactory.SetValue(ASDateEditer.NameProperty, tagsAndNames[tag]);
+                        textBlockFactory.SetValue(ASDateEditer.NameProperty, gridsTableClass[gridName].tagsAndNames[tag]);
 
                         DataTemplate textBlockTemplate = new DataTemplate();
                         textBlockTemplate.VisualTree = textBlockFactory;
@@ -5655,7 +5651,7 @@ $@"EXECUTE sp_executesql N'
                         // Create the DatePicker
                         FrameworkElementFactory datePickerFactory = new FrameworkElementFactory(typeof(ASDateEditer));
                         datePickerFactory.SetBinding(ASDateEditer.TextProperty, bind);
-                        datePickerFactory.SetValue(ASDateEditer.DisplaySizeProperty, timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()]);
+                        datePickerFactory.SetValue(ASDateEditer.DisplaySizeProperty, gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()]);
 
 
                         DataTemplate datePickerTemplate = new DataTemplate();
@@ -5676,12 +5672,12 @@ $@"EXECUTE sp_executesql N'
                         //Binding bind = new Binding("ItemArray[" + tagsAndPositions[e.Column.Header.ToString()] + "]");
                         bind.Mode = BindingMode.TwoWay;
                         bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-                        if (timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 5)
+                        if (gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 5)
                         {
                             bind.Converter = new ASTimeEditerConverter();
                             bind.ConverterParameter = 5;
                         }
-                        else if (timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 8)
+                        else if (gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 8)
                         {
                             bind.Converter = new ASTimeEditerConverter();
                             bind.ConverterParameter = 8;
@@ -5691,7 +5687,7 @@ $@"EXECUTE sp_executesql N'
                         FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                         textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
                         //textBlockFactory.AddHandler(TextBlock.GotKeyboardFocusEvent, new KeyboardFocusChangedEventHandler(textBlockGotKeyboardFocus));
-                        textBlockFactory.SetValue(ASDateEditer.NameProperty, tagsAndNames[tag]);
+                        textBlockFactory.SetValue(ASDateEditer.NameProperty, gridsTableClass[gridName].tagsAndNames[tag]);
 
                         DataTemplate textBlockTemplate = new DataTemplate();
                         textBlockTemplate.VisualTree = textBlockFactory;
@@ -5699,7 +5695,7 @@ $@"EXECUTE sp_executesql N'
                         // Create the ASTimeEditer
                         FrameworkElementFactory timeEditerFactory = new FrameworkElementFactory(typeof(ASTimeEditer));
                         timeEditerFactory.SetBinding(ASTimeEditer.TextProperty, bind);
-                        timeEditerFactory.SetValue(ASTimeEditer.DisplaySizeProperty, timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()]);
+                        timeEditerFactory.SetValue(ASTimeEditer.DisplaySizeProperty, gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()]);
 
                         DataTemplate timeEditerTemplate = new DataTemplate();
                         timeEditerTemplate.VisualTree = timeEditerFactory;
@@ -5723,7 +5719,7 @@ $@"EXECUTE sp_executesql N'
                         // Create the TextBlock
                         FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                         textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
-                        textBlockFactory.SetValue(ASDateEditer.NameProperty, tagsAndNames[tag]);
+                        textBlockFactory.SetValue(ASDateEditer.NameProperty, gridsTableClass[gridName].tagsAndNames[tag]);
 
                         DataTemplate textBlockTemplate = new DataTemplate();
                         textBlockTemplate.VisualTree = textBlockFactory;
@@ -5755,7 +5751,7 @@ $@"EXECUTE sp_executesql N'
                         // Create the TextBlock
                         FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                         textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
-                        textBlockFactory.SetValue(ASDateEditer.NameProperty, tagsAndNames[tag]);
+                        textBlockFactory.SetValue(ASDateEditer.NameProperty, gridsTableClass[gridName].tagsAndNames[tag]);
 
                         DataTemplate textBlockTemplate = new DataTemplate();
                         textBlockTemplate.VisualTree = textBlockFactory;
@@ -5787,7 +5783,7 @@ $@"EXECUTE sp_executesql N'
                         // Create the TextBlock
                         FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                         textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
-                        textBlockFactory.SetValue(ASDateEditer.NameProperty, tagsAndNames[tag]);
+                        textBlockFactory.SetValue(ASDateEditer.NameProperty, gridsTableClass[gridName].tagsAndNames[tag]);
 
                         DataTemplate textBlockTemplate = new DataTemplate();
                         textBlockTemplate.VisualTree = textBlockFactory;
@@ -5827,7 +5823,7 @@ $@"EXECUTE sp_executesql N'
                         checkBoxFactory.SetValue(CheckBox.FocusableProperty, false);
 
                         checkBoxFactory.SetValue(CheckBox.HorizontalAlignmentProperty, HorizontalAlignment.Center);
-                        checkBoxFactory.SetValue(CheckBox.NameProperty, tagsAndNames[tag]);
+                        checkBoxFactory.SetValue(CheckBox.NameProperty, gridsTableClass[gridName].tagsAndNames[tag]);
 
                         //editing
                         FrameworkElementFactory checkBoxEditingFactory = new FrameworkElementFactory(typeof(CheckBox));
@@ -5840,7 +5836,7 @@ $@"EXECUTE sp_executesql N'
                         //checkBoxEditingFactory.AddHandler(CheckBox.ClickEvent, new RoutedEventHandler(checkboxChecked));
 
                         checkBoxEditingFactory.SetValue(CheckBox.HorizontalAlignmentProperty, HorizontalAlignment.Center);
-                        checkBoxEditingFactory.SetValue(CheckBox.NameProperty, tagsAndNames[tag]);
+                        checkBoxEditingFactory.SetValue(CheckBox.NameProperty, gridsTableClass[gridName].tagsAndNames[tag]);
 
 
 
@@ -5965,7 +5961,7 @@ $@"EXECUTE sp_executesql N'
                                 {
                                     var currentItemAsDateTime = currentItemArray[i] as DateTime?;
                                     string initForDefine = "";
-                                    switch (timeAndDateEditerTagsAndSizes[currRow.Table.Columns[i].ColumnName])
+                                    switch (gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[currRow.Table.Columns[i].ColumnName])
                                     {
                                         case 10:
                                             initForDefine = currentItemAsDateTime.Value.ToString("dd/MM/yyyy");
@@ -6082,7 +6078,7 @@ $@"EXECUTE sp_executesql N'
                 int i = 1;
 
                 dynamic newVariableInit = null;
-                foreach (var item in tagsAndTypes)
+                foreach (var item in gridsTableClass[gridName].tagsAndTypes)
                 {
                     switch (Gui.DEFINES[item.Key.ToLower()].Type)
                     {
@@ -6131,7 +6127,7 @@ $@"EXECUTE sp_executesql N'
                             }
                             else if (DateTime.TryParse(rowItemArray[i].ToString(), out DateTime newDateTime))
                             {
-                                switch (timeAndDateEditerTagsAndSizes[item.Key])
+                                switch (gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[item.Key])
                                 {
                                     case 10:
                                         newVariableInit = ((DateTime)rowItemArray[i]).ToString("dd/MM/yyyy");
@@ -6182,7 +6178,9 @@ $@"EXECUTE sp_executesql N'
             public Dictionary<string, Type> newTagsAndTypes;
             public string tableOrArray;
 
-
+            public Dictionary<string, string> tagsAndHeaders;
+            public Dictionary<string, int> timeAndDateEditerTagsAndSizes = new Dictionary<string, int>();
+            public Dictionary<string, string> tagsAndNames = new Dictionary<string, string>();
         }
 
         class DisplayTableClass
@@ -6192,9 +6190,17 @@ $@"EXECUTE sp_executesql N'
             public string actCntrVarName;
             public string maxElemsVarName;
             public List<string> tags;
+            //public Dictionary<string, Type> tagsAndTypes;
+            //public Dictionary<string, Type> newTagsAndTypes;
+            public string tableOrArray;
+
+            public Dictionary<string, string> tagsAndHeaders;
             public Dictionary<string, Type> tagsAndTypes;
             public Dictionary<string, Type> newTagsAndTypes;
-            public string tableOrArray;
+            public Dictionary<string, int> timeAndDateEditerTagsAndSizes = new Dictionary<string, int>();
+            public Dictionary<string, string> tagsAndEditors = new Dictionary<string, string>();
+
+            public Dictionary<string, string> tagsAndNames = new Dictionary<string, string>();
 
             public int tableHndlNum;
 
@@ -6296,11 +6302,10 @@ $@"EXECUTE sp_executesql N'
             //DataTable gridSource;
             string gridName;
 
-            Dictionary<string, string> tagsAndHeaders;
+            
             //Dictionary<string, Type> tagsAndTypes;
             //Dictionary<string, Type> newTagsAndTypes;
-            Dictionary<string, int> timeAndDateEditerTagsAndSizes = new Dictionary<string, int>();
-            Dictionary<string, string> tagsAndNames = new Dictionary<string, string>();
+            
 
             DataGrid dg;
             protected override Variable Evaluate(ParsingScript script)
@@ -6376,7 +6381,7 @@ $@"EXECUTE sp_executesql N'
                 }
 
                 gridsArrayClass[gridName].tagsAndTypes = new Dictionary<string, Type>();
-                tagsAndHeaders = new Dictionary<string, string>();
+                gridsArrayClass[gridName].tagsAndHeaders = new Dictionary<string, string>();
 
                 var columns = dg.Columns;
                 for (int i = 0; i < columns.Count; i++)
@@ -6394,9 +6399,9 @@ $@"EXECUTE sp_executesql N'
                             if (asgc.FieldName != null)
                             {
                                 gridsArrayClass[gridName].tagsAndTypes.Add(asgc.FieldName.ToString(), typeof(object));
-                                tagsAndHeaders.Add(asgc.FieldName.ToString(), dgtc.Header.ToString());
-                                timeAndDateEditerTagsAndSizes[asgc.FieldName.ToString()] = asgc.EditLength;
-                                tagsAndNames[asgc.FieldName.ToString()] = asgc.Name;
+                                gridsArrayClass[gridName].tagsAndHeaders.Add(asgc.FieldName.ToString(), dgtc.Header.ToString());
+                                gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[asgc.FieldName.ToString()] = asgc.EditLength;
+                                gridsArrayClass[gridName].tagsAndNames[asgc.FieldName.ToString()] = asgc.Name;
                             }
                         }
                         //if (cell is ASTimeEditer)
@@ -6494,7 +6499,7 @@ $@"EXECUTE sp_executesql N'
                         }
                     }
 
-                    newColumn.Caption = tagsAndHeaders[item.Key];
+                    newColumn.Caption = gridsArrayClass[gridName].tagsAndHeaders[item.Key];
                     gridsDataTables[gridName].Columns.Add(newColumn);
                 }
 
@@ -6543,7 +6548,7 @@ $@"EXECUTE sp_executesql N'
                 fillDataTable(gridName);
 
                 gridsArrayClass[gridName].dg = dg;
-                gridsArrayClass[gridName].tags = tagsAndHeaders.Keys.ToList();
+                gridsArrayClass[gridName].tags = gridsArrayClass[gridName].tagsAndHeaders.Keys.ToList();
                 gridsArrayClass[gridName].tableOrArray = "array";
 
                 return Variable.EmptyInstance;
@@ -6665,8 +6670,10 @@ $@"EXECUTE sp_executesql N'
 
             private void DataGrid_OnAutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
             {
+                var gridName = (sender as DataGrid).Name.ToLower();
+
                 var tag = e.Column.Header.ToString();
-                var realHeader = tagsAndHeaders[tag];
+                var realHeader = gridsArrayClass[gridName].tagsAndHeaders[tag];
 
                 if (e.PropertyType == typeof(DateTime))
                 {
@@ -6676,7 +6683,7 @@ $@"EXECUTE sp_executesql N'
                     Binding bind = new Binding(tag);
                     bind.Mode = BindingMode.TwoWay;
                     bind.UpdateSourceTrigger = UpdateSourceTrigger.LostFocus;
-                    if (timeAndDateEditerTagsAndSizes[tag] == 8)
+                    if (gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 8)
                     {
                         CultureInfo ci = CultureInfo.CreateSpecificCulture(CultureInfo.CurrentCulture.Name);
                         ci.DateTimeFormat.ShortDatePattern = "dd/MM/yy";
@@ -6687,7 +6694,7 @@ $@"EXECUTE sp_executesql N'
                         bind.ConverterParameter = 8; //size
                         bind.StringFormat = "dd/MM/yy";
                     }
-                    else if (timeAndDateEditerTagsAndSizes[tag] == 10)
+                    else if (gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 10)
                     {
                         CultureInfo ci = CultureInfo.CreateSpecificCulture(CultureInfo.CurrentCulture.Name);
                         ci.DateTimeFormat.ShortDatePattern = "dd/MM/yyyy";
@@ -6702,7 +6709,7 @@ $@"EXECUTE sp_executesql N'
                     // Create the TextBlock
                     FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                     textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
-                    textBlockFactory.SetValue(ASDateEditer.NameProperty, tagsAndNames[tag]);
+                    textBlockFactory.SetValue(ASDateEditer.NameProperty, gridsArrayClass[gridName].tagsAndNames[tag]);
 
                     DataTemplate textBlockTemplate = new DataTemplate();
                     textBlockTemplate.VisualTree = textBlockFactory;
@@ -6710,7 +6717,7 @@ $@"EXECUTE sp_executesql N'
                     // Create the DatePicker
                     FrameworkElementFactory datePickerFactory = new FrameworkElementFactory(typeof(ASDateEditer));
                     datePickerFactory.SetBinding(ASDateEditer.TextProperty, bind);
-                    datePickerFactory.SetValue(ASDateEditer.DisplaySizeProperty, timeAndDateEditerTagsAndSizes[tag]);
+                    datePickerFactory.SetValue(ASDateEditer.DisplaySizeProperty, gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag]);
 
 
                     DataTemplate datePickerTemplate = new DataTemplate();
@@ -6730,12 +6737,12 @@ $@"EXECUTE sp_executesql N'
                     Binding bind = new Binding(tag);
                     bind.Mode = BindingMode.TwoWay;
                     bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-                    if (timeAndDateEditerTagsAndSizes[tag] == 5)
+                    if (gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 5)
                     {
                         bind.Converter = new ASTimeEditerConverter();
                         bind.ConverterParameter = 5;
                     }
-                    else if (timeAndDateEditerTagsAndSizes[tag] == 8)
+                    else if (gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 8)
                     {
                         bind.Converter = new ASTimeEditerConverter();
                         bind.ConverterParameter = 8;
@@ -6745,7 +6752,7 @@ $@"EXECUTE sp_executesql N'
                     FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                     textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
                     //textBlockFactory.AddHandler(TextBlock.GotKeyboardFocusEvent, new KeyboardFocusChangedEventHandler(textBlockGotKeyboardFocus));
-                    textBlockFactory.SetValue(ASDateEditer.NameProperty, tagsAndNames[tag]);
+                    textBlockFactory.SetValue(ASDateEditer.NameProperty, gridsArrayClass[gridName].tagsAndNames[tag]);
 
                     DataTemplate textBlockTemplate = new DataTemplate();
                     textBlockTemplate.VisualTree = textBlockFactory;
@@ -6753,7 +6760,7 @@ $@"EXECUTE sp_executesql N'
                     // Create the ASTimeEditer
                     FrameworkElementFactory timeEditerFactory = new FrameworkElementFactory(typeof(ASTimeEditer));
                     timeEditerFactory.SetBinding(ASTimeEditer.TextProperty, bind);
-                    timeEditerFactory.SetValue(ASTimeEditer.DisplaySizeProperty, timeAndDateEditerTagsAndSizes[tag]);
+                    timeEditerFactory.SetValue(ASTimeEditer.DisplaySizeProperty, gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag]);
 
                     DataTemplate timeEditerTemplate = new DataTemplate();
                     timeEditerTemplate.VisualTree = timeEditerFactory;
@@ -6776,7 +6783,7 @@ $@"EXECUTE sp_executesql N'
                     // Create the TextBlock
                     FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                     textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
-                    textBlockFactory.SetValue(ASDateEditer.NameProperty, tagsAndNames[tag]);
+                    textBlockFactory.SetValue(ASDateEditer.NameProperty, gridsArrayClass[gridName].tagsAndNames[tag]);
 
                     DataTemplate textBlockTemplate = new DataTemplate();
                     textBlockTemplate.VisualTree = textBlockFactory;
@@ -6807,7 +6814,7 @@ $@"EXECUTE sp_executesql N'
                     // Create the TextBlock
                     FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                     textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
-                    textBlockFactory.SetValue(ASDateEditer.NameProperty, tagsAndNames[tag]);
+                    textBlockFactory.SetValue(ASDateEditer.NameProperty, gridsArrayClass[gridName].tagsAndNames[tag]);
 
                     DataTemplate textBlockTemplate = new DataTemplate();
                     textBlockTemplate.VisualTree = textBlockFactory;
@@ -6838,7 +6845,7 @@ $@"EXECUTE sp_executesql N'
                     // Create the TextBlock
                     FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                     textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
-                    textBlockFactory.SetValue(ASDateEditer.NameProperty, tagsAndNames[tag]);
+                    textBlockFactory.SetValue(ASDateEditer.NameProperty, gridsArrayClass[gridName].tagsAndNames[tag]);
 
                     DataTemplate textBlockTemplate = new DataTemplate();
                     textBlockTemplate.VisualTree = textBlockFactory;
@@ -6877,7 +6884,7 @@ $@"EXECUTE sp_executesql N'
 
                     checkBoxFactory.SetValue(CheckBox.FocusableProperty, false);
                     checkBoxFactory.SetValue(CheckBox.HorizontalAlignmentProperty, HorizontalAlignment.Center);
-                    checkBoxFactory.SetValue(CheckBox.NameProperty, tagsAndNames[tag]);
+                    checkBoxFactory.SetValue(CheckBox.NameProperty, gridsArrayClass[gridName].tagsAndNames[tag]);
 
 
                     FrameworkElementFactory checkBoxEditingFactory = new FrameworkElementFactory(typeof(CheckBox));
@@ -6890,7 +6897,7 @@ $@"EXECUTE sp_executesql N'
                     //checkBoxEditingFactory.AddHandler(CheckBox.ClickEvent, new RoutedEventHandler(checkboxChecked));
 
                     checkBoxEditingFactory.SetValue(CheckBox.HorizontalAlignmentProperty, HorizontalAlignment.Center);
-                    checkBoxEditingFactory.SetValue(CheckBox.NameProperty, tagsAndNames[tag]);
+                    checkBoxEditingFactory.SetValue(CheckBox.NameProperty, gridsArrayClass[gridName].tagsAndNames[tag]);
 
 
                     DataTemplate checkBoxTemplate = new DataTemplate();
@@ -7106,7 +7113,7 @@ $@"EXECUTE sp_executesql N'
                                     break;
                                 case "TimeSpan":
                                     newDynamicVar = "";
-                                    var size = timeAndDateEditerTagsAndSizes[gridsArrayClass[gridName].newTagsAndTypes.ElementAt(i).Key];
+                                    var size = gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[gridsArrayClass[gridName].newTagsAndTypes.ElementAt(i).Key];
                                     if (size == 5)
                                     {
                                         newDynamicVar = ((TimeSpan)rowNewItemArray[i]).ToString("hh\\:mm");
