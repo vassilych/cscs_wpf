@@ -8,13 +8,13 @@
         mc:Ignorable="d"
         xmlns:local="clr-namespace:wkprdash"
         Title="Prodaja"
-        Height="743"
+        Height="943"
         Width="1340">
     <Window.Resources />
     <Grid Background="white">
         <TabControl HorizontalAlignment="Left"
                     VerticalAlignment="Top"
-                    Height="704"
+                    Height="940"
                     Width="1320"
                     Margin="0,0,0,0"
                     Name="TASPageControl1"
@@ -120,8 +120,7 @@
                     <wcl:ASEnterBox ButtonSize="0"
                                     FontWeight="Bold"
                                     Size="4"
-                                    Text=" "
-                                    FieldName="ovagod_h"
+                                    FieldName="trenutnaGodina"
                                     Foreground="black"
                                     Name="Ovagod"
                                     FontSize="14"
@@ -161,6 +160,7 @@
                             <RadioButton HorizontalAlignment="Left"
                                          VerticalAlignment="Top"
                                          Height="17"
+                                         IsEnabled="False"
                                          Width="113"
                                          Margin="8,16,0,0"
                                          Name="TASRadioButton1"
@@ -168,12 +168,15 @@
                             <RadioButton HorizontalAlignment="Left"
                                          VerticalAlignment="Top"
                                          Height="17"
+                                         IsEnabled="False"
                                          Width="113"
                                          Margin="8,32,0,0"
                                          Name="TASRadioButton2"
-                                         Content="Bez PDV-a" />
+                                         Content="Bez PDV-a"
+                                         IsChecked="True" />
                             <RadioButton HorizontalAlignment="Left"
                                          VerticalAlignment="Top"
+                                         IsEnabled="False"
                                          Height="17"
                                          Width="113"
                                          Margin="8,48,0,0"
@@ -184,7 +187,6 @@
                     <wcl:ASEnterBox ButtonSize="21"
                                     FontWeight="Bold"
                                     Size="0"
-                                    Text=" "
                                     FieldName="partner"
                                     Foreground="black"
                                     Name="cePartner"
@@ -202,7 +204,6 @@
                     <wcl:ASEnterBox ButtonSize="21"
                                     FontWeight="Bold"
                                     Size="0"
-                                    Text=" "
                                     FieldName="REGIJA"
                                     Foreground="black"
                                     Name="ceRegija"
@@ -220,7 +221,6 @@
                     <wcl:ASEnterBox ButtonSize="0"
                                     FontWeight="Bold"
                                     Size="4"
-                                    Text=" "
                                     FieldName="regijaNaziv"
                                     Foreground="black"
                                     Name="TASComboEnter4"
@@ -237,11 +237,10 @@
                     <wcl:ASEnterBox ButtonSize="0"
                                     FontWeight="Bold"
                                     Size="4"
-                                    Text=" "
                                     FieldName="partnerNaziv"
                                     Foreground="black"
                                     Name="TASComboEnter5"
-                                    FontSize="2"
+                                    FontSize="12"
                                     Case="Normal"
                                     Height="22"
                                     Width="230"
@@ -268,19 +267,70 @@
                                        HorizontalAlignment="Center" />
                         </Grid>
                     </Button>
+                    <Button HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Height="41"
+                            Margin="688,302,0,0"
+                            FontFamily="Arial"
+                            Width="128"
+                            Visibility="Visible"
+                            Name="gbRecalc1">
+                        <Grid>
+                            <TextBlock Grid.Column="1"
+                                       FontSize="10"
+                                       Foreground="Black"
+                                       VerticalAlignment="Center"
+                                       Text="Recalc1"
+                                       HorizontalAlignment="Center" />
+                        </Grid>
+                    </Button>
+                    <Button HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Height="41"
+                            Margin="808,302,0,0"
+                            FontFamily="Arial"
+                            Width="128"
+                            Visibility="Visible"
+                            Name="T10RacuniZ">
+                        <Grid>
+                            <TextBlock Grid.Column="1"
+                                       FontSize="10"
+                                       Foreground="Black"
+                                       VerticalAlignment="Center"
+                                       Text="T10RacuniZ"
+                                       HorizontalAlignment="Center" />
+                        </Grid>
+                    </Button>
+                    <Button HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Height="41"
+                            Margin="958,302,0,0"
+                            FontFamily="Arial"
+                            Width="128"
+                            Visibility="Visible"
+                            Name="T10RacuniMj">
+                        <Grid>
+                            <TextBlock Grid.Column="1"
+                                       FontSize="10"
+                                       Foreground="Black"
+                                       VerticalAlignment="Center"
+                                       Text="T10RacuniMj"
+                                       HorizontalAlignment="Center" />
+                        </Grid>
+                    </Button>
                     <wcl:ASNumericBox HorizontalAlignment="Left"
                                       VerticalAlignment="Top"
                                       FontWeight="Bold"
                                       ButtonSize="21"
-                                      Size="5"
+                                      Size="3"
                                       Height="22"
                                       Width="64"
                                       Margin="60,11,0,0"
-                                      Name="skladisteNumericBox"
+                                      Name="ceSkladiste"
                                       Background="White"
                                       Foreground="black"
                                       KeyTraps="F2|neSkladiste.click"
-                                      FieldName="skladisteField"
+                                      FieldName="skladiste"
                                       FontFamily="lato"
                                       FontSize="14"
                                       TabIndex="0" />
@@ -303,7 +353,6 @@
                     <wcl:ASEnterBox ButtonSize="21"
                                     FontWeight="Bold"
                                     Size="0"
-                                    Text=" "
                                     FieldName="artikl"
                                     Foreground="black"
                                     Name="ceArtikl"
@@ -320,8 +369,7 @@
                                     TabIndex="1" />
                     <wcl:ASEnterBox ButtonSize="0"
                                     FontWeight="Bold"
-                                    Size="4"
-                                    Text=" "
+                                    Size="0"
                                     FieldName="artiklNaziv"
                                     Foreground="black"
                                     Name="TASComboEnter7"
@@ -338,7 +386,6 @@
                     <wcl:ASEnterBox ButtonSize="0"
                                     FontWeight="Bold"
                                     Size="2"
-                                    Text=" "
                                     FieldName="mjesec_h"
                                     Foreground="black"
                                     Name="TASComboEnter11"
@@ -361,6 +408,7 @@
                                IsEnabled="True"
                                Name="TASCheckBox1">
                         <CheckBox Margin="0,0,5,0"
+                                  DataContext="do_mjeseca"
                                   FlowDirection="RightToLeft" />
                         <TextBlock Text="Do mjeseca"
                                    FontFamily="lato"
@@ -384,7 +432,7 @@
                                VerticalAlignment="Top"
                                Height="16"
                                Width="175"
-                               Margin="124,191,0,0"
+                               Margin="124,345,0,0"
                                FontFamily="lato"
                                FontWeight="Bold"
                                Name="Label6"
@@ -395,7 +443,7 @@
                                VerticalAlignment="Top"
                                Height="16"
                                Width="219"
-                               Margin="822,330,0,0"
+                               Margin="822,290,0,0"
                                FontFamily="lato"
                                FontWeight="Bold"
                                Name="Label7"
@@ -406,7 +454,7 @@
                                VerticalAlignment="Top"
                                Height="16"
                                Width="251"
-                               Margin="128,435,0,0"
+                               Margin="128,580,0,0"
                                FontFamily="lato"
                                FontWeight="Bold"
                                Name="Label8"
@@ -530,7 +578,8 @@
                             </LinearGradientBrush>
                         </Grid.Background>
                     </Grid>
-                    <lvc:CartesianChart Name="ChartPoMjesecima"
+                    <lvc:CartesianChart LegendPosition="Left"
+                                        Name="ChartPoMjesecima"
                                         VerticalAlignment="Top"
                                         HorizontalAlignment="Left"
                                         Width="376"
@@ -574,13 +623,19 @@
                               VerticalAlignment="Top"
                               Height="216"
                               Width="429"
-                              Margin="15,330,0,0"
+                              Margin="15,361,0,0"
                               IsReadOnly="true"
                               Name="dgStavke"
                               HorizontalScrollBarVisibility="Auto"
                               VerticalScrollBarVisibility="Auto"
                               Background="White"
                               TabIndex="2">
+                        <DataGrid.Resources>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="Background"
+                                        Value="#FFAE0000" />
+                            </Style>
+                        </DataGrid.Resources>
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Header="No."
                                                     Width="24">
@@ -638,7 +693,7 @@
                               VerticalAlignment="Top"
                               Height="216"
                               Width="429"
-                              Margin="727,351,0,0"
+                              Margin="727,311,0,0"
                               IsReadOnly="true"
                               Name="dgRacuniMjesec"
                               HorizontalScrollBarVisibility="Auto"
@@ -648,7 +703,7 @@
                         <DataGrid.Resources>
                             <Style TargetType="{x:Type DataGridColumnHeader}">
                                 <Setter Property="Background"
-                                        Value="blue" />
+                                        Value="#FF326363" />
                             </Style>
                         </DataGrid.Resources>
                         <DataGrid.Columns>
@@ -678,7 +733,7 @@
                                     <DataTemplate>
                                         <wcl:ASGridCell FieldName="T10DATUMMJ_AR"
                                                         Editor="edDefault"
-                                                        EditLength="0" />
+                                                        EditLength="8" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -708,13 +763,19 @@
                               VerticalAlignment="Top"
                               Height="216"
                               Width="481"
-                              Margin="15,453,0,0"
+                              Margin="15,600,0,0"
                               IsReadOnly="true"
                               Name="dgRacuniLast"
                               HorizontalScrollBarVisibility="Auto"
                               VerticalScrollBarVisibility="Auto"
                               Background="White"
                               TabIndex="4">
+                        <DataGrid.Resources>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="Background"
+                                        Value="#FF006393" />
+                            </Style>
+                        </DataGrid.Resources>
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Header="No."
                                                     Width="24">
@@ -742,7 +803,7 @@
                                     <DataTemplate>
                                         <wcl:ASGridCell FieldName="T10DATUMZ_AR"
                                                         Editor="edDefault"
-                                                        EditLength="0" />
+                                                        EditLength="8" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -973,7 +1034,6 @@
                     <wcl:ASEnterBox ButtonSize="0"
                                     FontWeight="Bold"
                                     Size="4"
-                                    Text=" "
                                     FieldName="skladisteNaziv"
                                     Foreground="black"
                                     Name="TASComboEnter6"
@@ -990,7 +1050,6 @@
                     <wcl:ASEnterBox ButtonSize="0"
                                     FontWeight="Bold"
                                     Size="4"
-                                    Text=" "
                                     FieldName="artiklNaziv"
                                     Foreground="black"
                                     Name="TASComboEnter8"
@@ -1007,7 +1066,6 @@
                     <wcl:ASEnterBox ButtonSize="0"
                                     FontWeight="Bold"
                                     Size="4"
-                                    Text=" "
                                     FieldName="partnerNaziv"
                                     Foreground="black"
                                     Name="TASComboEnter9"
@@ -1024,7 +1082,6 @@
                     <wcl:ASEnterBox ButtonSize="0"
                                     FontWeight="Bold"
                                     Size="4"
-                                    Text=" "
                                     FieldName="regijaNaziv"
                                     Foreground="black"
                                     Name="TASComboEnter10"
@@ -1041,7 +1098,6 @@
                     <wcl:ASEnterBox ButtonSize="0"
                                     FontWeight="Bold"
                                     Size="2"
-                                    Text=" "
                                     FieldName="mjesec_h"
                                     Foreground="black"
                                     Name="mjesec"

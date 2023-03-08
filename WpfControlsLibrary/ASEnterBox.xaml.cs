@@ -158,21 +158,27 @@ namespace WpfControlsLibrary
             InitializeComponent();
         }
 
-        
+
+        bool loaded = false;
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            enterBoxTextBox.Size = Size == 0? Int32.MaxValue : Size;
-            enterBoxTextBox.Text = Text;
-            enterBoxTextBox.CharacterCasing = Case?.ToLower() == "up"? CharacterCasing.Upper : (Case?.ToLower() == "down"? CharacterCasing.Lower : CharacterCasing.Normal);
-            enterBoxTextBox.FontWeight = FontWeight;
+            if (!loaded)
+            {
+                enterBoxTextBox.Size = Size == 0 ? Int32.MaxValue : Size;
+                enterBoxTextBox.Text = Text;
+                enterBoxTextBox.CharacterCasing = Case?.ToLower() == "up" ? CharacterCasing.Upper : (Case?.ToLower() == "down" ? CharacterCasing.Lower : CharacterCasing.Normal);
+                enterBoxTextBox.FontWeight = FontWeight;
 
-            enterBoxTextBox.IsReadOnly = IsReadOnly;
+                enterBoxTextBox.IsReadOnly = IsReadOnly;
 
-            enterBoxTextBox.Background = Background == null? new SolidColorBrush() { Color = Colors.White} : Background;
-            enterBoxTextBox.Foreground = Foreground == null? new SolidColorBrush() { Color = Colors.Black} : Foreground;
+                enterBoxTextBox.Background = Background == null ? new SolidColorBrush() { Color = Colors.White } : Background;
+                enterBoxTextBox.Foreground = Foreground == null ? new SolidColorBrush() { Color = Colors.Black } : Foreground;
 
-            enterBoxButton.Width = ButtonSize;
+                enterBoxButton.Width = ButtonSize;
+
+                loaded = true;
+            }
         }
     }
 }

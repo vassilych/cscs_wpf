@@ -1,11 +1,8 @@
 MessageBox("start");
 
-funkcija("funkcija");
-function funkcija(txt){
-    MessageBox(txt);
-}
-
-MessageBox(lalala);
+DEFINE variable1 type i;
+MessageBox(variable1); // crashes here
+//...
 
 openv("NKPRINV", "BD1");
 openv("NKPRINVL", "BD1");
