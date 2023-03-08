@@ -92,8 +92,10 @@ function ceRegija@post(){
 }
 
 DEFINE saPdvomField type l;
-DEFINE bezPdvaField type l value 1;
+DEFINE bezPdvaField type l;
+//bezPdvaField = true;
 DEFINE razlikaUCijeniField type l;
+
 
 CreateWindow("../../scripts/WKPRDASH2.xaml");
 
