@@ -6319,16 +6319,24 @@ $@"EXECUTE sp_executesql N'
                 lineCntrVarName = Utils.GetSafeVariable(args, 1);
                 actCntrVar = Utils.GetSafeVariable(args, 2);
                 Variable maxRowsVar = Utils.GetSafeVariable(args, 3);
+                
+                //------------------------------------------------------------------------
+
+                if (gridsArrayClass.ContainsKey(gridName) && gridsArrayClass[gridName].tagsAndTypes != null && gridsArrayClass[gridName].tagsAndTypes.Count > 0)
+                {
+                    fillDataTable(gridName);
+                    return Variable.EmptyInstance;
+                }
 
                 //------------------------------------------------------------------------
 
                 gridsArrayClass[gridName] = new DisplayArrayClass();
 
-                gridsArrayClass[gridName].lineCntrVarName = lineCntrVarName.Type == Variable.VarType.STRING ? actCntrVar.String : null;
+                gridsArrayClass[gridName].lineCntrVarName = lineCntrVarName.Type == Variable.VarType.STRING ? lineCntrVarName.String : null;
                 gridsArrayClass[gridName].actCntrVarName = actCntrVar.Type == Variable.VarType.STRING ? actCntrVar.String : null;
                 gridsArrayClass[gridName].maxElemsVarName = maxRowsVar.Type == Variable.VarType.STRING ? maxRowsVar.String : null;
 
-                //------------------------------------------------------------------------
+                //--------------------
 
                 // maxRows
                 if (maxRowsVar.Type == Variable.VarType.STRING)// -> varName
@@ -6404,48 +6412,6 @@ $@"EXECUTE sp_executesql N'
                                 gridsArrayClass[gridName].tagsAndNames[asgc.FieldName.ToString()] = asgc.Name;
                             }
                         }
-                        //if (cell is ASTimeEditer)
-                        //{
-                        //    var te = cell as ASTimeEditer;
-                        //    if (te.Tag != null)
-                        //    {
-                        //        gridsArrayClass[gridName].tagsAndTypes.Add(te.Tag.ToString(), typeof(TimeSpan));
-                        //        tagsAndHeaders.Add(te.Tag.ToString(), dgtc.Header.ToString());
-                        //        timeAndDateEditerTagsAndSizes[te.Tag.ToString()] = te.DisplaySize;
-                        //        tagsAndNames[te.Tag.ToString()] = te.Name;
-                        //    }
-                        //}
-                        //else if (cell is ASDateEditer)
-                        //{
-                        //    var de = cell as ASDateEditer;
-                        //    if (de.Tag != null)
-                        //    {
-                        //        gridsArrayClass[gridName].tagsAndTypes.Add(de.Tag.ToString(), typeof(DateTime));
-                        //        tagsAndHeaders.Add(de.Tag.ToString(), dgtc.Header.ToString());
-                        //        timeAndDateEditerTagsAndSizes[de.Tag.ToString()] = de.DisplaySize;
-                        //        tagsAndNames[de.Tag.ToString()] = de.Name;
-                        //    }
-                        //}
-                        //else if (cell is CheckBox)
-                        //{
-                        //    var cb = cell as CheckBox;
-                        //    if (cb.Tag != null)
-                        //    {
-                        //        gridsArrayClass[gridName].tagsAndTypes.Add(cb.Tag.ToString(), typeof(bool));
-                        //        tagsAndHeaders.Add(cb.Tag.ToString(), dgtc.Header.ToString());
-                        //        tagsAndNames[cb.Tag.ToString()] = cb.Name;
-                        //    }
-                        //}
-                        //else if (cell is TextBox)
-                        //{
-                        //    var tb = cell as TextBox;
-                        //    if (tb.Tag != null)
-                        //    {
-                        //        gridsArrayClass[gridName].tagsAndTypes.Add(tb.Tag.ToString(), typeof(string));
-                        //        tagsAndHeaders.Add(tb.Tag.ToString(), dgtc.Header.ToString());
-                        //        tagsAndNames[tb.Tag.ToString()] = tb.Name;
-                        //    }
-                        //}
                     }
                 }
 
@@ -7240,6 +7206,11 @@ $@"EXECUTE sp_executesql N'
 
                         break;
 
+                    case "close":
+                        if(gridsDataTables.ContainsKey(gridName))
+                            gridsDataTables[gridName].Rows.Clear();
+                        break;
+
                     default:
                         break;
                 }
@@ -7388,7 +7359,8 @@ $@"EXECUTE sp_executesql N'
                         break;
                     
                     case "close":
-                        gridsDataTables[gridName].Rows.Clear();
+                        if (gridsDataTables.ContainsKey(gridName))
+                            gridsDataTables[gridName].Rows.Clear();
                         break;
 
                     default:
