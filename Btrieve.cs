@@ -7386,6 +7386,10 @@ $@"EXECUTE sp_executesql N'
                         
 
                         break;
+                    
+                    case "close":
+                        gridsDataTables[gridName].Rows.Clear();
+                        break;
 
                     default:
                         break;
