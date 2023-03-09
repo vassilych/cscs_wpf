@@ -1,5 +1,14 @@
 MessageBox("start");
 
+goto label1;
+
+MessageBox("skipped?")
+
+label1:
+MessageBox("end");
+quit;
+
+
 DEFINE variable1 type i;
 MessageBox(variable1); // crashes here
 //...
