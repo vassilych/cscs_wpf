@@ -6181,6 +6181,7 @@ $@"EXECUTE sp_executesql N'
             public Dictionary<string, string> tagsAndHeaders;
             public Dictionary<string, int> timeAndDateEditerTagsAndSizes = new Dictionary<string, int>();
             public Dictionary<string, string> tagsAndNames = new Dictionary<string, string>();
+            public Dictionary<string, double> tagsAndWidths = new Dictionary<string, double>();
         }
 
         class DisplayTableClass
@@ -6410,6 +6411,7 @@ $@"EXECUTE sp_executesql N'
                                 gridsArrayClass[gridName].tagsAndHeaders.Add(asgc.FieldName.ToString(), dgtc.Header.ToString());
                                 gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[asgc.FieldName.ToString()] = asgc.EditLength;
                                 gridsArrayClass[gridName].tagsAndNames[asgc.FieldName.ToString()] = asgc.Name;
+                                gridsArrayClass[gridName].tagsAndWidths[asgc.FieldName.ToString()] = dgtc.ActualWidth;
                             }
                         }
                     }

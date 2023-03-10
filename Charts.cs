@@ -43,6 +43,9 @@ namespace WpfCSCS
                 var value2Variable = Utils.GetSafeVariable(args, 3);
                 if (value2Variable == null)
                     value2Variable = new Variable();
+                var value3Variable = Utils.GetSafeVariable(args, 4);
+                if (value3Variable == null)
+                    value3Variable = new Variable();
 
                 var widget = gui.GetWidget(widgetName);
                 if (widget is CartesianChart)
@@ -107,7 +110,16 @@ namespace WpfCSCS
                     }
                     else if (optionString == "labels")
                     {
-                        cartesianWidget.XAxes.First().Labels = valueVariable.Tuple.Select(p => p.String).ToList();
+                        if(valueVariable.String?.ToLower() == "x")
+                        {
+                            cartesianWidget.XAxes.First().Labels = value3Variable.Tuple.Select(p => p.String).ToList();
+                            cartesianWidget.XAxes.First().TextSize = value2Variable.Value != 0 ? value2Variable.Value : 15;
+                        }
+                        else if (valueVariable.String?.ToLower() == "y")
+                        {
+                            cartesianWidget.YAxes.First().TextSize = value2Variable.Value != 0 ? value2Variable.Value : 15;
+                        }
+                        
                     }
                     else if (optionString == "xlabelsrotation")
                     {
@@ -122,7 +134,7 @@ namespace WpfCSCS
                         cartesianWidget.Title = new LabelVisual()
                         {
                             Text = valueVariable.String,
-                            TextSize = 25,
+                            TextSize = value2Variable.Value != 0 ? value2Variable.Value : 20,
                             Padding = new LiveChartsCore.Drawing.Padding(15),
                             Paint = new SolidColorPaint(SKColors.DarkSlateGray)
                         };
@@ -136,7 +148,10 @@ namespace WpfCSCS
                             firstXAxis.ForceStepToMin = true;
                         }
                     }
-
+                    else if(optionString == "margins")
+                    {
+                        cartesianWidget.DrawMargin = new LiveChartsCore.Measure.Margin((float)valueVariable.Tuple[0].Value, (float)valueVariable.Tuple[1].Value, (float)valueVariable.Tuple[2].Value, (float)valueVariable.Tuple[3].Value);
+                    }
                     
                 }
 
