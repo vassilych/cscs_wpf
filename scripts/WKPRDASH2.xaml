@@ -578,7 +578,8 @@
                             </LinearGradientBrush>
                         </Grid.Background>
                     </Grid>
-                    <lvc:CartesianChart LegendPosition="Left"
+                    <lvc:CartesianChart TooltipFindingStrategy="CompareAll"
+                                        LegendPosition="Bottom"
                                         Name="ChartPoMjesecima"
                                         VerticalAlignment="Top"
                                         HorizontalAlignment="Left"
@@ -761,8 +762,8 @@
                     </DataGrid>
                     <DataGrid HorizontalAlignment="Left"
                               VerticalAlignment="Top"
-                              Height="216"
-                              Width="481"
+                              Height="280"
+                              Width="607"
                               Margin="15,600,0,0"
                               IsReadOnly="true"
                               Name="dgRacuniLast"
@@ -774,6 +775,8 @@
                             <Style TargetType="{x:Type DataGridColumnHeader}">
                                 <Setter Property="Background"
                                         Value="#FF006393" />
+                                <Setter Property="Foreground"
+                                        Value="White" />
                             </Style>
                         </DataGrid.Resources>
                         <DataGrid.Columns>

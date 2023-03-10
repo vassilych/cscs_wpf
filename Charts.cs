@@ -83,7 +83,7 @@ namespace WpfCSCS
                                     Values = newList,
                                     //TooltipLabelFormatter = (chartPoint) => $"{newList[(int)chartPoint.Context.Series.Name.SecondaryValue]}" + $": chartPoint.Context.Series.Name}: {chartPoint.PrimaryValue:C0}"
                                     //TooltipLabelFormatter = (chartPoint) => $"{chartPoint.Context.Series.Name} - {} - {newList[(int)chartPoint.SecondaryValue]}"
-                                    TooltipLabelFormatter = (chartPoint) => $"{newList[(int)chartPoint.SecondaryValue]}",
+                                    TooltipLabelFormatter = (chartPoint) => $"{newList[(int)chartPoint.SecondaryValue].ToString("N")}",
                                     //Fill = new SolidColorPaint(SKColors.Transparent)
                                     Fill = null,
                                     //GeometryFill = null,
@@ -151,6 +151,25 @@ namespace WpfCSCS
                     else if(optionString == "margins")
                     {
                         cartesianWidget.DrawMargin = new LiveChartsCore.Measure.Margin((float)valueVariable.Tuple[0].Value, (float)valueVariable.Tuple[1].Value, (float)valueVariable.Tuple[2].Value, (float)valueVariable.Tuple[3].Value);
+                    }
+                    else if(optionString == "tooltipdecimalplaces")
+                    {
+                        var aljksd = cartesianWidget.ToolTip;
+
+                        foreach (var series in cartesianWidget.Series)
+                        {
+                            if (chartsTypes[widgetName] == "columnseries")
+                            {
+                                (series as ColumnSeries<double>).TooltipLabelFormatter = (chartPoint) => $"{chartPoint.PrimaryValue.ToString($"N{valueVariable.Value}")}";
+                            }
+                            else if (chartsTypes[widgetName] == "lineseries")
+                            {
+                                (series as LineSeries<double>).TooltipLabelFormatter = (chartPoint) => $"{chartPoint.PrimaryValue.ToString($"N{valueVariable.Value}")}";
+                            }
+                        }
+                        
+
+
                     }
                     
                 }

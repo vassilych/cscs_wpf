@@ -185,6 +185,9 @@ function pripremi(){
 
     
     queryResult = sqlquery(sqlQueryString);
+    
+    //MessageBox(queryResult);
+    
     arrayProsla = {};
     arrayTrenutna = {};
     sales_ar = {};
@@ -218,12 +221,17 @@ function pripremi(){
 
     Chart("ChartPoMjesecima", "init");
     Chart("ChartPoMjesecima", "seriesType", "lineSeries");
-    Chart("ChartPoMjesecima", "title", "Naslov grafa");
+    Chart("ChartPoMjesecima", "title", "Naslov grafa", 20);
     // Chart("ChartPoMjesecima", "labels", {"Siječanj", "Veljača", "Ožujak", "Travanj", "Svibanj", "Lipanj", "Srpanj", "Kolovoz", "Rujan", "Listopad", "Studeni", "Prosinac"});
-    Chart("ChartPoMjesecima", "labels", {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
-    Chart("ChartPoMjesecima", "xlabelsRotation", -90);
-    Chart("ChartPoMjesecima", "values", arrayTrenutna, STRING(proslaGodina) ovagod_h);
-    Chart("ChartPoMjesecima", "values", arrayProsla, ovagod_h);
+    Chart("ChartPoMjesecima", "labels", "y", 13);
+    Chart("ChartPoMjesecima", "labels", "x", 13, {"Januar", "Februar", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
+    Chart("ChartPoMjesecima", "xlabelsRotation", 0);
+    Chart("ChartPoMjesecima", "values", arrayProsla, STRING(proslaGodina));
+    Chart("ChartPoMjesecima", "values", arrayTrenutna, STRING(ovagod_h));
+    Chart("ChartPoMjesecima", "SeparatorStep", 1);
+    Chart("ChartPoMjesecima", "Margins", {50, 20, 0, 10});
+    Chart("ChartPoMjesecima", "TooltipDecimalPlaces", 0);
+
 
 
     //------ DRUGI -----------
@@ -522,42 +530,42 @@ return;
 
 function T10RacuniZ()
 {
-	define t10Iznosz_ar type n size 14 dec 2 array 10;
-	define t10Namez_ar type a size 30 array 10;
-	define t10Cntrz_ar type i size 2 array 10;
-	define t10Datumz_ar type d size 8 array 10;
-	define t10Timez_ar type t size 8 array 10;
-	define t10Racunz_ar type r size 8 array 10;
+    define t10Iznosz_ar type n size 14 dec 2 array 10;
+    define t10Namez_ar type a size 30 array 10;
+    define t10Cntrz_ar type i size 2 array 10;
+    define t10Datumz_ar type d size 8 array 10;
+    define t10Timez_ar type t size 8 array 10;
+    define t10Racunz_ar type r size 8 array 10;
     
-	define T10Cntrz type i;
-	define t10DatRac type l;
-		if ( t10datrac == true )
-		{
-		 	//za sada ne koristimo ovo!
-			sql_str =  "SELECT TOP 10 nkpr_gl_num , nkpr_gl_cusnme , CONVERT(char(8) ,  nkpr_gl_invdte , 3) AS datecr , convert(char(8) , nkpr_gl_timecr , 20) as nkpr_gl_timecr ,  CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_gl_total ELSE nkpr_gl_total END AS nkpr_gl_total" ;
-		}
-		else 
-		{
-		 	sql_str =  "SELECT TOP 10 nkpr_gl_num , nkpr_gl_cusnme , CONVERT(char(8) ,  nkpr_gl_datecr , 3) AS datecr , convert(char(8) , nkpr_gl_timecr , 20) as nkpr_gl_timecr ,  CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_gl_total ELSE nkpr_gl_total END AS nkpr_gl_total" ;
-		}
-		sql_str =  sql_str +  " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv" ;
-		sql_str =  sql_str +  " WHERE YEAR(nkpr_gl_datem) =  " + ovagod_h  ;
-		if ( do_mjeseca == true )
-		{
-		 	sql_str =  sql_str +  " AND month(nkpr_gl_datem)< =  " + mjesec_h  ;
-		}
-		else 
-		{
-		 	sql_str =  sql_str +  " AND month(nkpr_gl_datem) =  " + mjesec_h;
-		 }
-		if ( t10datrac == true )
-		 {
-		 	sql_str =  sql_str +  " ORDER BY nkpr_gl_invdte DESC , nkpr_gl_timecr DESC" ;
-		}
-		else 
-		{
-		 	sql_str =  sql_str +  " ORDER BY nkpr_gl_datecr DESC , nkpr_gl_timecr DESC" ;
-		}
+    define T10Cntrz type i;
+    define t10DatRac type l;
+        if ( t10datrac == true )
+        {
+            //za sada ne koristimo ovo!
+            sql_str =  "SELECT TOP 10 nkpr_gl_num , nkpr_gl_cusnme , CONVERT(char(8) ,  nkpr_gl_invdte , 3) AS datecr , convert(char(8) , nkpr_gl_timecr , 20) as nkpr_gl_timecr ,  CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_gl_total ELSE nkpr_gl_total END AS nkpr_gl_total" ;
+        }
+        else 
+        {
+            sql_str =  "SELECT TOP 10 nkpr_gl_num , nkpr_gl_cusnme , CONVERT(char(8) ,  nkpr_gl_datecr , 3) AS datecr , convert(char(8) , nkpr_gl_timecr , 20) as nkpr_gl_timecr ,  CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_gl_total ELSE nkpr_gl_total END AS nkpr_gl_total" ;
+        }
+        sql_str =  sql_str +  " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv" ;
+        sql_str =  sql_str +  " WHERE YEAR(nkpr_gl_datem) =  " + ovagod_h  ;
+        if ( do_mjeseca == true )
+        {
+            sql_str =  sql_str +  " AND month(nkpr_gl_datem)< =  " + mjesec_h  ;
+        }
+        else 
+        {
+            sql_str =  sql_str +  " AND month(nkpr_gl_datem) =  " + mjesec_h;
+         }
+        if ( t10datrac == true )
+         {
+            sql_str =  sql_str +  " ORDER BY nkpr_gl_invdte DESC , nkpr_gl_timecr DESC" ;
+        }
+        else 
+        {
+            sql_str =  sql_str +  " ORDER BY nkpr_gl_datecr DESC , nkpr_gl_timecr DESC" ;
+        }
     sqlResult = sqlQuery(sql_str);
   
 
@@ -590,40 +598,40 @@ function T10RacuniZ()
 }
 function T10RacuniMj()
 {
-    	define t10IznosMj_ar type n size 14 dec 2 array 10;
-	define t10NameMj_ar type a size 30 array 10;
-	define t10CntrMj_ar type i size 2 array 10;
-	define t10DatumMj_ar type d size 8 array 10;
-	define t10RacunMj_ar type r size 8 array 10;
-	define T10CntrMj type i;
-	sql_str =  "SELECT TOP 10 nkpr_gl_num , nkpr_gl_cusnme , CONVERT(char(8) ,  nkpr_gl_invdte , 3) AS datecr ,  CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_gl_total ELSE nkpr_gl_total END AS nkpr_gl_total" ;
-	//sql_str =  "SELECT TOP 10 nkpr_gl_num , nkpr_gl_cusnme , nkpr_gl_invdte ,  CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_gl_total ELSE nkpr_gl_total END AS nkpr_gl_total" ;
-	sql_str =  sql_str +  " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv" ;
-	if ( regija != "" )
-	{
-		sql_str =  sql_str +  " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart g ON nkpr_gl_cuscod =  g.nksc_partcode" ;
-	}
-	sql_str =  sql_str +  " WHERE 1 = 1" ;
-		if ( mjesec_h != "" )
-		 {
-		 	if ( do_mjeseca == true )
-			 {
-			 	sql_str =  sql_str +  " AND month(nkpr_gl_datem)< =  " + mjesec_h ;
-				sql_str =  sql_str +  " AND YEAR(nkpr_gl_datem) =  " + ovagod_h ;
-			}
-			else 
-			{
-			 	sql_str =  sql_str +  " AND month(nkpr_gl_datem) =  " + mjesec_h ;
-				sql_str =  sql_str +  " AND YEAR(nkpr_gl_datem) =  " + ovagod_h ;
-			 }
-		}
-		//sql_str =  sql_str +  " AND DATEDIFF(day , nkpr_gl_invdte ,  CURRENT_TIMESTAMP) BETWEEN 0 AND 31" ;
-		if ( regija != "" )
-		{
-		 	sql_str =  sql_str +  " AND g.nksc_regija =  '" + regija + "'";
-		}
-		sql_str =  sql_str +  " ORDER BY CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_gl_total ELSE nkpr_gl_total END DESC";
-		sqlResult = sqlQuery(sql_str);
+        define t10IznosMj_ar type n size 14 dec 2 array 10;
+    define t10NameMj_ar type a size 30 array 10;
+    define t10CntrMj_ar type i size 2 array 10;
+    define t10DatumMj_ar type d size 8 array 10;
+    define t10RacunMj_ar type r size 8 array 10;
+    define T10CntrMj type i;
+    sql_str =  "SELECT TOP 10 nkpr_gl_num , nkpr_gl_cusnme , CONVERT(char(8) ,  nkpr_gl_invdte , 3) AS datecr ,  CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_gl_total ELSE nkpr_gl_total END AS nkpr_gl_total" ;
+    //sql_str =  "SELECT TOP 10 nkpr_gl_num , nkpr_gl_cusnme , nkpr_gl_invdte ,  CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_gl_total ELSE nkpr_gl_total END AS nkpr_gl_total" ;
+    sql_str =  sql_str +  " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv" ;
+    if ( regija != "" )
+    {
+        sql_str =  sql_str +  " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart g ON nkpr_gl_cuscod =  g.nksc_partcode" ;
+    }
+    sql_str =  sql_str +  " WHERE 1 = 1" ;
+        if ( mjesec_h != "" )
+         {
+            if ( do_mjeseca == true )
+             {
+                sql_str =  sql_str +  " AND month(nkpr_gl_datem)< =  " + mjesec_h ;
+                sql_str =  sql_str +  " AND YEAR(nkpr_gl_datem) =  " + ovagod_h ;
+            }
+            else 
+            {
+                sql_str =  sql_str +  " AND month(nkpr_gl_datem) =  " + mjesec_h ;
+                sql_str =  sql_str +  " AND YEAR(nkpr_gl_datem) =  " + ovagod_h ;
+             }
+        }
+        //sql_str =  sql_str +  " AND DATEDIFF(day , nkpr_gl_invdte ,  CURRENT_TIMESTAMP) BETWEEN 0 AND 31" ;
+        if ( regija != "" )
+        {
+            sql_str =  sql_str +  " AND g.nksc_regija =  '" + regija + "'";
+        }
+        sql_str =  sql_str +  " ORDER BY CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_gl_total ELSE nkpr_gl_total END DESC";
+        sqlResult = sqlQuery(sql_str);
         //SaveFile(sql_str);
         for ( i = 1; i < Size(sqlResult); i++ )
         {      
@@ -639,7 +647,7 @@ function T10RacuniMj()
             t10RacunMj_ar[i - 1] =  nkpr_gl_num;
         }        
         DEFINE cntr3 type i;
-		DisplayArraySetup("dgRacuniMjesec", "cntr3",  Size(sqlResult) - 1,  10);
+        DisplayArraySetup("dgRacuniMjesec", "cntr3",  Size(sqlResult) - 1,  10);
                 MessageBox("kRAJ T10RacuniMj");
-		return ;
+        return ;
 }
