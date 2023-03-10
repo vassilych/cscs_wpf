@@ -608,7 +608,9 @@
                             </LinearGradientBrush>
                         </Grid.Background>
                     </Grid>
-                    <lvc:CartesianChart Name="ChartPoDanima"
+                    <lvc:CartesianChart TooltipFindingStrategy="CompareAll"
+                                        LegendPosition="Bottom"
+                                        Name="ChartPoDanima"
                                         VerticalAlignment="Top"
                                         HorizontalAlignment="Left"
                                         Width="500"
@@ -762,8 +764,8 @@
                     </DataGrid>
                     <DataGrid HorizontalAlignment="Left"
                               VerticalAlignment="Top"
-                              Height="280"
-                              Width="607"
+                              Height="216"
+                              Width="481"
                               Margin="15,600,0,0"
                               IsReadOnly="true"
                               Name="dgRacuniLast"
