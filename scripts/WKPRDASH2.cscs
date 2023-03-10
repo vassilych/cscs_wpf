@@ -1,5 +1,3 @@
-SetWidgetOptions("MainGrid", "IsEnabled", "False");
-
 DEFINE skladiste type i size 3;
 
 DEFINE skladisteNaziv type a size 50;
@@ -223,10 +221,9 @@ function pripremi(){
     Chart("ChartPoMjesecima", "title", "Naslov grafa");
     // Chart("ChartPoMjesecima", "labels", {"Siječanj", "Veljača", "Ožujak", "Travanj", "Svibanj", "Lipanj", "Srpanj", "Kolovoz", "Rujan", "Listopad", "Studeni", "Prosinac"});
     Chart("ChartPoMjesecima", "labels", {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
-    Chart("ChartPoMjesecima", "xlabelsRotation", 0);
+    Chart("ChartPoMjesecima", "xlabelsRotation", -90);
     Chart("ChartPoMjesecima", "values", arrayTrenutna, STRING(proslaGodina) ovagod_h);
     Chart("ChartPoMjesecima", "values", arrayProsla, ovagod_h);
-    Chart("ChartPoMjesecima", "separatorStep", 1);
 
 
     //------ DRUGI -----------
