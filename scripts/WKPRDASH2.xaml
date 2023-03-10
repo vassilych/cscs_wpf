@@ -11,7 +11,8 @@
         Height="943"
         Width="1340">
     <Window.Resources />
-    <Grid Background="white">
+    <Grid Background="white"
+          Name="MainGrid">
         <TabControl HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     Height="940"

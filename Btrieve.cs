@@ -7394,6 +7394,84 @@ $@"EXECUTE sp_executesql N'
 
                         switch (option)
                         {
+                            case "clear":
+
+                                if (gridsTableClass.Keys.Contains(gridName)) // -> wlistF
+                                {
+
+                                    //// add new grid row
+                                    //var newRow = gridsDataTables[gridName].NewRow();
+                                    //gridsDataTables[gridName].Rows.Add(newRow);
+
+                                    //dg.SelectedIndex = dg.Items.Count - 1;
+                                    ////dg.ScrollIntoView(dg.Items.GetItemAt(dg.Items.Count - 1));
+                                    //dg.ScrollIntoView(dg.SelectedItem);
+                                }
+                                else if (gridsArrayClass.Keys.Contains(gridName)) // -> wlistM
+                                {
+                                    //var currentRowCount = dg.Items.Count;
+
+                                    //// check for max length
+                                    //if (gridsArrayClass[gridName].maxElemsVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable defVar))
+                                    //{
+                                    //    if (currentRowCount + 1 > defVar.Value)
+                                    //    {
+                                    //        MessageBox.Show("Maximum elements reached.");
+                                    //        return Variable.EmptyInstance;
+                                    //    }
+                                    //}
+                                    //else
+                                    //{
+                                    //    if (currentRowCount + 1 > gridsArrayClass[gridName].maxElemsValue)
+                                    //    {
+                                    //        MessageBox.Show("Maximum elements reached.");
+                                    //        return Variable.EmptyInstance;
+                                    //    }
+                                    //}
+
+                                    //// add new array item
+                                    //foreach (var item in gridsArrayClass[gridName].tags)
+                                    //{
+                                    //    var tagToLower = item.ToLower();
+
+                                    //    if (Gui.DEFINES.TryGetValue(tagToLower, out DefineVariable defVar2))
+                                    //    {
+                                    //        if (defVar2.Tuple.Count > currentRowCount)
+                                    //        {
+                                    //            defVar2.Tuple[currentRowCount] = new Variable();
+                                    //        }
+                                    //        else
+                                    //        {
+                                    //            defVar2.Tuple.Add(new Variable());
+                                    //        }
+                                    //    }
+                                    //}
+
+
+                                    //// fill linCntr with new element index
+                                    //if (gridsArrayClass[gridName].lineCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar3))
+                                    //{
+                                    //    defVar3.InitVariable(new Variable(currentRowCount), Gui);
+                                    //}
+
+                                    //// increment active elements variable
+                                    //if (gridsArrayClass[gridName].actCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar4))
+                                    //{
+                                    //    defVar4.InitVariable(new Variable(defVar4.Value + 1), Gui);
+                                    //}
+
+                                    //gridsArrayClass[gridName].actCntrValue++;
+
+                                    //// add new grid row
+                                    //var newRow = gridsDataTables[gridName].NewRow();
+                                    //gridsDataTables[gridName].Rows.Add(newRow);
+
+                                    //dg.ScrollIntoView(dg.Items.GetItemAt(dg.Items.Count - 1));
+                                    //dg.SelectedIndex = dg.Items.Count - 1;
+                                }
+
+                                break;
+                            
                             case "addrow":
 
                                 if (gridsTableClass.Keys.Contains(gridName)) // -> wlistF

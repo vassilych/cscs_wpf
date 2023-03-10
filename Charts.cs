@@ -127,6 +127,17 @@ namespace WpfCSCS
                             Paint = new SolidColorPaint(SKColors.DarkSlateGray)
                         };
                     }
+                    else if(optionString == "separatorstep")
+                    {
+                        var firstXAxis = cartesianWidget.XAxes.FirstOrDefault();
+                        if (firstXAxis != null)
+                        {
+                            firstXAxis.MinStep = valueVariable.Value;
+                            firstXAxis.ForceStepToMin = true;
+                        }
+                    }
+
+                    
                 }
 
                 return Variable.EmptyInstance;

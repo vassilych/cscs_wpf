@@ -3714,7 +3714,7 @@ namespace WpfCSCS
                     dg.IsReadOnly = true;
                 }
             }
-            if (widget is TabControl)
+            else if (widget is TabControl)
             {
                 TabControl tc = widget as TabControl;
                 if (option == "position")
@@ -3731,6 +3731,14 @@ namespace WpfCSCS
                 {
                     tb.Text = Utils.GetSafeString(args, 2);
                 }
+            }
+            else if (widget is Grid)
+            {
+                //TextBox tb = widget as TextBox;
+                //if (option == "text")
+                //{
+                //    tb.Text = Utils.GetSafeString(args, 2);
+                //}
             }
 
             return new Variable(true);
