@@ -4439,43 +4439,59 @@ namespace WpfCSCS
             {
                 paramsStr = paramsStr.Substring(0, paramsStr.Length - 1) + '"';
                 var exec = Process.GetCurrentProcess().MainModule.FileName;
-                var result = RunExecFunction.RunExec(exec, chainFullName + paramsStr);
-                return result;
+                var result1 = RunExecFunction.RunExec(exec, chainFullName + paramsStr);
+                return result1;
             }
 
             Gui = new CSCS_GUI();
             Gui.Init();
 
-            ParsingScript chainScript = null;
             var tokenSet = CSCS_GUI.GetPreprocessTokens();
+            string split1 = ""; string split2 = "";
+            string fileName = script.GetFilePath(chainName);
             if (tokenSet.Count > 0)
             {
-                var toProcess = Utils.PreprocessScriptFile(chainName, tokenSet, script.PWD, script.Context);
-                chainScript = new ParsingScript(InterpreterInstance, toProcess);
-                chainScript.Filename = script.GetFilePath(chainName);
+                Utils.SplitScriptFile(chainName, tokenSet, out split1, out split2, script.PWD, script.Context);
             }
             else
             {
-                chainScript = tempScript.GetIncludeFileScript(chainName);
+                string data = Utils.File2String(chainName, out fileName, script.PWD);
+                split2 = Utils.ConvertToScript(Gui.Interpreter, data, out _, fileName);
             }
 
-            chainScript.StackLevel = Gui.Interpreter.AddStackLevel(chainScript.Filename);
-            chainScript.CurrentModule = chainName;
-            chainScript.ParentScript = script;
             CheckScriptIsMain(chainName);
-            Chains[chainScript.Filename] = chainScript;
-            Gui.Script = chainScript;
+            Gui.Parameters[fileName] = parameters;
 
-            chainScript.SetInterpreter(CSCS_GUI.InterpreterManager.CurrentInterpreter);
-            //chainScript.Context = script.Context;
+            Variable result = RunTask(Gui, split1, script, chainName);
+            if (!string.IsNullOrWhiteSpace(split2))
+            {
+                result = RunTask(Gui, split2, script, chainName);
+            }
 
-            Gui.Parameters[chainScript.Filename] = parameters;
-
-            return RunTask(chainScript);
+            return result;
         }
 
-        static Variable RunTask(ParsingScript chainScript)
+        static Variable RunTask(CSCS_GUI gui, string scriptStr, ParsingScript parent, string chainName)
         {
+            if (string.IsNullOrWhiteSpace(scriptStr))
+            {
+                return Variable.EmptyInstance;
+            }
+            string fileName = parent.GetFilePath(chainName);
+
+            ParsingScript chainScript = new ParsingScript(gui.Interpreter, scriptStr);
+            chainScript.Filename = fileName;
+            chainScript.ParentScript = parent;
+            chainScript.InTryBlock = parent.InTryBlock;
+            chainScript.StackLevel = gui.Interpreter.AddStackLevel(chainScript.Filename);
+            chainScript.CurrentModule = chainName;
+            chainScript.ParentScript = parent;
+            Chains[chainScript.Filename] = chainScript;
+            gui.Script = chainScript;
+
+            chainScript.SetInterpreter(gui.Interpreter);
+            chainScript.Context = gui;
+            
             Variable result = Variable.EmptyInstance;
             //Application.Current.Dispatcher.Invoke(new Action(() => {
             while (chainScript.StillValid())
@@ -4545,11 +4561,13 @@ namespace WpfCSCS
                 {
                     NameOrPathOfXamlForm = NameOrPathOfXamlForm + ".xaml";
                 }
+                NameOrPathOfXamlForm = script.GetFilePath(NameOrPathOfXamlForm);
                 if (File.Exists(NameOrPathOfXamlForm))
                 {
                     var parentWin = Gui.GetParentWindow(script);
                     SpecialWindow modalwin;
-                    if (parentWin != null && !script.ParentScript.OriginalScript.Contains(Constants.MAINMENU))
+                    if (parentWin != null && script.ParentScript != null &&
+                        !script.ParentScript.OriginalScript.Contains(Constants.MAINMENU))
                     {
                         var winMode = SpecialWindow.MODE.SPECIAL_MODAL;
                         modalwin = CreateNew(NameOrPathOfXamlForm, parentWin, winMode, script);
