@@ -1341,8 +1341,15 @@ namespace SplitAndMerge
                 var token = GetNextToken(script).ToLower();
                 if (string.IsNullOrWhiteSpace(token))
                 {
-                    script.Forward();
-                    continue;
+                    if (script.Current == Constants.END_GROUP)
+                    {
+                        token += script.CurrentAndForward();
+                    }
+                    else
+                    {
+                        script.Forward();
+                        continue;
+                    }
                 }
                 var needed = tokens.Contains(token);
 
