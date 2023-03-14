@@ -78,8 +78,8 @@ namespace WpfControlsLibrary
 
         public override void OnApplyTemplate()
         {
-            Size = 600;
-            Dec = 300;
+            //Size = 600;
+            //Dec = 300;
 
             base.OnApplyTemplate();
 
@@ -105,43 +105,45 @@ namespace WpfControlsLibrary
 
             ntb.HorizontalContentAlignment = HorizontalAlignment.Right;
 
-            if (string.IsNullOrEmpty(ntb.Text))
+            var tempText = ntb.Text;
+
+            if (string.IsNullOrEmpty(tempText))
             {
-                ntb.Text += 0;
+                tempText += 0;
             }
 
             if (Dec != 0)
             {
-                if (!ntb.Text.Contains(decimalSign))
+                if (!tempText.Contains(decimalSign))
                 {
-                    ntb.Text += decimalSign;
+                    tempText += decimalSign;
                     for (int i = 0; i < Dec; i++)
                     {
-                        ntb.Text += "0";
+                        tempText += "0";
                     }
                 }
             }
 
-            var splitted = ntb.Text.Split(decimalSign.ToCharArray().First());
+            var splitted = tempText.Split(decimalSign.ToCharArray().First());
 
             if (Dec > 0)
             {
-                if (!ntb.Text.Contains(decimalSign))
+                if (!tempText.Contains(decimalSign))
                 {
-                    ntb.Text += decimalSign;
+                    tempText += decimalSign;
                 }
                 if (splitted[1].Length != Dec)
                 {
-                    ntb.Text = Math.Round(double.Parse(ntb.Text.Replace(thousandsDelimiter, "").Replace(decimalSign, ",")), Dec).ToString().Replace(",", decimalSign);
+                    tempText = Math.Round(double.Parse(tempText.Replace(thousandsDelimiter, "").Replace(decimalSign, ",")), Dec).ToString().Replace(",", decimalSign);
 
-                    if (!ntb.Text.Contains(decimalSign))
+                    if (!tempText.Contains(decimalSign))
                     {
-                        ntb.Text += decimalSign;
+                        tempText += decimalSign;
                     }
 
-                    while (ntb.Text.Split(decimalSign.ToCharArray().First())[1].Length < Dec)
+                    while (tempText.Split(decimalSign.ToCharArray().First())[1].Length < Dec)
                     {
-                        ntb.Text += "0";
+                        tempText += "0";
                     }
                 }
             }
@@ -151,14 +153,16 @@ namespace WpfControlsLibrary
             {
                 if (splitted[0].Length == 0)
                 {
-                    ntb.Text = "0" + ntb.Text;
+                    tempText = "0" + tempText;
                 }
             }
 
             if (splitted[0].Length == 1 && splitted[0] == "-")
             {
-                ntb.Text = "0" + ntb.Text.Substring(1);
+                tempText = "0" + tempText.Substring(1);
             }
+
+            ntb.Text = tempText;
 
             if (Thousands)
                 formatThousandsDelimiter(ntb);

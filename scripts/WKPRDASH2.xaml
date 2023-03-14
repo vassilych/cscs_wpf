@@ -120,7 +120,7 @@
                     <wcl:ASEnterBox ButtonSize="0"
                                     FontWeight="Bold"
                                     Size="4"
-                                    FieldName="trenutnaGodina"
+                                    FieldName="ovagod_h"
                                     Foreground="black"
                                     Name="Ovagod"
                                     FontSize="14"
@@ -578,7 +578,8 @@
                             </LinearGradientBrush>
                         </Grid.Background>
                     </Grid>
-                    <lvc:CartesianChart LegendPosition="Left"
+                    <lvc:CartesianChart TooltipFindingStrategy="CompareAll"
+                                        LegendPosition="Bottom"
                                         Name="ChartPoMjesecima"
                                         VerticalAlignment="Top"
                                         HorizontalAlignment="Left"
@@ -607,7 +608,9 @@
                             </LinearGradientBrush>
                         </Grid.Background>
                     </Grid>
-                    <lvc:CartesianChart Name="ChartPoDanima"
+                    <lvc:CartesianChart TooltipFindingStrategy="CompareAll"
+                                        LegendPosition="Bottom"
+                                        Name="ChartPoDanima"
                                         VerticalAlignment="Top"
                                         HorizontalAlignment="Left"
                                         Width="500"
@@ -774,6 +777,8 @@
                             <Style TargetType="{x:Type DataGridColumnHeader}">
                                 <Setter Property="Background"
                                         Value="#FF006393" />
+                                <Setter Property="Foreground"
+                                        Value="White" />
                             </Style>
                         </DataGrid.Resources>
                         <DataGrid.Columns>
@@ -843,6 +848,7 @@
                                       VerticalAlignment="Top"
                                       FontWeight="Bold"
                                       ButtonSize="0"
+                                      Size="14"
                                       Dec="2"
                                       Height="30"
                                       Width="174"

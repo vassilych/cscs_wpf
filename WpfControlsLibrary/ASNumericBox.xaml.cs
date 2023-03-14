@@ -21,12 +21,12 @@ namespace WpfControlsLibrary
     public partial class ASNumericBox : UserControl
     {
 
-        public static readonly DependencyProperty SizeProperty = DependencyProperty.Register("Size", typeof(int), typeof(ASNumericBox));
-        public int Size
+        public static readonly DependencyProperty SizeProperty = DependencyProperty.Register("Size", typeof(int?), typeof(ASNumericBox));
+        public int? Size
         {
             get
             {
-                return (int)base.GetValue(SizeProperty);
+                return (int?)base.GetValue(SizeProperty);
             }
             set
             {
@@ -34,12 +34,12 @@ namespace WpfControlsLibrary
             }
         }
 
-        public static readonly DependencyProperty DecProperty = DependencyProperty.Register("Dec", typeof(int), typeof(ASNumericBox));
-        public int Dec
+        public static readonly DependencyProperty DecProperty = DependencyProperty.Register("Dec", typeof(int?), typeof(ASNumericBox));
+        public int? Dec
         {
             get
             {
-                return (int)base.GetValue(DecProperty);
+                return (int?)base.GetValue(DecProperty);
             }
             set
             {
@@ -239,8 +239,8 @@ namespace WpfControlsLibrary
         {
             if (!loaded)
             {
-                numBoxTextBox.Size = Size;
-                numBoxTextBox.Dec = Dec;
+                numBoxTextBox.Size = Size == null ? 500 : (int)Size;
+                numBoxTextBox.Dec = Dec == null ? 0 : (int)Dec;
                 numBoxTextBox.MinValue = MinValue != null ? (double)MinValue : double.MinValue;
                 numBoxTextBox.MaxValue = MaxValue != null ? (double)MaxValue : double.MaxValue;
                 numBoxTextBox.Text = Text;

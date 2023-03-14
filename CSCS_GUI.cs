@@ -3714,7 +3714,7 @@ namespace WpfCSCS
                     dg.IsReadOnly = true;
                 }
             }
-            if (widget is TabControl)
+            else if (widget is TabControl)
             {
                 TabControl tc = widget as TabControl;
                 if (option == "position")
@@ -3731,6 +3731,14 @@ namespace WpfCSCS
                 {
                     tb.Text = Utils.GetSafeString(args, 2);
                 }
+            }
+            else if (widget is Grid)
+            {
+                //TextBox tb = widget as TextBox;
+                //if (option == "text")
+                //{
+                //    tb.Text = Utils.GetSafeString(args, 2);
+                //}
             }
 
             return new Variable(true);
@@ -4471,6 +4479,11 @@ namespace WpfCSCS
             }
             string fileName = parent.GetFilePath(chainName);
 
+            //if (Chains.ContainsKey(fileName))
+            //{
+            //    return Variable.EmptyInstance;
+            //}
+
             ParsingScript chainScript = new ParsingScript(gui.Interpreter, scriptStr);
             chainScript.Filename = fileName;
             chainScript.ParentScript = parent;
@@ -4619,7 +4632,7 @@ namespace WpfCSCS
                     new Variable(true) :
                             script.Current == Constants.END_STATEMENT ? Variable.EmptyInstance :
                             new Variable(Utils.GetToken(script, separator));
-                if (script.Prev != '"' && !string.IsNullOrWhiteSpace(value.String))
+                if (labelName != "type" && script.Prev != '"' && !string.IsNullOrWhiteSpace(value.String))
                 {
                     var existing = gui.Interpreter.GetVariableValue(value.String, script);
                     value = existing == null ? value : existing;
