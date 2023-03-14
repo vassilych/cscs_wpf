@@ -222,9 +222,8 @@ function pripremi(){
     Chart("ChartPoMjesecima", "init");
     Chart("ChartPoMjesecima", "seriesType", "lineSeries");
     Chart("ChartPoMjesecima", "title", "Naslov grafa", 20);
-    // Chart("ChartPoMjesecima", "labels", {"Siječanj", "Veljača", "Ožujak", "Travanj", "Svibanj", "Lipanj", "Srpanj", "Kolovoz", "Rujan", "Listopad", "Studeni", "Prosinac"});
     Chart("ChartPoMjesecima", "labels", "y", 13);
-    Chart("ChartPoMjesecima", "labels", "x", 13, {"Januar", "Februar", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
+    Chart("ChartPoMjesecima", "labels", "x", 13, {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
     Chart("ChartPoMjesecima", "xlabelsRotation", 0);
     Chart("ChartPoMjesecima", "values", arrayProsla, STRING(proslaGodina));
     Chart("ChartPoMjesecima", "values", arrayTrenutna, STRING(ovagod_h));

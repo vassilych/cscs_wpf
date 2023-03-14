@@ -1269,7 +1269,7 @@ namespace SplitAndMerge
                                           new Variable(exc.Message), args.Count > 0 ? args[0] : Variable.EmptyInstance, script);
                 if (task == null)
                 {
-                    throw;
+                     throw;
                 }
                 result = task.Result;
             }

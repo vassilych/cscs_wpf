@@ -5435,6 +5435,11 @@ $@"EXECUTE sp_executesql N'
                     if (forIsSet && !Script.GetTempScript(forString).Execute(new char[] { '"' }, 0).AsBool())
                     {
                         new Btrieve.FINDVClass(Script, tableHndlNum, "n").FINDV();
+                        if (LastFlerrsOfFnums[tableHndlNum] == 3)
+                        {
+                            SetFlerr(0, tableHndlNum);
+                            break;
+                        }
                         continue;
                     }
 

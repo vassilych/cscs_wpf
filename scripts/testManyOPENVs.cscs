@@ -1,17 +1,27 @@
-MessageBox("start");
-
-goto label1;
-
-MessageBox("skipped?")
-
-label1:
-MessageBox("end");
-quit;
 
 
+
+MessageBox(var402);
+
+MessageBox(variable1);
 DEFINE variable1 type i;
-MessageBox(variable1); // crashes here
-//...
+
+
+/*
+//MessageBox(variable55);//!!!
+function1();
+MessageBox(variable55);
+
+function function1(){
+    //MessageBox(variable55);// !!!
+    DEFINE variable55 type i;
+    MessageBox(variable55);
+    MessageBox("FUNCTION!");
+}
+MessageBox(variable55);
+*/
+
+
 
 openv("NKPRINV", "BD1");
 openv("NKPRINVL", "BD1");
@@ -81,7 +91,8 @@ openv("NKSYCCYR", "BD1");
 openv("NKMKVEZM", "BD1");
 
 MessageBox("end openv. start define...");
-/*
+
+
 define var1 type A array 250;
 define var2 type A array 250;
 define var3 type A array 250;
@@ -3267,7 +3278,7 @@ define var3179 type A;
 define var3180 type A;
 define var3181 type A;
 define var3182 type A;
-
+/*
 define Xvar1 type A;
 define Xvar2 type A;
 define Xvar3 type A;
@@ -8489,7 +8500,7 @@ define aXvar2031 type A;
 define aXvar2032 type A;
 define aXvar2033 type A;
 define aXvar2034 type A;
-/*
+
 define aXvar2035 type A;
 define aXvar2036 type A;
 define aXvar2037 type A;
@@ -9643,7 +9654,14 @@ MessageBox("end defines. start i++...");
 
 DEFINE lalala type a size 10;
 
+
+
+dakljsd();
+
 function dakljsd(){
+
+
+DEFINE variable5 type i;
 
 
 a = "nesto";
@@ -20825,6 +20843,9 @@ i++;
 i++;
 }
 
-MessageBox("end i++");
+MessageBox("end i++, i = " + i);
+MessageBox("variable5 = " + variable5);
+
+
 
 quit;
