@@ -95,17 +95,22 @@ namespace WpfControlsLibrary
             this.Loaded += NumericTextBox_Loaded;
 
             this.TextChanged += NumericTextBox_TextChanged;
+
+            //FormatOnLostFocus();
         }
 
         private void NumericTextBox_Loaded(object sender, RoutedEventArgs e)
         {
-            var ntb = (e.Source as ASNumericTextBox);
+            LoadedEvent();
+        }
 
-            ntb.TextChanged -= NumericTextBox_TextChanged;
+        public void LoadedEvent()
+        {
+            this.TextChanged -= NumericTextBox_TextChanged;
 
-            ntb.HorizontalContentAlignment = HorizontalAlignment.Right;
+            this.HorizontalContentAlignment = HorizontalAlignment.Right;
 
-            var tempText = ntb.Text;
+            var tempText = this.Text;
 
             if (string.IsNullOrEmpty(tempText))
             {
@@ -162,12 +167,12 @@ namespace WpfControlsLibrary
                 tempText = "0" + tempText.Substring(1);
             }
 
-            ntb.Text = tempText;
+            this.Text = tempText;
 
             if (Thousands)
-                formatThousandsDelimiter(ntb);
+                formatThousandsDelimiter(this);
 
-            ntb.TextChanged += NumericTextBox_TextChanged;
+            this.TextChanged += NumericTextBox_TextChanged;
         }
 
         private void NumericTextBox_LostFocus(object sender, RoutedEventArgs e)

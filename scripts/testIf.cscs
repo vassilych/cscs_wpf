@@ -1,9 +1,16 @@
-MessageBox("start");
+Cursor("wait");
+
+MessageBox("waiting");
+
+Cursor("default");
+
+MessageBox("default cursor");
 
 
 if(2==1){
     MessageBox("1");
 }
+
 
 
 quit;

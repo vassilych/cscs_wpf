@@ -1141,6 +1141,8 @@ $@"EXECUTE sp_executesql N'
 
             interpreter.RegisterFunction(Constants.DATAGRID, new DataGridFunction());
             
+            interpreter.RegisterFunction(Constants.CURSOR, new CursorFunction());
+            
             interpreter.RegisterFunction(Constants.RESET_FIELD, new ResetFieldFunction());
             
             interpreter.RegisterFunction(Constants.CO_GET, new COGetFunction());
@@ -1656,6 +1658,7 @@ order by {orderByString}
                         return "tinyInt";
                     case "I":// int
                         return "smallInt";
+                        
                     case "V":// overlay
                         return "";// it's not beeing used
                     default:
@@ -4937,12 +4940,12 @@ $@"EXECUTE sp_executesql N'
                 var startStringVar = args.FirstOrDefault(p => p.CurrentAssign.ToLower() == "start");
                 if (startStringVar != null)
                 {
-                    gridsTableClass[gridName].startString = script.GetTempScript(startStringVar.AsString());
+                    gridsTableClass[gridName].startVar = startStringVar;
                 }
                 else
                 {
                     //gridsTableClass[gridName].startString = script.GetTempScript();
-                    gridsTableClass[gridName].startString = script.GetTempScript("");
+                    gridsTableClass[gridName].startVar = new Variable("");
                 }
 
                 var whileStringVar = args.FirstOrDefault(p => p.CurrentAssign.ToLower() == "whilestring");
@@ -5362,7 +5365,7 @@ $@"EXECUTE sp_executesql N'
 
                 gridsDataTables[gridName].Rows.Clear();
 
-                var startString = gridsTableClass[gridName].startString;
+                var startVar = gridsTableClass[gridName].startVar;
                 var tableHndlNum = gridsTableClass[gridName].tableHndlNum;
                 var tableKey = gridsTableClass[gridName].tableKey;
                 var KeyClass = gridsTableClass[gridName].KeyClass;
@@ -5375,17 +5378,44 @@ $@"EXECUTE sp_executesql N'
 
                 var tagsAndTypes = gridsTableClass[gridName].tagsAndTypes;
 
-                if (!string.IsNullOrEmpty(startString.String))
+                if (startVar.Tuple != null && startVar.Tuple.Count > 0)
                 {
                     // if has start string
-                    var startParts = startString.String.Split('|');
+
+                    //var startParts = startString.String.Split('|');
+                    //var startStringResult = "";
+                    //foreach (var startPart in startParts)
+                    //{
+                    //    var part = Script.GetTempScript(startPart).Execute(null, 0).AsString();
+                    //    startStringResult += part;
+                    //    startStringResult += "|";
+                    //}
+                    //startStringResult = startStringResult.Remove(startStringResult.Length - 1, 1);
+
                     var startStringResult = "";
-                    foreach (var startPart in startParts)
+
+                    foreach (var startPart in startVar.Tuple)
                     {
-                        var part = Script.GetTempScript(startPart).Execute(null, 0).AsString();
-                        startStringResult += part;
+                        //var part = Script.GetTempScript(startPart).Execute(null, 0).AsString();
+                        
+                        switch (startPart.Type)
+                        {
+                            case Variable.VarType.INT:
+                            case Variable.VarType.NUMBER:
+                                startStringResult += startPart.AsString();
+                                break;
+                            case Variable.VarType.STRING:
+                                startStringResult += "'" + startPart.AsString() + "'";
+                                break;                    
+                            case Variable.VarType.DATETIME:
+                                startStringResult += "'" + startPart.AsString() + "'";
+                                break;
+                            default:
+                                break;
+                        }
                         startStringResult += "|";
                     }
+
                     startStringResult = startStringResult.Remove(startStringResult.Length - 1, 1);
 
                     new Btrieve.FINDVClass(Script, tableHndlNum, "g", tableKey, startStringResult).FINDV();
@@ -6210,7 +6240,7 @@ $@"EXECUTE sp_executesql N'
 
             public int tableHndlNum;
 
-            public ParsingScript startString;
+            public Variable startVar;
             public ParsingScript whileString;
             public string forString;
             public string tableKey;
@@ -7702,6 +7732,113 @@ $@"EXECUTE sp_executesql N'
                                 break;
                         }
                     }
+                }
+
+                return Variable.EmptyInstance;
+            }
+
+            private bool insertIntoArrays(int index, DisplayArrayClass dac)
+            {
+                try
+                {
+                    foreach (var arrayName in dac.tags)
+                    {
+                        if (Gui.DEFINES.TryGetValue(arrayName.ToLower(), out DefineVariable defVar))
+                        {
+                            defVar.Tuple.Insert(index, new Variable());
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
+            }
+
+            private bool deleteFromArrays(int index, DisplayArrayClass dac)
+            {
+                try
+                {
+                    foreach (var arrayName in dac.tags)
+                    {
+                        if (Gui.DEFINES.TryGetValue(arrayName.ToLower(), out DefineVariable defVar))
+                        {
+                            defVar.Tuple.RemoveAt(index);
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
+            }
+
+            private bool deleteFromDB(string rowId, OpenvTable thisOpenv)
+            {
+                try
+                {
+                    var query =
+$@"EXECUTE sp_executesql N'
+DELETE FROM {Databases[thisOpenv.databaseName.ToUpper()]}.dbo.{thisOpenv.tableName}
+where ID = {rowId}
+'";
+
+                    using (SqlCommand cmd = new SqlCommand(query, Gui.SQLInstance.SqlServerConnection))
+                    {
+                        var ret = cmd.ExecuteNonQuery();
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
+            }
+
+            private bool IsUserVisible(FrameworkElement element, FrameworkElement container)
+            {
+                if (!element.IsVisible)
+                    return false;
+                Rect bounds = element.TransformToAncestor(container).TransformBounds(new Rect(0.0, 0.0, element.ActualWidth, element.ActualHeight));
+                Rect rect = new Rect(0.0, 0.0, container.ActualWidth, container.ActualHeight);
+                return rect.Contains(bounds.TopLeft) || rect.Contains(bounds.BottomRight);
+            }
+        }
+        
+        class CursorFunction : ParserFunction
+        {
+            CSCS_GUI Gui;
+
+            protected override Variable Evaluate(ParsingScript script)
+            {
+                List<Variable> args = script.GetFunctionArgs();
+                Utils.CheckArgs(args.Count, 1, m_name);
+
+                Gui = CSCS_GUI.GetInstance(script);
+
+                var cursorOption = Utils.GetSafeString(args, 0).ToLower();
+
+                switch (cursorOption)
+                {
+                    case "wait":
+                        Mouse.OverrideCursor = Cursors.Wait;
+                        break;
+                    case "default":
+                        Mouse.OverrideCursor = null;
+                        break;
+
+                    default:
+                        break;
                 }
 
                 return Variable.EmptyInstance;

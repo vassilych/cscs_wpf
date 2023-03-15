@@ -192,6 +192,8 @@ namespace SplitAndMerge
 
         public const string DATAGRID = "DataGrid";
 
+        public const string CURSOR = "Cursor";
+
         public const string RESET_FIELD = "ResetField";
 
         public const string CO_GET = "COGet";

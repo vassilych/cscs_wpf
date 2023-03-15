@@ -399,7 +399,17 @@
                                     VerticalAlignment="Top"
                                     Background="#FFFFE6D9"
                                     TabIndex="12" />
-                    <WrapPanel HorizontalAlignment="Left"
+                    <CheckBox HorizontalAlignment="Left"
+                              VerticalAlignment="Top"
+                              Margin="1049,15,0,0"
+                              Name="TASCheckBox1"
+                              IsEnabled="True"
+                              Height="17"
+                              Width="96"
+                              DataContext="do_mjeseca"
+                              FlowDirection="RightToLeft"
+                              Content="Do mjeseca" />
+                    <!-- <WrapPanel HorizontalAlignment="Left"
                                VerticalAlignment="Top"
                                Orientation="Horizontal"
                                Height="17"
@@ -415,7 +425,7 @@
                                    FontSize="13"
                                    Foreground="Black"
                                    TextWrapping="Wrap" />
-                    </WrapPanel>
+                    </WrapPanel> -->
                 </Grid>
             </TabItem>
             <TabItem Background="Transparent">
@@ -443,7 +453,7 @@
                                VerticalAlignment="Top"
                                Height="16"
                                Width="219"
-                               Margin="822,290,0,0"
+                               Margin="822,345,0,0"
                                FontFamily="lato"
                                FontWeight="Bold"
                                Name="Label7"
@@ -625,7 +635,7 @@
                     <DataGrid HorizontalAlignment="Left"
                               VerticalAlignment="Top"
                               Height="216"
-                              Width="429"
+                              Width="550"
                               Margin="15,361,0,0"
                               IsReadOnly="true"
                               Name="dgStavke"
@@ -644,7 +654,7 @@
                                                     Width="24">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <wcl:ASGridCell FieldName="TOP10PART_AR"
+                                        <wcl:ASGridCell FieldName="top10Part_ar"
                                                         Editor="edDefault"
                                                         EditLength="0" />
                                     </DataTemplate>
@@ -695,8 +705,8 @@
                     <DataGrid HorizontalAlignment="Left"
                               VerticalAlignment="Top"
                               Height="216"
-                              Width="429"
-                              Margin="727,311,0,0"
+                              Width="550"
+                              Margin="727,361,0,0"
                               IsReadOnly="true"
                               Name="dgRacuniMjesec"
                               HorizontalScrollBarVisibility="Auto"
@@ -715,7 +725,7 @@
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <wcl:ASGridCell FieldName="T10CNTRMJ_AR"
-                                                        Editor="edDefault"
+                                                        Editor="edNumeric"
                                                         EditLength="0" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
@@ -765,7 +775,7 @@
                     <DataGrid HorizontalAlignment="Left"
                               VerticalAlignment="Top"
                               Height="216"
-                              Width="481"
+                              Width="550"
                               Margin="15,600,0,0"
                               IsReadOnly="true"
                               Name="dgRacuniLast"

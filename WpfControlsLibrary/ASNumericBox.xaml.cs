@@ -256,6 +256,8 @@ namespace WpfControlsLibrary
                 //numBoxTextBox.Name = TextBoxName;
                 //numBoxButton.Name = ButtonName;
 
+                numBoxTextBox.LoadedEvent();
+
                 loaded = true;
             }
 
