@@ -741,6 +741,11 @@ namespace WpfCSCS
 
             if (DEFINES.TryGetValue(widgetName, out DefineVariable defVar))
             {
+                //if (defVar.Type != newValue.Type)
+                //{
+                //    return;
+                //}
+
                 var assign = new MyAssignFunction(widgetName);
                 assign.DoAssign(Script, widgetName, defVar, ref newValue);
                 //defVar.InitVariable(newValue, this);
@@ -1365,6 +1370,16 @@ namespace WpfCSCS
                 return;
             }
 
+            //if(sender is ASNumericTextBox)
+            //{
+            //    var asntb = (sender as ASNumericTextBox);
+            //    if (asntb.SkipWidgetTextChanged)
+            //    {
+            //        asntb.SkipWidgetTextChanged = false;
+            //        ///return;
+            //    }
+            //}
+
             //m_updatingWidget.Add(widgetName);
             var text = GetTextWidgetFunction.GetText(widget);
             //UpdateVariable(widget, text);
@@ -1394,7 +1409,11 @@ namespace WpfCSCS
                     case "b":
                         if (double.TryParse(text.AsString(), out double parsedDouble))
                         {
-                            UpdateVariable(widget2, new Variable(parsedDouble));
+                            if(text.AsString() == parsedDouble.ToString())
+                            {
+                                UpdateVariable(widget2, new Variable(parsedDouble));
+                            }
+                            
                         }
                         break;
 

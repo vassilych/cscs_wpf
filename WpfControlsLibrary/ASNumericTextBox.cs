@@ -16,6 +16,7 @@ namespace WpfControlsLibrary
         const string decimalSign = ",";
 
         public bool SkipTextChangedHandler = false;
+        public bool SkipWidgetTextChanged = false;
 
         public Dictionary<string, List<object>> paramsForKeyTraps = new Dictionary<string, List<object>>();
 
@@ -107,6 +108,7 @@ namespace WpfControlsLibrary
         public void LoadedEvent()
         {
             this.TextChanged -= NumericTextBox_TextChanged;
+            SkipWidgetTextChanged = true;
 
             this.HorizontalContentAlignment = HorizontalAlignment.Right;
 
@@ -172,6 +174,7 @@ namespace WpfControlsLibrary
             if (Thousands)
                 formatThousandsDelimiter(this);
 
+            SkipWidgetTextChanged = false;
             this.TextChanged += NumericTextBox_TextChanged;
         }
 
@@ -180,10 +183,12 @@ namespace WpfControlsLibrary
             FormatOnLostFocus();
 
             this.TextChanged -= NumericTextBox_TextChanged;
+            SkipWidgetTextChanged = true;
 
             if (Thousands)
                 formatThousandsDelimiter(this);
 
+            SkipWidgetTextChanged = false;
             this.TextChanged += NumericTextBox_TextChanged;
 
             //var ntb = (e.Source as ASNumericTextBox);
@@ -264,6 +269,7 @@ namespace WpfControlsLibrary
             //var ntb = (e.Source as ASNumericTextBox);
 
             this.TextChanged -= NumericTextBox_TextChanged;
+            SkipWidgetTextChanged = true;
 
             if (double.TryParse(this.Text, out double resDouble))
             {
@@ -291,12 +297,14 @@ namespace WpfControlsLibrary
                 if (!this.Text.Contains(decimalSign))
                 {
                     SkipTextChangedHandler = true;
-                    this.Text += decimalSign;
+                    var append = "";
+                    append += decimalSign;
                     for (int i = 0; i < Dec; i++)
                     {
                         SkipTextChangedHandler = true;
-                        this.Text += "0";
+                        append += "0";
                     }
+                    this.Text += append;
                 }
             }
 
@@ -338,6 +346,7 @@ namespace WpfControlsLibrary
                 this.Text = "0" + this.Text.Substring(1);
             }
 
+            SkipWidgetTextChanged = false;
             this.TextChanged += NumericTextBox_TextChanged;
         }
 
@@ -346,6 +355,7 @@ namespace WpfControlsLibrary
             var ntb = (e.Source as ASNumericTextBox);
 
             ntb.TextChanged -= NumericTextBox_TextChanged;
+            SkipWidgetTextChanged = true;
 
             if (string.IsNullOrEmpty(ntb.Text))
             {
@@ -366,6 +376,7 @@ namespace WpfControlsLibrary
 
             ntb.Text = ntb.Text.Replace(thousandsDelimiter, "");
 
+            SkipWidgetTextChanged = false;
             ntb.TextChanged += NumericTextBox_TextChanged;
         }
 
@@ -380,6 +391,7 @@ namespace WpfControlsLibrary
             var ntb = (e.Source as ASNumericTextBox);
 
             ntb.TextChanged -= NumericTextBox_TextChanged;
+            SkipWidgetTextChanged = true;
 
             var splitted = ntb.Text.Split(decimalSign.ToCharArray().First());
        
@@ -401,6 +413,7 @@ namespace WpfControlsLibrary
                 ntb.SelectionStart = SelectionStartBeforeChange;
             }
 
+            SkipWidgetTextChanged = false;
             ntb.TextChanged += NumericTextBox_TextChanged;
 
             if(!ntb.IsKeyboardFocused)
@@ -424,6 +437,7 @@ namespace WpfControlsLibrary
             }
 
             ntb.TextChanged -= NumericTextBox_TextChanged;
+            SkipWidgetTextChanged = true;
 
             splitted[0] = splitted[0].Replace(thousandsDelimiter, "");
 
@@ -453,6 +467,7 @@ namespace WpfControlsLibrary
                 }
             }
 
+            SkipWidgetTextChanged = false;
             ntb.TextChanged += NumericTextBox_TextChanged;
         }
 
