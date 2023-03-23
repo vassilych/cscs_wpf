@@ -167,8 +167,6 @@ namespace WpfCSCS
                                 (series as LineSeries<double>).TooltipLabelFormatter = (chartPoint) => $"{chartPoint.PrimaryValue.ToString($"N{valueVariable.Value}")}";
                             }
                         }
-                        
-
 
                     }
                     

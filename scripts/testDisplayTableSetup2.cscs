@@ -9,12 +9,17 @@ if(flerr() != 0){
 }
 
 
+function func1(){
+    return 1;
+}
 
 
-
+Format("price");
 //// switch commented and uncommented for checkbox filter
 //DisplayTableSetup("grid1", table_hndl, "InvoiceLine_invoiceLineNumber", "1|1", "invoiceNumber < 40", "bitcolumn = 0");
-DisplayTableSetup("grid1", fnum: table_hndl, key: "InvoiceLine_invoiceLineNumber", start: "1|1", whileString: "invoiceNumber<13", forString: "");
+
+// DisplayTableSetup("grid1", fnum: table_hndl, key: "InvoiceLine_invoiceLineNumber", start: "1|1", whileString: "invoiceNumber<13", forString: "");
+DisplayTableSetup("grid1", fnum: table_hndl, key: "InvoiceLine_invoiceLineNumber", start: {1, func1()}, whileString: "invoiceNumber<13", forString: "");
 
 i = 2;
 function btnES@Clicked(){
@@ -48,4 +53,8 @@ function btnSave@clicked(){
     //MessageBox("price = " + price);
     Save(table_hndl, true, true);
     DisplayTable("grid1", "RedisplayActive");
+}
+
+function priceName@clicked(){
+    MessageBox("priceName clicked");
 }

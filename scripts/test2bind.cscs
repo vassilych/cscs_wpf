@@ -1,0 +1,5 @@
+CreateWindow("../../scripts/test2bind.xaml");
+
+DEFINE var1 type a size 10;
+
+var1 = "startValue";

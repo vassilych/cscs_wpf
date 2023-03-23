@@ -112,31 +112,6 @@ namespace WpfControlsLibrary
             }
         }
 
-        //public static readonly DependencyProperty TextBoxDCProperty = DependencyProperty.Register("TextBoxDC", typeof(string), typeof(ASNumericBox));
-        //public string TextBoxDC
-        //{
-        //    get
-        //    {
-        //        return (string)base.GetValue(TextBoxDCProperty);
-        //    }
-        //    set
-        //    {
-        //        base.SetValue(TextBoxDCProperty, value);
-        //    }
-        //}
-        
-        //public static readonly DependencyProperty TextBoxNameProperty = DependencyProperty.Register("TextBoxName", typeof(string), typeof(ASNumericBox));
-        //public string TextBoxName
-        //{
-        //    get
-        //    {
-        //        return (string)base.GetValue(TextBoxNameProperty);
-        //    }
-        //    set
-        //    {
-        //        base.SetValue(TextBoxNameProperty, value);
-        //    }
-        //}
         
         public static readonly DependencyProperty FieldNameProperty = DependencyProperty.Register("FieldName", typeof(string), typeof(ASNumericBox));
         public string FieldName
@@ -215,26 +190,69 @@ namespace WpfControlsLibrary
                 base.SetValue(IsReadOnlyProperty, value);
             }
         }
+        
+        public static readonly DependencyProperty IsInGridProperty = DependencyProperty.Register("IsInGrid", typeof(bool), typeof(ASNumericBox));
+        public bool IsInGrid
+        {
+            get
+            {
+                return (bool)base.GetValue(IsInGridProperty);
+            }
+            set
+            {
+                base.SetValue(IsInGridProperty, value);
+            }
+        }
 
-        //public static readonly DependencyProperty ButtonNameProperty = DependencyProperty.Register("ButtonName", typeof(string), typeof(ASNumericBox));
-        //public string ButtonName
-        //{
-        //    get
-        //    {
-        //        return (string)base.GetValue(ButtonNameProperty);
-        //    }
-        //    set
-        //    {
-        //        base.SetValue(ButtonNameProperty, value);
-        //    }
-        //}
+
+        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(string), typeof(ASNumericBox));
+        public string Value
+        {
+            get
+            {
+                return (string)base.GetValue(ValueProperty);
+            }
+            set
+            {
+                base.SetValue(ValueProperty, value);
+            }
+        }
+        
+        public static readonly DependencyProperty HorizontalContentAlignmentProperty = DependencyProperty.Register("HorizontalContentAlignment", typeof(HorizontalAlignment), typeof(ASNumericBox));
+        public HorizontalAlignment HorizontalContentAlignment
+        {
+            get
+            {
+                return (HorizontalAlignment)base.GetValue(HorizontalContentAlignmentProperty);
+            }
+            set
+            {
+                base.SetValue(HorizontalContentAlignmentProperty, value);
+            }
+        }
+
 
         public ASNumericBox()
         {
             InitializeComponent();
         }
 
+
+
         bool loaded = false;
+
+
+        //routed event
+        public static readonly RoutedEvent ButtonClickEvent = EventManager.RegisterRoutedEvent(
+        "ButtonClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ASNumericBox));
+
+        public event RoutedEventHandler ButtonClick
+        {
+            add { AddHandler(ButtonClickEvent, value); }
+            remove { RemoveHandler(ButtonClickEvent, value); }
+        }
+
+
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             if (!loaded)
@@ -243,20 +261,33 @@ namespace WpfControlsLibrary
                 numBoxTextBox.Dec = Dec == null ? 0 : (int)Dec;
                 numBoxTextBox.MinValue = MinValue != null ? (double)MinValue : double.MinValue;
                 numBoxTextBox.MaxValue = MaxValue != null ? (double)MaxValue : double.MaxValue;
-                numBoxTextBox.Text = Text;
+
+                numBoxTextBox.IsReadOnly = this.IsReadOnly;
+                numBoxTextBox.IsTabStop = this.IsTabStop;
+
+                ////novo
+                Binding bind = new Binding("Value");
+                bind.Mode = BindingMode.TwoWay;
+                bind.UpdateSourceTrigger = UpdateSourceTrigger.LostFocus;
+                bind.RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(ASNumericBox), 1);
+                numBoxTextBox.SetBinding(ASNumericTextBox.TextProperty, bind);
+
+                numBoxTextBox.HorizontalContentAlignment = HorizontalContentAlignment;
+
                 numBoxTextBox.Thousands = Thousands;
                 numBoxButton.Width = ButtonSize;
                 numBoxTextBox.FontWeight = FontWeight;
                 numBoxTextBox.Background = Background == null ? new SolidColorBrush() { Color = Colors.White } : Background;
                 numBoxTextBox.Foreground = Foreground == null ? new SolidColorBrush() { Color = Colors.Black } : Foreground;
-                //numBoxTextBox.DataContext = TextBoxDC;
-
+                
                 numBoxTextBox.IsReadOnly = IsReadOnly;
 
-                //numBoxTextBox.Name = TextBoxName;
-                //numBoxButton.Name = ButtonName;
+                numBoxTextBox.LoadedEvent();
+
+                if (IsInGrid) numBoxTextBox.IsInGrid = true;
 
                 loaded = true;
+
             }
 
         }
@@ -266,5 +297,10 @@ namespace WpfControlsLibrary
             numBoxTextBox.FormatOnLostFocus();
         }
 
+
+        private void numBoxButton_Click(object sender, RoutedEventArgs e)
+        {
+            RaiseEvent(new RoutedEventArgs(ASNumericBox.ButtonClickEvent));
+        }
     }
 }

@@ -65,6 +65,7 @@
       <DependentUpon>ASNumericBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="ASNumericTextBox.cs" />
+    <Compile Include="ASNumericBoxConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

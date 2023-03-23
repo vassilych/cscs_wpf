@@ -17,16 +17,12 @@ namespace WpfControlsLibrary
             try
             {
                 doubleValue = (double)value;
-                
             }
             catch
             {
 
             }
             return doubleValue.ToString();
-
-
-
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -1,9 +1,0 @@
-MessageBox("start");
-
-
-if(2==1){
-    MessageBox("1");
-}
-
-
-quit;
