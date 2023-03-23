@@ -48,6 +48,45 @@ namespace WpfControlsLibrary
                 base.SetValue(EditLengthProperty, value);
             }
         }
+        
+        public static readonly DependencyProperty DecimalChrsProperty = DependencyProperty.Register("DecimalChrs", typeof(int?), typeof(ASGridCell));
+        public int? DecimalChrs
+        {
+            get
+            {
+                return (int?)base.GetValue(DecimalChrsProperty);
+            }
+            set
+            {
+                base.SetValue(DecimalChrsProperty, value);
+            }
+        }
+        
+        public static readonly DependencyProperty SizeProperty = DependencyProperty.Register("Size", typeof(int?), typeof(ASGridCell));
+        public int? Size
+        {
+            get
+            {
+                return (int?)base.GetValue(SizeProperty);
+            }
+            set
+            {
+                base.SetValue(SizeProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty ThousandsProperty = DependencyProperty.Register("Thousands", typeof(bool), typeof(ASGridCell));
+        public bool Thousands
+        {
+            get
+            {
+                return (bool)base.GetValue(ThousandsProperty);
+            }
+            set
+            {
+                base.SetValue(ThousandsProperty, value);
+            }
+        }
 
         public override void OnApplyTemplate()
         {

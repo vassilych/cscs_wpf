@@ -48,7 +48,7 @@
                 <DataGridTemplateColumn Header="Price">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <wcl:ASGridCell FieldName="price"/>
+                            <wcl:ASGridCell FieldName="price" Name="priceName" HorizontalContentAlignment="Center"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

@@ -19,7 +19,7 @@
                     Margin="0,0,0,0"
                     Name="TASPageControl1"
                     Background="Transparent"
-                    TabIndex="0">
+                    >
             <TabItem Background="Transparent">
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal"
@@ -333,7 +333,7 @@
                                       FieldName="skladiste"
                                       FontFamily="lato"
                                       FontSize="14"
-                                      TabIndex="0" />
+                                       />
                     <wcl:ASEnterBox ButtonSize="0"
                                     FontWeight="Bold"
                                     Size="50"
@@ -508,7 +508,7 @@
                                Margin="455,162,0,0"
                                FontFamily="lato"
                                Name="Label14"
-                               FontSize="11"
+                               FontSize="12"
                                Foreground="#FF295454"
                                Text="Ovaj mjesec:" />
                     <TextBlock HorizontalAlignment="Left"
@@ -656,7 +656,8 @@
                                     <DataTemplate>
                                         <wcl:ASGridCell FieldName="top10Part_ar"
                                                         Editor="edDefault"
-                                                        EditLength="0" />
+                                                        EditLength="0" 
+                                                        HorizontalContentAlignment="Right"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -666,7 +667,8 @@
                                     <DataTemplate>
                                         <wcl:ASGridCell FieldName="NAMEPART_AR"
                                                         Editor="edDefault"
-                                                        EditLength="0" />
+                                                        EditLength="0"
+                                                        HorizontalContentAlignment="Left" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -676,7 +678,8 @@
                                     <DataTemplate>
                                         <wcl:ASGridCell FieldName="SALESPART1_AR"
                                                         Editor="edNumeric"
-                                                        EditLength="0" />
+                                                        EditLength="0" 
+                                                        HorizontalContentAlignment="Right"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -686,7 +689,8 @@
                                     <DataTemplate>
                                         <wcl:ASGridCell FieldName="SALESPART2_AR"
                                                         Editor="edNumeric"
-                                                        EditLength="0" />
+                                                        EditLength="0" 
+                                                        HorizontalContentAlignment="Right"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -696,7 +700,8 @@
                                     <DataTemplate>
                                         <wcl:ASGridCell FieldName="INDEXPART_AR"
                                                         Editor="edNumeric"
-                                                        EditLength="0" />
+                                                        EditLength="0"
+                                                        HorizontalContentAlignment="Right" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -726,7 +731,8 @@
                                     <DataTemplate>
                                         <wcl:ASGridCell FieldName="T10CNTRMJ_AR"
                                                         Editor="edNumeric"
-                                                        EditLength="0" />
+                                                        EditLength="0" 
+                                                        HorizontalContentAlignment="Right"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -736,7 +742,8 @@
                                     <DataTemplate>
                                         <wcl:ASGridCell FieldName="T10RACUNMJ_AR"
                                                         Editor="edNumeric"
-                                                        EditLength="0" />
+                                                        EditLength="0"
+                                                        HorizontalContentAlignment="Left"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -746,7 +753,8 @@
                                     <DataTemplate>
                                         <wcl:ASGridCell FieldName="T10DATUMMJ_AR"
                                                         Editor="edDefault"
-                                                        EditLength="8" />
+                                                        EditLength="8"
+                                                        HorizontalContentAlignment="Left" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -756,7 +764,8 @@
                                     <DataTemplate>
                                         <wcl:ASGridCell FieldName="T10NAMEMJ_AR"
                                                         Editor="edDefault"
-                                                        EditLength="0" />
+                                                        EditLength="0"
+                                                        HorizontalContentAlignment="Left" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -766,7 +775,8 @@
                                     <DataTemplate>
                                         <wcl:ASGridCell FieldName="T10IZNOSMJ_AR"
                                                         Editor="edNumeric"
-                                                        EditLength="0" />
+                                                        EditLength="0"
+                                                        HorizontalContentAlignment="Right" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -777,7 +787,7 @@
                               Height="216"
                               Width="550"
                               Margin="15,600,0,0"
-                              IsReadOnly="true"
+                              IsReadOnly="false"
                               Name="dgRacuniLast"
                               HorizontalScrollBarVisibility="Auto"
                               VerticalScrollBarVisibility="Auto"
@@ -798,7 +808,8 @@
                                     <DataTemplate>
                                         <wcl:ASGridCell FieldName="T10CNTRZ_AR"
                                                         Editor="edDefault"
-                                                        EditLength="0" />
+                                                        EditLength="0" 
+                                                        HorizontalContentAlignment="Right"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -808,7 +819,8 @@
                                     <DataTemplate>
                                         <wcl:ASGridCell FieldName="T10RACUNZ_AR"
                                                         Editor="edNumeric"
-                                                        EditLength="0" />
+                                                        EditLength="0"
+                                                        HorizontalContentAlignment="Left" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -818,7 +830,8 @@
                                     <DataTemplate>
                                         <wcl:ASGridCell FieldName="T10DATUMZ_AR"
                                                         Editor="edDefault"
-                                                        EditLength="8" />
+                                                        EditLength="8" 
+                                                        HorizontalContentAlignment="Left"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -828,7 +841,8 @@
                                     <DataTemplate>
                                         <wcl:ASGridCell FieldName="T10TIMEZ_AR"
                                                         Editor="edDefault"
-                                                        EditLength="0" />
+                                                        EditLength="0" 
+                                                        HorizontalContentAlignment="Left"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -838,7 +852,8 @@
                                     <DataTemplate>
                                         <wcl:ASGridCell FieldName="T10NAMEZ_AR"
                                                         Editor="edDefault"
-                                                        EditLength="0" />
+                                                        EditLength="0" 
+                                                        HorizontalContentAlignment="Left"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -847,8 +862,14 @@
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <wcl:ASGridCell FieldName="T10IZNOSZ_AR"
-                                                        Editor="edNumeric"
-                                                        EditLength="0" />
+                                                        EditLength="0" 
+                                                        HorizontalContentAlignment="Center"
+                                                        DecimalChrs="2"
+                                                        Size="10"
+                                                        Thousands="True"
+                                                        Name="clickTest"
+                                                        Editor="edEditBtn"
+                                                        />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -868,9 +889,14 @@
                                       Background="#FFF2F2F2"
                                       Foreground="black"
                                       FieldName="tot_ovagod"
+                                      HorizontalContentAlignment="Right"
                                       FontFamily="Lato"
                                       FontSize="21"
-                                      TabIndex="5" />
+                                      TabIndex="5"
+                                      IsReadOnly="True"
+                                      
+                                       
+                                      />
                     <wcl:ASNumericBox HorizontalAlignment="Left"
                                       VerticalAlignment="Top"
                                       FontWeight="Bold"
@@ -884,6 +910,7 @@
                                       Background="#FFF2F2F2"
                                       Foreground="black"
                                       FieldName="tot_lani"
+                                      HorizontalContentAlignment="Right"
                                       FontFamily="lato"
                                       FontSize="21"
                                       TabIndex="6" />
@@ -891,6 +918,7 @@
                                       VerticalAlignment="Top"
                                       FontWeight="Bold"
                                       ButtonSize="0"
+                                       Size="10"
                                       Dec="2"
                                       Height="30"
                                       Width="126"
@@ -1150,7 +1178,9 @@
                             FontFamily="Arial"
                             Width="128"
                             Visibility="Visible"
-                            Name="gbPripremi2">
+                            Name="gbPripremi2"
+                            TabIndex="0"
+                            >
                         <Grid>
                             <TextBlock Grid.Column="1"
                                        FontSize="10"

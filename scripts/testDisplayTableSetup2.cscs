@@ -14,6 +14,7 @@ function func1(){
 }
 
 
+Format("price");
 //// switch commented and uncommented for checkbox filter
 //DisplayTableSetup("grid1", table_hndl, "InvoiceLine_invoiceLineNumber", "1|1", "invoiceNumber < 40", "bitcolumn = 0");
 
@@ -52,4 +53,8 @@ function btnSave@clicked(){
     //MessageBox("price = " + price);
     Save(table_hndl, true, true);
     DisplayTable("grid1", "RedisplayActive");
+}
+
+function priceName@clicked(){
+    MessageBox("priceName clicked");
 }

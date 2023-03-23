@@ -63,6 +63,8 @@ namespace WpfControlsLibrary
 
         #endregion
 
+        public bool IsInGrid;
+
         public int Size;
         public int Dec;
         public double MinValue = double.MinValue;
@@ -107,10 +109,13 @@ namespace WpfControlsLibrary
 
         public void LoadedEvent()
         {
+            if(IsInGrid)
+                return;
+
             this.TextChanged -= NumericTextBox_TextChanged;
             SkipWidgetTextChanged = true;
 
-            this.HorizontalContentAlignment = HorizontalAlignment.Right;
+            //this.HorizontalContentAlignment = HorizontalAlignment.Right;
 
             var tempText = this.Text;
 
@@ -180,6 +185,9 @@ namespace WpfControlsLibrary
 
         private void NumericTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
+            if (IsInGrid)
+                return;
+
             FormatOnLostFocus();
 
             this.TextChanged -= NumericTextBox_TextChanged;
@@ -190,111 +198,44 @@ namespace WpfControlsLibrary
 
             SkipWidgetTextChanged = false;
             this.TextChanged += NumericTextBox_TextChanged;
-
-            //var ntb = (e.Source as ASNumericTextBox);
-
-            //ntb.TextChanged -= NumericTextBox_TextChanged;
-
-            //if (double.TryParse(ntb.Text, out double resDouble))
-            //{
-            //    if (resDouble > MaxValue || resDouble < MinValue)
-            //    {
-            //        ntb.Text = "0";
-            //    }
-            //}
-
-            //if (string.IsNullOrEmpty(ntb.Text))
-            //{
-            //    ntb.Text += 0;
-            //}
-
-            //if (Dec != 0)
-            //{
-            //    if (!ntb.Text.Contains(decimalSign))
-            //    {
-            //        ntb.Text += decimalSign;
-            //        for (int i = 0; i < Dec; i++)
-            //        {
-            //            ntb.Text += "0";
-            //        }
-            //    }
-            //}
-
-            //var splitted = ntb.Text.Split(decimalSign.ToCharArray().First());
-
-            //if (Dec > 0)
-            //{
-            //    ntb.TextChanged -= NumericTextBox_TextChanged;
-            //    if (!ntb.Text.Contains(decimalSign))
-            //    {
-            //        ntb.Text += decimalSign;
-            //    }
-            //    if (splitted[1].Length != Dec)
-            //    {
-            //        ntb.Text = Math.Round(double.Parse(ntb.Text.Replace(thousandsDelimiter, "").Replace(decimalSign, ",")), Dec).ToString().Replace(",", decimalSign);
-
-            //        if (!ntb.Text.Contains(decimalSign))
-            //        {
-            //            ntb.Text += decimalSign;
-            //        }
-
-            //        while (ntb.Text.Split(decimalSign.ToCharArray().First())[1].Length < Dec)
-            //        {
-            //            ntb.Text += "0";
-            //        }
-            //    }
-            //}
-
-            //if(Dec > 0)
-            //{
-            //    if (splitted[0].Length == 0)
-            //    {
-            //        ntb.Text = "0" + ntb.Text;
-            //    }
-            //}
-
-            //if (splitted[0].Length == 1 && splitted[0] == "-")
-            //{
-            //    ntb.Text = "0" + ntb.Text.Substring(1);
-            //}
-
-            //if (Thousands)
-            //    formatThousandsDelimiter(ntb);
-
-            //ntb.TextChanged += NumericTextBox_TextChanged;
         }
 
         public void FormatOnLostFocus()
         {
+            if (IsInGrid)
+                return;
+
             //var ntb = (e.Source as ASNumericTextBox);
 
             this.TextChanged -= NumericTextBox_TextChanged;
             SkipWidgetTextChanged = true;
 
-            if (double.TryParse(this.Text, out double resDouble))
+            string tempTxt = this.Text;
+
+            if (double.TryParse(tempTxt, out double resDouble))
             {
                 if (resDouble > MaxValue || resDouble < MinValue)
                 {
-                    this.Text = "0";
+                    tempTxt = "0";
                 }
                 else
                 {
-                    this.Text = resDouble.ToString();
+                    tempTxt = resDouble.ToString();
                 }
             }
             else
             {
-                this.Text = "0";
+                tempTxt = "0";
             }
 
-            if (string.IsNullOrEmpty(this.Text))
+            if (string.IsNullOrEmpty(tempTxt))
             {
-                this.Text += 0;
+                tempTxt += 0;
             }
 
             if (Dec != 0)
             {
-                if (!this.Text.Contains(decimalSign))
+                if (!tempTxt.Contains(decimalSign))
                 {
                     SkipTextChangedHandler = true;
                     var append = "";
@@ -304,31 +245,31 @@ namespace WpfControlsLibrary
                         SkipTextChangedHandler = true;
                         append += "0";
                     }
-                    this.Text += append;
+                    tempTxt += append;
                 }
             }
 
-            var splitted = this.Text.Split(decimalSign.ToCharArray().First());
+            var splitted = tempTxt.Split(decimalSign.ToCharArray().First());
 
             if (Dec > 0)
             {
                 this.TextChanged -= NumericTextBox_TextChanged;
-                if (!this.Text.Contains(decimalSign))
+                if (!tempTxt.Contains(decimalSign))
                 {
-                    this.Text += decimalSign;
+                    tempTxt += decimalSign;
                 }
                 if (splitted[1].Length != Dec)
                 {
-                    this.Text = Math.Round(double.Parse(this.Text.Replace(thousandsDelimiter, "").Replace(decimalSign, ",")), Dec).ToString().Replace(",", decimalSign);
+                    tempTxt = Math.Round(double.Parse(tempTxt.Replace(thousandsDelimiter, "").Replace(decimalSign, ",")), Dec).ToString().Replace(",", decimalSign);
 
-                    if (!this.Text.Contains(decimalSign))
+                    if (!tempTxt.Contains(decimalSign))
                     {
-                        this.Text += decimalSign;
+                        tempTxt += decimalSign;
                     }
 
-                    while (this.Text.Split(decimalSign.ToCharArray().First())[1].Length < Dec)
+                    while (tempTxt.Split(decimalSign.ToCharArray().First())[1].Length < Dec)
                     {
-                        this.Text += "0";
+                        tempTxt += "0";
                     }
                 }
             }
@@ -337,14 +278,16 @@ namespace WpfControlsLibrary
             {
                 if (splitted[0].Length == 0)
                 {
-                    this.Text = "0" + this.Text;
+                    tempTxt = "0" + tempTxt;
                 }
             }
 
             if (splitted[0].Length == 1 && splitted[0] == "-")
             {
-                this.Text = "0" + this.Text.Substring(1);
+                tempTxt = "0" + tempTxt.Substring(1);
             }
+
+            this.Text = tempTxt;
 
             SkipWidgetTextChanged = false;
             this.TextChanged += NumericTextBox_TextChanged;
@@ -352,29 +295,36 @@ namespace WpfControlsLibrary
 
         private void NumericTextBox_GotFocus(object sender, RoutedEventArgs e)
         {
+            if (IsInGrid)
+                return;
+
             var ntb = (e.Source as ASNumericTextBox);
 
             ntb.TextChanged -= NumericTextBox_TextChanged;
             SkipWidgetTextChanged = true;
 
-            if (string.IsNullOrEmpty(ntb.Text))
+            string tempTxt = ntb.Text;
+
+            if (string.IsNullOrEmpty(tempTxt))
             {
-                ntb.Text += 0;
+                tempTxt += 0;
             }
 
             if (Dec != 0)
             {
-                if (!ntb.Text.Contains(decimalSign))
+                if (!tempTxt.Contains(decimalSign))
                 {
-                    ntb.Text += decimalSign;
+                    tempTxt += decimalSign;
                     for(int i = 0; i < Dec; i++)
                     {
-                        ntb.Text += "0";
+                        tempTxt += "0";
                     }
                 }
             }
 
-            ntb.Text = ntb.Text.Replace(thousandsDelimiter, "");
+            tempTxt = tempTxt.Replace(thousandsDelimiter, "");
+
+            ntb.Text = tempTxt;
 
             SkipWidgetTextChanged = false;
             ntb.TextChanged += NumericTextBox_TextChanged;
@@ -423,11 +373,16 @@ namespace WpfControlsLibrary
 
         private void formatThousandsDelimiter(ASNumericTextBox ntb)
         {
+            if (IsInGrid)
+                return;
+
             numOfThousandsDelimiters = 0;
 
-            var charList = ntb.Text.ToList();
+            var tempTxt = ntb.Text;
 
-            var splitted = ntb.Text.Split(decimalSign.ToCharArray().First());
+            var charList = tempTxt.ToList();
+
+            var splitted = tempTxt.Split(decimalSign.ToCharArray().First());
 
             bool hasNegativeSign = false;
             if (splitted[0].StartsWith("-"))
@@ -459,13 +414,15 @@ namespace WpfControlsLibrary
                 }
                 result = result.Substring(0, result.Length - 1);
 
-                ntb.Text = result + (splitted.Length > 1 ? decimalSign + splitted[1] : "");
+                tempTxt = result + (splitted.Length > 1 ? decimalSign + splitted[1] : "");
 
                 if (hasNegativeSign)
                 {
-                    ntb.Text = "-" + ntb.Text;
+                    tempTxt = "-" + tempTxt;
                 }
             }
+
+            ntb.Text = tempTxt;
 
             SkipWidgetTextChanged = false;
             ntb.TextChanged += NumericTextBox_TextChanged;

@@ -192,6 +192,8 @@ namespace SplitAndMerge
 
         public const string DATAGRID = "DataGrid";
 
+        public const string FORMAT = "Format";
+
         public const string CURSOR = "Cursor";
 
         public const string RESET_FIELD = "ResetField";
@@ -1009,6 +1011,10 @@ namespace WpfCSCS
             {
                 return false;
             }
+
+            if (widget is ASDateEditer)
+                return false;
+
             m_dateSelectedHandlers[name] = action;
             datePicker.SelectedDateChanged += DatePicker_SelectedDateChanged;
 
@@ -1157,6 +1163,8 @@ namespace WpfCSCS
             RunScript(funcName, win, new Variable(widgetName), newValue);
         }
 
+        //public bool skipSelectedDateChanged = false;
+
         private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             var widget = sender as FrameworkElement;
@@ -1169,8 +1177,9 @@ namespace WpfCSCS
             {
                 return;
             }
-            if (DEFINES.TryGetValue(widgetBindingName, out DefineVariable defVar))
+            if (DEFINES.TryGetValue(widgetBindingName.ToLower(), out DefineVariable defVar))
             {
+                //skipSelectedDateChanged = false;
                 var dateFormat = defVar.GetDateFormat();
                 ValueUpdated(funcName, widgetName, widget, new Variable(date.Value.ToString(dateFormat)));
             }
@@ -1453,7 +1462,8 @@ namespace WpfCSCS
             var widget = sender as ASDateEditer;
             var widgetName = GetWidgetBindingName(widget);
 
-            var text = GetTextWidgetFunction.GetText(widget);
+            //var text = GetTextWidgetFunction.GetText(widget);
+            DateTime? text = widget.SelectedDate;
 
             m_updatingWidget.Add(widgetName);
             //var text = GetTextWidgetFunction.GetText(widget2);
@@ -1462,21 +1472,25 @@ namespace WpfCSCS
                 switch (defVar.DefType)
                 {
                     case "a":
-                        UpdateVariable(widget, text);
+                        //UpdateVariable(widget, text);
                         break;
 
                     case "i":
                     case "n":
                     case "r":
                     case "b":
-                        if (double.TryParse(text.AsString(), out double parsedDouble))
-                        {
-                            UpdateVariable(widget, new Variable(parsedDouble));
-                        }
+                        //if (double.TryParse(text.AsString(), out double parsedDouble))
+                        //{
+                        //    UpdateVariable(widget, new Variable(parsedDouble));
+                        //}
                         break;
 
                     case "d":
-                        UpdateVariable(widget, new Variable(text));
+                        var variableName = GetWidgetBindingName(widget).ToLower();
+                        if (DEFINES.TryGetValue(variableName, out DefineVariable defVar2))
+                        {
+                            UpdateVariable(widget, new Variable(text?.ToString(defVar2.GetDateFormat())));
+                        }
                         break;
                     case "t":
                         //if (true)
@@ -2177,6 +2191,8 @@ namespace WpfCSCS
                     foreach (var item in groupBoxGrid.Children)
                     {
                         if(item is RadioButton)
+                            CacheControl(item as FrameworkElement, win, controls);
+                        else if (item is CheckBox)
                             CacheControl(item as FrameworkElement, win, controls);
                     }
                 }
