@@ -277,6 +277,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="scripts\test2bind.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="scripts\Window2.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -317,6 +321,7 @@
     <None Include="scripts\helloWorld.cscs" />
     <None Include="scripts\printPlugin.cscs" />
     <None Include="scripts\start.cscs" />
+    <None Include="scripts\test2bind.cscs" />
     <None Include="scripts\wpfgui.cscs" />
   </ItemGroup>
   <ItemGroup>

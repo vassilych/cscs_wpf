@@ -6761,7 +6761,7 @@ $@"EXECUTE sp_executesql N'
                     }
 
                     // gridName@move event
-                    var widgetName = Gui.GetWidgetName(dg);
+                    var widgetName = CSCS_GUI.GetWidgetName(dg);
                     if (string.IsNullOrWhiteSpace(widgetName))
                     {
                         return;

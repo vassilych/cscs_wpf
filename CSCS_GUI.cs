@@ -693,15 +693,25 @@ namespace WpfCSCS
             }, null);
         }
 
-        public string GetWidgetBindingName(FrameworkElement widget)
+        public static string GetWidgetBindingName(FrameworkElement widget)
         {
-            var widgetName = widget == null || widget.DataContext == null ? "" : widget.DataContext.ToString();
-            return widgetName;
+            if (widget == null)
+            {
+                return "";
+            }
+            var nm = string.IsNullOrWhiteSpace(widget.Name) ? "" : widget.Name;
+            var dc = widget.DataContext == null ? "" : widget.DataContext.ToString();
+            var bindingName = string.IsNullOrWhiteSpace(dc) ? nm : dc;
+            return bindingName;
         }
 
-        public string GetWidgetName(FrameworkElement widget)
+        public static string GetWidgetName(FrameworkElement widget)
         {
-            var widgetName = widget == null || widget.Name == null ? "" : widget.Name.ToString().ToString().ToString();
+            if (widget == null || string.IsNullOrWhiteSpace(widget.Name))
+            {
+                return "";
+            }
+            var widgetName = widget.Name.ToString();
             return widgetName;
         }
 
@@ -1297,7 +1307,7 @@ namespace WpfCSCS
         private void Widget_PreClick(object sender, MouseButtonEventArgs e)
         {
             var widget = sender as FrameworkElement;
-            var widgetName = GetWidgetBindingName(widget);
+            var widgetName = GetWidgetName(widget);
             if (string.IsNullOrWhiteSpace(widgetName) || e.ChangedButton != MouseButton.Left)
             {
                 return;
@@ -1316,7 +1326,7 @@ namespace WpfCSCS
         private void Widget_PostClick(object sender, MouseButtonEventArgs e)
         {
             var widget = sender as FrameworkElement;
-            var widgetName = GetWidgetBindingName(widget);
+            var widgetName = GetWidgetName(widget);
             if (string.IsNullOrWhiteSpace(widgetName) || e.ChangedButton != MouseButton.Left)
             {
                 return;
@@ -1335,7 +1345,7 @@ namespace WpfCSCS
         private void Widget_KeyDown(object sender, KeyEventArgs e)
         {
             var widget = sender as FrameworkElement;
-            var widgetName = GetWidgetBindingName(widget);
+            var widgetName = GetWidgetName(widget);
             if (string.IsNullOrWhiteSpace(widgetName))
             {
                 return;
@@ -1353,7 +1363,7 @@ namespace WpfCSCS
         private void Widget_KeyUp(object sender, KeyEventArgs e)
         {
             var widget = sender as FrameworkElement;
-            var widgetName = GetWidgetBindingName(widget);
+            var widgetName = GetWidgetName(widget);
             if (string.IsNullOrWhiteSpace(widgetName))
             {
                 return;
@@ -1524,7 +1534,7 @@ namespace WpfCSCS
         private void Widget_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var widget = sender as Selector;
-            var widgetName = GetWidgetBindingName(widget);
+            var widgetName = GetWidgetName(widget);
             if (m_selChangedHandlers.TryGetValue(widgetName, out string funcName))
             {
                 var item = e.AddedItems.Count > 0 ? e.AddedItems[0].ToString() : e.RemovedItems.Count > 0 ? e.RemovedItems[0].ToString() : "";
@@ -1537,7 +1547,7 @@ namespace WpfCSCS
         private void Widget_Hover(object sender, MouseEventArgs e)
         {
             var widget = sender as FrameworkElement;
-            var widgetName = GetWidgetBindingName(widget);
+            var widgetName = GetWidgetName(widget);
             if (string.IsNullOrWhiteSpace(widgetName))
             {
                 return;
@@ -2221,8 +2231,18 @@ namespace WpfCSCS
 
         public void CacheControl(FrameworkElement widget, Window win = null, List<FrameworkElement> controls = null)
         {
+            var wName = GetWidgetName(widget);
+            if (!string.IsNullOrWhiteSpace(wName))
+            {
+                Controls[wName.ToLower()] = widget;
+                controls?.Add(widget);
+                if (win != null)
+                {
+                    Control2Window[widget] = win;
+                }
+            }
 
-            if (widget != null && !string.IsNullOrEmpty(widget.Name))
+            /*if (widget != null && !string.IsNullOrWhiteSpace(widget.Name))
             {
                 Controls[widget.Name.ToString().ToLower()] = widget;
                 controls?.Add(widget);
@@ -2239,7 +2259,7 @@ namespace WpfCSCS
                 {
                     Control2Window[widget] = win;
                 }
-            }
+            }*/
         }
 
         public void CacheASEnterBoxChild(FrameworkElement widget, Window win = null, List<FrameworkElement> controls = null, ASEnterBox enterBox = null)
@@ -2302,8 +2322,28 @@ namespace WpfCSCS
                     }
                 }
 
+                var wName = GetWidgetName(widget);
+                if (!string.IsNullOrWhiteSpace(wName))
+                {
+                    Controls[wName.ToLower()] = widget;
+                    controls?.Add(widget);
+                    if (win != null)
+                    {
+                        Control2Window[widget] = win;
+                    }
+                }
+                /*if (widget != null && widget.DataContext != null)
+                {
+                    Controls[widget.DataContext.ToString().ToLower()] = widget;
+                    controls?.Add(widget);
+                    if (win != null)
+                    {
+                        Control2Window[widget] = win;
+                    }
+                }
                 if (widget != null && !string.IsNullOrEmpty(enterBox.FieldName))
                 {
+
                     Controls[enterBox.FieldName.ToString().ToLower()] = widget;
                     controls?.Add(widget);
                     if (win != null)
@@ -2322,13 +2362,22 @@ namespace WpfCSCS
                     {
                         Control2Window[widget] = win;
                     }
-                }
+                }*/
             }
             else if (widget is Button)
             {
                 widget.Name = enterBox.Name;
-
-                if (widget != null && !string.IsNullOrEmpty(enterBox.Name))
+                var wName = GetWidgetName(widget);
+                if (!string.IsNullOrWhiteSpace(wName))
+                {
+                    Controls[wName.ToLower()] = widget;
+                    controls?.Add(widget);
+                    if (win != null)
+                    {
+                        Control2Window[widget] = win;
+                    }
+                }
+                /*if (widget != null && !string.IsNullOrEmpty(enterBox.Name))
                 {
                     Controls[enterBox.Name.ToString().ToLower()] = widget;
                     controls?.Add(widget);
@@ -2336,16 +2385,7 @@ namespace WpfCSCS
                     {
                         Control2Window[widget] = win;
                     }
-                }
-                //if (widget != null && numBox.DataContext != null)
-                //{
-                //    Controls[numBox.DataContext.ToString().ToLower()] = widget;
-                //    controls?.Add(widget);
-                //    if (win != null)
-                //    {
-                //        Control2Window[widget] = win;
-                //    }
-                //}
+                }*/
             }
         }
 
@@ -2438,10 +2478,18 @@ namespace WpfCSCS
                     }
                 }
 
-                if (widget != null && !string.IsNullOrEmpty(numBox.FieldName))
+                var wName = GetWidgetBindingName(widget);
+                if (!string.IsNullOrWhiteSpace(wName))
                 {
-                    //Controls[numBox.FieldName.ToString().ToLower()] = widget;
-                    //Controls[numBox.Name.ToString().ToLower()] = widget;
+                    Controls[wName.ToLower()] = widget;
+                    controls?.Add(widget);
+                    if (win != null)
+                    {
+                        Control2Window[widget] = win;
+                    }
+                }
+                /*if (widget != null && !string.IsNullOrEmpty(numBox.FieldName))
+                {
                     Controls[widget.Name.ToLower()] = widget;
                     controls?.Add(widget);
                     if (win != null)
@@ -2451,8 +2499,6 @@ namespace WpfCSCS
                 }
                 if (widget != null && numBox.FieldName != null)
                 {
-                    //Controls[numBox.FieldName.ToString().ToLower()] = widget;
-                    //Controls[numBox.Name.ToString().ToLower()] = widget;
                     Controls[widget.Name.ToLower()] = widget;
 
                     if (controls != null && !controls.Contains(widget))
@@ -2462,41 +2508,38 @@ namespace WpfCSCS
                     {
                         Control2Window[widget] = win;
                     }
-                }
+                }*/
             }
             else if (widget is Button)
             {
-                //widget.Name = numBox.Name;
                 widget.Name = numBox.Name; //"button_" + numBox.Name;
-
-                if (widget != null && !string.IsNullOrEmpty(numBox.Name))
+                var wName = GetWidgetBindingName(widget);
+                if (!string.IsNullOrWhiteSpace(wName))
                 {
-                    //Controls[numBox.Name.ToString().ToLower()] = widget;
-                    Controls[widget.Name.ToString().ToLower()] = widget;
+                    Controls[wName.ToLower()] = widget;
                     controls?.Add(widget);
                     if (win != null)
                     {
                         Control2Window[widget] = win;
                     }
                 }
-                //if (widget != null && numBox.DataContext != null)
-                //{
-                //    Controls[numBox.DataContext.ToString().ToLower()] = widget;
-                //    controls?.Add(widget);
-                //    if (win != null)
-                //    {
-                //        Control2Window[widget] = win;
-                //    }
-                //}
+                /*if (widget != null && !string.IsNullOrEmpty(numBox.Name))
+                {
+                    Controls[widget.Name.ToString().ToLower()] = widget;
+                    controls?.Add(widget);
+                    if (win != null)
+                    {
+                        Control2Window[widget] = win;
+                    }
+                }*/
             }
-
-
-
         }
         public void RemoveControl(FrameworkElement widget)
         {
             widget.Visibility = Visibility.Hidden;
-            Controls.Remove(widget.DataContext.ToString().ToLower());
+
+            var wName = GetWidgetBindingName(widget);
+            Controls.Remove(wName.ToLower());
         }
 
         public void AddWidgetActions(FrameworkElement widget)
@@ -3847,7 +3890,7 @@ namespace WpfCSCS
         {
             DataGrid dg = sender as DataGrid;
             var gui = dg.DataContext as CSCS_GUI;
-            string widgetName = gui.GetWidgetBindingName(dg);
+            string widgetName = CSCS_GUI.GetWidgetBindingName(dg);
             Color bgcolor, fgcolor;
             if (m_bgcolors.TryGetValue(widgetName, out bgcolor))
             {
