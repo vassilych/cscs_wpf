@@ -496,6 +496,7 @@ namespace WpfCSCS
         Dictionary<string, string> m_SelectHandlers = new Dictionary<string, string>();
 
         Dictionary<string, Variable> m_boundVariables = new Dictionary<string, Variable>();
+        Dictionary<string, List<FrameworkElement>> m_bound2Widgets = new Dictionary<string, List<FrameworkElement>>();
 
         HashSet<string> m_updatingWidget = new HashSet<string>();
         //static Dictionary<string, TabPage> s_tabPages           = new Dictionary<string, TabPage>();
@@ -740,6 +741,15 @@ namespace WpfCSCS
             }
 
             SetTextWidgetFunction.SetText(widget, newValue.AsString());
+            if (m_bound2Widgets.TryGetValue(widgetName, out List<FrameworkElement> widgets))
+            {
+                foreach (var wid in widgets)
+                {
+                    SetTextWidgetFunction.SetText(wid, newValue.AsString());
+                }
+                var ct = widgets.Count;
+            }
+
             m_boundVariables[widgetName] = newValue;
         }
 
@@ -862,6 +872,14 @@ namespace WpfCSCS
 
             name = name.ToLower();
             m_boundVariables[name] = current;
+            
+            if (!m_bound2Widgets.TryGetValue(name, out List<FrameworkElement> widgets))
+            {
+                widgets = new List<FrameworkElement>();
+            }
+            widgets.Add(widget);
+            m_bound2Widgets[name] = widgets;
+
             if (DEFINES.TryGetValue(name, out DefineVariable defVar))
             {
                 OnVariableChange(name, defVar);
@@ -4343,6 +4361,7 @@ namespace WpfCSCS
 
             MenuItem newMenuItem = new MenuItem();
             newMenuItem.Header = menuLabel;
+            newMenuItem.Name = GetValidName(menuName);
             newMenuItem.DataContext = menuName;
 
             if (!string.IsNullOrWhiteSpace(menuAction))
@@ -4358,6 +4377,16 @@ namespace WpfCSCS
             gui.CacheControl(newMenuItem, win);
 
             return new Variable(menuName);
+        }
+
+        public static string GetValidName(string name)
+        {
+            string newName = name.Replace('.', '_').Replace('(', '_').Replace(')', '_').Replace('-', '_').Replace(' ', '_');
+            foreach (char c in Path.GetInvalidFileNameChars())
+            {
+                newName = newName.Replace(c, '_');
+            }
+            return newName;
         }
     }
 

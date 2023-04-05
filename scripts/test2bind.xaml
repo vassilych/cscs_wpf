@@ -15,13 +15,13 @@
         <TextBox VerticalAlignment="Top"
                  HorizontalAlignment="Left"
                  Margin="10,10,0,0"
-                 DataContext="var1"
+                 DataContext="var1" Name="Lala1"
                  Height="35"
                  Width="100" />
         <TextBox VerticalAlignment="Top"
                  HorizontalAlignment="Left"
                  Margin="10,55,0,0"
-                 DataContext="var1"
+                 DataContext="var1" Name="Lala2"
                  Height="35"
                  Width="100" />
     </Grid>
