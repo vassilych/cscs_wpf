@@ -293,6 +293,10 @@ function mainMenuWindow_OnDisplay(){
 
     AddMenuItem("OtherDC", "test2bind.cscs", "test2bind", "runScript");
     
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testSlowDEFINE.cscs", "testSlowDEFINE", "runScript");
+    
 
     //----- IVAN -------------------------------  
 
