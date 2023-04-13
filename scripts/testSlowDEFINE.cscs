@@ -1,0 +1,8 @@
+
+CreateWindow("../../scripts/testSlowDEFINE.xaml");
+
+DEFINE var1 type n size 5 n 2;
+
+var1 = 98091;
+
+

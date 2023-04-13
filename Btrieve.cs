@@ -1106,6 +1106,10 @@ $@"EXECUTE sp_executesql N'
             Gui = gui;
             Interpreter interpreter = gui.Interpreter;
 
+            gridsArrayClass = new Dictionary<string, DisplayArrayClass>();
+            gridsTableClass = new Dictionary<string, DisplayTableClass>();
+            gridsTableWhereClass = new Dictionary<string, DisplayTableWhereClass>();
+
             interpreter.RegisterFunction(Constants.OPENV, new OpenvFunction());
             interpreter.RegisterFunction(Constants.FINDV, new FindvFunction());
             interpreter.RegisterFunction(Constants.CLOSEV, new ClosevFunction());
@@ -5240,6 +5244,9 @@ $@"EXECUTE sp_executesql N'
                 dg.SelectedCellsChanged += Dg_SelectedCellsChanged;
 
                 dg.BeginningEdit += Dg_BeginningEdit;
+
+                dg.CanUserDeleteRows = false;
+
                 //-------------------------------------------------------------------------------
 
                 //grids[gridName] = new DisplayArrayClass()
@@ -6811,7 +6818,8 @@ $@"EXECUTE sp_executesql N'
                 //actCntrVar = Utils.GetSafeVariable(args, 2);
                 //maxRowsVar = Utils.GetSafeVariable(args, 3);
 
-                gridsArrayClass[gridName] = new DisplayArrayClass();
+                if (!gridsArrayClass.ContainsKey(gridName))
+                    gridsArrayClass[gridName] = new DisplayArrayClass();
 
                 var counterFldVar = args.FirstOrDefault(p => p.CurrentAssign.ToLower() == "counterfld");
                 if (counterFldVar != null)
@@ -7038,6 +7046,8 @@ $@"EXECUTE sp_executesql N'
                 dg.RowEditEnding += Dg_RowEditEnding;
 
                 dg.SelectedCellsChanged += Dg_SelectedCellsChanged;
+                
+                dg.CanUserDeleteRows = false;
 
                 //dg.AddingNewItem += Dg_AddingNewItem;
 

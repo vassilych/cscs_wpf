@@ -8,1190 +8,1026 @@
         mc:Ignorable="d"
         xmlns:local="clr-namespace:wkprdash"
         Title="Prodaja"
-        Height="943"
-        Width="1340">
+        Height="970"
+        Width="1600">
     <Window.Resources />
+
     <Grid Background="white">
-        <TabControl HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Height="940"
-                    Width="1320"
-                    Margin="0,0,0,0"
-                    Name="TASPageControl1"
-                    Background="Transparent"
-                    >
-            <TabItem Background="Transparent">
-                <TabItem.Header>
-                    <StackPanel Orientation="Horizontal"
-                                Height="16">
-                        <TextBlock Text="Izbor"
-                                   TextWrapping="Wrap"
-                                   FontWeight="Bold" />
-                    </StackPanel>
-                </TabItem.Header>
-                <Grid>
-                    <Grid HorizontalAlignment="Left"
-                          VerticalAlignment="Top"
-                          Height="355"
-                          Width="1323"
-                          Name="GradientPanel5"
-                          Margin="-3,2,0,0">
-                        <Grid.Background>
-                            <LinearGradientBrush StartPoint="0,0"
-                                                 EndPoint="1,1">
-                                <GradientStop Color="silver"
-                                              Offset="0.0" />
-                                <GradientStop Color="silver"
-                                              Offset="1.0" />
-                            </LinearGradientBrush>
-                        </Grid.Background>
-                    </Grid>
-                    <TextBlock HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               Height="16"
-                               Width="42"
-                               Margin="631,17,0,0"
-                               FontFamily="lato"
-                               Name="Label10"
-                               FontSize="12"
-                               Foreground="black"
-                               Text="Datum:" />
-                    <TextBlock HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               Height="16"
-                               Width="41"
-                               Margin="15,78,0,0"
-                               FontFamily="Arial"
-                               Name="Label1"
-                               FontSize="12"
-                               Foreground="black"
-                               Text="Kupac:" />
-                    <TextBlock HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               Height="16"
-                               Width="44"
-                               Margin="15,107,0,0"
-                               FontFamily="Arial"
-                               Name="Label16"
-                               FontSize="12"
-                               Foreground="black"
-                               Text="Regija: " />
-                    <TextBlock HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               Height="16"
-                               Width="45"
-                               Margin="15,17,0,0"
-                               FontFamily="Arial"
-                               Name="Label9"
-                               FontSize="12"
-                               Foreground="black"
-                               Text="Sklad.: " />
-                    <TextBlock HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               Height="16"
-                               Width="34"
-                               Margin="15,47,0,0"
-                               FontFamily="Arial"
-                               Name="Label11"
-                               FontSize="12"
-                               Foreground="black"
-                               Text="Artikl:" />
-                    <TextBlock HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               Height="16"
-                               Width="98"
-                               Margin="767,17,0,0"
-                               FontFamily="lato"
-                               Name="Label12"
-                               FontSize="12"
-                               Foreground="black"
-                               Text="Poslovna godina:" />
-                    <TextBlock HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               Height="16"
-                               Width="48"
-                               Margin="934,17,0,0"
-                               FontFamily="Arial"
-                               FontWeight="Bold"
-                               Name="Label21"
-                               FontSize="12"
-                               Foreground="black"
-                               Text="Mjesec:" />
-                    <wcl:ASEnterBox ButtonSize="0"
-                                    FontWeight="Bold"
-                                    Size="4"
-                                    FieldName="ovagod_h"
-                                    Foreground="black"
-                                    Name="Ovagod"
-                                    FontSize="14"
-                                    Case="Normal"
-                                    Height="22"
-                                    Width="52"
-                                    Margin="873,11,0,0"
-                                    FontFamily="lato"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Top"
-                                    Background="#FFFFE6D9"
-                                    TabIndex="7" />
-                    <wcl:ASDateEditer HorizontalAlignment="Left"
-                                      VerticalAlignment="Top"
-                                      Height="22"
-                                      ButtonWidth="0"
-                                      FontSize="14"
-                                      DisplaySize="8"
-                                      Background="#FFFFE6D9"
-                                      Foreground="black"
-                                      Width="72"
-                                      Margin="677,11,0,0"
-                                      FontWeight="Bold"
-                                      Name="TASDateEdit1"
-                                      DataContext="danas" />
-                    <GroupBox Padding="0"
-                              HorizontalAlignment="Left"
+
+        <TextBlock HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Height="15"
+                   Width="171"
+                   Margin="150,420,0,0"
+                   FontFamily="lato"
+                   FontWeight="Bold"
+                   Name="Label6"
+                   FontSize="11"
+                   Foreground="black"
+                   Text="Top 10 - kupaca u razdoblju" />
+        <TextBlock HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Height="15"
+                   Width="243"
+                   Margin="130,670,0,0"
+                   FontFamily="lato"
+                   FontWeight="Bold"
+                   Name="Label8"
+                   FontSize="11"
+                   Foreground="black"
+                   Text="Posljednjih 10 računa po datumu unosa" />
+        <TextBlock HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Height="15"
+                   Width="214"
+                   Margin="1150,420,0,0"
+                   FontFamily="lato"
+                   FontWeight="Bold"
+                   Name="Label7"
+                   FontSize="11"
+                   Foreground="black"
+                   Text="Top 10 - najveći računi u razdoblju" />
+        <TextBlock      HorizontalAlignment="Left" VerticalAlignment="Top"
+                Height="15"
+                Width="166"
+                Margin="1150,670,0,0"           
+                FontFamily="lato"
+                FontWeight="Bold"
+                Name="labTop10Artikl"
+                FontSize="11"
+                Foreground="black"
+                Text="Top 10 artikala u razdoblju">
+                </TextBlock>
+        <TextBlock HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Height="15"
+                   Width="63"
+                   Margin="620,115,0,0"
+                   FontFamily="lato"
+                   Name="Label2"
+                   FontSize="11"
+                   Foreground="black"
+                   Text="Ova godina:" />
+        <TextBlock HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Height="15"
+                   Width="74"
+                   Margin="620,146,0,0"
+                   FontFamily="lato"
+                   Name="Label3"
+                   FontSize="11"
+                   Foreground="black"
+                   Text="Prošla godina:" />
+        <TextBlock HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Height="15"
+                   Width="44"
+                   Margin="620,190,0,0"
+                   FontFamily="lato"
+                   Name="Label5"
+                   FontSize="11"
+                   Foreground="black"
+                   Text="Index %:" />
+        <TextBlock HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Height="15"
+                   Width="66"
+                   Margin="620,222,0,0"
+                   FontFamily="lato"
+                   Name="Label14"
+                   FontSize="11"
+                   Foreground="#FF295454"
+                   Text="Ovaj mjesec:" />
+        <TextBlock HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Height="15"
+                   Width="71"
+                   Margin="620,254,0,0"
+                   FontFamily="lato"
+                   Name="Label15"
+                   FontSize="11"
+                   Foreground="#FF295454"
+                   Text="Prošli mjesec:" />
+        <TextBlock HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Height="15"
+                   Width="44"
+                   Margin="620,286,0,0"
+                   FontFamily="lato"
+                   Name="Label17"
+                   FontSize="11"
+                   Foreground="#FF295454"
+                   Text="Index %:" />
+        <TextBlock HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Height="15"
+                   Width="63"
+                   Margin="620,307,0,0"
+                   FontFamily="lato"
+                   Name="Label18"
+                   FontSize="11"
+                   Foreground="#FF934900"
+                   Text="Ovaj tjedan:" />
+        <TextBlock HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Height="15"
+                   Width="68"
+                   Margin="620,339,0,0"
+                   FontFamily="lato"
+                   Name="Label19"
+                   FontSize="11"
+                   Foreground="#FF934900"
+                   Text="Prošli tjedan:" />
+        <TextBlock HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Height="15"
+                   Width="44"
+                   Margin="620,382,0,0"
+                   FontFamily="lato"
+                   Name="Label20"
+                   FontSize="11"
+                   Foreground="#FF934900"
+                   Text="Index %:" />
+        <Grid HorizontalAlignment="Left"
+              VerticalAlignment="Top"
+              Height="120"
+              Width="1600"
+              Name="GradientPanel5"
+              Margin="-8,-16,0,0">
+            <Grid.Background>
+                <LinearGradientBrush StartPoint="0,0"
+                                     EndPoint="1,1">
+                    <GradientStop Color="#FF880000"
+                                  Offset="0.0" />
+                    <GradientStop Color="black"
+                                  Offset="1.0" />
+                </LinearGradientBrush>
+            </Grid.Background>
+            <TextBlock HorizontalAlignment="Left"
+                       VerticalAlignment="Top"
+                       Height="15"
+                       Width="54"
+                       Margin="743,31,0,0"
+                       FontFamily="lato"
+                       Name="Label10"
+                       FontSize="11"
+                       Foreground="white"
+                       Text="Na datum:" />
+            <TextBlock HorizontalAlignment="Left"
+                       VerticalAlignment="Top"
+                       Height="15"
+                       Width="38"
+                       Margin="143,74,0,0"
+                       FontFamily="Arial"
+                       Name="Label1"
+                       FontSize="11"
+                       Foreground="white"
+                       Text="Kupac:" />
+            <TextBlock HorizontalAlignment="Left"
+                       VerticalAlignment="Top"
+                       Height="15"
+                       Width="42"
+                       Margin="143,94,0,0"
+                       FontFamily="Arial"
+                       Name="Label16"
+                       FontSize="11"
+                       Foreground="white"
+                       Text="Regija: " />
+            <TextBlock HorizontalAlignment="Left"
+                       VerticalAlignment="Top"
+                       Height="15"
+                       Width="40"
+                       Margin="143,31,0,0"
+                       FontFamily="Arial"
+                       Name="Label9"
+                       FontSize="11"
+                       Foreground="white"
+                       Text="Sklad.: " />
+            <TextBlock HorizontalAlignment="Left"
+                       VerticalAlignment="Top"
+                       Height="15"
+                       Width="29"
+                       Margin="143,52,0,0"
+                       FontFamily="Arial"
+                       Name="Label11"
+                       FontSize="11"
+                       Foreground="white"
+                       Text="Artikl:" />
+            <TextBlock HorizontalAlignment="Left"
+                       VerticalAlignment="Top"
+                       Height="15"
+                       Width="89"
+                       Margin="895,31,0,0"
+                       FontFamily="lato"
+                       Name="Label12"
+                       FontSize="11"
+                       Foreground="white"
+                       Text="Poslovna godina:" />
+            <TextBlock HorizontalAlignment="Left"
+                       VerticalAlignment="Top"
+                       Height="15"
+                       Width="44"
+                       Margin="1062,31,0,0"
+                       FontFamily="Arial"
+                       FontWeight="Bold"
+                       Name="Label21"
+                       FontSize="11"
+                       Foreground="white"
+                       Text="Mjesec:" />
+            <wcl:ASEnterBox ButtonSize="0"
+                            FontWeight="Bold"
+                            Size="4"
+                            FieldName="ovagod_h"
+                            Foreground="black"
+                            Name="Ovagod"
+                            FontSize="11"
+                            Case="Normal"
+                            Height="22"
+                            Width="52"
+                            Margin="1001,25,0,0"
+                            FontFamily="lato"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Background="#FFFFE6D9"
+                            TabIndex="0" />
+            <wcl:ASDateEditer HorizontalAlignment="Left"
                               VerticalAlignment="Top"
-                              Height="99"
-                              Width="135"
-                              Margin="456,16,0,0"
-                              BorderThickness="1"
-                              BorderBrush="Black"
-                              Header="Koje podatke?"
-                              Background="silver">
-                        <Grid>
-                            <RadioButton HorizontalAlignment="Left"
-                                         VerticalAlignment="Top"
-                                         Height="17"
-                                         IsEnabled="False"
-                                         Width="113"
-                                         Margin="8,16,0,0"
-                                         Name="TASRadioButton1"
-                                         Content="Sa PDV-om" />
-                            <RadioButton HorizontalAlignment="Left"
-                                         VerticalAlignment="Top"
-                                         Height="17"
-                                         IsEnabled="False"
-                                         Width="113"
-                                         Margin="8,32,0,0"
-                                         Name="TASRadioButton2"
-                                         Content="Bez PDV-a"
-                                         IsChecked="True" />
-                            <RadioButton HorizontalAlignment="Left"
-                                         VerticalAlignment="Top"
-                                         IsEnabled="False"
-                                         Height="17"
-                                         Width="113"
-                                         Margin="8,48,0,0"
-                                         Name="TASRadioButton3"
-                                         Content="Razlika u cijeni" />
-                        </Grid>
-                    </GroupBox>
-                    <wcl:ASEnterBox ButtonSize="21"
-                                    FontWeight="Bold"
-                                    Size="0"
-                                    FieldName="partner"
-                                    Foreground="black"
-                                    Name="cePartner"
-                                    FontSize="14"
-                                    KeyTraps="F2|cePartner.click"
-                                    Case="Normal"
-                                    Height="22"
-                                    Width="112"
-                                    Margin="60,71,0,0"
-                                    FontFamily="lato"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Top"
-                                    Background="White"
-                                    TabIndex="2" />
-                    <wcl:ASEnterBox ButtonSize="21"
-                                    FontWeight="Bold"
-                                    Size="0"
-                                    FieldName="REGIJA"
-                                    Foreground="black"
-                                    Name="ceRegija"
-                                    FontSize="14"
-                                    KeyTraps="F2|ceRegija.click"
-                                    Case="Normal"
-                                    Height="22"
-                                    Width="84"
-                                    Margin="60,101,0,0"
-                                    FontFamily="lato"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Top"
-                                    Background="White"
-                                    TabIndex="3" />
-                    <wcl:ASEnterBox ButtonSize="0"
-                                    FontWeight="Bold"
-                                    Size="4"
-                                    FieldName="regijaNaziv"
-                                    Foreground="black"
-                                    Name="TASComboEnter4"
-                                    FontSize="12"
-                                    Case="Normal"
-                                    Height="22"
-                                    Width="257"
-                                    Margin="150,101,0,0"
-                                    FontFamily="lato"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Top"
-                                    Background="#FFFFE6D9"
-                                    TabIndex="11" />
-                    <wcl:ASEnterBox ButtonSize="0"
-                                    FontWeight="Bold"
-                                    Size="4"
-                                    FieldName="partnerNaziv"
-                                    Foreground="black"
-                                    Name="TASComboEnter5"
-                                    FontSize="12"
-                                    Case="Normal"
-                                    Height="22"
-                                    Width="230"
-                                    Margin="177,71,0,0"
-                                    FontFamily="lato"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Top"
-                                    Background="#FFFFE6D9"
-                                    TabIndex="10" />
-                    <Button HorizontalAlignment="Left"
-                            VerticalAlignment="Top"
-                            Height="41"
-                            Margin="568,302,0,0"
-                            FontFamily="Arial"
-                            Width="128"
-                            Visibility="Visible"
-                            Name="gbPripremi">
-                        <Grid>
-                            <TextBlock Grid.Column="1"
-                                       FontSize="10"
-                                       Foreground="Black"
-                                       VerticalAlignment="Center"
-                                       Text="Pripremi"
-                                       HorizontalAlignment="Center" />
-                        </Grid>
-                    </Button>
-                    <Button HorizontalAlignment="Left"
-                            VerticalAlignment="Top"
-                            Height="41"
-                            Margin="688,302,0,0"
-                            FontFamily="Arial"
-                            Width="128"
-                            Visibility="Visible"
-                            Name="gbRecalc1">
-                        <Grid>
-                            <TextBlock Grid.Column="1"
-                                       FontSize="10"
-                                       Foreground="Black"
-                                       VerticalAlignment="Center"
-                                       Text="Recalc1"
-                                       HorizontalAlignment="Center" />
-                        </Grid>
-                    </Button>
-                    <Button HorizontalAlignment="Left"
-                            VerticalAlignment="Top"
-                            Height="41"
-                            Margin="808,302,0,0"
-                            FontFamily="Arial"
-                            Width="128"
-                            Visibility="Visible"
-                            Name="T10RacuniZ">
-                        <Grid>
-                            <TextBlock Grid.Column="1"
-                                       FontSize="10"
-                                       Foreground="Black"
-                                       VerticalAlignment="Center"
-                                       Text="T10RacuniZ"
-                                       HorizontalAlignment="Center" />
-                        </Grid>
-                    </Button>
-                    <Button HorizontalAlignment="Left"
-                            VerticalAlignment="Top"
-                            Height="41"
-                            Margin="958,302,0,0"
-                            FontFamily="Arial"
-                            Width="128"
-                            Visibility="Visible"
-                            Name="T10RacuniMj">
-                        <Grid>
-                            <TextBlock Grid.Column="1"
-                                       FontSize="10"
-                                       Foreground="Black"
-                                       VerticalAlignment="Center"
-                                       Text="T10RacuniMj"
-                                       HorizontalAlignment="Center" />
-                        </Grid>
-                    </Button>
-                    <wcl:ASNumericBox HorizontalAlignment="Left"
-                                      VerticalAlignment="Top"
-                                      FontWeight="Bold"
-                                      ButtonSize="21"
-                                      Size="3"
-                                      Height="22"
-                                      Width="64"
-                                      Margin="60,11,0,0"
-                                      Name="ceSkladiste"
-                                      Background="White"
-                                      Foreground="black"
-                                      KeyTraps="F2|neSkladiste.click"
-                                      FieldName="skladiste"
-                                      FontFamily="lato"
-                                      FontSize="14"
-                                       />
-                    <wcl:ASEnterBox ButtonSize="0"
-                                    FontWeight="Bold"
-                                    Size="50"
-                                    FieldName="skladisteNaziv"
-                                    Foreground="black"
-                                    Name="skladisteNazivEnterBox"
-                                    FontSize="12"
-                                    Case="Normal"
-                                    Height="22"
-                                    Width="280"
-                                    Margin="127,11,0,0"
-                                    FontFamily="lato"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Top"
-                                    Background="#FFFFE6D9"
-                                    TabIndex="8" />
-                    <wcl:ASEnterBox ButtonSize="21"
-                                    FontWeight="Bold"
-                                    Size="0"
-                                    FieldName="artikl"
-                                    Foreground="black"
-                                    Name="ceArtikl"
-                                    FontSize="14"
-                                    KeyTraps="F2|ceRegija.click"
-                                    Case="Normal"
-                                    Height="22"
-                                    Width="120"
-                                    Margin="60,41,0,0"
-                                    FontFamily="lato"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Top"
-                                    Background="White"
-                                    TabIndex="1" />
-                    <wcl:ASEnterBox ButtonSize="0"
-                                    FontWeight="Bold"
-                                    Size="0"
-                                    FieldName="artiklNaziv"
-                                    Foreground="black"
-                                    Name="TASComboEnter7"
-                                    FontSize="12"
-                                    Case="Normal"
-                                    Height="22"
-                                    Width="222"
-                                    Margin="185,41,0,0"
-                                    FontFamily="lato"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Top"
-                                    Background="#FFFFE6D9"
-                                    TabIndex="9" />
-                    <wcl:ASEnterBox ButtonSize="0"
-                                    FontWeight="Bold"
-                                    Size="2"
-                                    FieldName="mjesec_h"
-                                    Foreground="black"
-                                    Name="TASComboEnter11"
-                                    FontSize="14"
-                                    Case="Normal"
-                                    Height="22"
-                                    Width="44"
-                                    Margin="989,11,0,0"
-                                    FontFamily="lato"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Top"
-                                    Background="#FFFFE6D9"
-                                    TabIndex="12" />
+                              Height="22"
+                              ButtonWidth="19"
+                              FontSize="11"
+                              DisplaySize="8"
+                              Background="#FFFFE6D9"
+                              Foreground="black"
+                              Width="75"
+                              Margin="805,25,0,0"
+                              FontWeight="Bold"
+                              Name="TASDateEdit1"
+                              DataContext="danas_h" />
+                              
+            <GroupBox Padding="0"
+                      HorizontalAlignment="Left"
+                      VerticalAlignment="Top"
+                      Height="86"
+                      Width="121"
+                      Margin="583,26,0,0"
+                      BorderThickness="1"
+                      BorderBrush="Black"
+                      Header="Koje podatke?"
+                      Background="#EE66FFFF">
+                <Grid>
                     <CheckBox HorizontalAlignment="Left"
                               VerticalAlignment="Top"
-                              Margin="1049,15,0,0"
-                              Name="TASCheckBox1"
-                              IsEnabled="True"
+                              Height="16"
+                              Width="113"
+                              Margin="8,2,0,0"
+                              Name="CheckBoxButton1"
+                              DataContext="saPdvomField"
+                              Content="Sa PDV-om" />
+                    <CheckBox HorizontalAlignment="Left"
+                              VerticalAlignment="Top"
                               Height="17"
-                              Width="96"
-                              DataContext="do_mjeseca"
-                              FlowDirection="RightToLeft"
-                              Content="Do mjeseca" />
-                    <!-- <WrapPanel HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               Orientation="Horizontal"
-                               Height="17"
-                               Width="96"
-                               Margin="1049,15,0,0"
-                               IsEnabled="True"
-                               Name="TASCheckBox1">
-                        <CheckBox Margin="0,0,5,0"
-                                  DataContext="do_mjeseca"
-                                  FlowDirection="RightToLeft" />
-                        <TextBlock Text="Do mjeseca"
-                                   FontFamily="lato"
-                                   FontSize="13"
-                                   Foreground="Black"
-                                   TextWrapping="Wrap" />
-                    </WrapPanel> -->
+                              Width="113"
+                              Margin="8,17,0,0"
+                              Name="CheckBoxButton2"
+                              DataContext="bezPdvaField"
+                              Content="Bez PDV-a" />
+                    <CheckBox HorizontalAlignment="Left"
+                              VerticalAlignment="Top"
+                              Height="17"
+                              Width="113"
+                              Margin="8,32,0,0"
+                              Name="CheckBoxButton3"
+                              DataContext="razlikaUCijeniField"
+                              Content="Razlika u cijeni" />
+                    <CheckBox HorizontalAlignment="Left"
+                              VerticalAlignment="Top"
+                              Height="17"
+                              Width="113"
+                              Margin="8,47,0,0"
+                              Name="CheckBoxButton4"
+                              DataContext="tezina_dn"
+                              Content="Težina u Kg" />
                 </Grid>
-            </TabItem>
-            <TabItem Background="Transparent">
-                <TabItem.Header>
-                    <StackPanel Orientation="Horizontal"
-                                Height="16">
-                        <TextBlock Text="Dashboard"
-                                   TextWrapping="Wrap"
-                                   FontWeight="Bold" />
-                    </StackPanel>
-                </TabItem.Header>
+            </GroupBox>
+            <wcl:ASEnterBox ButtonSize="21"
+                            FontWeight="Bold"
+                            Size="0"
+                            FieldName="partner"
+                            Foreground="black"
+                            Name="cePartner"
+                            FontSize="11"
+                            KeyTraps="F2|cePartner.click"
+                            Case="Normal"
+                            Height="22"
+                            Width="100"
+                            Margin="188,67,0,0"
+                            FontFamily="lato"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Background="#FFFFE6D9"
+                            TabIndex="3" />
+            <wcl:ASEnterBox ButtonSize="21"
+                            FontWeight="Bold"
+                            Size="0"
+                            FieldName="REGIJA"
+                            Foreground="black"
+                            Name="ceRegija"
+                            FontSize="11"
+                            KeyTraps="F2|ceRegija.click"
+                            Case="Normal"
+                            Height="22"
+                            Width="76"
+                            Margin="188,88,0,0"
+                            FontFamily="lato"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Background="#FFFFE6D9"
+                            TabIndex="4" />
+            <wcl:ASEnterBox ButtonSize="0"
+                            FontWeight="Bold"
+                            Size="4"
+                            FieldName="regijaNaziv"
+                            Foreground="black"
+                            Name="TASComboEnter4"
+                            FontSize="11"
+                            Case="Normal"
+                            Height="22"
+                            Width="242"
+                            Margin="278,88,0,0"
+                            FontFamily="lato"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Background="#FFFFE6D9"
+                            TabIndex="5" />
+            <wcl:ASEnterBox ButtonSize="0"
+                            FontWeight="Bold"
+                            Size="4"
+                            FieldName="partnerNaziv"
+                            Foreground="black"
+                            Name="TASComboEnter5"
+                            FontSize="11"
+                            Case="Normal"
+                            Height="22"
+                            Width="215"
+                            Margin="305,67,0,0"
+                            FontFamily="lato"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Background="#FFFFE6D9"
+                            TabIndex="6" />
+            <wcl:ASNumericBox HorizontalAlignment="Left"
+                              VerticalAlignment="Top"
+        VerticalContentAlignment="Center"  
+                              FontWeight="Bold"
+                              ButtonSize="0"
+                              Height="22"
+                              Width="60"
+                              Margin="188,25,0,0"
+                              Name="neSkladiste"
+                              Thousands="True"
+                              Background="#FFFFE6D9"
+                              Foreground="black"
+                              KeyTraps="F2|neSkladiste.click"
+                              FieldName="SKLADiste"
+                              FontFamily="lato"
+                              FontSize="11"
+                              TabIndex="7" />
+            <wcl:ASEnterBox ButtonSize="0"
+                            FontWeight="Bold"
+                            Size="4"
+                            FieldName="skladisteNaziv"
+                            Foreground="black"
+                            Name="TASComboEnter1"
+                            FontSize="11"
+                            Case="Normal"
+                            Height="22"
+                            Width="265"
+                            Margin="255,25,0,0"
+                            FontFamily="lato"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Background="#FFFFE6D9"
+                            TabIndex="8" />
+            <wcl:ASEnterBox ButtonSize="21"
+                            FontWeight="Bold"
+                            Size="0"
+                            FieldName="artikl"
+                            Foreground="black"
+                            Name="ceArtikl"
+                            FontSize="11"
+                            KeyTraps="F2|ceRegija.click"
+                            Case="Normal"
+                            Height="22"
+                            Width="120"
+                            Margin="188,46,0,0"
+                            FontFamily="lato"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Background="#FFFFE6D9"
+                            TabIndex="9" />
+            <wcl:ASEnterBox ButtonSize="0"
+                            FontWeight="Bold"
+                            Size="4"
+                            FieldName="artiklNaziv"
+                            Foreground="black"
+                            Name="TASComboEnter7"
+                            FontSize="11"
+                            Case="Normal"
+                            Height="22"
+                            Width="207"
+                            Margin="313,46,0,0"
+                            FontFamily="lato"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Background="#FFFFE6D9"
+                            TabIndex="10" />
+            <wcl:ASEnterBox ButtonSize="0"
+                            FontWeight="Bold"
+                            Size="2"
+                            FieldName="mjesec_h"
+                            Foreground="black"
+                            Name="TASComboEnter11"
+                            FontSize="11"
+                            Case="Normal"
+                            Height="22"
+                            Width="35"
+                            Margin="1117,25,0,0"
+                            FontFamily="lato"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Background="#FFFFE6D9"
+                            TabIndex="11" />
+            <GroupBox HorizontalAlignment="Left"
+                      VerticalAlignment="Top"
+                      Height="25"
+                      Width="121"
+                      BorderThickness="0"
+                      Margin="1177,29,0,0">
                 <Grid>
-                    <TextBlock HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               Height="16"
-                               Width="175"
-                               Margin="124,345,0,0"
-                               FontFamily="lato"
-                               FontWeight="Bold"
-                               Name="Label6"
-                               FontSize="12"
-                               Foreground="black"
-                               Text="Top 10 - kupaca u razdoblju" />
-                    <TextBlock HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               Height="16"
-                               Width="219"
-                               Margin="822,345,0,0"
-                               FontFamily="lato"
-                               FontWeight="Bold"
-                               Name="Label7"
-                               FontSize="12"
-                               Foreground="black"
-                               Text="Top 10 - najveći računi u razdoblju" />
-                    <TextBlock HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               Height="16"
-                               Width="251"
-                               Margin="128,580,0,0"
-                               FontFamily="lato"
-                               FontWeight="Bold"
-                               Name="Label8"
-                               FontSize="12"
-                               Foreground="black"
-                               Text="Posljednjih 10 računa po datumu unosa" />
-                    <TextBlock HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               Height="15"
-                               Width="65"
-                               Margin="455,55,0,0"
-                               FontFamily="lato"
-                               Name="Label2"
-                               FontSize="11"
-                               Foreground="black"
-                               Text="Ova godina:" />
-                    <TextBlock HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               Height="15"
-                               Width="80"
-                               Margin="455,86,0,0"
-                               FontFamily="lato"
-                               Name="Label3"
-                               FontSize="11"
-                               Foreground="black"
-                               Text="Prošla godina:" />
-                    <TextBlock HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               Height="15"
-                               Width="46"
-                               Margin="455,130,0,0"
-                               FontFamily="lato"
-                               Name="Label5"
-                               FontSize="11"
-                               Foreground="black"
-                               Text="Index %:" />
-                    <TextBlock HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               Height="15"
-                               Width="71"
-                               Margin="455,162,0,0"
-                               FontFamily="lato"
-                               Name="Label14"
-                               FontSize="12"
-                               Foreground="#FF295454"
-                               Text="Ovaj mjesec:" />
-                    <TextBlock HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               Height="15"
-                               Width="79"
-                               Margin="455,194,0,0"
-                               FontFamily="lato"
-                               Name="Label15"
-                               FontSize="11"
-                               Foreground="#FF295454"
-                               Text="Prošli mjesec:" />
-                    <TextBlock HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               Height="15"
-                               Width="46"
-                               Margin="455,226,0,0"
-                               FontFamily="lato"
-                               Name="Label17"
-                               FontSize="11"
-                               Foreground="#FF295454"
-                               Text="Index %:" />
-                    <TextBlock HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               Height="15"
-                               Width="64"
-                               Margin="455,247,0,0"
-                               FontFamily="lato"
-                               Name="Label18"
-                               FontSize="11"
-                               Foreground="#FF934900"
-                               Text="Ovaj tjedan:" />
-                    <TextBlock HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               Height="15"
-                               Width="72"
-                               Margin="455,279,0,0"
-                               FontFamily="lato"
-                               Name="Label19"
-                               FontSize="11"
-                               Foreground="#FF934900"
-                               Text="Prošli tjedan:" />
-                    <TextBlock HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               Height="15"
-                               Width="46"
-                               Margin="455,322,0,0"
-                               FontFamily="lato"
-                               Name="Label20"
-                               FontSize="11"
-                               Foreground="#FF934900"
-                               Text="Index %:" />
-                    <TextBlock HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               Height="16"
-                               Width="48"
-                               Margin="910,9,0,0"
-                               FontFamily="Arial"
-                               FontWeight="Bold"
-                               Name="Label4"
-                               FontSize="12"
-                               Foreground="black"
-                               Text="Mjesec:" />
-                    <Grid HorizontalAlignment="Left"
-                          VerticalAlignment="Top"
-                          Height="230"
-                          Width="376"
-                          Name="GradientPanel1"
-                          Margin="15,45,0,0">
-                        <Grid.Background>
-                            <LinearGradientBrush StartPoint="0,0"
-                                                 EndPoint="1,1">
-                                <GradientStop Color="#E6E6E6"
-                                              Offset="0.0" />
-                                <GradientStop Color="#C5C5C5"
-                                              Offset="1.0" />
-                            </LinearGradientBrush>
-                        </Grid.Background>
-                    </Grid>
-                    <lvc:CartesianChart TooltipFindingStrategy="CompareAll"
-                                        LegendPosition="Bottom"
-                                        Name="ChartPoMjesecima"
-                                        VerticalAlignment="Top"
-                                        HorizontalAlignment="Left"
-                                        Width="376"
-                                        Height="230"
-                                        Margin="15,45,0,0" />
-                    <!-- <Button Content="Pripremi"
-                            VerticalAlignment="Top"
+                    <CheckBox 
                             HorizontalAlignment="Left"
-                            Width="100"
-                            Height="50"
-                            Margin="640,10,0,0" /> -->
-                    <Grid HorizontalAlignment="Left"
-                          VerticalAlignment="Top"
-                          Height="230"
-                          Width="500"
-                          Name="GradientPanel2"
-                          Margin="750,45,0,0">
-                        <Grid.Background>
-                            <LinearGradientBrush StartPoint="0,0"
-                                                 EndPoint="1,1">
-                                <GradientStop Color="#E6E6E6"
-                                              Offset="0.0" />
-                                <GradientStop Color="#C5C5C5"
-                                              Offset="1.0" />
-                            </LinearGradientBrush>
-                        </Grid.Background>
-                    </Grid>
-                    <lvc:CartesianChart TooltipFindingStrategy="CompareAll"
-                                        LegendPosition="Bottom"
-                                        Name="ChartPoDanima"
-                                        VerticalAlignment="Top"
-                                        HorizontalAlignment="Left"
-                                        Width="500"
-                                        Height="230"
-                                        Margin="750,45,0,0" />
-                    <!-- <Button Content="Pripremi"
                             VerticalAlignment="Top"
-                            HorizontalAlignment="Left"
-                            Width="100"
-                            Height="50"
-                            Margin="300,10,0,0" /> -->
-                    <DataGrid HorizontalAlignment="Left"
-                              VerticalAlignment="Top"
-                              Height="216"
-                              Width="550"
-                              Margin="15,361,0,0"
-                              IsReadOnly="true"
-                              Name="dgStavke"
-                              HorizontalScrollBarVisibility="Auto"
-                              VerticalScrollBarVisibility="Auto"
-                              Background="White"
-                              TabIndex="2">
-                        <DataGrid.Resources>
-                            <Style TargetType="{x:Type DataGridColumnHeader}">
-                                <Setter Property="Background"
-                                        Value="#FFAE0000" />
-                            </Style>
-                        </DataGrid.Resources>
-                        <DataGrid.Columns>
-                            <DataGridTemplateColumn Header="No."
-                                                    Width="24">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <wcl:ASGridCell FieldName="top10Part_ar"
-                                                        Editor="edDefault"
-                                                        EditLength="0" 
-                                                        HorizontalContentAlignment="Right"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="Kupac"
-                                                    Width="150">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <wcl:ASGridCell FieldName="NAMEPART_AR"
-                                                        Editor="edDefault"
-                                                        EditLength="0"
-                                                        HorizontalContentAlignment="Left" />
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="Prodaja ova god."
-                                                    Width="108">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <wcl:ASGridCell FieldName="SALESPART1_AR"
-                                                        Editor="edNumeric"
-                                                        EditLength="0" 
-                                                        HorizontalContentAlignment="Right"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="Prodaja lani"
-                                                    Width="102">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <wcl:ASGridCell FieldName="SALESPART2_AR"
-                                                        Editor="edNumeric"
-                                                        EditLength="0" 
-                                                        HorizontalContentAlignment="Right"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="Indx%"
-                                                    Width="38">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <wcl:ASGridCell FieldName="INDEXPART_AR"
-                                                        Editor="edNumeric"
-                                                        EditLength="0"
-                                                        HorizontalContentAlignment="Right" />
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <DataGrid HorizontalAlignment="Left"
-                              VerticalAlignment="Top"
-                              Height="216"
-                              Width="550"
-                              Margin="727,361,0,0"
-                              IsReadOnly="true"
-                              Name="dgRacuniMjesec"
-                              HorizontalScrollBarVisibility="Auto"
-                              VerticalScrollBarVisibility="Auto"
-                              Background="White"
-                              TabIndex="3">
-                        <DataGrid.Resources>
-                            <Style TargetType="{x:Type DataGridColumnHeader}">
-                                <Setter Property="Background"
-                                        Value="#FF326363" />
-                            </Style>
-                        </DataGrid.Resources>
-                        <DataGrid.Columns>
-                            <DataGridTemplateColumn Header="No."
-                                                    Width="24">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <wcl:ASGridCell FieldName="T10CNTRMJ_AR"
-                                                        Editor="edNumeric"
-                                                        EditLength="0" 
-                                                        HorizontalContentAlignment="Right"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="Račun"
-                                                    Width="69">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <wcl:ASGridCell FieldName="T10RACUNMJ_AR"
-                                                        Editor="edNumeric"
-                                                        EditLength="0"
-                                                        HorizontalContentAlignment="Left"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="Datum"
-                                                    Width="63">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <wcl:ASGridCell FieldName="T10DATUMMJ_AR"
-                                                        Editor="edDefault"
-                                                        EditLength="8"
-                                                        HorizontalContentAlignment="Left" />
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="Kupac"
-                                                    Width="165">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <wcl:ASGridCell FieldName="T10NAMEMJ_AR"
-                                                        Editor="edDefault"
-                                                        EditLength="0"
-                                                        HorizontalContentAlignment="Left" />
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="Iznos sa PDV-om"
-                                                    Width="102">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <wcl:ASGridCell FieldName="T10IZNOSMJ_AR"
-                                                        Editor="edNumeric"
-                                                        EditLength="0"
-                                                        HorizontalContentAlignment="Right" />
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <DataGrid HorizontalAlignment="Left"
-                              VerticalAlignment="Top"
-                              Height="216"
-                              Width="550"
-                              Margin="15,600,0,0"
-                              IsReadOnly="false"
-                              Name="dgRacuniLast"
-                              HorizontalScrollBarVisibility="Auto"
-                              VerticalScrollBarVisibility="Auto"
-                              Background="White"
-                              TabIndex="4">
-                        <DataGrid.Resources>
-                            <Style TargetType="{x:Type DataGridColumnHeader}">
-                                <Setter Property="Background"
-                                        Value="#FF006393" />
-                                <Setter Property="Foreground"
-                                        Value="White" />
-                            </Style>
-                        </DataGrid.Resources>
-                        <DataGrid.Columns>
-                            <DataGridTemplateColumn Header="No."
-                                                    Width="24">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <wcl:ASGridCell FieldName="T10CNTRZ_AR"
-                                                        Editor="edDefault"
-                                                        EditLength="0" 
-                                                        HorizontalContentAlignment="Right"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="Račun"
-                                                    Width="69">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <wcl:ASGridCell FieldName="T10RACUNZ_AR"
-                                                        Editor="edNumeric"
-                                                        EditLength="0"
-                                                        HorizontalContentAlignment="Left" />
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="Datum"
-                                                    Width="63">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <wcl:ASGridCell FieldName="T10DATUMZ_AR"
-                                                        Editor="edDefault"
-                                                        EditLength="8" 
-                                                        HorizontalContentAlignment="Left"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="Sat"
-                                                    Width="50">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <wcl:ASGridCell FieldName="T10TIMEZ_AR"
-                                                        Editor="edDefault"
-                                                        EditLength="0" 
-                                                        HorizontalContentAlignment="Left"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="Kupac"
-                                                    Width="165">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <wcl:ASGridCell FieldName="T10NAMEZ_AR"
-                                                        Editor="edDefault"
-                                                        EditLength="0" 
-                                                        HorizontalContentAlignment="Left"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="Iznos sa PDV-om"
-                                                    Width="102">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <wcl:ASGridCell FieldName="T10IZNOSZ_AR"
-                                                        EditLength="0" 
-                                                        HorizontalContentAlignment="Center"
-                                                        DecimalChrs="2"
-                                                        Size="10"
-                                                        Thousands="True"
-                                                        Name="clickTest"
-                                                        Editor="edEditBtn"
-                                                        />
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <wcl:ASNumericBox HorizontalAlignment="Left"
-                                      VerticalAlignment="Top"
-                                      FontWeight="Bold"
-                                      ButtonSize="0"
-                                      Size="14"
-                                      Dec="2"
-                                      Height="30"
-                                      Width="174"
-                                      Margin="538,53,0,0"
-                                      Name="TASNumEnter5"
-                                      Thousands="True"
-                                      Background="#FFF2F2F2"
-                                      Foreground="black"
-                                      FieldName="tot_ovagod"
-                                      HorizontalContentAlignment="Right"
-                                      FontFamily="Lato"
-                                      FontSize="21"
-                                      TabIndex="5"
-                                      IsReadOnly="True"
-                                      
-                                       
-                                      />
-                    <wcl:ASNumericBox HorizontalAlignment="Left"
-                                      VerticalAlignment="Top"
-                                      FontWeight="Bold"
-                                      ButtonSize="0"
-                                      Dec="2"
-                                      Height="30"
-                                      Width="174"
-                                      Margin="538,85,0,0"
-                                      Name="TASNumEnter15"
-                                      Thousands="True"
-                                      Background="#FFF2F2F2"
-                                      Foreground="black"
-                                      FieldName="tot_lani"
-                                      HorizontalContentAlignment="Right"
-                                      FontFamily="lato"
-                                      FontSize="21"
-                                      TabIndex="6" />
-                    <wcl:ASNumericBox HorizontalAlignment="Left"
-                                      VerticalAlignment="Top"
-                                      FontWeight="Bold"
-                                      ButtonSize="0"
-                                       Size="10"
-                                      Dec="2"
-                                      Height="30"
-                                      Width="126"
-                                      Margin="586,117,0,0"
-                                      Name="TASNumEnter16"
-                                      Thousands="True"
-                                      Background="#FFF2F2F2"
-                                      Foreground="black"
-                                      FieldName="postotak"
-                                      FontFamily="lato"
-                                      FontSize="21"
-                                      TabIndex="7" />
-                    <wcl:ASNumericBox HorizontalAlignment="Left"
-                                      VerticalAlignment="Top"
-                                      FontWeight="Bold"
-                                      ButtonSize="0"
-                                      Dec="2"
-                                      Height="30"
-                                      Width="174"
-                                      Margin="538,149,0,0"
-                                      Name="TASNumEnter1"
-                                      Thousands="True"
-                                      Background="#FFD0E8E8"
-                                      Foreground="#FF295454"
-                                      FieldName="tot_ovajmj"
-                                      FontFamily="Lato"
-                                      FontSize="21"
-                                      TabIndex="8" />
-                    <wcl:ASNumericBox HorizontalAlignment="Left"
-                                      VerticalAlignment="Top"
-                                      FontWeight="Bold"
-                                      ButtonSize="0"
-                                      Dec="2"
-                                      Height="30"
-                                      Width="174"
-                                      Margin="538,181,0,0"
-                                      Name="TASNumEnter2"
-                                      Thousands="True"
-                                      Background="#FFD0E8E8"
-                                      Foreground="#FF295454"
-                                      FieldName="tot_proslimj"
-                                      FontFamily="lato"
-                                      FontSize="21"
-                                      TabIndex="9" />
-                    <wcl:ASNumericBox HorizontalAlignment="Left"
-                                      VerticalAlignment="Top"
-                                      FontWeight="Bold"
-                                      ButtonSize="0"
-                                      Dec="2"
-                                      Height="30"
-                                      Width="126"
-                                      Margin="586,213,0,0"
-                                      Name="TASNumEnter3"
-                                      Thousands="True"
-                                      Background="#FFD0E8E8"
-                                      Foreground="#FF295454"
-                                      FieldName="postotakMj"
-                                      FontFamily="lato"
-                                      FontSize="21"
-                                      TabIndex="10" />
-                    <wcl:ASNumericBox HorizontalAlignment="Left"
-                                      VerticalAlignment="Top"
-                                      FontWeight="Bold"
-                                      ButtonSize="0"
-                                      Dec="2"
-                                      Height="30"
-                                      Width="174"
-                                      Margin="538,245,0,0"
-                                      Name="TASNumEnter4"
-                                      Thousands="True"
-                                      Background="#FFFFDCB9"
-                                      Foreground="#FF934900"
-                                      FieldName="tot_ovajTj"
-                                      FontFamily="Lato"
-                                      FontSize="21"
-                                      TabIndex="11" />
-                    <wcl:ASNumericBox HorizontalAlignment="Left"
-                                      VerticalAlignment="Top"
-                                      FontWeight="Bold"
-                                      ButtonSize="0"
-                                      Dec="2"
-                                      Height="30"
-                                      Width="174"
-                                      Margin="538,277,0,0"
-                                      Name="TASNumEnter6"
-                                      Thousands="True"
-                                      Background="#FFFFDCB9"
-                                      Foreground="#FF934900"
-                                      FieldName="tot_prosliTj"
-                                      FontFamily="lato"
-                                      FontSize="21"
-                                      TabIndex="12" />
-                    <wcl:ASNumericBox HorizontalAlignment="Left"
-                                      VerticalAlignment="Top"
-                                      FontWeight="Bold"
-                                      ButtonSize="0"
-                                      Dec="2"
-                                      Height="30"
-                                      Width="126"
-                                      Margin="586,309,0,0"
-                                      Name="TASNumEnter7"
-                                      Thousands="True"
-                                      Background="#FFFFDCB9"
-                                      Foreground="#FF934900"
-                                      FieldName="postotakTj"
-                                      FontFamily="lato"
-                                      FontSize="21"
-                                      TabIndex="13" />
-                    <wcl:ASEnterBox HorizontalAlignment="Left"
-                                    FontWeight="Bold"
-                                    VerticalAlignment="Top"
-                                    Margin="455,68,0,0"
-                                    FieldName="ovagod_h"
-                                    Name="TASENTER1"
-                                    FontSize="11"
-                                    Foreground="black"
-                                    Background="White"
-                                    Height="16"
-                                    Width="72"
-                                    TabIndex="14" />
-                    <wcl:ASEnterBox HorizontalAlignment="Left"
-                                    FontWeight="Bold"
-                                    VerticalAlignment="Top"
-                                    Margin="455,100,0,0"
-                                    FieldName="lani_h"
-                                    Name="TASENTER2"
-                                    FontSize="11"
-                                    Foreground="black"
-                                    Background="White"
-                                    Height="19"
-                                    Width="72"
-                                    TabIndex="15" />
-                    <wcl:ASEnterBox HorizontalAlignment="Left"
-                                    FontWeight="Bold"
-                                    VerticalAlignment="Top"
-                                    Margin="455,262,0,0"
-                                    FieldName="week_c"
-                                    Name="TASENTER3"
-                                    FontSize="11"
-                                    Foreground="#FF934900"
-                                    Background="White"
-                                    Height="16"
-                                    Width="72"
-                                    TabIndex="16" />
-                    <wcl:ASEnterBox HorizontalAlignment="Left"
-                                    FontWeight="Bold"
-                                    VerticalAlignment="Top"
-                                    Margin="455,294,0,0"
-                                    FieldName="week_p"
-                                    Name="TASENTER4"
-                                    FontSize="11"
-                                    Foreground="#FF934900"
-                                    Background="White"
-                                    Height="17"
-                                    Width="72"
-                                    TabIndex="17" />
-                    <wcl:ASEnterBox ButtonSize="0"
-                                    FontWeight="Bold"
-                                    Size="4"
-                                    FieldName="skladisteNaziv"
-                                    Foreground="black"
-                                    Name="TASComboEnter6"
-                                    FontSize="12"
-                                    Case="Normal"
-                                    Height="22"
-                                    Width="222"
-                                    Margin="-17,3,0,0"
-                                    FontFamily="lato"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Top"
-                                    Background="#FFA6A6A6"
-                                    TabIndex="18" />
-                    <wcl:ASEnterBox ButtonSize="0"
-                                    FontWeight="Bold"
-                                    Size="4"
-                                    FieldName="artiklNaziv"
-                                    Foreground="black"
-                                    Name="TASComboEnter8"
-                                    FontSize="12"
-                                    Case="Normal"
-                                    Height="22"
-                                    Width="222"
-                                    Margin="212,3,0,0"
-                                    FontFamily="lato"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Top"
-                                    Background="#FFA6A6A6"
-                                    TabIndex="19" />
-                    <wcl:ASEnterBox ButtonSize="0"
-                                    FontWeight="Bold"
-                                    Size="4"
-                                    FieldName="partnerNaziv"
-                                    Foreground="black"
-                                    Name="TASComboEnter9"
-                                    FontSize="2"
-                                    Case="Normal"
-                                    Height="22"
-                                    Width="222"
-                                    Margin="441,3,0,0"
-                                    FontFamily="lato"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Top"
-                                    Background="#FFA6A6A6"
-                                    TabIndex="20" />
-                    <wcl:ASEnterBox ButtonSize="0"
-                                    FontWeight="Bold"
-                                    Size="4"
-                                    FieldName="regijaNaziv"
-                                    Foreground="black"
-                                    Name="TASComboEnter10"
-                                    FontSize="12"
-                                    Case="Normal"
-                                    Height="22"
-                                    Width="222"
-                                    Margin="670,3,0,0"
-                                    FontFamily="lato"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Top"
-                                    Background="#FFA6A6A6"
-                                    TabIndex="21" />
-                    <wcl:ASEnterBox ButtonSize="0"
-                                    FontWeight="Bold"
-                                    Size="2"
-                                    FieldName="mjesec_h"
-                                    Foreground="black"
-                                    Name="mjesec"
-                                    FontSize="14"
-                                    Case="Normal"
-                                    Height="22"
-                                    Width="44"
-                                    Margin="965,3,0,0"
-                                    FontFamily="lato"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Top"
-                                    Background="#FFA6A6A6"
-                                    TabIndex="22" />
-                    <WrapPanel HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               Orientation="Horizontal"
-                               Height="17"
-                               Width="96"
-                               Margin="1025,7,0,0"
-                               IsEnabled="True"
-                               Name="TASCheckBox2">
-                        <CheckBox Margin="0,0,5,0"
-                                  FlowDirection="RightToLeft" />
-                        <TextBlock Text="Do mjeseca"
-                                   FontFamily="lato"
-                                   FontSize="13"
-                                   Foreground="Black"
-                                   TextWrapping="Wrap" />
-                    </WrapPanel>
-                    <Button HorizontalAlignment="Left"
-                            VerticalAlignment="Top"
-                            Height="41"
-                            Margin="1160,-2,0,0"
-                            FontFamily="Arial"
-                            Width="128"
-                            Visibility="Visible"
-                            Name="gbPripremi2"
-                            TabIndex="0"
-                            >
-                        <Grid>
-                            <TextBlock Grid.Column="1"
-                                       FontSize="10"
-                                       Foreground="Black"
-                                       VerticalAlignment="Center"
-                                       Text="Pripremi"
-                                       HorizontalAlignment="Center" />
-                        </Grid>
-                    </Button>
+                            Height="16"
+                            Width="113"
+                            Name="cbMjesec"
+                            DataContext = "do_mjeseca"
+                                                   Foreground="white"
+
+                            Content="Do mjeseca"/>
+                </Grid>               
+            </GroupBox>
+            <Button HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Height="41"
+                    Margin="1168,54,0,0"
+                    FontFamily="Arial"
+                    Width="128"
+                    Visibility="Visible"
+                    Name="gbPripremi">
+                <Grid>
+                    <TextBlock Grid.Column="1"
+                               FontSize="10"
+                               Foreground="Black"
+                               VerticalAlignment="Center"
+                               Text="Pripremi"
+                               HorizontalAlignment="Center" />
                 </Grid>
-            </TabItem>
-        </TabControl>
+            </Button>
+        </Grid>
+        <Grid>
+            <lvc:CartesianChart LegendPosition="Right"
+                                Name="ChartPoMjesecima"
+                                VerticalAlignment="Top"
+                                HorizontalAlignment="Left"
+                                Width="600"
+                                Height="300"
+                                Margin="10,110,110,110" />
+            <lvc:CartesianChart Name="ChartPoDanima"
+                                VerticalAlignment="Top"
+                                HorizontalAlignment="Left"
+                                Width="700"
+                                Height="300"
+                                Margin="880,110,0,0" />
+        </Grid>
+        <DataGrid HorizontalAlignment="Left"
+                  VerticalAlignment="Top"
+                  Height="216"
+                  Width="480"
+                  Margin="15,440,0,0"
+                  IsReadOnly="true"
+                  Name="dgStavke"
+                  AlternatingRowBackground="LightGray"
+                  HorizontalScrollBarVisibility="Auto"
+                  VerticalScrollBarVisibility="Auto"
+                  Background="White"
+                  TabIndex="2">
+            <DataGrid.Resources>
+                <Style TargetType="{x:Type DataGridColumnHeader}">
+                    <Setter Property="Background"
+                            Value="#FFAE0000" />
+                    <Setter Property="Foreground" Value="White"  />
+
+                </Style>
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="No."
+                                        Width="24">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell FieldName="TOP10PART_AR"
+                                            Editor="edDefault"
+                                            EditLength="0" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Kupac"
+                                        Width="150">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell FieldName="NAMEPART_AR"
+                                            Editor="edDefault"
+                                            EditLength="0" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Prodaja ova god."
+                                        Width="108">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell FieldName="SALESPART1_AR"
+                                            Editor="edEditBtn"
+                                            EditLength="0" 
+                                            Name="clickTest"
+                                            Thousands="True"
+                                            Size="10"
+                                            HorizontalContentAlignment="Right"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Prodaja lani"
+                                        Width="102">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell FieldName="SALESPART2_AR"
+                                            Editor="edEditBtn"
+                                            EditLength="0" 
+                                            Name="clickTest"
+                                            Size="10"
+                                            HorizontalContentAlignment="Right"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Indx%"
+                                        Width="38">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell FieldName="INDEXPART_AR"
+                                            Editor="edEditBtn"
+                                            EditLength="0" 
+                                            Name="clickTest"
+                                            Thousands="True"
+                                            Size="10"
+                                            HorizontalContentAlignment="Right"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <DataGrid HorizontalAlignment="Left"
+                  VerticalAlignment="Top"
+                  Height="216"
+                  Width="470"
+                  Margin="1000,440,0,0"
+                  IsReadOnly="true"
+                  Name="dgRacuniMjesec"
+                  AlternatingRowBackground="LightGray"
+                  HorizontalScrollBarVisibility="Auto"
+                  VerticalScrollBarVisibility="Auto"
+                  Background="White"
+                  TabIndex="3">
+            <DataGrid.Resources>
+                <Style TargetType="{x:Type DataGridColumnHeader}">
+                    <Setter Property="Background"
+                            Value="#FF326363" />
+                </Style>
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="No."
+                                        Width="24">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell FieldName="T10CNTRMJ_AR"
+                                            Editor="edDefault"
+                                            EditLength="0" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Račun"
+                                        Width="69">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell FieldName="T10RACUNMJ_AR"
+                                            Editor="edNumeric"
+                                            HorizontalContentAlignment="Right"
+                                            EditLength="0" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Datum"
+                                        Width="63">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell FieldName="T10DATUMMJ_AR"
+                                                        HorizontalContentAlignment="Center"
+
+                                            Editor="edDefault"
+                                            EditLength="8" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Kupac"
+                                        Width="165">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell FieldName="T10NAMEMJ_AR"
+                                            Editor="edDefault"
+                                            EditLength="0" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Izn.PDV"
+                                        Width="90">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell FieldName="T10IZNOSMJ_AR"
+                                            Editor="edEditBtn"
+                                            EditLength="0" 
+                                            Name="clickTest"
+                                            Thousands="True"
+                                            Size="10"
+                                            DecimalChrs="2"
+                                            HorizontalContentAlignment="Right"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <DataGrid HorizontalAlignment="Left"
+                  VerticalAlignment="Top"
+                  Height="216"
+                  Width="510"
+                  Margin="15,690,0,0"
+                  IsReadOnly="true"
+                  Name="dgRacuniLast"
+                  AlternatingRowBackground="LightGray"
+                  HorizontalScrollBarVisibility="Auto"
+                  VerticalScrollBarVisibility="Auto"
+                  Background="White"
+                  TabIndex="4">
+            <DataGrid.Resources>
+                <Style TargetType="{x:Type DataGridColumnHeader}">
+                    <Setter Property="Background"
+                            Value="#FF006393" />
+                </Style>
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="No."
+                                        Width="24">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell FieldName="T10CNTRZ_AR"
+                                            Editor="edDefault"
+                                            EditLength="0" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Račun"
+                                        Width="69">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell FieldName="T10RACUNZ_AR"
+                            HorizontalContentAlignment="Right"
+                                            Editor="edNumeric"
+                                            EditLength="0" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Datum"
+                                        Width="63">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell FieldName="T10DATUMZ_AR"
+                            HorizontalContentAlignment="Center"
+                                            Editor="edDefault"
+                                            EditLength="8" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Sat"
+                                        Width="50">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell FieldName="T10TIMEZ_AR"
+                                        HorizontalContentAlignment="Center"
+                                            Editor="edDefault"
+                                            EditLength="0" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Kupac"
+                                        Width="165">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell FieldName="T10NAMEZ_AR"
+                                            Editor="edDefault"
+                                            Thousands="True"
+                                            EditLength="0" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Izn.PDV"
+                                        Width="90">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell FieldName="T10IZNOSZ_AR"
+                                            Editor="edEditBtn"
+                                            EditLength="0" 
+                                            Name="clickTest"
+                                            Size="10"
+                                            DecimalChrs="2"
+                                            HorizontalContentAlignment="Right"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+                </DataGrid>
+                        <DataGrid          
+                                            HorizontalAlignment="Left" VerticalAlignment="Top"
+                  Height="216"
+                  Width="470"
+                                            Margin="1000,690,0,0"
+                                            IsReadOnly="true"
+                                            Name="dgArtikli"
+                                            HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                                            Background="White"
+                                            TabIndex="19">
+
+                    <DataGrid.Resources>
+                        <Style TargetType="{x:Type DataGridColumnHeader}">
+                            <Setter Property="Background" Value="#FF0000A0"  />
+                        </Style>
+                    </DataGrid.Resources>
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="No." Width="24">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <wcl:ASGridCell FieldName="TOP10ART_AR" Editor="edDefault" EditLength="0" HorizontalContentAlignment="Center"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Artikl" Width="150">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <wcl:ASGridCell FieldName="NAMEART_AR" Editor="edDefault" EditLength="0" HorizontalContentAlignment="Left"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Prodaja ova god." Width="108">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <wcl:ASGridCell FieldName="SALESART1_AR" Editor="edNumeric" EditLength="0" HorizontalContentAlignment="Right"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Prodaja lani" Width="102">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <wcl:ASGridCell FieldName="SALESART2_AR" 
+                                    Editor="edNumeric" 
+                                    EditLength="0" 
+                                    Size="10"
+                                    HorizontalContentAlignment="Right"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Indx%" Width="38">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <wcl:ASGridCell FieldName="INDEXART_AR" Editor="edNumeric" EditLength="0" HorizontalContentAlignment="Right"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+        <wcl:ASNumericBox HorizontalAlignment="Left"
+                          VerticalAlignment="Top"
+                          FontWeight="Bold"
+                          ButtonSize="0"
+                          Dec="2"
+                          Height="26"
+                          Width="174"
+                          Margin="700,113,0,0"
+                          Name="TASNumEnter5"
+                          Thousands="True"
+                          Background="#FFF2F2F2"
+                          Foreground="black"
+                          FieldName="tot_ovagod"
+                          FontFamily="Lato"
+                          FontSize="19"
+                          TabIndex="5"
+                          HorizontalContentAlignment="Right" 
+                          IsReadOnly="True"/>
+        <wcl:ASNumericBox HorizontalAlignment="Left"
+                          VerticalAlignment="Top"
+                          FontWeight="Bold"
+                          ButtonSize="0"
+                          Dec="2"
+                          Height="26"
+                          Width="174"
+                          Margin="700,145,0,0"
+                          Name="TASNumEnter15"
+                          Thousands="True"
+                          Background="#FFF2F2F2"
+                          Foreground="black"
+                          FieldName="tot_lani"
+                          FontFamily="lato"
+                          FontSize="17"
+                          HorizontalContentAlignment="Right" 
+                          IsReadOnly="True"
+                          TabIndex="6" />
+        <wcl:ASNumericBox HorizontalAlignment="Left"
+                          VerticalAlignment="Top"
+                          FontWeight="Bold"
+                          ButtonSize="0"
+                          Dec="2"
+                          Height="26"
+                          Width="126"
+                          Margin="748,177,0,0"
+                          Name="TASNumEnter16"
+                          Thousands="True"
+                          Background="#FFF2F2F2"
+                          Foreground="black"
+                          FieldName="postotak"
+                          FontFamily="lato"
+                          FontSize="17"
+                          HorizontalContentAlignment="Right" 
+                          IsReadOnly="True"
+                          TabIndex="7" />
+        <wcl:ASNumericBox HorizontalAlignment="Left"
+                          VerticalAlignment="Top"
+                          FontWeight="Bold"
+                          ButtonSize="0"
+                          Dec="2"
+                          Height="26"
+                          Width="174"
+                          Margin="700,209,0,0"
+                          Name="TASNumEnter1"
+                          Thousands="True"
+                          Background="#FFD0E8E8"
+                          Foreground="#FF295454"
+                          FieldName="tot_ovajmj"
+                          HorizontalContentAlignment="Right" 
+                          IsReadOnly="True"
+                          FontFamily="Lato"
+                          FontSize="17"
+                          TabIndex="8" />
+        <wcl:ASNumericBox HorizontalAlignment="Left"
+                          VerticalAlignment="Top"
+                          FontWeight="Bold"
+                          ButtonSize="0"
+                          Dec="2"
+                          Height="26"
+                          Width="174"
+                          Margin="700,241,0,0"
+                          Name="TASNumEnter2"
+                          Thousands="True"
+                          Background="#FFD0E8E8"
+                          Foreground="#FF295454"
+                          FieldName="tot_proslimj"
+                          FontFamily="lato"
+                          HorizontalContentAlignment="Right" 
+                          IsReadOnly="True"
+                          FontSize="17"
+                          TabIndex="9" />
+        <wcl:ASNumericBox HorizontalAlignment="Left"
+                          VerticalAlignment="Top"
+                          FontWeight="Bold"
+                          ButtonSize="0"
+                          Dec="2"
+                          Height="26"
+                          Width="126"
+                          Margin="748,273,0,0"
+                          Name="TASNumEnter3"
+                          Thousands="True"
+                          Background="#FFD0E8E8"
+                          Foreground="#FF295454"
+                          FieldName="postotakMj"
+                          FontFamily="lato"
+                          HorizontalContentAlignment="Right" 
+                          IsReadOnly="True"
+                          FontSize="17"
+                          TabIndex="10" />
+        <wcl:ASNumericBox HorizontalAlignment="Left"
+                          VerticalAlignment="Top"
+                          FontWeight="Bold"
+                          ButtonSize="0"
+                          Dec="2"
+                          Height="26"
+                          Width="174"
+                          Margin="700,305,0,0"
+                          Name="TASNumEnter4"
+                          Thousands="True"
+                          Background="#FFFFDCB9"
+                          Foreground="#FF934900"
+                          FieldName="tot_ovajTj"
+                          FontFamily="Lato"
+                          HorizontalContentAlignment="Right" 
+                          IsReadOnly="True"
+                          FontSize="17"
+                          TabIndex="11" />
+        <wcl:ASNumericBox HorizontalAlignment="Left"
+                          VerticalAlignment="Top"
+                          FontWeight="Bold"
+                          ButtonSize="0"
+                          Dec="2"
+                          Height="26"
+                          Width="174"
+                          Margin="700,337,0,0"
+                          Name="TASNumEnter6"
+                          Thousands="True"
+                          Background="#FFFFDCB9"
+                          Foreground="#FF934900"
+                          FieldName="tot_prosliTj"
+                          HorizontalContentAlignment="Right" 
+                          IsReadOnly="True"
+                          FontFamily="lato"
+                          FontSize="17"
+                          TabIndex="12" />
+        <wcl:ASNumericBox HorizontalAlignment="Left"
+                          VerticalAlignment="Top"
+                          FontWeight="Bold"
+                          ButtonSize="0"
+                          Dec="2"
+                          Height="26"
+                          Width="126"
+                          Margin="748,369,0,0"
+                          Name="TASNumEnter7"
+                          Thousands="True"
+                          Background="#FFFFDCB9"
+                          Foreground="#FF934900"
+                          FieldName="postotakTj"
+                          HorizontalContentAlignment="Right" 
+                          IsReadOnly="True"
+                          FontFamily="lato"
+                          FontSize="17"
+                          TabIndex="13" />
+        <wcl:ASEnterBox HorizontalAlignment="Left"
+                        FontWeight="Bold"
+                        VerticalAlignment="Top"
+                        Margin="620,128,0,0"
+                        FieldName="ovagod_h"
+                        Name="TASENTER1"
+                        FontSize="11"
+                        Foreground="black"
+                        Background="White"
+                        Height="18"
+                        Width="72"
+                        TabIndex="14" />
+        <wcl:ASEnterBox HorizontalAlignment="Left"
+                        FontWeight="Bold"
+                        VerticalAlignment="Top"
+                        Margin="620,160,0,0"
+                        FieldName="lani_h"
+                        Name="TASENTER2"
+                        FontSize="11"
+                        Foreground="black"
+                        Background="White"
+                        Height="18"
+                        Width="72"
+                        TabIndex="15" />
+        <wcl:ASEnterBox HorizontalAlignment="Left"
+                        FontWeight="Bold"
+                        VerticalAlignment="Top"
+                        Margin="620,322,0,0"
+                        FieldName="week_c"
+                        Name="TASENTER3"
+                        FontSize="11"
+                        Foreground="#FF934900"
+                        Background="White"
+                        Height="18"
+                        Width="72"
+                        TabIndex="16" />
+        <wcl:ASEnterBox HorizontalAlignment="Left"
+                        FontWeight="Bold"
+                        VerticalAlignment="Top"
+                        Margin="620,354,0,0"
+                        FieldName="week_p"
+                        Name="TASENTER4"
+                        FontSize="11"
+                        Foreground="#FF934900"
+                        Background="White"
+                        Height="18"
+                        Width="72"
+                        TabIndex="17" />
     </Grid>
 </Window>

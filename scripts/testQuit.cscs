@@ -1,0 +1,8 @@
+func1();
+MessageBox("got here, but shouldn't.");
+quit;
+
+function func1(){
+    quit;//should quit the chained module
+    MessageBox("didn't get here, Ok.")
+}
