@@ -297,6 +297,10 @@ function mainMenuWindow_OnDisplay(){
 
     AddMenuItem("OtherDC", "testSlowDEFINE.cscs", "testSlowDEFINE", "runScript");
     
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testQuit.cscs", "testQuit", "runScript");
+    
 
     //----- IVAN -------------------------------  
 
