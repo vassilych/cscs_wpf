@@ -4611,6 +4611,10 @@ namespace WpfCSCS
             while (chainScript.StillValid())
             {
                 result = chainScript.Execute();
+                if (result.Type == Variable.VarType.QUIT)
+                {
+                    break;
+                }
                 chainScript.GoToNextStatement();
             }
             //}));
