@@ -716,6 +716,7 @@ namespace WpfCSCS
             return widgetName;
         }
 
+        static string s_variableChanged;
         public void OnVariableChange(string name, Variable newValue, bool exists = true)
         {
             if (ChangingBoundVariable)
@@ -728,11 +729,13 @@ namespace WpfCSCS
             }
 
             var widgetName = name.ToLower();
-            if (!m_boundVariables.TryGetValue(widgetName, out Variable bounded))
+            if (string.Equals(widgetName, s_variableChanged) ||
+                !m_boundVariables.TryGetValue(widgetName, out Variable bounded))
             {
                 return;
             }
 
+            s_variableChanged = widgetName;
             var widget = GetWidget(widgetName);
             if (m_addingActions)
             {
@@ -751,6 +754,7 @@ namespace WpfCSCS
             }
 
             m_boundVariables[widgetName] = newValue;
+            s_variableChanged = null;
         }
 
         void UpdateVariable(FrameworkElement widget, Variable newValue)
@@ -761,20 +765,20 @@ namespace WpfCSCS
                 return;
             }
 
+            if (ChangingBoundVariable)
+            {
+                return;
+            }
+            var prev = ChangingBoundVariable;
+            ChangingBoundVariable = true;
             if (DEFINES.TryGetValue(widgetName, out DefineVariable defVar))
             {
-                //if (defVar.Type != newValue.Type)
-                //{
-                //    return;
-                //}
-
                 var assign = new MyAssignFunction(widgetName);
                 assign.DoAssign(Script, widgetName, defVar, ref newValue);
-                //defVar.InitVariable(newValue, this);
+                ChangingBoundVariable = false;
                 return;
             }
 
-            ChangingBoundVariable = true;
             Interpreter.AddGlobalOrLocalVariable(widgetName,
                                         new GetVarFunction(newValue));
             ChangingBoundVariable = false;
@@ -1450,7 +1454,7 @@ namespace WpfCSCS
                             {
                                 UpdateVariable(widget2, new Variable(parsedDouble));
                             }
-                            
+                           
                         }
                         break;
 
@@ -1473,9 +1477,6 @@ namespace WpfCSCS
                 }
             }
 
-            m_updatingWidget.Remove(widgetName2);
-
-
             string funcName;
             if (m_textChangedHandlers.TryGetValue(widgetName, out funcName))
             {
@@ -1483,6 +1484,7 @@ namespace WpfCSCS
                 Interpreter.Run(funcName, new Variable(widgetName), text,
                     Variable.EmptyInstance, GetScript(win));
             }
+            m_updatingWidget.Remove(widgetName2);
         }
 
         private void Widget_DateChanged(object sender, SelectionChangedEventArgs e)
