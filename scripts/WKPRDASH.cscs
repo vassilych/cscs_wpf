@@ -346,11 +346,13 @@ function pripremi(){
             }
         }        
     }
-    bojeArray = {200, 210, 215};
+
+    bojeArray = {150, 210, 255};
     HorizontalBar("HorizontalBarOG", "BarWidth", 50);
     HorizontalBar("HorizontalBarOG", "Text", string(tot_ovagod));
     HorizontalBar("HorizontalBarOG", "Color", bojeArray);
-    postotak= Math.Round(((tot_ovagod-tot_lani)/tot_lani)*100, 2);
+    
+	postotak= Math.Round(((tot_ovagod-tot_lani)/tot_lani)*100, 2);
     postotakMj= Math.Round(((tot_ovajmj-tot_prosliMj)/tot_prosliMj)*100,2);  
 
     Chart("ChartPoMjesecima", "init");

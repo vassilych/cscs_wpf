@@ -30,6 +30,7 @@ namespace WpfControlsLibrary
             set
             {
                 base.SetValue(BarWidthProperty, value);
+                BarFill.Width = Width * value / 100;
             }
         }
         
@@ -43,6 +44,7 @@ namespace WpfControlsLibrary
             set
             {
                 base.SetValue(FontSizeProperty, value);
+                InsideText.FontSize = value;
             }
         }
         
@@ -56,6 +58,7 @@ namespace WpfControlsLibrary
             set
             {
                 base.SetValue(TextProperty, value);
+                InsideText.Text = value;
             }
         }
         

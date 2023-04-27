@@ -1,11 +1,19 @@
-﻿using System;
+﻿using CSCS.InterpreterManager;
+using SplitAndMerge;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data;
+using System.Data.SqlClient;
+using System.Diagnostics;
+using System.Dynamic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Dynamic;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -13,24 +21,11 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Net;
-using System.Globalization;
-using System.Threading;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Data.SqlClient;
-using static WpfCSCS.CSCS_GUI;
-
-using System.Text.RegularExpressions;
-using System.Data;
-using static WpfCSCS.Btrieve;
 using WpfControlsLibrary;
-using CSCS.InterpreterManager;
 using WpfCSCS;
-using SplitAndMerge;
-using static SplitAndMerge.CSCSClass;
+using static WpfCSCS.Btrieve;
 
 namespace SplitAndMerge
 {
