@@ -8805,6 +8805,27 @@ where ID = {rowId}
                     variablesStringFormats[varName] = "N";
                 }
 
+                //RECV
+                try
+                {
+                    var recvVariableName = args.FirstOrDefault(p => p.CurrentAssign.ToLower() == "recv");
+                    if (recvVariableName != null)
+                    {
+                        var recvName = recvVariableName.String;
+                        if (Gui.DEFINES.TryGetValue(recvName.ToLower(), out DefineVariable recvDefVar))
+                        {
+                            if (Gui.DEFINES.TryGetValue(varName.ToLower(), out DefineVariable inDefVar))
+                            {
+                                recvDefVar.String = String.Format("{0:" + variablesStringFormats[varName] + "}", inDefVar.Value);
+                            }
+
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+
+                }
 
                 //variablesStringFormats[varName] = "{0:N%replace%}";
 
