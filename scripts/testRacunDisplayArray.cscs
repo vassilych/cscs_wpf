@@ -1,0 +1,122 @@
+CreateWindow("../../scripts/testRacunDisplayArray.xaml");
+
+DEFINE idArray type r size 10 array 50;
+
+DEFINE brojLinijeArray type i array 50;
+DEFINE sifraArtiklaArray type a size 15 array 50;
+DEFINE nazivArtiklaArray type a size 150 array 50;
+DEFINE kolicinaArray type n size 15 dec 2 array 50;
+DEFINE cijenaArray type n size 15 dec 2 array 50;
+DEFINE iznosArray type n size 15 dec 2 array 50;
+
+DEFINE maximumElements type i;
+
+DEFINE datagridCntr type i;
+
+DEFINE brojRacuna type r size 10;
+DEFINE datum type d size 8;
+DEFINE sifraPartnera type r size 15;
+DEFINE nazivPartnera type a size 150;
+
+DEFINE sifraArtikla type a size 15;
+DEFINE nazivArtikla type a size 150;
+DEFINE kolicina type n size 15 dec 2;
+DEFINE cijena type n size 15 dec 2;
+DEFINE iznos type n size 15 dec 2;
+
+DEFINE nkprinvHndl type i;
+DEFINE nkprinvlHndl type i;
+
+function testRacunDisplayArray_OnStart(){
+    
+    maximumElements = 50;
+
+    nkprinvHndl = openv("nkprinv");
+    if(flerr(nkprinvHndl) != 0){
+        MessageBox("FLERR! - nkprinv");
+    }
+    
+    nkprinvlHndl = openv("nkprinvl");
+    if(flerr(nkprinvlHndl) != 0){
+        MessageBox("FLERR! - nkprinvl");
+    }
+
+    Navigator("navigator1", nkprinvHndl, "nkpr_gl_num");
+}
+
+function navigator1@afterChange(){
+    //MessageBox(RcnGet(nkprinvHndl));
+    brojRacuna = nkpr_gl_num;
+    
+    datum = nkpr_gl_invdte;
+    sifraPartnera = nkpr_gl_cuscod;
+    nazivPartnera = nkpr_gl_cusnme;
+
+    popuniLinije();
+}
+
+function brojRacunaNumericBox@post(){
+    //preuzmi račun iz baze
+    
+    //glava
+    findv(nkprinvHndl, "m", "nkpr_gl_num", brojRacuna);
+    if(flerr(nkprinvHndl) != 0){
+        MessageBox("FLERR! - nkprinv");
+    }
+    
+    datum = nkpr_gl_invdte;
+    sifraPartnera = nkpr_gl_cuscod;
+    nazivPartnera = nkpr_gl_cusnme;
+
+    popuniLinije();
+}
+
+function popuniLinije(){
+    
+    DisplayArray("datagrid1", "close");
+    //DisplayArray("datagrid1", "RedisplayActive");
+
+    DEFINE lnNum type i;
+    lnNum = 0;
+    scan(nkprinvlHndl; "nkpr_ln_invnm"; string(brojRacuna); nkpr_ln_invnm == brojRacuna; ""; ""; ""){
+        //MessageBox(nkpr_ln_pdesc);
+        brojLinijeArray[lnNum] = NKPR_LN_BR_LN;
+        sifraArtiklaArray[lnNum] = nkpr_ln_pcode;
+        nazivArtiklaArray[lnNum] = nkpr_ln_pdesc;
+        kolicinaArray[lnNum] = nkpr_ln_pqty;
+        cijenaArray[lnNum] = nkpr_ln_pprce;
+        iznosArray[lnNum] = nkpr_ln_cenan;
+
+        lnNum++;
+    }
+
+    DisplayArraySetup("datagrid1", counterFld: "datagridCntr", activeElements: lnNum, maxElements: maximumElements);
+
+    datagridCntr = 0;
+    DisplayArrayRefresh("datagrid1");
+}
+
+function datagrid1@move(){
+    if(datagridCntr >= 0){
+        sifraArtikla = sifraArtiklaArray[datagridCntr];
+        nazivArtikla = nazivArtiklaArray[datagridCntr];
+        kolicina = kolicinaArray[datagridCntr];
+        cijena = cijenaArray[datagridCntr];
+        iznos = iznosArray[datagridCntr];
+    }
+}
+
+function noviRedButton@clicked(){
+    DataGrid("datagrid1", "addrow");
+}
+
+function spremiRedButton@clicked(){
+    sifraArtiklaArray[datagridCntr] = sifraArtikla;
+    nazivArtiklaArray[datagridCntr] = nazivArtikla;
+    kolicinaArray[datagridCntr] = kolicina;
+    cijenaArray[datagridCntr] = cijena;
+    iznosArray[datagridCntr] = iznos;
+
+    DisplayArray("datagrid1", "RedisplayActive");
+}
+

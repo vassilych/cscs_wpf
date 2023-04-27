@@ -1,0 +1,13 @@
+CreateWindow("../../scripts/newHorizontalBarChart.xaml");
+
+
+
+function newHorizontalBarChart_OnStart(){
+
+    bojeArray = {200, 210, 215};
+
+
+    HorizontalBar("HorizontalBar1", "BarWidth", 50);
+    HorizontalBar("HorizontalBar1", "Text", "50%");
+    HorizontalBar("HorizontalBar1", "Color", bojeArray);
+}

@@ -81,6 +81,8 @@ namespace SplitAndMerge
             interpreter.RegisterFunction(Constants.STRINGS, new StringsFunction());
 
             interpreter.RegisterFunction(Constants.STATUS_BAR, new StatusBarFunction());
+            
+            interpreter.RegisterFunction(Constants.HORIZONTAL_BAR, new HorizontalBarFunction());
 
 
             interpreter.RegisterFunction("OpenFile", new OpenFileFunction(false));
@@ -205,7 +207,7 @@ namespace SplitAndMerge
 
         public const string FLERR = "Flerr";
 
-        public const string NAVIGATOR = "ASNavigator";
+        public const string NAVIGATOR = "Navigator";
 
         public const string SQL_TO_XLSX = "SqlToXlsx";
 
@@ -275,6 +277,8 @@ namespace SplitAndMerge
         public const string STRINGS = "Strings";
 
         public const string STATUS_BAR = "StatusBar";
+
+        public const string HORIZONTAL_BAR = "HorizontalBar";
         
         public const string CHART = "Chart";
 
@@ -505,6 +509,7 @@ namespace WpfCSCS
         internal CSCS_SQL SQLInstance { get; set; } = new CSCS_SQL();
         internal Btrieve BtrieveInstance { get; set; } = new Btrieve();
         internal Charts ChartsInstance { get; set; } = new Charts();
+        internal NavigatorClass NavigatorClassInstance { get; set; } = new NavigatorClass();
         internal Commands CommandsInstance { get; set; } = new Commands();
 
         static public InterpreterManagerModule InterpreterManager = new InterpreterManagerModule();
@@ -593,7 +598,7 @@ namespace WpfCSCS
             ChartsInstance.Init(this);
             ReportFunction.Init(Interpreter);
             Excel.Init(Interpreter);
-            NavigatorClass.Init(Interpreter);
+            NavigatorClassInstance.Init(Interpreter);
             CommandsInstance.Init(this);
         }
 
@@ -4186,6 +4191,47 @@ namespace WpfCSCS
                     {
                         x++;
                     }
+                }
+            }
+
+            return Variable.EmptyInstance;
+        }
+    }
+    
+    class HorizontalBarFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 3, m_name);
+
+            var gui = CSCS_GUI.GetInstance(script);
+
+            var widgetName = Utils.GetSafeString(args, 0);
+            var option = Utils.GetSafeString(args, 1).ToLower();
+            //var value = Utils.GetSafeVariable(args, 2);
+
+            var widget = gui.GetWidget(widgetName);
+            if (widget is ASHorizontalBar)
+            {
+                var ashb = widget as ASHorizontalBar;
+                if(option == "fontsize")
+                {
+                    ashb.FontSize = Utils.GetSafeInt(args, 2);
+                }
+                else if (option == "barwidth")
+                {
+                    ashb.BarWidth = Utils.GetSafeInt(args, 2);
+                }
+                else if (option == "text")
+                {
+                    ashb.Text = Utils.GetSafeString(args, 2);
+                }
+                else if (option == "color")
+                {
+                    var rgbArray = Utils.GetSafeVariable(args, 2).Tuple;
+
+                    ashb.BarColor = new SolidColorBrush(Color.FromRgb((byte)rgbArray[0].Value, (byte)rgbArray[1].Value, (byte)rgbArray[2].Value));
                 }
             }
 

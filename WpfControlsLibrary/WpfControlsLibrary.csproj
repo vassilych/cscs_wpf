@@ -56,6 +56,9 @@
     <Compile Include="ASEnterBox.xaml.cs">
       <DependentUpon>ASEnterBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ASHorizontalBar.xaml.cs">
+      <DependentUpon>ASHorizontalBar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ASMemoBox.cs" />
     <Compile Include="ASEnterTextBox.cs" />
     <Compile Include="ASNavigator.xaml.cs">
@@ -100,6 +103,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ASEnterBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ASHorizontalBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

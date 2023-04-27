@@ -7,6 +7,7 @@ using SkiaSharp;
 using SplitAndMerge;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,6 +25,13 @@ namespace WpfCSCS
             
 
         }
+
+        static List<SolidColorPaint> colorList = new List<SolidColorPaint>()
+        {
+            new SolidColorPaint(new SKColor(0, 0, 255)), // blue
+            new SolidColorPaint(new SKColor(255, 0, 0)), // red
+            new SolidColorPaint(new SKColor(0, 255, 0)) // green
+        };
 
         CSCS_GUI Gui { get; set; }
 
@@ -74,7 +82,8 @@ namespace WpfCSCS
                             var temp = cartesianWidget.Series.ToList();
                             if (chartsTypes[widgetName] == "columnseries")
                             {
-                                temp.Add(new ColumnSeries<double>() { Values = newList });
+                                temp.Add(new ColumnSeries<double>() { Values = newList, Fill = colorList[temp.Count]});
+                                //Debug.WriteLine("temp.Count = " + temp.Count);
                             }
                             else if (chartsTypes[widgetName] == "lineseries")
                             {

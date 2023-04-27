@@ -300,6 +300,19 @@ function mainMenuWindow_OnDisplay(){
     AddMenuSeparator("OtherDC");
 
     AddMenuItem("OtherDC", "testQuit.cscs", "testQuit", "runScript");
+       
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testRacunDisplayArray.cscs", "testRacunDisplayArray", "runScript");
+    AddMenuItem("OtherDC", "testRacunDisplayTable.cscs", "testRacunDisplayTable", "runScript");
+           
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testPrintArrayElementInEvent.cscs", "testPrintArrayElementInEvent", "runScript");
+    
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "newHorizontalBarChart.cscs", "newHorizontalBarChart", "runScript");
     
 
     //----- IVAN -------------------------------  

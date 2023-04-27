@@ -1,0 +1,69 @@
+CreateWindow("../../scripts/testRacunDisplayTable.xaml");
+
+DEFINE idArray type r size 10 array 50;
+
+DEFINE nkprinvHndl type i;
+DEFINE nkprinvlHndl type i;
+
+function testRacunDisplayTable_OnStart(){
+    
+    //maximumElements = 50;
+
+    nkprinvHndl = openv("nkprinv");
+    if(flerr(nkprinvHndl) != 0){
+        MessageBox("FLERR! - nkprinv");
+    }
+    
+    nkprinvlHndl = openv("nkprinvl");
+    if(flerr(nkprinvlHndl) != 0){
+        MessageBox("FLERR! - nkprinvl");
+    }
+
+    Navigator("navigator1", nkprinvHndl, "nkpr_gl_num");
+}
+
+function navigator1@afterChange(){
+    popuniLinije();
+}
+
+function brojRacunaNumericBox@post(){
+    //preuzmi račun iz baze
+    
+    //glava
+    findv(nkprinvHndl, "m", "nkpr_gl_num", nkpr_gl_num);
+    if(flerr(nkprinvHndl) != 0){
+        MessageBox("FLERR! - nkprinv");
+    }
+
+    popuniLinije();
+}
+
+function popuniLinije(){
+    
+    DisplayTable("datagrid1", "close");
+
+    DisplayTableSetup("datagrid1", fnum: nkprinvlHndl, key: "nkpr_ln_invnm", start: {nkpr_gl_num}, whileString: "nkpr_gl_num == nkpr_ln_invnm", forString: "");
+    
+    //prva linija
+    nkpr_ln_invnm = nkpr_gl_num;
+    findv(nkprinvlHndl, "m", "nkpr_ln_invnm", nkpr_gl_num);
+    if(flerr(nkprinvlHndl) != 0){
+        MessageBox("FLERR! - nkprinvl");
+    }
+
+    DisplayTable("datagrid1", "RedisplayFromTop");
+}
+
+
+function noviRedButton@clicked(){
+    DataGrid("datagrid1", "addrow");
+    clr(nkprinvlHndl, "buff");
+    nkpr_ln_invnm = nkpr_gl_num;
+}
+
+function spremiRedButton@clicked(){
+    Save(nkprinvlHndl, false, true);
+   
+    popuniLinije();
+}
+

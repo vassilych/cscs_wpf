@@ -4991,7 +4991,10 @@ $@"EXECUTE sp_executesql N'
                 //whileString = Utils.GetSafeString(args, 4).ToLower();
                 //forString = Utils.GetSafeString(args, 5).ToLower();
 
-                gridsTableClass[gridName] = new DisplayTableClass();
+                if (!gridsTableClass.ContainsKey(gridName))
+                    gridsTableClass[gridName] = new DisplayTableClass();
+
+
                 //gridsTableClass[gridName].startString = script.GetTempScript(args[3].AsString()); //Utils.GetSafeString(args, 3);
                 //gridsTableClass[gridName].whileString = script.GetTempScript(args[4].AsString()); //Utils.GetSafeString(args, 4).ToLower();
                 //gridsTableClass[gridName].forString = Utils.GetSafeString(args, 5).ToLower();
@@ -5027,6 +5030,20 @@ $@"EXECUTE sp_executesql N'
                 {
                     gridsTableClass[gridName].forString = "";
                 }
+
+
+                //------------------------------------------------------------------------
+
+                if (gridsTableClass.ContainsKey(gridName) && gridsTableClass[gridName].tagsAndTypes != null && gridsTableClass[gridName].tagsAndTypes.Count > 0)
+                {
+                    //Gui.DEFINES.TryGetValue(lineCntrVarName.String.ToLower(), out DefineVariable defCntrVar){
+                    //    defCntrVar = 
+                    //}
+                    fillDataTable(gridName, Gui);
+                    return Variable.EmptyInstance;
+                }
+
+                //------------------------------------------------------------------------
 
 
                 //------------------------------------------------------------------------
@@ -5258,7 +5275,7 @@ $@"EXECUTE sp_executesql N'
                 gridsTableClass[gridName].tags = gridsTableClass[gridName].tagsAndHeaders.Keys.ToList();
                 gridsTableClass[gridName].tableHndlNum = tableHndlNum;
                 gridsTableClass[gridName].tableKey = tableKey;
-                gridsTableClass[gridName].tagsAndTypes = gridsTableClass[gridName].tagsAndTypes;
+                //gridsTableClass[gridName].tagsAndTypes = gridsTableClass[gridName].tagsAndTypes;
                 gridsTableClass[gridName].KeyClass = KeyClass;
                 gridsTableClass[gridName].Script = Script;
 
@@ -6856,7 +6873,10 @@ $@"EXECUTE sp_executesql N'
 
                 if (gridsArrayClass.ContainsKey(gridName) && gridsArrayClass[gridName].tagsAndTypes != null && gridsArrayClass[gridName].tagsAndTypes.Count > 0)
                 {
-                    fillDataTable(gridName);
+                    //Gui.DEFINES.TryGetValue(lineCntrVarName.String.ToLower(), out DefineVariable defCntrVar){
+                    //    defCntrVar = 
+                    //}
+                    fillDataTable(gridName, Gui);
                     return Variable.EmptyInstance;
                 }
 
@@ -7078,7 +7098,7 @@ $@"EXECUTE sp_executesql N'
                 gridsArrayClass[gridName].tags = gridsArrayClass[gridName].tagsAndHeaders.Keys.ToList();
                 gridsArrayClass[gridName].tableOrArray = "array";
 
-                fillDataTable(gridName);
+                fillDataTable(gridName, Gui);
 
                 generateDataGridColumns(gridName);
 
@@ -7099,7 +7119,7 @@ $@"EXECUTE sp_executesql N'
             //   Debug.WriteLine("Dg_IsKeyboardFocusWithinChanged");
             //}
 
-            public void fillDataTable(string gridName)
+            public void fillDataTable(string gridName, CSCS_GUI Gui)
             {
                 int lastArrayCount = 0;
                 for (int i = 0; i < gridsArrayClass[gridName].tagsAndTypes.Count; i++)
@@ -7136,13 +7156,24 @@ $@"EXECUTE sp_executesql N'
                 }
 
                 int activeElements;
-                if (gridsArrayClass[gridName].actCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable actelems))
+                //if (gridsArrayClass[gridName].actCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable actelems))
+                //{
+                //    activeElements = (int)actelems.Value;
+                //}
+                if((int)gridsArrayClass[gridName].actCntrVar.Value != 0)
                 {
-                    activeElements = (int)actelems.Value;
+                    activeElements = (int)gridsArrayClass[gridName].actCntrVar.Value;
                 }
                 else
                 {
-                    activeElements = gridsArrayClass[gridName].actCntrValue;
+                    if (gridsArrayClass[gridName].actCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable actelems))
+                    {
+                        activeElements = (int)actelems.Value;
+                    }
+                    else
+                    {
+                        activeElements = gridsArrayClass[gridName].actCntrValue;
+                    }
                 }
 
                 for (int i = 0; i < maxElements && i < lastArrayCount && i < activeElements; i++)
@@ -8129,7 +8160,7 @@ $@"EXECUTE sp_executesql N'
                         var currentIndex = dg.SelectedIndex;
 
                         gridsDataTables[gridName].Rows.Clear();
-                        new DisplayArraySetupFunction().fillDataTable(gridName);
+                        new DisplayArraySetupFunction().fillDataTable(gridName, Gui);
 
 
                         if (currentIndex < 0 || currentIndex > dg.Items.Count - 1)
@@ -8145,8 +8176,11 @@ $@"EXECUTE sp_executesql N'
                         break;
 
                     case "close":
-                        if(gridsDataTables.ContainsKey(gridName))
+                        if (gridsDataTables.ContainsKey(gridName))
+                        {
                             gridsDataTables[gridName].Rows.Clear();
+                            //gridsArrayClass[gridName].lineCntrVar = new Variable(0);
+                        }
                         break;
 
                     default:

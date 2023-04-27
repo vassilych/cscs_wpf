@@ -1,0 +1,18 @@
+CreateWindow("../../scripts/testPrintArrayElementInEvent.xaml");
+
+DEFINE arrayA type a size 10 array 10;
+DEFINE arrayR type r size 10 array 10;
+DEFINE arrayN type n size 10 dec 2 array 10;
+DEFINE arrayI type i array 10;
+
+arrayA[0] = "testText";
+arrayR[0] = 12345;
+arrayN[0] = 11111.11;
+arrayI[0] = 99;
+
+function btn1@clicked(){
+    MessageBox("arrayA[0] = " + arrayA[0]);
+    MessageBox("arrayR[0] = " + arrayR[0]);
+    MessageBox("arrayN[0] = " + arrayN[0]);
+    MessageBox("arrayI[0] = " + arrayI[0]);
+}
