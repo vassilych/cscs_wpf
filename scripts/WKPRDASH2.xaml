@@ -28,6 +28,17 @@
         <TextBlock HorizontalAlignment="Left"
                    VerticalAlignment="Top"
                    Height="15"
+                   Width="171"
+                   Margin="670,420,0,0"
+                   FontFamily="lato"
+                   FontWeight="Bold"
+                   Name="regija"
+                   FontSize="11"
+                   Foreground="black"
+                   Text="Top 5 - regija u razdoblju" />
+        <TextBlock HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Height="15"
                    Width="243"
                    Margin="130,670,0,0"
                    FontFamily="lato"
@@ -413,7 +424,7 @@
                             Size="0"
                             FieldName="artikl"
                             Foreground="black"
-                            Name="ceArtikl"
+                            Name="neArtikl"
                             FontSize="11"
                             KeyTraps="F2|ceRegija.click"
                             Case="Normal"
@@ -427,7 +438,7 @@
                             TabIndex="9" />
             <wcl:ASEnterBox ButtonSize="0"
                             FontWeight="Bold"
-                            Size="4"
+                            Size="0"
                             FieldName="artiklNaziv"
                             Foreground="black"
                             Name="TASComboEnter7"
@@ -593,6 +604,90 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
+             <DataGrid HorizontalAlignment="Left"
+                  VerticalAlignment="Top"
+                  Height="216"
+                  Width="480"
+                  Margin="510,440,0,0"
+                  IsReadOnly="true"
+                  Name="dgRegije"
+                  AlternatingRowBackground="LightGray"
+                  HorizontalScrollBarVisibility="Auto"
+                  VerticalScrollBarVisibility="Auto"
+                  Background="White"
+                  TabIndex="2">
+            <DataGrid.Resources>
+                <Style TargetType="{x:Type DataGridColumnHeader}">
+                    <Setter Property="Background"
+                            Value="#ffa600" />
+                    <Setter Property="Foreground" Value="White"  />
+
+                </Style>
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="No."
+                                        Width="24">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell FieldName="TOP10REG_AR"
+                                            Editor="edDefault"
+                                            EditLength="0" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Regija"
+                                        Width="150">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell FieldName="NAMEREG_AR"
+                                            Editor="edDefault"
+                                            EditLength="0" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Prodaja ova god."
+                                        Width="108">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell FieldName="SALESREG1_AR"
+                                            Editor="edEditBtn"
+                                            EditLength="0" 
+                                            Name="clickTest"
+                                            Thousands="True"
+                                            Size="10"
+                                            HorizontalContentAlignment="Right"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Prodaja lani"
+                                        Width="102">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell FieldName="SALESREG2_AR"
+                                            Editor="edEditBtn"
+                                            EditLength="0" 
+                                            Name="clickTest"
+                                            Size="10"
+                                            HorizontalContentAlignment="Right"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Indx%"
+                                        Width="38">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <wcl:ASGridCell FieldName="INDEXREG_AR"
+                                            Editor="edEditBtn"
+                                            EditLength="0" 
+                                            Name="clickTest"
+                                            Thousands="True"
+                                            Size="10"
+                                            HorizontalContentAlignment="Right"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
         <DataGrid HorizontalAlignment="Left"
                   VerticalAlignment="Top"
                   Height="216"
@@ -609,6 +704,7 @@
                 <Style TargetType="{x:Type DataGridColumnHeader}">
                     <Setter Property="Background"
                             Value="#FF326363" />
+                    <Setter Property="Foreground" Value="White"  />
                 </Style>
             </DataGrid.Resources>
             <DataGrid.Columns>
@@ -688,6 +784,7 @@
                 <Style TargetType="{x:Type DataGridColumnHeader}">
                     <Setter Property="Background"
                             Value="#FF006393" />
+                    <Setter Property="Foreground" Value="White"  />
                 </Style>
             </DataGrid.Resources>
             <DataGrid.Columns>
@@ -768,6 +865,8 @@
                                             Margin="1000,690,0,0"
                                             IsReadOnly="true"
                                             Name="dgArtikli"
+                                  AlternatingRowBackground="LightGray"
+
                                             HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
                                             Background="White"
                                             TabIndex="19">
@@ -775,6 +874,8 @@
                     <DataGrid.Resources>
                         <Style TargetType="{x:Type DataGridColumnHeader}">
                             <Setter Property="Background" Value="#FF0000A0"  />
+                                                <Setter Property="Foreground" Value="White"  />
+
                         </Style>
                     </DataGrid.Resources>
                     <DataGrid.Columns>
@@ -819,7 +920,7 @@
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
-        <wcl:ASNumericBox HorizontalAlignment="Left"
+        <!-- <wcl:ASNumericBox HorizontalAlignment="Left"
                           VerticalAlignment="Top"
                           FontWeight="Bold"
                           ButtonSize="0"
@@ -836,7 +937,14 @@
                           FontSize="19"
                           TabIndex="5"
                           HorizontalContentAlignment="Right" 
-                          IsReadOnly="True"/>
+                          IsReadOnly="True"/> -->
+                            <wcl:ASHorizontalBar Name="HorizontalBarOG"
+                             HorizontalAlignment="Left"
+                             VerticalAlignment="Top"
+                             Height="26"
+                             Width="174"
+                             Margin="700,113,0,0"
+                             FontSize="19" />
         <wcl:ASNumericBox HorizontalAlignment="Left"
                           VerticalAlignment="Top"
                           FontWeight="Bold"
