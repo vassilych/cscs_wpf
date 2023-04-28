@@ -5,11 +5,21 @@ DEFINE skladiste type i size 3;
 DEFINE skladisteNaziv type a size 50;
 DEFINE tot_ovagod type n size 14 dec 2 ; 
 DEFINE tot_lani type n size 14 dec 2 ; 
+DEFINE tot_ovajmj type n size 14 dec 2 ; 
+DEFINE tot_proslimj type n size 14 dec 2 ; 
 DEFINE postotak type n size 10 dec 2 ; 
 DEFINE postotakMj type n size 10 dec 2 ; 
 define postotakTj type n size 10 dec 2 ;
 DEFINE artiklNaziv type a size 30;
 define artikl type a size 15 ;
+
+DEFINE tot_ovagod_string type a size 20;
+DEFINE tot_lani_string type a size 20;
+DEFINE tot_ovajmj_string type a size 20;
+DEFINE tot_proslimj_string type a size 20;
+DEFINE tot_ovajTj_string type a size 20;
+DEFINE tot_ProsliTj_string type a size 20;
+
 
 define mjesec_h type i size 2 ;
 
@@ -348,10 +358,49 @@ function pripremi(){
     }
 
     bojeArray = {150, 210, 255};
-    HorizontalBar("HorizontalBarOG", "BarWidth", 50);
-    HorizontalBar("HorizontalBarOG", "Text", string(tot_ovagod));
+	bojeArray2 = {200, 170, 80};
+	if (tot_ovagod>tot_lani)
+	{
+		INT A = tot_ovagod/tot_lani;
+    	HorizontalBar("HorizontalBarOG", "BarWidth", 90);
+		HorizontalBar("HorizontalBarLG", "BarWidth", 90/A);
+	}
+	else
+	{
+		INT A = tot_lani/tot_ovagod;
+    	HorizontalBar("HorizontalBarLG", "BarWidth", 90);
+		HorizontalBar("HorizontalBarOG", "BarWidth", 90/A);
+	}
+	Format("tot_ovagod", "nofd", recv: "tot_ovagod_string");
+    HorizontalBar("HorizontalBarOG", "Text", tot_ovagod_string);
     HorizontalBar("HorizontalBarOG", "Color", bojeArray);
-    
+
+    Format("tot_lani", "nofd", recv: "tot_lani_string");
+    HorizontalBar("HorizontalBarLG", "Text", tot_lani_string);
+    HorizontalBar("HorizontalBarLG", "Color", bojeArray2);
+
+ 	bojeArrayMJ = {100, 180, 255};
+	bojeArrayMJ2 = {230, 60, 80};
+	if (tot_ovajmj>tot_proslimj)
+	{
+		MessageBox(tot_ovajmj);
+    	HorizontalBar("HorizontalBarOM", "BarWidth", 90);
+		HorizontalBar("HorizontalBarLM", "BarWidth", 90/A);
+	}
+	else
+	{
+		INT A = tot_proslimj/tot_ovajmj;
+    	HorizontalBar("HorizontalBarLM", "BarWidth", 90);
+		HorizontalBar("HorizontalBarOM", "BarWidth", 90/A);
+	}
+	Format("tot_ovajmj", "nofd", recv: "tot_ovajmj_string");
+    HorizontalBar("HorizontalBarOM", "Text", tot_ovajmj_string);
+    HorizontalBar("HorizontalBarOM", "Color", bojeArrayMJ);
+
+    Format("tot_proslimj", "nofd", recv: "tot_proslimj_string");
+    HorizontalBar("HorizontalBarLM", "Text", tot_proslimj_string);
+    HorizontalBar("HorizontalBarLM", "Color", bojeArrayMJ2);
+
 	postotak= Math.Round(((tot_ovagod-tot_lani)/tot_lani)*100, 2);
     postotakMj= Math.Round(((tot_ovajmj-tot_prosliMj)/tot_prosliMj)*100,2);  
 
@@ -537,6 +586,27 @@ function week()
                 //MessageBox("postotakTj " + postotakTj);
             }
         }
+		bojeArrayTJ = {55, 153, 133};
+		bojeArrayTJ2 = {55, 153, 176};
+		if (tot_ovajTj>tot_ProsliTj)
+		{
+			MessageBox(tot_ovajTj);
+			HorizontalBar("HorizontalBarOT", "BarWidth", 90);
+			HorizontalBar("HorizontalBarLT", "BarWidth", 90/A);
+		}
+		else
+		{
+			INT A = tot_ProsliTj/tot_ovajTj;
+			HorizontalBar("HorizontalBarLT", "BarWidth", 90);
+			HorizontalBar("HorizontalBarOT", "BarWidth", 90/A);
+		}
+		Format("tot_ovajTj", "nofd", recv: "tot_ovajTj_string");
+		HorizontalBar("HorizontalBarOT", "Text", tot_ovajTj_string);
+		HorizontalBar("HorizontalBarOT", "Color", bojeArrayTJ);
+
+		Format("tot_ProsliTj", "nofd", recv: "tot_ProsliTj_string");
+		HorizontalBar("HorizontalBarLT", "Text", tot_ProsliTj_string);
+		HorizontalBar("HorizontalBarLT", "Color", bojeArrayTJ2);
 		return;
 	}
 
@@ -556,12 +626,13 @@ function gbRegija()
 		sql_str = sql_str + "WITH sales AS";
 		if ( bezPdvaField == true )
 		 {
-		 	sql_str = sql_str + " (SELECT TOP 10 nkpr_gl_cusnme , nkpr_gl_cuscod , Sales1 = ISNULL(SUM(CASE WHEN nkpr_gl_dviza = 'D' THEN nkpr_gl_tecaj * nkpr_ln_amt ELSE nkpr_ln_amt END) , 0)";
+		 	sql_str = sql_str + " (SELECT TOP 10 KSDU_SF_CODE, ksdu_sf_opis1,Sales1 = ISNULL(SUM(CASE WHEN nkpr_gl_dviza = 'D' THEN nkpr_gl_tecaj * nkpr_ln_amt ELSE nkpr_ln_amt END),0) ";
 			sql_str = sql_str + " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv";
 			//if regija<> ''
 			sql_str = sql_str + " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart g ON nkpr_gl_cuscod = g.nksc_partcode";
 			//endif
 			sql_str = sql_str + " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkprinvl ON nkpr_gl_num = nkpr_ln_invnm";
+			sql_str = sql_str + " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.KPSYSIFA a ON NKSC_REGIJA = a.ksdu_sf_code";
 			if ( skladiste != 0 )
 			 {
 			 	sql_str = sql_str + " AND nkpr_ln_loc = " + skladiste;
