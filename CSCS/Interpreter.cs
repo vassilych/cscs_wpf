@@ -1693,6 +1693,8 @@ namespace SplitAndMerge
         public void RegisterFunction(string name, ParserFunction function,
                                             bool isNative = true)
         {
+            //File.AppendAllText(@"c:\temp\popis.txt", $"{name}\n");
+
             function.InterpreterInstance = this;
 
             name = Constants.ConvertName(name);

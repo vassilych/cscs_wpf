@@ -153,6 +153,10 @@ function mainMenuWindow_OnDisplay(){
 
     AddMenuItem("ChartsDC", "WKPRDASH2.cscs", "WKPRDASH2", "runScript");
    
+    AddMenuSeparator("ChartsDC");
+
+    AddMenuItem("ChartsDC", "testPieChart.cscs", "testPieChart", "runScript");
+   
     //------- OTHER -----------------------------
 
     AddMenuItem("OtherDC", "editDatabases.cscs", "editDatabases - using FillOutGrid", "runScript"); // ?
