@@ -8,14 +8,21 @@
         mc:Ignorable="d"
         Title="NumericBox"
         Height="500"
-        Width="700">
+        Width="500">
     <Grid>
-        <wcl:ASHorizontalBar Name="HorizontalBar1"
-                             HorizontalAlignment="Left"
-                             VerticalAlignment="Top"
-                             Height="35"
-                             Width="120"
-                             Margin="10,10,0,0"
-                             FontSize="25" />
+        <lvc:PieChart LegendPosition="Bottom"
+                      Name="PieChart1"
+                      VerticalAlignment="Top"
+                      HorizontalAlignment="Left"
+                      Width="350"
+                      Height="350"
+                      Margin="25" />
+        <Button Name="Button1"
+                Content="Refresh"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Left"
+                Width="150"
+                Height="50"
+                Margin="0" />
     </Grid>
 </Window>

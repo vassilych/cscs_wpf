@@ -8,9 +8,9 @@ function newHorizontalBarChart_OnStart(){
     numVar = 12345;
     Format("numVar", "nofd", recv: "stringVar");
 
-    bojeArray = {200, 210, 215};
+    bojeArray = {100, 210, 215};
 
-    HorizontalBar("HorizontalBar1", "BarWidth", 50);
+    HorizontalBar("HorizontalBar1", "BarWidth", 70);
     HorizontalBar("HorizontalBar1", "Text", stringVar);
     HorizontalBar("HorizontalBar1", "Color", bojeArray);
 }
