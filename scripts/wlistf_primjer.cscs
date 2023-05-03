@@ -1,0 +1,25 @@
+CreateWindow("../../scripts/wlistf_primjer.xaml");
+
+	define nkprinv_hndl type i;
+	define nkprinvl_hndl type i;
+	define sifra type r size 8;
+	function wlistf_primjer_onOpen()
+	{
+		sifra = 10100001;
+		nkprinv_hndl = openv('nkprinv');
+		nkprinvl_hndl = openv('nkprinvl');
+		return;
+	}
+	function gbAAA@clicked()
+	{
+		cursor("wait");
+		DisplayTableSetup ('list_glave', fnum: nkprinv_hndl , key: "nkpr_gl_num", whileString:"nkpr_gl_num == sifra" , start:{ sifra});
+		cursor("dflt");
+		return;
+	}
+	function gbExit@clicked()
+	{
+		quit;
+		return;
+	}
+

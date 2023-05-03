@@ -136,7 +136,7 @@ function mainMenuWindow_OnDisplay(){
 
     AddMenuItem("ReportingDC", "TestReporting4_NKPRINV(L).cscs", "TestReporting4_NKPRINV(L)", "runScript");
     AddMenuItem("ReportingDC", "TestReporting4_NKPRINV(L) - sa SCANom.cscs", "TestReporting4_NKPRINV(L) - sa SCANom", "runScript");
-    
+
     //------ EXCEL ------------------------------
 
     AddMenuItem("ExcelDC", "TestExcel.cscs", "TestExcel", "runScript");
@@ -326,7 +326,13 @@ function mainMenuWindow_OnDisplay(){
     // AddMenuSeparator("IvanDC");
 
     // AddMenuItem("IvanDC", "test.cscs", "test", "runScript");
+    AddMenuSeparator("IvanDC");
 
+    AddMenuItem("IvanDC", "wlistm_array.cscs", "wlistm_array", "runScript");    
+    AddMenuSeparator("IvanDC");
+
+    AddMenuItem("IvanDC", "wlistf_primjer.cscs", "wlistf_primjer", "runScript");    
+    //------ WLISTM ------------------------------
 
     //----------------------   
 }

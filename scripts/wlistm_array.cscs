@@ -1,0 +1,29 @@
+CreateWindow("../../scripts/wlistm_array.xaml");
+
+	define numKONTO type r;
+	define numKONTOcntr type r;
+	define GK_AC_Konto_ar type a size 15 array 1000;
+	define GK_AC_OPIS_ar type a size 45 array 1000;
+	function Ok@clicked()
+	{
+		cursor("wait");
+		numKONTOcntr = 0;
+		//NEPOZNATO WLISTM 'List_Acct' CLOSE
+		for(numkontocntr = 1; numkontocntr <= 10; numkontocntr += 1)
+		{
+		 	GK_AC_Konto_ar[numKONTOcntr -1] = numKONTOcntr;
+			GK_AC_OPIS_ar[numKONTOcntr -1] = "aaaaa";
+		}
+		numKONTO = numKONTOcntr;
+	//	DisplayArraySetup("List_Acct", numKONTOcntr,  numKONTOcntr,  1);
+		DisplayArraySetup("List_Acct", counterFld: "numkontocntr", activeElements: numKONTO , maxElements: 10);
+
+		cursor("dflt");
+		return;
+	}
+	function gbExit@clicked()
+	{
+		quit;
+		return;
+	}
+
