@@ -957,6 +957,20 @@ namespace WpfCSCS
             clickable.Click += new RoutedEventHandler(Widget_Click);
             return true;
         }
+        
+        public bool AddGroupBoxClickedHandler(string name, string action, FrameworkElement widget)
+        {
+            var clickable = widget as GroupBox;
+            
+            if (clickable == null)
+            {
+                return false;
+            }
+            m_actionHandlers[name] = action;
+            clickable.MouseDoubleClick -= new MouseButtonEventHandler(GroupBox_Click);
+            clickable.MouseDoubleClick += new MouseButtonEventHandler(GroupBox_Click);
+            return true;
+        }
 
         public bool AddPreActionHandler(string name, string action, FrameworkElement widget)
         {
@@ -1228,6 +1242,106 @@ namespace WpfCSCS
         static bool shouldButtonClick = false;
 
         private void Widget_Click(object sender, RoutedEventArgs e)
+        {
+            LastObjClickedWidgetName = ((Control)sender).Name;
+            LastObjWidgetName = LastObjClickedWidgetName;
+
+            var widget = sender as FrameworkElement;
+            var widgetName = GetWidgetName(widget);
+            if (string.IsNullOrEmpty(widgetName))
+            {
+                return;
+            }
+
+            shouldButtonClick = true;
+            if (sender is Button)
+            {
+                var btn = sender as Button;
+                if (btn.Parent is FrameworkElement)
+                {
+                    var parent1 = btn.Parent;
+                    if ((parent1 as FrameworkElement).Parent is ASEnterBox)
+                    {
+                        var entBox = (parent1 as FrameworkElement).Parent as ASEnterBox;
+
+                        var entBoxGrid = entBox.Content as Grid;
+                        foreach (var item in entBoxGrid.Children)
+                        {
+                            if (item is ASEnterTextBox)
+                            {
+                                var entTB = item as ASEnterTextBox;
+                                entTB.Focus();
+
+                                //if (((Control)e.NewFocus).Name == entTB.Name)
+                                //{
+                                //    return;
+                                //}
+                                if (!shouldButtonClick)
+                                    return;
+                                break;
+                            }
+                        }
+                    }
+                    else if ((parent1 as FrameworkElement).Parent is ASNumericBox)
+                    {
+                        var numBox = (parent1 as FrameworkElement).Parent as ASNumericBox;
+
+                        var numBoxGrid = numBox.Content as Grid;
+                        foreach (var item in numBoxGrid.Children)
+                        {
+                            if (item is ASNumericTextBox)
+                            {
+                                var numTB = item as ASNumericTextBox;
+                                numTB.Focus();
+
+                                //if (((Control)e.NewFocus).Name == numTB.Name)
+                                //{
+                                //    return;
+                                //}
+                                if (!shouldButtonClick)
+                                    return;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            string funcName;
+            if (!m_actionHandlers.TryGetValue(widgetName, out funcName))
+            {
+                return;
+            }
+
+            Variable result = null;
+            if (widget is CheckBox)
+            {
+                var checkBox = widget as CheckBox;
+                var val = checkBox.IsChecked == true ? true : false;
+                result = new Variable(val);
+            }
+            else
+            {
+                result = new Variable(widgetName);
+            }
+
+            if(widget is Button)
+            {
+                if(widget.Parent is Grid)
+                {
+                    if((widget.Parent as Grid).Parent is ASNumericBox)
+                    {
+                        var nb = (widget.Parent as Grid).Parent as ASNumericBox;
+                        nb.FormatNumericTextBox();
+                    }
+                }
+            }
+
+            ValueUpdated(funcName, widgetName, widget, result);
+        }
+        
+        private void GroupBox_Click(object sender, MouseButtonEventArgs e)
         {
             LastObjClickedWidgetName = ((Control)sender).Name;
             LastObjWidgetName = LastObjClickedWidgetName;
@@ -2217,6 +2331,8 @@ namespace WpfCSCS
                 }
                 else if (child is GroupBox)//for RadioButtons
                 {
+                    CacheControl(child as FrameworkElement, win, controls);
+
                     var groupBox = child as GroupBox;
                     var groupBoxGrid = groupBox.Content as Grid;
                     foreach (var item in groupBoxGrid.Children)
@@ -2665,6 +2781,14 @@ namespace WpfCSCS
 
                 if (!string.IsNullOrWhiteSpace(widgetName))
                 {
+                    if (widget is GroupBox)
+                    {
+                        //events
+                        string groupBoxClick = widgetName + "@Clicked";
+
+                        AddGroupBoxClickedHandler(widget.Name, groupBoxClick, widget);
+                    }
+
                     string clickAction = widgetName + "@Clicked";
                     string preClickAction = widgetName + "@PreClicked";
                     string postClickAction = widgetName + "@PostClicked";

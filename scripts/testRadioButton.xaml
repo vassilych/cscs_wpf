@@ -15,29 +15,27 @@
                   HorizontalAlignment="Left"
                   Margin="10, 10, 0, 0"
                   Height="200"
-                  Width="300">
+                  Width="300"
+                  Name="gb1">
             <Grid>
                 <RadioButton DataContext="rb1"
-                VerticalAlignment="Top"
+                             VerticalAlignment="Top"
                              HorizontalAlignment="Left"
                              Margin="10, 10, 0, 0"
                              Height="30"
-                             Width="100"
-                             GroupName="ready">Yes</RadioButton>
+                             Width="100">Yes</RadioButton>
                 <RadioButton DataContext="rb2"
-                VerticalAlignment="Top"
+                             VerticalAlignment="Top"
                              HorizontalAlignment="Left"
                              Margin="10, 50, 0, 0"
                              Height="30"
-                             Width="100"
-                             GroupName="ready">No</RadioButton>
+                             Width="100">No</RadioButton>
                 <RadioButton DataContext="rb3"
-                VerticalAlignment="Top"
+                             VerticalAlignment="Top"
                              HorizontalAlignment="Left"
                              Margin="10, 90, 0, 0"
                              Height="30"
                              Width="100"
-                             GroupName="ready"
                              IsChecked="True">Maybe</RadioButton>
             </Grid>
         </GroupBox>

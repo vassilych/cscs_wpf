@@ -44,6 +44,7 @@ function testRacunDisplayArray_OnStart(){
     Navigator("navigator1", nkprinvHndl, "nkpr_gl_num");
 }
 
+
 function navigator1@afterChange(){
     //MessageBox(RcnGet(nkprinvHndl));
     brojRacuna = nkpr_gl_num;
