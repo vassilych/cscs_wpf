@@ -199,6 +199,9 @@ namespace SplitAndMerge
         public const string CO_SET = "COSet";
         
         public const string COMMONDB_GET = "CommonDBGet";
+        public const string YEAR = "Year";
+        public const string DOM = "DOM";
+        public const string DOW = "DOW";
 
         public const string FLERR = "Flerr";
 
@@ -3786,6 +3789,46 @@ namespace WpfCSCS
             return ret;
         }
     }
+
+    public class YearFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            CultureInfo provider = CultureInfo.InvariantCulture;
+            var dateVariable = Utils.GetSafeVariable(args, 0);
+            DateTime datum = DateTime.ParseExact(dateVariable.String, "dd/MM/yy", provider);
+            var GODINA = datum.Year;
+            return new Variable(GODINA);
+        }
+    }
+    public class DOMFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var dateVariable = Utils.GetSafeVariable(args, 0);
+            var rezultat = dateVariable.String.Substring(0, 2);
+            return new Variable(rezultat);
+        }
+    }
+    public class DOWFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            CultureInfo provider = CultureInfo.InvariantCulture;
+            var dateVariable = Utils.GetSafeVariable(args, 0);
+           DateTime datum = DateTime.ParseExact(dateVariable.String, "dd/MM/yy", provider);
+            var danTjedan = datum.DayOfWeek;
+            var rezultat = danTjedan;
+            return new Variable(rezultat);
+        }
+    } 
+
     class AddWidgetDataFunction : ParserFunction
     {
         protected override Variable Evaluate(ParsingScript script)
@@ -3794,7 +3837,6 @@ namespace WpfCSCS
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 1, m_name);
             var data = args[0];
-
             var gui = CSCS_GUI.GetInstance(script);
             var widget = gui.GetWidget(widgetName);
             var itemsAdded = 0;

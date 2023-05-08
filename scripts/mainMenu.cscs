@@ -326,6 +326,7 @@ function mainMenuWindow_OnDisplay(){
     AddMenuSeparator("OtherDC");
 
     AddMenuItem("OtherDC", "testDebugger.cscs", "testDebugger", "runScript");
+    AddMenuItem("OtherDC", "testYear.cscs", "testYear", "runScript");
     
 
     //----- IVAN -------------------------------  

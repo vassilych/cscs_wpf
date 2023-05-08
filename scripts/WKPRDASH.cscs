@@ -20,7 +20,6 @@ DEFINE tot_proslimj_string type a size 20;
 DEFINE tot_ovajTj_string type a size 20;
 DEFINE tot_ProsliTj_string type a size 20;
 
-
 define mjesec_h type i size 2 ;
 
 define partner type a size 10 ;
@@ -497,9 +496,24 @@ function pripremi(){
     Chart("ChartPoDanima", "SeparatorStep", 1);
     Chart("ChartPoDanima", "values", arrayVrijednosti, "01");
     Chart("ChartPoDanima", "Margins", {60, 20, 0, 30});
-    //Chart("ChartPoDanima", "Margins", {50, 20, 0, 30});
+	
+	//TREĆI 
+	sql_str = "With TopItems2 As";
+	sql_str = sql_str + " (SELECT nkpr_gl_cuscty AS CountryID , sum(nkpr_gl_total) AS Origin , ROW_NUMBER() OVER( ORDER BY sum(nkpr_gl_total) DESC ) As Num";
+	sql_str = sql_str + " FROM " + trenutnaGodinaBaza + " .dbo.nkprinv AS U GROUP BY nkpr_gl_cuscty)" ;
+	sql_str = sql_str + " Select countryID, round(Origin,0) as Iznos ";
+	sql_str = sql_str + " From TopItems2 Where Num <= 9 Union ALL Select 'ostali', round(sum(Origin),0) as Iznos ";
+	sql_str = sql_str + " From TopItems2 Where Num > 9 ";
+	queryResult = sqlquery(sql_str);
+	PieChart("PieChart1", "init");
+    PieChart("PieChart1", "seriesType", "pie");
+    PieChart("PieChart1", "title", "Pie Chart Title", 20);    
+	for(i = 1; i < queryResult.length; i++)
+	{
+		PieChart("PieChart1", "values", int(queryResult[i][1]) , string(queryResult[i][0].trim()));
+	}
+	PieChart("PieChart1", "Margins", {100,100,100,100});
 
-    //NewBindSql("datagrid1" , sqlQueryString);
 }
 
 function week()
@@ -590,7 +604,6 @@ function week()
 		bojeArrayTJ2 = {55, 153, 176};
 		if (tot_ovajTj>tot_ProsliTj)
 		{
-			MessageBox(tot_ovajTj);
 			HorizontalBar("HorizontalBarOT", "BarWidth", 90);
 			HorizontalBar("HorizontalBarLT", "BarWidth", 90/A);
 		}

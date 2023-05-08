@@ -515,6 +515,14 @@
                                 Height="300"
                                 Margin="880,110,0,0" />
         </Grid>
+                        <lvc:PieChart 
+                        LegendPosition="left"
+                      Name="PieChart1"
+                      VerticalAlignment="Top"
+                      HorizontalAlignment="Left"
+                      Width="240"
+                      Height="240"
+                      Margin="700,650,0,0" />
         <DataGrid HorizontalAlignment="Left"
                   VerticalAlignment="Top"
                   Height="216"
