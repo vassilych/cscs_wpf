@@ -327,6 +327,10 @@ function mainMenuWindow_OnDisplay(){
 
     AddMenuItem("OtherDC", "testDebugger.cscs", "testDebugger", "runScript");
     
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testModalF2List.cscs", "testModalF2List", "runScript");
+    
 
     //----- IVAN -------------------------------  
 
