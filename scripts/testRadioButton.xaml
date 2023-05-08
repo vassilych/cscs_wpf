@@ -18,26 +18,35 @@
                   Width="300"
                   Name="gb1">
             <Grid>
-                <RadioButton DataContext="rb1"
+                <RadioButton Name="rb1"
+                             DataContext="rb1"
                              VerticalAlignment="Top"
                              HorizontalAlignment="Left"
                              Margin="10, 10, 0, 0"
                              Height="30"
                              Width="100">Yes</RadioButton>
-                <RadioButton DataContext="rb2"
+                <RadioButton Name="rb2"
+                             DataContext="rb2"
                              VerticalAlignment="Top"
                              HorizontalAlignment="Left"
                              Margin="10, 50, 0, 0"
                              Height="30"
                              Width="100">No</RadioButton>
-                <RadioButton DataContext="rb3"
+                <RadioButton Name="rb3"
+                             DataContext="rb3"
                              VerticalAlignment="Top"
                              HorizontalAlignment="Left"
                              Margin="10, 90, 0, 0"
                              Height="30"
-                             Width="100"
-                             IsChecked="True">Maybe</RadioButton>
+                             Width="100">Maybe</RadioButton>
             </Grid>
         </GroupBox>
+        <Button Name="btn1"
+                Content="varijable"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Left"
+                Margin="10, 200, 0, 0"
+                Height="30"
+                Width="100" />
     </Grid>
 </Window>

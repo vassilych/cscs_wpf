@@ -468,6 +468,7 @@ namespace WpfCSCS
 
         public static Dictionary<Window, string> Window2File { get; set; } = new Dictionary<Window, string>();
         public static Dictionary<string, Window> File2Window { get; set; } = new Dictionary<string, Window>();
+        public static Dictionary<string, List<string>> GroupBoxesAndRadioButtons { get; set; } = new Dictionary<string, List<string>>();
 
         public Interpreter Interpreter { get; private set; }
 
@@ -971,6 +972,20 @@ namespace WpfCSCS
             clickable.MouseDoubleClick += new MouseButtonEventHandler(GroupBox_Click);
             return true;
         }
+        
+        public bool AddRadioButtonClickedHandler(string name, string action, FrameworkElement widget)
+        {
+            var clickable = widget as RadioButton;
+            
+            if (clickable == null)
+            {
+                return false;
+            }
+            m_actionHandlers[name] = action;
+            clickable.Click -= new RoutedEventHandler(RadioButton_Click);
+            clickable.Click += new RoutedEventHandler(RadioButton_Click);
+            return true;
+        }
 
         public bool AddPreActionHandler(string name, string action, FrameworkElement widget)
         {
@@ -1049,6 +1064,18 @@ namespace WpfCSCS
             }
             m_selChangedHandlers[name] = action;
             sel.SelectionChanged += new SelectionChangedEventHandler(Widget_SelectionChanged);
+            return true;
+        }
+        public bool AddRadioButtonSelectedChangedHandler(string name, string action, FrameworkElement widget)
+        {
+            var sel = widget as RadioButton;
+            if (sel == null)
+            {
+                return false;
+            }
+            m_selChangedHandlers[name] = action;
+            sel.Checked += new RoutedEventHandler(RadioButton_Checked);
+            sel.Unchecked += new RoutedEventHandler(RadioButton_Unchecked);
             return true;
         }
         public bool AddDateChangedHandler(string name, string action, FrameworkElement widget)
@@ -1440,6 +1467,106 @@ namespace WpfCSCS
 
             ValueUpdated(funcName, widgetName, widget, result);
         }
+        
+        private void RadioButton_Click(object sender, RoutedEventArgs e)
+        {
+            LastObjClickedWidgetName = ((Control)sender).Name;
+            LastObjWidgetName = LastObjClickedWidgetName;
+
+            var widget = sender as FrameworkElement;
+            var widgetName = GetWidgetName(widget);
+            if (string.IsNullOrEmpty(widgetName))
+            {
+                return;
+            }
+
+            shouldButtonClick = true;
+            if (sender is Button)
+            {
+                var btn = sender as Button;
+                if (btn.Parent is FrameworkElement)
+                {
+                    var parent1 = btn.Parent;
+                    if ((parent1 as FrameworkElement).Parent is ASEnterBox)
+                    {
+                        var entBox = (parent1 as FrameworkElement).Parent as ASEnterBox;
+
+                        var entBoxGrid = entBox.Content as Grid;
+                        foreach (var item in entBoxGrid.Children)
+                        {
+                            if (item is ASEnterTextBox)
+                            {
+                                var entTB = item as ASEnterTextBox;
+                                entTB.Focus();
+
+                                //if (((Control)e.NewFocus).Name == entTB.Name)
+                                //{
+                                //    return;
+                                //}
+                                if (!shouldButtonClick)
+                                    return;
+                                break;
+                            }
+                        }
+                    }
+                    else if ((parent1 as FrameworkElement).Parent is ASNumericBox)
+                    {
+                        var numBox = (parent1 as FrameworkElement).Parent as ASNumericBox;
+
+                        var numBoxGrid = numBox.Content as Grid;
+                        foreach (var item in numBoxGrid.Children)
+                        {
+                            if (item is ASNumericTextBox)
+                            {
+                                var numTB = item as ASNumericTextBox;
+                                numTB.Focus();
+
+                                //if (((Control)e.NewFocus).Name == numTB.Name)
+                                //{
+                                //    return;
+                                //}
+                                if (!shouldButtonClick)
+                                    return;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            string funcName;
+            if (!m_actionHandlers.TryGetValue(widgetName, out funcName))
+            {
+                return;
+            }
+
+            Variable result = null;
+            if (widget is CheckBox)
+            {
+                var checkBox = widget as CheckBox;
+                var val = checkBox.IsChecked == true ? true : false;
+                result = new Variable(val);
+            }
+            else
+            {
+                result = new Variable(widgetName);
+            }
+
+            if(widget is Button)
+            {
+                if(widget.Parent is Grid)
+                {
+                    if((widget.Parent as Grid).Parent is ASNumericBox)
+                    {
+                        var nb = (widget.Parent as Grid).Parent as ASNumericBox;
+                        nb.FormatNumericTextBox();
+                    }
+                }
+            }
+
+            //ValueUpdated(funcName, widgetName, widget, result);
+        }
 
         private void Widget_PreClick(object sender, MouseButtonEventArgs e)
         {
@@ -1675,6 +1802,36 @@ namespace WpfCSCS
                 var item = e.AddedItems.Count > 0 ? e.AddedItems[0].ToString() : e.RemovedItems.Count > 0 ? e.RemovedItems[0].ToString() : "";
                 Control2Window.TryGetValue(widget, out Window win);
                 Interpreter.Run(funcName, new Variable(widgetName), new Variable(item),
+                    Variable.EmptyInstance, GetScript(win));
+            }
+        }
+        
+        private void RadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            var widget = sender as RadioButton;
+
+            UpdateVariable(widget, new Variable(true));
+            
+            var widgetName = GetWidgetName(widget);
+            if (m_selChangedHandlers.TryGetValue(widgetName, out string funcName))
+            {
+                Control2Window.TryGetValue(widget, out Window win);
+                Interpreter.Run(funcName, new Variable(widgetName), /*new Variable(item)*/ null,
+                    Variable.EmptyInstance, GetScript(win));
+            }
+        }
+        
+        private void RadioButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+            var widget = sender as RadioButton;
+
+            UpdateVariable(widget, new Variable(false));
+            
+            var widgetName = GetWidgetName(widget);
+            if (m_selChangedHandlers.TryGetValue(widgetName, out string funcName))
+            {
+                Control2Window.TryGetValue(widget, out Window win);
+                Interpreter.Run(funcName, new Variable(widgetName), /*new Variable(item)*/ null,
                     Variable.EmptyInstance, GetScript(win));
             }
         }
@@ -2338,7 +2495,14 @@ namespace WpfCSCS
                     foreach (var item in groupBoxGrid.Children)
                     {
                         if(item is RadioButton)
+                        {
                             CacheControl(item as FrameworkElement, win, controls);
+                            if (!GroupBoxesAndRadioButtons.Any(p => p.Key == groupBox.Name.ToLower()))
+                                GroupBoxesAndRadioButtons.Add(groupBox.Name, new List<string>());
+                            if(!GroupBoxesAndRadioButtons[groupBox.Name].Any(p=> p == (item as RadioButton).Name.ToLower()))
+                                GroupBoxesAndRadioButtons[groupBox.Name].Add((item as RadioButton).Name.ToLower());
+                        }
+                            
                         else if (item is CheckBox)
                             CacheControl(item as FrameworkElement, win, controls);
                     }
@@ -2788,64 +2952,75 @@ namespace WpfCSCS
 
                         AddGroupBoxClickedHandler(widget.Name, groupBoxClick, widget);
                     }
+                    else if (widget is RadioButton)
+                    {
+                        string radioButtonClick = widgetName + "@Clicked";
+                        string selectionChangedAction = widgetName + "@Changed";
 
-                    string clickAction = widgetName + "@Clicked";
-                    string preClickAction = widgetName + "@PreClicked";
-                    string postClickAction = widgetName + "@PostClicked";
-                    string keyDownAction = widgetName + "@KeyDown";
-                    string keyUpAction = widgetName + "@KeyUp";
-                    string textChangeAction = widgetName + "@TextChange";
-                    string mouseHoverAction = widgetName + "@MouseHover";
-                    string selectionChangedAction = widgetName + "@SelectionChanged";
-                    string dateChangedAction = widgetName + "@DateChanged";
+                        AddRadioButtonSelectedChangedHandler(widgetName, selectionChangedAction, widget);
+                        AddRadioButtonClickedHandler(widget.Name, radioButtonClick, widget);
+                    }
+                    else
+                    {
+                        string clickAction = widgetName + "@Clicked";
+                        string preClickAction = widgetName + "@PreClicked";
+                        string postClickAction = widgetName + "@PostClicked";
+                        string keyDownAction = widgetName + "@KeyDown";
+                        string keyUpAction = widgetName + "@KeyUp";
+                        string textChangeAction = widgetName + "@TextChange";
+                        string mouseHoverAction = widgetName + "@MouseHover";
+                        string selectionChangedAction = widgetName + "@SelectionChanged";
+                        string dateChangedAction = widgetName + "@DateChanged";
 
-                    //textBox
-                    string widgetPreAction = widgetName + "@Pre";
-                    string widgetPostAction = widgetName + "@Post";
+                        //textBox
+                        string widgetPreAction = widgetName + "@Pre";
+                        string widgetPostAction = widgetName + "@Post";
 
-                    //tabs
-                    string widgetChangeAction = widgetName + "@Change";
-                    string widgetAfterChangeAction = widgetName + "@AfterChange";
+                        //tabs
+                        string widgetChangeAction = widgetName + "@Change";
+                        string widgetAfterChangeAction = widgetName + "@AfterChange";
 
-                    //dataGrid
-                    string widgetMoveAction = widgetName + "@Move";
-                    string widgetSelectAction = widgetName + "@Select";
+                        //dataGrid
+                        string widgetMoveAction = widgetName + "@Move";
+                        string widgetSelectAction = widgetName + "@Select";
 
-                    RadioButton asd = new RadioButton();
-                    //asd.Checked
-                    //asd.Unchecked
+                        RadioButton asd = new RadioButton();
+                        //asd.Checked
+                        //asd.Unchecked
 
-                    AddActionHandler(widgetName, clickAction, widget);
-                    AddPreActionHandler(widgetName, preClickAction, widget);
-                    AddPostActionHandler(widgetName, postClickAction, widget);
-                    AddKeyDownHandler(widgetName, keyDownAction, widget);
-                    AddKeyUpHandler(widgetName, keyUpAction, widget);
+                        AddActionHandler(widgetName, clickAction, widget);
+                        AddPreActionHandler(widgetName, preClickAction, widget);
+                        AddPostActionHandler(widgetName, postClickAction, widget);
+                        AddKeyDownHandler(widgetName, keyDownAction, widget);
+                        AddKeyUpHandler(widgetName, keyUpAction, widget);
 
 
-                    AddTextChangedHandler(widgetName, textChangeAction, widget);
+                        AddTextChangedHandler(widgetName, textChangeAction, widget);
 
-                    AddSelectionChangedHandler(widgetName, selectionChangedAction, widget);
-                    AddMouseHoverHandler(widgetName, mouseHoverAction, widget);
-                    AddDateChangedHandler(widgetName, dateChangedAction, widget);
+                        AddSelectionChangedHandler(widgetName, selectionChangedAction, widget);
+                        AddMouseHoverHandler(widgetName, mouseHoverAction, widget);
+                        AddDateChangedHandler(widgetName, dateChangedAction, widget);
 
-                    //Pre, Post
-                    AddWidgetPreHandler(widgetName, widgetPreAction, widget);
-                    AddWidgetPostHandler(widgetName, widgetPostAction, widget);
+                        //Pre, Post
+                        AddWidgetPreHandler(widgetName, widgetPreAction, widget);
+                        AddWidgetPostHandler(widgetName, widgetPostAction, widget);
 
-                    //ASNavigator(Change and AfterChange) and TabControl(Change) events
-                    AddWidgetChangeHandler(widgetName, widgetChangeAction, widget);
-                    AddWidgetAfterChangeHandler(widgetName, widgetAfterChangeAction, widget);
+                        //ASNavigator(Change and AfterChange) and TabControl(Change) events
+                        AddWidgetChangeHandler(widgetName, widgetChangeAction, widget);
+                        AddWidgetAfterChangeHandler(widgetName, widgetAfterChangeAction, widget);
 
-                    //Grid(Move and Select)
-                    AddWidgetMoveHandler(widgetName, widgetMoveAction, widget);
-                    AddWidgetSelectHandler(widgetName, widgetSelectAction, widget);
+                        //Grid(Move and Select)
+                        AddWidgetMoveHandler(widgetName, widgetMoveAction, widget);
+                        AddWidgetSelectHandler(widgetName, widgetSelectAction, widget);
+                    }
                 }
 
                 //xaml DataContext property
                 var widgetBindingName = GetWidgetBindingName(widget);
                 if (!string.IsNullOrWhiteSpace(widgetBindingName))
                 {
-                    AddBinding(widgetBindingName, widget);
+                    if(!(widget is RadioButton))
+                        AddBinding(widgetBindingName, widget);
                 }
             }
         }
@@ -6705,12 +6880,30 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
 
         Variable ProcessLocalAssign(ParsingScript script)
         {
+            CSCS_GUI gui = (CSCS_GUI)script.Context;
+
             InterpreterInstance = script.InterpreterInstance;
             DefineVariable defVar = IsDefinedVariable(script);
             if (defVar != null)
             {
                 Variable varValue = new Variable(Variable.VarType.NONE);
                 var result = DoAssign(script, m_name, defVar, ref varValue);
+
+                foreach(string groupBox in CSCS_GUI.GroupBoxesAndRadioButtons.Keys)
+                {
+                    if(CSCS_GUI.GroupBoxesAndRadioButtons[groupBox].Any(p=>p == m_name.ToLower()))
+                    {
+                        var widget = gui.Controls.First(p => (string)p.Value.DataContext == m_name.ToLower());
+                        var widget2 = gui.GetWidget(widget.Key.ToLower());
+
+                        if(widget2 is RadioButton)
+                        {
+                            var radioButton = widget2 as RadioButton;
+                            radioButton.IsChecked = defVar.AsBool();
+                        }
+                    }
+                }
+
                 ProcessParentScript(script, m_name, varValue);
                 return result;
             }
