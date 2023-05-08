@@ -14,6 +14,7 @@ function func1(){
 }
 
 
+
 Format("price");
 //// switch commented and uncommented for checkbox filter
 //DisplayTableSetup("grid1", table_hndl, "InvoiceLine_invoiceLineNumber", "1|1", "invoiceNumber < 40", "bitcolumn = 0");

@@ -1156,6 +1156,15 @@ $@"EXECUTE sp_executesql N'
 
             interpreter.RegisterFunction(Constants.COMMONDB_GET, new CommonDBGetFunction());
 
+            interpreter.RegisterFunction(Constants.YEAR, new YearFunction());
+            interpreter.RegisterFunction(Constants.DOM, new DOMFunction());
+            interpreter.RegisterFunction(Constants.DOW, new DOWFunction());
+
+            
+
+
+
+
         }
 
         CSCS_GUI Gui { get; set; }
