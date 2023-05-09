@@ -9,12 +9,9 @@ function btn1@clicked(){
 }
 
 function F2_onStart(){
-    //MessageBox("Hello!");
+    //MessageBox("asdasd");
 }
 
-function F2_onStart(){
-    MessageBox("Hello!");
-}
 
 function btn2@clicked(){
     quit;
