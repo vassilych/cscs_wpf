@@ -1,11 +1,8 @@
-StartDebugger(13337, true, "*");
-
 #MAINMENU;
 #WINFORM mainMenuWindow.xaml;
 //CreateWindow("../../scripts/mainMenuWindow.xaml");
 
-
-
+StartDebugger(13337, true, "*");
 
 define mainMenuDC type a;
 
@@ -327,6 +324,10 @@ function mainMenuWindow_OnDisplay(){
 
     AddMenuItem("OtherDC", "testDebugger.cscs", "testDebugger", "runScript");
     AddMenuItem("OtherDC", "testYear.cscs", "testYear", "runScript");
+    
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testModalF2List.cscs", "testModalF2List", "runScript");
     
 
     //----- IVAN -------------------------------  
