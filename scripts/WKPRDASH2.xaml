@@ -283,7 +283,7 @@
                       Header="Koje podatke?"
                       Background="#EE66FFFF">
                 <Grid>
-                    <CheckBox HorizontalAlignment="Left"
+                    <RadioButton HorizontalAlignment="Left"
                               VerticalAlignment="Top"
                               Height="16"
                               Width="113"
@@ -291,7 +291,7 @@
                               Name="CheckBoxButton1"
                               DataContext="saPdvomField"
                               Content="Sa PDV-om" />
-                    <CheckBox HorizontalAlignment="Left"
+                    <RadioButton HorizontalAlignment="Left"
                               VerticalAlignment="Top"
                               Height="17"
                               Width="113"
@@ -299,7 +299,7 @@
                               Name="CheckBoxButton2"
                               DataContext="bezPdvaField"
                               Content="Bez PDV-a" />
-                    <CheckBox HorizontalAlignment="Left"
+                    <RadioButton HorizontalAlignment="Left"
                               VerticalAlignment="Top"
                               Height="17"
                               Width="113"
@@ -307,7 +307,7 @@
                               Name="CheckBoxButton3"
                               DataContext="razlikaUCijeniField"
                               Content="Razlika u cijeni" />
-                    <CheckBox HorizontalAlignment="Left"
+                    <RadioButton HorizontalAlignment="Left"
                               VerticalAlignment="Top"
                               Height="17"
                               Width="113"
@@ -516,7 +516,6 @@
                                 Margin="880,110,0,0" />
         </Grid>
                         <lvc:PieChart 
-                        LegendPosition="left"
                       Name="PieChart1"
                       VerticalAlignment="Top"
                       HorizontalAlignment="Left"

@@ -476,6 +476,7 @@ function pripremi(){
     }
     sql_str = sql_str + " GROUP BY Wk_day";
     sql_str = sql_str + " ORDER BY [Wk_day]";
+
     queryResult = sqlquery(sql_str);
     arrayDani = {};
     arrayVrijednosti = {};
@@ -504,6 +505,7 @@ function pripremi(){
 	sql_str = sql_str + " Select countryID, round(Origin,0) as Iznos ";
 	sql_str = sql_str + " From TopItems2 Where Num <= 9 Union ALL Select 'ostali', round(sum(Origin),0) as Iznos ";
 	sql_str = sql_str + " From TopItems2 Where Num > 9 ";
+
 	queryResult = sqlquery(sql_str);
 	PieChart("PieChart1", "init");
     PieChart("PieChart1", "seriesType", "pie");
@@ -567,7 +569,9 @@ function week()
 		sql_str = sql_str + " GROUP BY [wk_Week]";
 		sql_str = sql_str + " ORDER BY [wk_Week] DESC";
         //
-        queryResult = sqlquery(sql_str);
+
+//SaveFile(sql_str);
+		sqlResult = sqlQuery(sql_str);
         for(i = 1; i < 2; i++)
         {        
             if(i >= Size(queryResult))
@@ -839,11 +843,11 @@ function gbRegija()
 		}
 		sql_str = sql_str + " GROUP BY sales.nkpr_gl_cusnme";
 		sql_str = sql_str + " ORDER BY sales1 DESC;";
-		SQL_str = sql_str + "SET query_governor_cost_limit 0;";
+		SQL_str = sql_str + " SET query_governor_cost_limit 0;";
 
 
  salesCntr = 0;    
-
+SaveFile(sql_str);
 sqlResult = sqlQuery(sql_str);
 for ( i = 1; i < Size(sqlResult); i++ )
 {        
@@ -1259,10 +1263,10 @@ function T10RacuniMj()
 			{
 			 	sql_str =  sql_str +  " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart g ON nkpr_gl_cuscod =  g.nksc_partcode" ;
 			}
-			if ( razlikaUCijeniField == true )
-			{
-			 	sql_str =  sql_str +  " AND c.nkpr_gl_invcd<> ''" ;
-			}
+			// if ( razlikaUCijeniField == true )
+			// {
+			//  	sql_str =  sql_str +  " AND c.nkpr_gl_invcd<> ''" ;
+			// }
 			sql_str =  sql_str +  " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkprinvl ON nkpr_gl_num =  nkpr_ln_invnm" ;
 			sql_str =  sql_str +  " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkmkarti ON arti_artikl =  nkpr_ln_pcode" ;
 			sql_str =  sql_str +  " WHERE 1 = 1" ;
@@ -1478,6 +1482,7 @@ function T10RacuniMj()
 		sql_str =  sql_str +  " GROUP BY sales.arti_artikl , sales.arti_naziv" ;
 		sql_str =  sql_str +  " ORDER BY sales1 DESC;" ;
 		SQL_str  = sql_str +  "SET query_governor_cost_limit 0;" ;
+		SaveFile(sql_str);
 		sqlResult = sqlQuery(sql_str);
         for ( i = 1; i < Size(sqlResult); i++ )
         {      
@@ -1505,33 +1510,33 @@ function T10RacuniMj()
 		return ;
 	}
 
-function CheckBoxButton1@clicked()
-{
-    saPdvomField = true;
-    bezPdvaField = false; 
-    razlikaUCijeniField = false;
-    tezina_dn = false;
+// function CheckBoxButton1@clicked()
+// {
+//     saPdvomField = true;
+//     bezPdvaField = false; 
+//     razlikaUCijeniField = false;
+//     tezina_dn = false;
 
-}
-function CheckBoxButton2@clicked()
-{
-    saPdvomField = false;
-    bezPdvaField = true;
-    razlikaUCijeniField = false;
-    tezina_dn = false;
+// }
+// function CheckBoxButton2@clicked()
+// {
+//     saPdvomField = false;
+//     bezPdvaField = true;
+//     razlikaUCijeniField = false;
+//     tezina_dn = false;
 
-}
-function CheckBoxButton3@clicked()
-{
-    bezPdvaField = false;
-    razlikaUCijeniField = true;
-    saPdvomField = false;
-    tezina_dn = false;
-}
-function CheckBoxButton4@clicked()
-{
-    tezina_dn = true;
-    bezPdvaField = false;
-    razlikaUCijeniField = false;
-    saPdvomField = false;
-}
+// }
+// function CheckBoxButton3@clicked()
+// {
+//     bezPdvaField = false;
+//     razlikaUCijeniField = true;
+//     saPdvomField = false;
+//     tezina_dn = false;
+// }
+// function CheckBoxButton4@clicked()
+// {
+//     tezina_dn = true;
+//     bezPdvaField = false;
+//     razlikaUCijeniField = false;
+//     saPdvomField = false;
+// }
