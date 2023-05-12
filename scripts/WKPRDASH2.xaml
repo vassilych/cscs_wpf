@@ -383,23 +383,7 @@
                             VerticalAlignment="Top"
                             Background="#FFFFE6D9"
                             TabIndex="6" />
-            <wcl:ASNumericBox HorizontalAlignment="Left"
-                              VerticalAlignment="Top"
-                              VerticalContentAlignment="Center"
-                              FontWeight="Bold"
-                              ButtonSize="0"
-                              Height="22"
-                              Width="60"
-                              Margin="188,25,0,0"
-                              Name="neSkladiste"
-                              Thousands="True"
-                              Background="#FFFFE6D9"
-                              Foreground="black"
-                              KeyTraps="F2|neSkladiste.click"
-                              FieldName="SKLADiste"
-                              FontFamily="lato"
-                              FontSize="11"
-                              TabIndex="7" />
+
             <wcl:ASEnterBox ButtonSize="0"
                             FontWeight="Bold"
                             Size="4"
@@ -433,6 +417,22 @@
                             VerticalAlignment="Top"
                             Background="#FFFFE6D9"
                             TabIndex="9" />
+            <wcl:ASEnterBox HorizontalAlignment="Left"
+                              VerticalAlignment="Top"
+                              VerticalContentAlignment="Center"
+                              FontWeight="Bold"
+                              ButtonSize="21"
+                              Height="22"
+                              Width="60"
+                              Margin="188,25,0,0"
+                              Name="neSkladiste"
+                              Background="#FFFFE6D9"
+                              Foreground="black"
+                              KeyTraps="F2|neSkladiste@clicked"
+                              FieldName="SKLADiste"
+                              FontFamily="lato"
+                              FontSize="11"
+                              TabIndex="7" />
             <wcl:ASEnterBox ButtonSize="0"
                             FontWeight="Bold"
                             Size="0"
@@ -540,14 +540,22 @@
                             Value="#FFAE0000" />
                     <Setter Property="Foreground"
                             Value="White" />
+                            
                 </Style>
             </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="No."
                                         Width="24">
+                <DataGridTemplateColumn.CellStyle>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="Background" Value="Red"/>
+                        <Setter Property="BorderThickness" Value="0"></Setter>
+                    </Style>
+                </DataGridTemplateColumn.CellStyle>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <wcl:ASGridCell FieldName="TOP10PART_AR"
+                            <wcl:ASGridCell 
+                            FieldName="TOP10PART_AR"
                                             Editor="edDefault"
                                             EditLength="0" />
                         </DataTemplate>
@@ -715,7 +723,8 @@
                                         Width="24">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <wcl:ASGridCell FieldName="T10CNTRMJ_AR"
+                            <wcl:ASGridCell
+                             FieldName="T10CNTRMJ_AR"
                                             Editor="edDefault"
                                             EditLength="0" />
                         </DataTemplate>

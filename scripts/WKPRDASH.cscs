@@ -3,6 +3,22 @@ Import("CSCS.Math");
 DEFINE skladiste type i size 3;
 
 DEFINE skladisteNaziv type a size 50;
+
+DEFINE ARTI_ARTIKL_ARR type a size 30 array 50000;
+DEFINE ARTI_NAZIV_ARR type a size 50 array 50000;
+DEFINE NKSC_PARTCODE_ARR type a size 10 array 50000;
+DEFINE NKSC_PARTNAME_ARR type a size 50 array 50000;
+
+DEFINE KSDU_SF_CODE_ARR type a size 6 array 5000;
+DEFINE KSDU_SF_OPIS1_ARR type a size 30 array 5000;
+
+DEFINE skladisteNaziv type a size 50;
+
+DEFINE PKMK_SKL_CODE_arr type i size 3 array 300;
+
+DEFINE PKMK_SKL_NAZIV_arr type a size 50 array 300;
+    DEFINE cntr1 type i;
+
 DEFINE tot_ovagod type n size 14 dec 2 ; 
 DEFINE tot_lani type n size 14 dec 2 ; 
 DEFINE tot_ovajmj type n size 14 dec 2 ; 
@@ -64,81 +80,104 @@ function WKPRDASH2_onDisplay(){
     proslimjesec0X = proslimjesec.length == 1 ? "0" + proslimjesec : proslimjesec;
     do_mjeseca = true;
 }
+function neSkladiste@clicked()
+{
+	ModalWindow("../../scripts/F2ListSkladista.xaml");
+	cursor("wait");
+	sqlQueryString = "SELECT [PKMK_SKL_CODE],[PKMK_SKL_NAZIV],[PKMK_SKL_TIP],[PKMK_SKL_REZ5],[PKMK_SKL_ADRESA]";
+	sqlQueryString +=",[PKMK_SKL_MJESTO],[PKMK_SKL_CENA],[PKMK_SKL_POSTBR] FROM  " + trenutnaGodinaBaza + ".[dbo].[PKMKSKLA] ";
+	queryResult = sqlquery(sqlQueryString);
+	if(size(queryResult) > 1)
+	{
+		for(i = 1; i < size(queryResult); i++)
+		{
+			PKMK_SKL_CODE_arr[i-1] = queryResult[i][0].Trim();
+			PKMK_SKL_NAZIV_arr[i-1] = queryResult[i][1].Trim();
+		}
+	}
+	DisplayArraySetup("dgSkl", counterFld: "cntr1", activeElements: Size(queryResult) - 1, maxElements: 300);
+}
+function neArtikl@clicked()
+{
+	ModalWindow("../../scripts/F2ListArtikla.xaml");
+	cursor("wait");
+	sqlQueryString = "SELECT [ARTI_ARTIKL],[ARTI_NAZIV] ";
+	sqlQueryString +=" FROM  " + trenutnaGodinaBaza + ".[dbo].[NKMKARTI] ";
+	queryResult = sqlquery(sqlQueryString);
+	if(size(queryResult) > 1)
+	{
+		for(i = 1; i < size(queryResult); i++)
+		{
+			ARTI_ARTIKL_ARR[i-1] = queryResult[i][0].Trim();
+			ARTI_NAZIV_ARR[i-1] = queryResult[i][1].Trim();
+		}
+	}
+	DisplayArraySetup("dgArti", counterFld: "cntr1", activeElements: Size(queryResult) - 1, maxElements: 50000);
+    cursor("dflt");
+}
+function cePartner@clicked()
+{
+	ModalWindow("../../scripts/F2ListPartnera.xaml");
+	cursor("wait");
 
-function neSkladiste@post(){
-    sqlQueryString = "SELECT top 1 [PKMK_SKL_CODE],[PKMK_SKL_NAZIV] FROM  " + trenutnaGodinaBaza + ".[dbo].[PKMKSKLA] ";
-    sqlQueryString += " where [PKMK_SKL_CODE] ="+ skladiste + " ";
+    sqlQueryString = "SELECT [NKSC_PARTCODE]  ,[NKSC_PARTNAME] FROM  " + trenutnaGodinaBaza + ".[dbo].[NKSCPART] ";
+	queryResult = sqlquery(sqlQueryString);
+	if(size(queryResult) > 1)
+	{
+		for(i = 1; i < size(queryResult); i++)
+		{
+			NKSC_PARTCODE_ARR[i-1] = queryResult[i][0].Trim();
+			NKSC_PARTNAME_ARR[i-1] = queryResult[i][1].Trim();
+		}
+	}
+	DisplayArraySetup("dgPart", counterFld: "cntr1", activeElements: Size(queryResult) - 1, maxElements: 50000);
+    cursor("dflt");
+
+}
+function ceRegija@clicked(){
+	ModalWindow("../../scripts/F2ListRegija.xaml");
+	cursor("wait");
+		
+    sqlQueryString = "SELECT [KSDU_SF_CODE],[KSDU_SF_OPIS1] FROM  " + CommonDBGet() + ".[dbo].[KPSYSIFA] ";
+    sqlQueryString += " WHERE [KSDU_SF_TIP] ='V'";
 
     queryResult = sqlquery(sqlQueryString);
-
-    if(size(queryResult) > 1){
-        skladisteNaziv = queryResult[1][1].Trim();
-    }
-    else{
-        skladisteNaziv = "";
-        skladiste = 0;
-    }
+	if(size(queryResult) > 1)
+	{
+		for(i = 1; i < size(queryResult); i++)
+		{
+			KSDU_SF_CODE_ARR[i-1] = queryResult[i][0].Trim();
+			KSDU_SF_OPIS1_ARR[i-1] = queryResult[i][1].Trim();
+		}
+	}
+	DisplayArraySetup("dgRegija", counterFld: "cntr1", activeElements: Size(queryResult) - 1, maxElements: 50000);
+    cursor("dflt");
 }
-function neArtikl@post(){
-    sqlQueryString = "SELECT top 1 [ARTI_ARTIKL]  ,[ARTI_NAZIV] FROM  " + trenutnaGodinaBaza + ".[dbo].[NKMKARTI] ";
-    sqlQueryString += " where [ARTI_ARTIKL] ='"+ artikl + "' ";
-    queryResult = sqlquery(sqlQueryString);
-
-    if(size(queryResult) > 1){
-        artiklNaziv = queryResult[1][1].Trim();
-    }
-    else{
-        artiklNaziv = "";
-        artikl = "";
-    }
+function gbSklOk@clicked()
+{
+	skladiste=PKMK_SKL_CODE_arr[cntr1];
+	skladistenaziv=PKMK_SKL_NAZIV_arr[cntr1];
+	quit;
 }
-function nePartner@post(){
-    sqlQueryString = "SELECT top 1 [NKSC_PARTCODE]  ,[NKSC_PARTNAME] FROM  " + trenutnaGodinaBaza + ".[dbo].[NKSCPART] ";
-    sqlQueryString += " where [NKSC_PARTCODE] ='"+ partner.Trim() + "' ";
-
-    queryResult = sqlquery(sqlQueryString);
-
-    if(size(queryResult) > 1){
-        partnerNaziv = queryResult[1][1].Trim();
-    }
-    else{
-        partnerNaziv = "";
-        partner = "";
-    }
+function gbArtiOk@clicked()
+{
+	artikl=ARTI_ARTIKL_ARR[cntr1];
+	artiklNaziv=ARTI_NAZIV_ARR[cntr1];
+	quit;
 }
-function neRegija@post(){
-    sqlQueryString = "SELECT top 1 [KSDU_SF_CODE],[KSDU_SF_OPIS1] FROM  " + CommonDBGet() + ".[dbo].[KPSYSIFA] ";
-    sqlQueryString += "  WHERE [KSDU_SF_TIP] ='V' and KSDU_SF_CODE='"+ regija.Trim() + "' ";
-
-    queryResult = sqlquery(sqlQueryString);
-
-    if(size(queryResult) > 1){
-        regijaNaziv = queryResult[1][1].Trim();
-    }
-    else{
-        regijaNaziv = "";
-        regija = "";
-    }
+function gbPartOk@clicked()
+{
+	partner=NKSC_PARTCODE_ARR[cntr1];
+	partnerNaziv=NKSC_PARTNAME_ARR[cntr1];
+	quit;
 }
-
-
-
-
+function gbRegijaOk@clicked()
+{
+	regija=KSDU_SF_CODE_ARR[cntr1];
+	regijaNaziv=KSDU_SF_OPIS1_ARR[cntr1];
+	quit;
+}
 CreateWindow("../../scripts/WKPRDASH2.xaml");
-
-function neSkladiste@clicked(){
-
-}
-function neArtikl@clicked(){
-    //MessageBox("artiklEnterBox: artikl = " + artikl);
-}
-function nePartner@clicked(){
-    //MessageBox("kupacEnterBox: partner = " + partner);
-}
-function neRegija@clicked(){
-    //MessageBox("regijaEnterBox: regija = " + regija);
-}
-
 function gbPripremi@clicked(){
     cursor("wait");
     pripremi();
@@ -847,7 +886,6 @@ function gbRegija()
 
 
  salesCntr = 0;    
-SaveFile(sql_str);
 sqlResult = sqlQuery(sql_str);
 for ( i = 1; i < Size(sqlResult); i++ )
 {        
@@ -867,7 +905,6 @@ for ( i = 1; i < Size(sqlResult); i++ )
         IndexPart_ar[i - 1] =  0;
     }
  } 
-    DEFINE cntr1 type i;
     Format("SALESPART2_AR", "nofd");
     Format("SALESPART1_AR", "nofd");
     DisplayArray("dgStavke", "close");
@@ -1482,7 +1519,6 @@ function T10RacuniMj()
 		sql_str =  sql_str +  " GROUP BY sales.arti_artikl , sales.arti_naziv" ;
 		sql_str =  sql_str +  " ORDER BY sales1 DESC;" ;
 		SQL_str  = sql_str +  "SET query_governor_cost_limit 0;" ;
-		SaveFile(sql_str);
 		sqlResult = sqlQuery(sql_str);
         for ( i = 1; i < Size(sqlResult); i++ )
         {      
@@ -1509,34 +1545,3 @@ function T10RacuniMj()
 		DisplayArraySetup("dgArtikli", counterFld: "cntr4", activeElements: Size(sqlResult) - 1, maxElements: 10);
 		return ;
 	}
-
-// function CheckBoxButton1@clicked()
-// {
-//     saPdvomField = true;
-//     bezPdvaField = false; 
-//     razlikaUCijeniField = false;
-//     tezina_dn = false;
-
-// }
-// function CheckBoxButton2@clicked()
-// {
-//     saPdvomField = false;
-//     bezPdvaField = true;
-//     razlikaUCijeniField = false;
-//     tezina_dn = false;
-
-// }
-// function CheckBoxButton3@clicked()
-// {
-//     bezPdvaField = false;
-//     razlikaUCijeniField = true;
-//     saPdvomField = false;
-//     tezina_dn = false;
-// }
-// function CheckBoxButton4@clicked()
-// {
-//     tezina_dn = true;
-//     bezPdvaField = false;
-//     razlikaUCijeniField = false;
-//     saPdvomField = false;
-// }
