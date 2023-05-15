@@ -284,37 +284,37 @@
                       Background="#EE66FFFF">
                 <Grid>
                     <RadioButton HorizontalAlignment="Left"
-                              VerticalAlignment="Top"
-                              Height="16"
-                              Width="113"
-                              Margin="8,2,0,0"
-                              Name="CheckBoxButton1"
-                              DataContext="saPdvomField"
-                              Content="Sa PDV-om" />
+                                 VerticalAlignment="Top"
+                                 Height="16"
+                                 Width="113"
+                                 Margin="8,2,0,0"
+                                 Name="CheckBoxButton1"
+                                 DataContext="saPdvomField"
+                                 Content="Sa PDV-om" />
                     <RadioButton HorizontalAlignment="Left"
-                              VerticalAlignment="Top"
-                              Height="17"
-                              Width="113"
-                              Margin="8,17,0,0"
-                              Name="CheckBoxButton2"
-                              DataContext="bezPdvaField"
-                              Content="Bez PDV-a" />
+                                 VerticalAlignment="Top"
+                                 Height="17"
+                                 Width="113"
+                                 Margin="8,17,0,0"
+                                 Name="CheckBoxButton2"
+                                 DataContext="bezPdvaField"
+                                 Content="Bez PDV-a" />
                     <RadioButton HorizontalAlignment="Left"
-                              VerticalAlignment="Top"
-                              Height="17"
-                              Width="113"
-                              Margin="8,32,0,0"
-                              Name="CheckBoxButton3"
-                              DataContext="razlikaUCijeniField"
-                              Content="Razlika u cijeni" />
+                                 VerticalAlignment="Top"
+                                 Height="17"
+                                 Width="113"
+                                 Margin="8,32,0,0"
+                                 Name="CheckBoxButton3"
+                                 DataContext="razlikaUCijeniField"
+                                 Content="Razlika u cijeni" />
                     <RadioButton HorizontalAlignment="Left"
-                              VerticalAlignment="Top"
-                              Height="17"
-                              Width="113"
-                              Margin="8,47,0,0"
-                              Name="CheckBoxButton4"
-                              DataContext="tezina_dn"
-                              Content="Težina u Kg" />
+                                 VerticalAlignment="Top"
+                                 Height="17"
+                                 Width="113"
+                                 Margin="8,47,0,0"
+                                 Name="CheckBoxButton4"
+                                 DataContext="tezina_dn"
+                                 Content="Težina u Kg" />
                 </Grid>
             </GroupBox>
             <wcl:ASEnterBox ButtonSize="21"
@@ -383,7 +383,6 @@
                             VerticalAlignment="Top"
                             Background="#FFFFE6D9"
                             TabIndex="6" />
-
             <wcl:ASEnterBox ButtonSize="0"
                             FontWeight="Bold"
                             Size="4"
@@ -418,21 +417,21 @@
                             Background="#FFFFE6D9"
                             TabIndex="9" />
             <wcl:ASEnterBox HorizontalAlignment="Left"
-                              VerticalAlignment="Top"
-                              VerticalContentAlignment="Center"
-                              FontWeight="Bold"
-                              ButtonSize="21"
-                              Height="22"
-                              Width="60"
-                              Margin="188,25,0,0"
-                              Name="neSkladiste"
-                              Background="#FFFFE6D9"
-                              Foreground="black"
-                              KeyTraps="F2|neSkladiste@clicked"
-                              FieldName="SKLADiste"
-                              FontFamily="lato"
-                              FontSize="11"
-                              TabIndex="7" />
+                            VerticalAlignment="Top"
+                            VerticalContentAlignment="Center"
+                            FontWeight="Bold"
+                            ButtonSize="21"
+                            Height="22"
+                            Width="60"
+                            Margin="188,25,0,0"
+                            Name="neSkladiste"
+                            Background="#FFFFE6D9"
+                            Foreground="black"
+                            KeyTraps="F2|neSkladiste@clicked"
+                            FieldName="SKLADiste"
+                            FontFamily="lato"
+                            FontSize="11"
+                            TabIndex="7" />
             <wcl:ASEnterBox ButtonSize="0"
                             FontWeight="Bold"
                             Size="0"
@@ -515,14 +514,15 @@
                                 Height="300"
                                 Margin="880,110,0,0" />
         </Grid>
-                        <lvc:PieChart 
+        <lvc:PieChart LegendPosition="Right"
                       Name="PieChart1"
                       VerticalAlignment="Top"
                       HorizontalAlignment="Left"
-                      Width="240"
+                      Width="500"
                       Height="240"
-                      Margin="700,650,0,0" />
-        <DataGrid HorizontalAlignment="Left"
+                      Margin="420,650,0,0" />
+        <DataGrid GridLinesVisibility="None"
+                  HorizontalAlignment="Left"
                   VerticalAlignment="Top"
                   Height="216"
                   Width="480"
@@ -540,22 +540,22 @@
                             Value="#FFAE0000" />
                     <Setter Property="Foreground"
                             Value="White" />
-                            
                 </Style>
             </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="No."
                                         Width="24">
-                <DataGridTemplateColumn.CellStyle>
-                    <Style TargetType="DataGridCell">
-                        <Setter Property="Background" Value="Red"/>
-                        <Setter Property="BorderThickness" Value="0"></Setter>
-                    </Style>
-                </DataGridTemplateColumn.CellStyle>
+                    <DataGridTemplateColumn.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="Background"
+                                    Value="Red" />
+                            <Setter Property="BorderThickness"
+                                    Value="0" />
+                        </Style>
+                    </DataGridTemplateColumn.CellStyle>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <wcl:ASGridCell 
-                            FieldName="TOP10PART_AR"
+                            <wcl:ASGridCell FieldName="TOP10PART_AR"
                                             Editor="edDefault"
                                             EditLength="0" />
                         </DataTemplate>
@@ -698,7 +698,8 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <DataGrid HorizontalAlignment="Left"
+        <DataGrid GridLinesVisibility="None"
+                  HorizontalAlignment="Left"
                   VerticalAlignment="Top"
                   Height="216"
                   Width="470"
@@ -723,8 +724,7 @@
                                         Width="24">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <wcl:ASGridCell
-                             FieldName="T10CNTRMJ_AR"
+                            <wcl:ASGridCell FieldName="T10CNTRMJ_AR"
                                             Editor="edDefault"
                                             EditLength="0" />
                         </DataTemplate>
@@ -779,7 +779,8 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <DataGrid HorizontalAlignment="Left"
+        <DataGrid GridLinesVisibility="None"
+                  HorizontalAlignment="Left"
                   VerticalAlignment="Top"
                   Height="216"
                   Width="510"
@@ -870,7 +871,8 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <DataGrid HorizontalAlignment="Left"
+        <DataGrid GridLinesVisibility="None"
+                  HorizontalAlignment="Left"
                   VerticalAlignment="Top"
                   Height="216"
                   Width="470"
@@ -973,14 +975,13 @@
                              Height="26"
                              Width="174"
                              Margin="700,113,0,0"
-                             
                              FontSize="19" />
         <wcl:ASHorizontalBar Name="HorizontalBarLG"
                              HorizontalAlignment="Left"
                              VerticalAlignment="Top"
-                          Height="26"
-                          Width="174"
-                          Margin="700,145,0,0"                            
+                             Height="26"
+                             Width="174"
+                             Margin="700,145,0,0"
                              FontSize="19" />
         <!-- <wcl:ASNumericBox HorizontalAlignment="Left"
                           VerticalAlignment="Top"
@@ -1054,19 +1055,19 @@
                           IsReadOnly="True"
                           FontSize="17"
                           TabIndex="9" /> -->
-            <wcl:ASHorizontalBar Name="HorizontalBarOM"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Top"
-                            Height="26"
-                            Width="174"
-                            Margin="700,209,0,0"                          
-                            FontSize="19" />
-        <wcl:ASHorizontalBar     Name="HorizontalBarLM"
+        <wcl:ASHorizontalBar Name="HorizontalBarOM"
                              HorizontalAlignment="Left"
                              VerticalAlignment="Top"
                              Height="26"
                              Width="174"
-                             Margin="700,241,0,0"                       
+                             Margin="700,209,0,0"
+                             FontSize="19" />
+        <wcl:ASHorizontalBar Name="HorizontalBarLM"
+                             HorizontalAlignment="Left"
+                             VerticalAlignment="Top"
+                             Height="26"
+                             Width="174"
+                             Margin="700,241,0,0"
                              FontSize="19" />
         <wcl:ASNumericBox HorizontalAlignment="Left"
                           VerticalAlignment="Top"
@@ -1123,18 +1124,18 @@
                           FontSize="17"
                           TabIndex="12" /> -->
         <wcl:ASHorizontalBar Name="HorizontalBarOT"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Top"
-                          Height="26"
-                          Width="174"
-                          Margin="700,305,0,0"                        
-                            FontSize="19" />
-        <wcl:ASHorizontalBar     Name="HorizontalBarLT"
                              HorizontalAlignment="Left"
                              VerticalAlignment="Top"
-                          Height="26"
-                          Width="174"
-                          Margin="700,337,0,0"                      
+                             Height="26"
+                             Width="174"
+                             Margin="700,305,0,0"
+                             FontSize="19" />
+        <wcl:ASHorizontalBar Name="HorizontalBarLT"
+                             HorizontalAlignment="Left"
+                             VerticalAlignment="Top"
+                             Height="26"
+                             Width="174"
+                             Margin="700,337,0,0"
                              FontSize="19" />
         <wcl:ASNumericBox HorizontalAlignment="Left"
                           VerticalAlignment="Top"

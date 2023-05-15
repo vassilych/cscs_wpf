@@ -19,7 +19,7 @@ DEFINE PKMK_SKL_CODE_arr type i size 3 array 300;
 DEFINE PKMK_SKL_NAZIV_arr type a size 50 array 300;
     DEFINE cntr1 type i;
 
-DEFINE tot_ovagod type n size 14 dec 2 ; 
+DEFINE tot_ovagod type n size 14 dec 0 ; 
 DEFINE tot_lani type n size 14 dec 2 ; 
 DEFINE tot_ovajmj type n size 14 dec 2 ; 
 DEFINE tot_proslimj type n size 14 dec 2 ; 
@@ -562,8 +562,8 @@ function pripremi(){
 	sql_str = sql_str + " (SELECT nkpr_gl_cuscty AS CountryID , sum(nkpr_gl_total) AS Origin , ROW_NUMBER() OVER( ORDER BY sum(nkpr_gl_total) DESC ) As Num";
 	sql_str = sql_str + " FROM " + trenutnaGodinaBaza + " .dbo.nkprinv AS U GROUP BY nkpr_gl_cuscty)" ;
 	sql_str = sql_str + " Select countryID, round(Origin,0) as Iznos ";
-	sql_str = sql_str + " From TopItems2 Where Num <= 9 Union ALL Select 'ostali', round(sum(Origin),0) as Iznos ";
-	sql_str = sql_str + " From TopItems2 Where Num > 9 ";
+	sql_str = sql_str + " From TopItems2 Where Num <= 6 Union ALL Select 'ostali', round(sum(Origin),0) as Iznos ";
+	sql_str = sql_str + " From TopItems2 Where Num > 6 ";
 
 	queryResult = sqlquery(sql_str);
 	PieChart("PieChart1", "init");
@@ -573,7 +573,7 @@ function pripremi(){
 	{
 		PieChart("PieChart1", "values", int(queryResult[i][1]) , string(queryResult[i][0].trim()));
 	}
-	PieChart("PieChart1", "Margins", {100,100,100,100});
+	PieChart("PieChart1", "Margins", {0,0,0,0});
 
 }
 
@@ -663,7 +663,7 @@ function week()
                 //MessageBox("postotakTj " + postotakTj);
             }
         }
-		bojeArrayTJ = {55, 153, 133};
+		bojeArrayTJ = {95, 193, 173};
 		bojeArrayTJ2 = {55, 153, 176};
 		if (tot_ovajTj>tot_ProsliTj)
 		{

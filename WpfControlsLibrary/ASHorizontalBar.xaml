@@ -18,7 +18,7 @@
             x:Name="InsideText"
             Text="default"
             VerticalContentAlignment="Center"
-            HorizontalContentAlignment="Center"
+            HorizontalContentAlignment="Right"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             FontSize="25"

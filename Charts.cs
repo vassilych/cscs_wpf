@@ -218,6 +218,8 @@ namespace WpfCSCS
                     else if (optionString == "init")
                     {
                         pieWidget.Series = new ISeries[] { };
+
+                        //pieWidget.DrawMargin = new LiveChartsCore.Measure.Margin() { Left = 200, Top = 50 };
                     }
                     else if (optionString == "values")
                     {
