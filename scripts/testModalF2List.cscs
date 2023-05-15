@@ -5,7 +5,7 @@ DEFINE var1 type a size 10;
 var1 = "abcdefg";
 
 function btn1@clicked(){
-    ModalWindow("../../scripts/F2.xaml");
+    modalWin = ModalWindow("../../scripts/F2.xaml");
 }
 
 function F2_onStart(){
@@ -14,7 +14,7 @@ function F2_onStart(){
 
 
 function btn2@clicked(){
-    quit;
+    CloseWindow(modalWin);
 }
 
 function F2_onClose(){

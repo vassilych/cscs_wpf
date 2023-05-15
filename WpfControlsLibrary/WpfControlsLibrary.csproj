@@ -52,6 +52,9 @@
     <Compile Include="asdasdasdasd.xaml.cs">
       <DependentUpon>asdasdasdasd.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ASDualListDialog.xaml.cs">
+      <DependentUpon>ASDualListDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ASGridCell.cs" />
     <Compile Include="ASEnterBox.xaml.cs">
       <DependentUpon>ASEnterBox.xaml</DependentUpon>
@@ -69,6 +72,7 @@
     </Compile>
     <Compile Include="ASNumericTextBox.cs" />
     <Compile Include="ASNumericBoxConverter.cs" />
+    <Compile Include="ASDualListDialogHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -99,6 +103,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="asdasdasdasd.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ASDualListDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

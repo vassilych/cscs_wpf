@@ -1,0 +1,28 @@
+CreateWindow("../../scripts/testDualListDialog.xaml");
+
+DEFINE sectedLines type a size 10 array 10;
+
+strings("dldh1", "list1", "stAddLine", "Line 1");
+strings("dldh1", "list1", "stAddLine", "Line 2");
+strings("dldh1", "list1", "stAddLine", "Line 3");
+strings("dldh1", "list1", "stAddLine", "Line 4");
+strings("dldh1", "list1", "stAddLine", "Line 5");
+
+function btn1@clicked(){
+    DUAL_LIST_EXEC("dldh1");
+    //MessageBox(strings("dldh1", "list2", "stGetLine", "", 0));
+
+    var1 = strings("dldh1", "asdasd", "stCount");
+
+    MessageBox(var1);
+
+    for(i = 0; i < var1; i++){
+        sectedLines[i] = strings("dldh1", "list2", "stGetLine", "", i);
+    }
+
+    for(i = 0; i < var1; i++){
+        sectedLines[i]
+    }
+    // strings("dld1", "list2", "stGetLine", "", 3);
+}
+

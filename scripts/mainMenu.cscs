@@ -329,6 +329,14 @@ function mainMenuWindow_OnDisplay(){
 
     AddMenuItem("OtherDC", "testModalF2List.cscs", "testModalF2List", "runScript");
     
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testDualListDialog.cscs", "testDualListDialog", "runScript");
+    
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testSlowArray.cscs", "testSlowArray", "runScript");
+    
 
     //----- IVAN -------------------------------  
 

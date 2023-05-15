@@ -82,7 +82,7 @@ function WKPRDASH2_onDisplay(){
 }
 function neSkladiste@clicked()
 {
-	ModalWindow("../../scripts/F2ListSkladista.xaml");
+	skladisteWin = ModalWindow("../../scripts/F2ListSkladista.xaml");
 	cursor("wait");
 	sqlQueryString = "SELECT [PKMK_SKL_CODE],[PKMK_SKL_NAZIV],[PKMK_SKL_TIP],[PKMK_SKL_REZ5],[PKMK_SKL_ADRESA]";
 	sqlQueryString +=",[PKMK_SKL_MJESTO],[PKMK_SKL_CENA],[PKMK_SKL_POSTBR] FROM  " + trenutnaGodinaBaza + ".[dbo].[PKMKSKLA] ";
@@ -96,28 +96,44 @@ function neSkladiste@clicked()
 		}
 	}
 	DisplayArraySetup("dgSkl", counterFld: "cntr1", activeElements: Size(queryResult) - 1, maxElements: 300);
+	cursor("dflt");
 }
 function neArtikl@clicked()
 {
-	ModalWindow("../../scripts/F2ListArtikla.xaml");
+	artikliWin = ModalWindow("../../scripts/F2ListArtikla.xaml");
 	cursor("wait");
+	
+	MessageBox("1");
+	
 	sqlQueryString = "SELECT [ARTI_ARTIKL],[ARTI_NAZIV] ";
 	sqlQueryString +=" FROM  " + trenutnaGodinaBaza + ".[dbo].[NKMKARTI] ";
 	queryResult = sqlquery(sqlQueryString);
-	if(size(queryResult) > 1)
+	
+	MessageBox("2");
+	
+	// OVO JE SPORO
+	if(true) //size(queryResult) > 1
 	{
-		for(i = 1; i < size(queryResult); i++)
+		for(i = 1; i < 30000; i++)//size(queryResult); i++)
 		{
-			ARTI_ARTIKL_ARR[i-1] = queryResult[i][0].Trim();
-			ARTI_NAZIV_ARR[i-1] = queryResult[i][1].Trim();
+			//ARTI_ARTIKL_ARR[i-1] = queryResult[i][0];//.Trim();
+			varX = queryResult[i][0];//.Trim();
+			//ARTI_NAZIV_ARR[i-1] = queryResult[i][1];//.Trim();
+			varX = queryResult[i][1];//.Trim();
 		}
 	}
+	
+	MessageBox("3");
+	
 	DisplayArraySetup("dgArti", counterFld: "cntr1", activeElements: Size(queryResult) - 1, maxElements: 50000);
-    cursor("dflt");
+	
+	MessageBox("4");
+	
+	cursor("dflt");
 }
 function cePartner@clicked()
 {
-	ModalWindow("../../scripts/F2ListPartnera.xaml");
+	partnerWin = ModalWindow("../../scripts/F2ListPartnera.xaml");
 	cursor("wait");
 
     sqlQueryString = "SELECT [NKSC_PARTCODE]  ,[NKSC_PARTNAME] FROM  " + trenutnaGodinaBaza + ".[dbo].[NKSCPART] ";
@@ -135,7 +151,7 @@ function cePartner@clicked()
 
 }
 function ceRegija@clicked(){
-	ModalWindow("../../scripts/F2ListRegija.xaml");
+	regijaWin = ModalWindow("../../scripts/F2ListRegija.xaml");
 	cursor("wait");
 		
     sqlQueryString = "SELECT [KSDU_SF_CODE],[KSDU_SF_OPIS1] FROM  " + CommonDBGet() + ".[dbo].[KPSYSIFA] ";
@@ -157,25 +173,29 @@ function gbSklOk@clicked()
 {
 	skladiste=PKMK_SKL_CODE_arr[cntr1];
 	skladistenaziv=PKMK_SKL_NAZIV_arr[cntr1];
-	quit;
+	//quit;
+	CloseWindow(skladisteWin);
 }
 function gbArtiOk@clicked()
 {
 	artikl=ARTI_ARTIKL_ARR[cntr1];
 	artiklNaziv=ARTI_NAZIV_ARR[cntr1];
-	quit;
+	// quit;
+	CloseWindow(artikliWin);
 }
 function gbPartOk@clicked()
 {
 	partner=NKSC_PARTCODE_ARR[cntr1];
 	partnerNaziv=NKSC_PARTNAME_ARR[cntr1];
-	quit;
+	// quit;
+	CloseWindow(partnerWin);
 }
 function gbRegijaOk@clicked()
 {
 	regija=KSDU_SF_CODE_ARR[cntr1];
 	regijaNaziv=KSDU_SF_OPIS1_ARR[cntr1];
-	quit;
+	// quit;
+	CloseWindow(regijaWin);
 }
 CreateWindow("../../scripts/WKPRDASH2.xaml");
 function gbPripremi@clicked(){

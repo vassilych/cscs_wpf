@@ -78,6 +78,8 @@ namespace SplitAndMerge
             interpreter.RegisterFunction(Constants.STATUS_BAR, new StatusBarFunction());
             
             interpreter.RegisterFunction(Constants.HORIZONTAL_BAR, new HorizontalBarFunction());
+            
+            interpreter.RegisterFunction(Constants.DUAL_LIST_EXEC, new DUAL_LIST_EXECFunction());
 
 
             interpreter.RegisterFunction("OpenFile", new OpenFileFunction(false));
@@ -277,6 +279,8 @@ namespace SplitAndMerge
         public const string STATUS_BAR = "StatusBar";
 
         public const string HORIZONTAL_BAR = "HorizontalBar";
+
+        public const string DUAL_LIST_EXEC = "DUAL_LIST_EXEC";
         
         public const string CHART = "Chart";
         public const string PIE_CHART = "PieChart";
@@ -4397,12 +4401,11 @@ namespace WpfCSCS
 
             var gui = CSCS_GUI.GetInstance(script);
 
-
-
             var widgetName = Utils.GetSafeString(args, 0);
-            var option = Utils.GetSafeString(args, 1);
-            var argStr = Utils.GetSafeString(args, 2);
-            var argNum = Utils.GetSafeInt(args, 3);
+            var listName = Utils.GetSafeString(args, 1);
+            var option = Utils.GetSafeString(args, 2);
+            var argStr = Utils.GetSafeString(args, 3);
+            var argNum = Utils.GetSafeInt(args, 4);
             //var arg3 = Utils.GetSafeString(args, 4);
 
             var widget = gui.GetWidget(widgetName);
@@ -4478,6 +4481,91 @@ namespace WpfCSCS
                     index = lines.FindIndex(p => p == argStr);
                     return new Variable(index);
                 }
+            }
+            else if (widget is ASDualListDialogHelper)
+            {
+                var dldh = widget as ASDualListDialogHelper;
+                List<string> leftLines = dldh.List1;
+                List<string> rightLines = dldh.List2;
+
+                if (option == "stAddLine")
+                {
+                    leftLines.Add(argStr);
+                    return Variable.EmptyInstance;
+                }
+                else if (option == "stGetLine")
+                {
+                    return new Variable(rightLines[argNum]);
+                }
+                else if (option == "stCount")
+                    return new Variable(rightLines.Count);
+                //else if (option == "stCount")
+                //    return new Variable(lines.Count);
+                //else if (option == "stGetLine")
+                //{
+                //    return new Variable(lines[argNum]);
+                //}
+                //else if (option == "stGetText")
+                //{
+                //    return new Variable(mtb.Text);
+                //}
+                //else if (option == "stSetLine")
+                //{
+                //    lines[argNum] = argStr;
+                //    mtb.Text = string.Join("\n", lines);
+                //    return Variable.EmptyInstance;
+                //}
+                //else if (option == "stSetText")
+                //{
+                //    mtb.Text = argStr;
+                //    return Variable.EmptyInstance;
+                //}
+                //else if (option == "stClear")
+                //{
+                //    mtb.Text = "";
+                //    return Variable.EmptyInstance;
+                //}
+                //else if (option == "stAddLine")
+                //{
+                //    lines.Add(argStr);
+                //    mtb.Text = string.Join("\n", lines);
+                //    return Variable.EmptyInstance;
+                //}
+                //else if (option == "stDelLine")
+                //{
+                //    lines.RemoveAt(argNum);
+                //    mtb.Text = string.Join("\n", lines);
+                //    return Variable.EmptyInstance;
+                //}
+                //else if (option == "stInsLine")
+                //{
+                //    lines.Insert(argNum, argStr);
+                //    mtb.Text = string.Join("\n", lines);
+                //    return Variable.EmptyInstance;
+                //}
+                //else if (option == "stLoad")
+                //{
+                //    string text = File.ReadAllText(argStr);
+                //    mtb.Text = text;
+                //    return Variable.EmptyInstance;
+                //}
+                //else if (option == "stSave")
+                //{
+                //    File.WriteAllText(argStr, mtb.Text);
+                //    return Variable.EmptyInstance;
+                //}
+                //else if (option == "stSort")
+                //{
+                //    lines.Sort();
+                //    mtb.Text = string.Join("\n", lines);
+                //    return Variable.EmptyInstance;
+                //}
+                //else if (option == "stFind" || option == "stLocate")
+                //{
+                //    var index = Int32.MaxValue;
+                //    index = lines.FindIndex(p => p == argStr);
+                //    return new Variable(index);
+                //}
             }
 
             return Variable.EmptyInstance;
@@ -4571,6 +4659,73 @@ namespace WpfCSCS
                     ashb.BarColor = new SolidColorBrush(Color.FromRgb((byte)rgbArray[0].Value, (byte)rgbArray[1].Value, (byte)rgbArray[2].Value));
                 }
             }
+
+            return Variable.EmptyInstance;
+        }
+    }
+    
+    class DUAL_LIST_EXECFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            var gui = CSCS_GUI.GetInstance(script);
+
+            var widgetName = Utils.GetSafeString(args, 0);
+            var widget = gui.GetWidget(widgetName);
+
+            if(widget is ASDualListDialogHelper)
+            {
+                var dldh = widget as ASDualListDialogHelper;
+                dldh.List2 = new List<string>();
+
+                ASDualListDialog dualListDialog = new ASDualListDialog();
+                dualListDialog.Title = dldh.Title;
+                dualListDialog.OkButtonCaption = dldh.OkButtonCaption;
+                dualListDialog.CancelButtonCaption = dldh.CancelButtonCaption;
+                dualListDialog.HelpButtonCaption = dldh.HelpButtonCaption;
+                dualListDialog.Label1Caption = dldh.Label1Caption;
+                dualListDialog.Label2Caption = dldh.Label2Caption;
+                
+                dualListDialog.Sorted = dldh.Sorted;
+                dualListDialog.ShowHelp = dldh.ShowHelp;
+
+                dualListDialog.LeftList = new ObservableCollection<string>(dldh.List1);
+                dualListDialog.RightList = new ObservableCollection<string>(dldh.List2);
+
+                dualListDialog.ShowDialog();
+
+                dldh.List2 = dualListDialog.RightList.ToList();
+            }
+            
+
+            return Variable.EmptyInstance;
+
+            //var widget = gui.GetWidget(widgetName);
+            //if (widget is ASHorizontalBar)
+            //{
+            //    var ashb = widget as ASHorizontalBar;
+            //    if(option == "fontsize")
+            //    {
+            //        ashb.FontSize = Utils.GetSafeInt(args, 2);
+            //    }
+            //    else if (option == "barwidth")
+            //    {
+            //        ashb.BarWidth = Utils.GetSafeInt(args, 2);
+            //    }
+            //    else if (option == "text")
+            //    {
+            //        ashb.Text = Utils.GetSafeString(args, 2);
+            //    }
+            //    else if (option == "color")
+            //    {
+            //        var rgbArray = Utils.GetSafeVariable(args, 2).Tuple;
+
+            //        ashb.BarColor = new SolidColorBrush(Color.FromRgb((byte)rgbArray[0].Value, (byte)rgbArray[1].Value, (byte)rgbArray[2].Value));
+            //    }
+            //}
 
             return Variable.EmptyInstance;
         }

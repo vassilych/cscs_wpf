@@ -28,40 +28,40 @@ function memo1@post(){
 
 var1 = "prva linija\ndruga linija\ntreća linija";
 
-MessageBox("stCount = " + Strings("memo1", "stCount"));
+MessageBox("stCount = " + Strings("memo1", "list1", "stCount"));
 
-MessageBox("line 2 = " + strings("memo1", "stGetLine", "", 2));
+MessageBox("line 2 = " + strings("memo1", "list1", "stGetLine", "", 2));
 
-MessageBox("getText = " + strings("memo1", "stGetText"));
+MessageBox("getText = " + strings("memo1", "list1", "stGetText"));
 
-strings("memo1", "stSetLine", "nova vrijednost linije", 1);
+strings("memo1", "list1", "stSetLine", "nova vrijednost linije", 1);
 MessageBox("line 1 set");
 
-strings("memo1", "stClear");
+strings("memo1", "list1", "stClear");
 MessageBox("all cleared");
 
-strings("memo1", "stSetText", "new text\nnew text\nnew text");
+strings("memo1", "list1", "stSetText", "new text\nnew text\nnew text");
 MessageBox("text set");
 
-strings("memo1", "stAddLine", "added line");
+strings("memo1", "list1", "stAddLine", "added line");
 MessageBox("line added");
 
-strings("memo1", "stDelLine", "", 3);
+strings("memo1", "list1", "stDelLine", "", 3);
 MessageBox("line deleted");
 
-strings("memo1", "stInsLine", "inserted line", 1);
+strings("memo1", "list1", "stInsLine", "inserted line", 1);
 MessageBox("line inserted at 1");
 
-strings("memo1", "stLoad", "e:\file.txt");
+strings("memo1", "list1", "stLoad", "e:\file.txt");
 MessageBox("read from file");
 
-strings("memo1", "stInsLine", "inserted line", 3);
+strings("memo1", "list1", "stInsLine", "inserted line", 3);
 MessageBox("line inserted at 3");
 
-MessageBox("found line at = " + strings("memo1", "stFind", "inserted line"));
+MessageBox("found line at = " + strings("memo1", "list1", "stFind", "inserted line"));
 
-strings("memo1", "stSort");
+strings("memo1", "list1", "stSort");
 MessageBox("sorted");
 
-strings("memo1", "stSave", "E:\file2.txt");
+strings("memo1", "list1", "stSave", "E:\file2.txt");
 MessageBox("file2.txt saved");
