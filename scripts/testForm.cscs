@@ -24,7 +24,7 @@ function numbox1@post(){
 
 b = 1;
 function numbox1@pre(){
-    return false;
+    //return false;
     // b++;
     // if(b % 2 == 0){
     //     return false;

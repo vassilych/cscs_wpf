@@ -1,0 +1,22 @@
+CreateWindow("../../scripts/testModalF2List.xaml");
+
+DEFINE var1 type a size 10;
+
+var1 = "abcdefg";
+
+function btn1@clicked(){
+    modalWin = ModalWindow("../../scripts/F2.xaml");
+}
+
+function F2_onStart(){
+    //MessageBox("asdasd");
+}
+
+
+function btn2@clicked(){
+    CloseWindow(modalWin);
+}
+
+function F2_onClose(){
+    var1 = "xxxxx";
+}

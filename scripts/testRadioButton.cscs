@@ -1,1 +1,49 @@
 CreateWindow("../../scripts/testRadioButton.xaml");
+
+DEFINE rb1, rb2, rb3 type l;
+
+// //programski mijenjat
+// rb1 = true;
+// rb2 = false;
+// rb3 = false;
+
+//citanje
+//MessageBox(rb2);
+function btn1@clicked(){
+    MessageBox("var1 = " + rb1);
+    MessageBox("var2 = " + rb2);
+    MessageBox("var3 = " + rb3);
+}
+
+//kad se klikne na prostor groupbox-a
+function gb1@clicked(){
+    rb1 = true;
+    MessageBox("groupBox clicked");
+}
+
+// // // kad se klikne na radiobutton, svaki klik
+// function rb1@clicked(){
+//     MessageBox("rb1@clicked");
+// }
+
+// function rb2@clicked(){
+//     MessageBox("rb2@clicked");
+// }
+
+
+// //changed - oba smjera -> odselektiran ili selektiran
+// function rb1@changed(){
+//     MessageBox("rb1 CHANGED");
+// }
+// function rb2@changed(){
+//     MessageBox("rb2 CHANGED");
+// }
+
+
+
+////--
+//pre
+
+//post
+
+

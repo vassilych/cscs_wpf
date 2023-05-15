@@ -1,0 +1,26 @@
+CreateWindow("../../scripts/testPieChart.xaml");
+
+function testPieChart_OnStart(){
+    refresh();
+
+    se = typeref("system.environment");
+    MessageBox(se.CurrentDirectory);
+
+    // wcch = typeref("WpfCSCS.Charts");
+    // MessageBox(wcch.testString);
+}
+
+function Button1@clicked(){
+    refresh();
+}
+
+function refresh(){
+    PieChart("PieChart1", "init");
+    PieChart("PieChart1", "seriesType", "pie");
+    PieChart("PieChart1", "title", "Pie Chart Title", 20);
+    
+    PieChart("PieChart1", "values", 20.5, "prvi dio");
+    PieChart("PieChart1", "values", 10.5, "drugi dio");
+    // Chart("PieChart1", "Margins", {50, 20, 0, 30});
+    // Chart("PieChart1", "TooltipDecimalPlaces", 2);
+}

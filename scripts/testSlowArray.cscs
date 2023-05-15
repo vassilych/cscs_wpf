@@ -1,0 +1,21 @@
+DEFINE array1 type a size 10 array 30000;
+
+MessageBox("Start");
+
+for(i = 0; i < 30000; i++)
+{
+    array1[i] = "x";
+}
+
+MessageBox("End 1");
+
+for(i = 0; i < 30000; i++)
+{
+    array1[i] = array1[i] + "y";
+}
+
+MessageBox("End 2");
+
+quit;
+
+

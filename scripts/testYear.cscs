@@ -1,0 +1,21 @@
+DEFINE dateVar type D size 8;
+
+dateVar = "03/05/23";
+
+dateVar = dateVar + 2;
+
+MessageBox(dateVar);
+
+/*
+rez = YEAR(dateVar);
+
+MessageBox(rez);
+rez1 = DOW(dateVar);
+
+MessageBox(rez1);
+rez2 = DOM(dateVar);
+
+MessageBox(rez2);
+*/
+
+quit;
