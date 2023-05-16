@@ -30,7 +30,16 @@ namespace WpfControlsLibrary
             set
             {
                 base.SetValue(BarWidthProperty, value);
-                BarFill.Width = Width * value / 100;
+
+                if(value < 0)
+                {
+                    BarFill.HorizontalAlignment = HorizontalAlignment.Right;
+                }
+                else
+                {
+                    BarFill.HorizontalAlignment = HorizontalAlignment.Left;
+                }
+                BarFill.Width = Math.Abs(Width * value / 100);
             }
         }
         
@@ -91,7 +100,7 @@ namespace WpfControlsLibrary
                 InsideText.IsTabStop = false;
                 InsideText.IsHitTestVisible = false;
 
-                BarFill.Width = Width*BarWidth/100;
+                BarFill.Width = Math.Abs(Width * BarWidth / 100);
                 InsideText.Text = Text;
                 InsideText.FontSize = FontSize;
 
