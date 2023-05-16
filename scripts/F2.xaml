@@ -13,8 +13,9 @@
                HorizontalAlignment="Left"
                VerticalAlignment="Top" />
         <Button Content="OK"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom" 
+                FontSize="22"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center" 
                 Name="btn2"/>
     </Grid>
 </Window>
