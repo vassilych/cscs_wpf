@@ -1,4 +1,4 @@
-﻿using CSCS.InterpreterManager;
+using CSCS.InterpreterManager;
 using SplitAndMerge;
 using System;
 using System.Collections.Generic;
@@ -746,7 +746,7 @@ namespace WpfCSCS
 
             s_variableChanged = widgetName;
             var widget = GetWidget(widgetName);
-            if (m_addingActions)
+            if (m_addingActions && string.IsNullOrEmpty(newValue.String))
             {
                 var text = bounded.AsString();
                 newValue.String = string.IsNullOrWhiteSpace(text) ? newValue.AsString() : text;
@@ -832,7 +832,15 @@ namespace WpfCSCS
                         }
                     }
                 }
-                return Interpreter.Run(customFunction, args, script);
+                try
+                {
+                    return Interpreter.Run(customFunction, args, script);
+                }
+                catch (Exception exc)
+                {
+                    Console.WriteLine("Exception: " + exc.Message);
+                    Console.WriteLine(exc.StackTrace);
+                }
             }
             return Variable.EmptyInstance;
         }
@@ -840,7 +848,7 @@ namespace WpfCSCS
         public bool AddBinding(string name, FrameworkElement widget)
         {
             var text = GetTextWidgetFunction.GetText(widget);
-            Variable baseValue = new Variable(text);
+            Variable baseValue = text;// new Variable(text);
             Interpreter.AddGlobal(name, new GetVarFunction(baseValue), false /* not native */);
 
             var current = new Variable(widget);
