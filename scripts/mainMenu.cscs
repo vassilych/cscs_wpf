@@ -337,6 +337,10 @@ function mainMenuWindow_OnDisplay(){
 
     AddMenuItem("OtherDC", "testSlowArray.cscs", "testSlowArray", "runScript");
     
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testModalWindow.cscs", "testModalWindow", "runScript");
+    
 
     //----- IVAN -------------------------------  
 
@@ -362,5 +366,7 @@ function mainMenuWindow_OnDisplay(){
 
 
 DEFINE var1 type a;
+
+//WebBrowser("browser1", "https://www.aurasoft.hr/");
 
 

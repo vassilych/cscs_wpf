@@ -96,9 +96,10 @@ namespace WpfCSCS
                                     TooltipLabelFormatter = (chartPoint) => $"{newList[(int)chartPoint.SecondaryValue].ToString("N")}",
                                     //Fill = new SolidColorPaint(SKColors.Transparent)
                                     Fill = null,
+                                    Stroke = new SolidColorPaint(new SKColor(100, 100, 100), 3),
                                     //GeometryFill = null,
-                                    //GeometryStroke = null,
-                                    GeometrySize = 7
+                                    //GeometryStroke = new SolidColorPaint(SKColor.Empty, 5),
+                                    GeometrySize = 5
 
                                 });
                             }
