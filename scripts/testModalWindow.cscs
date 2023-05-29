@@ -1,0 +1,9 @@
+CreateWindow("../../scripts/testModalWindow.xaml");
+
+function btn1@clicked(){
+    ModalWindow("../../scripts/testWindow1.xaml");
+}
+
+function btn2@clicked(){
+    CreateWindow("../../scripts/testWindow2.xaml");
+}

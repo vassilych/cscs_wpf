@@ -521,7 +521,7 @@ namespace WpfCSCS
         public static AdictionaryLocal.Adictionary Adictionary { get; set; } = new AdictionaryLocal.Adictionary();
 
         public Dictionary<string, DefineVariable> DEFINES { get; set; } =
-            new Dictionary<string, DefineVariable>();
+            new Dictionary<string, DefineVariable>(40000);
         public Dictionary<string, WidgetData> WIDGETS { get; set; } =
             new Dictionary<string, WidgetData>();
 

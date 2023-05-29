@@ -22,7 +22,9 @@
                    FontSize="12"
                    Foreground="black"
                    Text="Pretraživanje" />
-        <DataGrid HorizontalAlignment="Left"
+        <DataGrid AlternatingRowBackground="LightGray"
+                  GridLinesVisibility="None"
+                  HorizontalAlignment="Left"
                   VerticalAlignment="Top"
                   Height="320"
                   Width="624"
@@ -123,7 +125,7 @@
                          VerticalAlignment="Top"
                          Height="32"
                          Width="152"
-                         Margin="142,326,0,0"/>
+                         Margin="142,326,0,0" />
         <Button HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Height="32"
