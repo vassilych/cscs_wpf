@@ -1,4 +1,3 @@
-
 *.ide-shm
 *.ide-wal
 *.ide
@@ -15,7 +14,9 @@ ourScripts/
 *.vsidx
 *.1
 *.v2
-*.vsidx
-*.vsidx
-*.v2
+.vs/*
 .vs/slnx.sqlite
+.vs/VSWorkspaceState.json
+*.v2
+*.vsidx
+*.vsidx

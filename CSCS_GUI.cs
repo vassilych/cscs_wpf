@@ -472,6 +472,7 @@ namespace WpfCSCS
 
         public Dictionary<string, FrameworkElement> Controls { get; set; } = new Dictionary<string, FrameworkElement>();
         public Dictionary<FrameworkElement, Window> Control2Window { get; set; } = new Dictionary<FrameworkElement, Window>();
+        public Window ActiveWindow;
 
         public static Dictionary<Window, string> Window2File { get; set; } = new Dictionary<Window, string>();
         public static Dictionary<string, Window> File2Window { get; set; } = new Dictionary<string, Window>();
@@ -1249,7 +1250,9 @@ namespace WpfCSCS
         {
             UpdateVariable(widget, newValue);
             Control2Window.TryGetValue(widget, out Window win);
+            ActiveWindow = win;
             RunScript(funcName, win, new Variable(widgetName), newValue);
+            ActiveWindow = null;
         }
 
         //public bool skipSelectedDateChanged = false;
@@ -1379,7 +1382,7 @@ namespace WpfCSCS
                     }
                 }
             }
-
+            
             ValueUpdated(funcName, widgetName, widget, result);
         }
         
@@ -5959,6 +5962,7 @@ namespace WpfCSCS
 
         static Dictionary<string, Window> s_windows = new Dictionary<string, Window>();
         static Dictionary<string, string> s_windowType = new Dictionary<string, string>();
+        static Dictionary<string, string> s_typeWindow = new Dictionary<string, string>();
 
         static int s_currentWindow = -1;
 
@@ -5999,8 +6003,9 @@ namespace WpfCSCS
             Window wind = null;
             if (m_mode == MODE.NEW || m_mode == MODE.MODAL)
             {
-                var parentWin = Gui.GetParentWindow(script);
-                var currWin = Gui.GetScriptWindow(script);
+                var parentWin = Gui.ActiveWindow != null ? Gui.ActiveWindow : Gui.GetParentWindow(script);
+                parentWin = parentWin != null ? parentWin : Gui.GetScriptWindow(script);
+
                 var title = Utils.GetSafeString(args, 1);
                 var winMode = m_mode == MODE.NEW ? SpecialWindow.MODE.NORMAL : //SpecialWindow.MODE.SPECIAL_MODAL;
                     parentWin == CSCS_GUI.MainWindow ? SpecialWindow.MODE.MODAL : SpecialWindow.MODE.SPECIAL_MODAL;
@@ -6011,7 +6016,8 @@ namespace WpfCSCS
 
             if (!s_windows.TryGetValue(instanceName, out wind))
             {
-                if (!s_windowType.TryGetValue(instanceName, out string windName) ||
+                if ((!s_windowType.TryGetValue(instanceName, out string windName) &&
+                     !s_typeWindow.TryGetValue(instanceName, out windName)) ||
                     !s_windows.TryGetValue(windName, out wind))
                 {
                     throw new ArgumentException("Couldn't find window [" + instanceName + "]");
@@ -6047,8 +6053,8 @@ namespace WpfCSCS
         public SpecialWindow CreateNew(string instanceName, Window parentWin = null,
             SpecialWindow.MODE winMode = SpecialWindow.MODE.NORMAL, ParsingScript script = null)
         {
-            var isMain = ChainFunction.CheckParentScriptIsMain(script);
-            winMode = isMain ? SpecialWindow.MODE.NORMAL : SpecialWindow.MODE.MODAL;
+            //var isMain = ChainFunction.CheckParentScriptIsMain(script);
+            //winMode = isMain ? SpecialWindow.MODE.NORMAL : SpecialWindow.MODE.MODAL;
             SpecialWindow modalwin = new SpecialWindow(Gui, instanceName, winMode, parentWin);
             //winMode != SpecialWindow.MODE.NORMAL ? parentWin : null);
             var wind = modalwin.Instance;
@@ -6056,6 +6062,7 @@ namespace WpfCSCS
             var tag = wind.Tag.ToString();
             s_windows[tag] = wind;
             s_windowType[instanceName] = tag;
+            s_typeWindow[tag] = instanceName;
             s_currentWindow = 0;
 
             string cscsFilename = script == null ? "" : script.Filename;

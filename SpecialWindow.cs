@@ -95,9 +95,9 @@ namespace WpfCSCS
             Instance = CreateWindow(filename);
 
             IsMain = CSCS_GUI.MainWindow == null;
-            if (!IsMain)
+            if (!IsMain && mode != MODE.NORMAL)
             {
-                Instance.Owner = CSCS_GUI.MainWindow;
+                Instance.Owner = owner != null ? owner : CSCS_GUI.MainWindow;
             }
             s_windowCache[Instance] = this;
 
