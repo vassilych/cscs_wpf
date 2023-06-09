@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Interop;
 using System.Xml;
 
@@ -85,6 +86,26 @@ namespace WpfCSCS
             }
         }
 
+        private void showProperties(object obj)
+        {
+            //IInputElement focusedControl = FocusManager.GetFocusedElement();
+            UIElement elementWithFocus = Keyboard.FocusedElement as UIElement;
+            
+            string toDisplay = "";
+            if (elementWithFocus is FrameworkElement)
+            {
+                //DataContext
+                toDisplay += "Bound variable: " + (elementWithFocus as FrameworkElement).DataContext?.ToString();
+                
+                //Name
+
+
+            }
+
+            if(toDisplay.Length > 0)
+                MessageBox.Show(toDisplay);
+        }
+
         public SpecialWindow(CSCS_GUI gui, string filename, MODE mode = MODE.NORMAL, Window owner = null)
         {
             Mode = mode;
@@ -94,10 +115,17 @@ namespace WpfCSCS
             Gui = gui;
             Instance = CreateWindow(filename);
 
+            
+            var ib = new InputBinding(
+                new ShiftF9Command((object arg1) => { return true; }, showProperties),
+                new KeyGesture(Key.F9, ModifierKeys.Shift));
+            Instance.InputBindings.Add(ib);
+
+
             IsMain = CSCS_GUI.MainWindow == null;
-            if (!IsMain)
+            if (!IsMain && mode != MODE.NORMAL)
             {
-                Instance.Owner = CSCS_GUI.MainWindow;
+                Instance.Owner = owner != null ? owner : CSCS_GUI.MainWindow;
             }
             s_windowCache[Instance] = this;
 
@@ -236,6 +264,7 @@ namespace WpfCSCS
                 //Owner.Hide();
             }
         }
+
         private void Win_Unloaded(object sender, RoutedEventArgs e)
         {
             Window win = sender as Window;
@@ -348,4 +377,33 @@ namespace WpfCSCS
             return newInstance;
         }
     }
+
+    public class ShiftF9Command : ICommand
+    {
+        private readonly Predicate<object> _canExecute;
+        private readonly Action<object> _execute;
+
+        public ShiftF9Command(Predicate<object> canExecute, Action<object> execute)
+        {
+            _canExecute = canExecute;
+            _execute = execute;
+        }
+
+        public event EventHandler CanExecuteChanged
+        {
+            add => CommandManager.RequerySuggested += value;
+            remove => CommandManager.RequerySuggested -= value;
+        }
+
+        public bool CanExecute(object parameter)
+        {
+            return _canExecute(parameter);
+        }
+
+        public void Execute(object parameter)
+        {
+            _execute(parameter);
+        }
+    }
+
 }

@@ -156,10 +156,6 @@ function mainMenuWindow_OnDisplay(){
     
     AddMenuSeparator("ChartsDC");
 
-    AddMenuItem("ChartsDC", "WKPRDASH2.cscs", "WKPRDASH2", "runScript");
-   
-    AddMenuSeparator("ChartsDC");
-
     AddMenuItem("ChartsDC", "testPieChart.cscs", "testPieChart", "runScript");
    
     //------- OTHER -----------------------------
@@ -343,6 +339,14 @@ function mainMenuWindow_OnDisplay(){
     AddMenuSeparator("OtherDC");
 
     AddMenuItem("OtherDC", "testModalWindow.cscs", "testModalWindow", "runScript");
+    
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "NewBindSQL2.cscs", "NewBindSQL2", "runScript");
+    
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "nonExistingVarInEvent.cscs", "nonExistingVarInEvent", "runScript");
     
 
     //----- IVAN -------------------------------  

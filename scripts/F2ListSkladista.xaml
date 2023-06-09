@@ -49,8 +49,7 @@
                                         Width="36">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <wcl:ASGridCell FieldName="PKMK_SKL_CODE_arr"
-                                            HorizontalContentAlignment="Left" />
+                            <TextBox Tag="PKMK_SKL_CODE" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -58,8 +57,7 @@
                                         Width="209">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <wcl:ASGridCell FieldName="PKMK_SKL_NAZIV_arr"
-                                            HorizontalContentAlignment="Left" />
+                            <TextBox Tag="PKMK_SKL_NAZIV" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -120,12 +118,12 @@
                 </DataGridTemplateColumn> -->
             </DataGrid.Columns>
         </DataGrid>
-        <wcl:ASNavigator Name="NavigatorSkl"
+        <!-- <wcl:ASNavigator Name="NavigatorSkl"
                          HorizontalAlignment="Left"
                          VerticalAlignment="Top"
                          Height="32"
                          Width="152"
-                         Margin="142,326,0,0" />
+                         Margin="142,326,0,0" /> -->
         <Button HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Height="32"
@@ -169,21 +167,34 @@
                            HorizontalAlignment="Center" />
             </Grid>
         </Button>
-        <wcl:ASNumericBox HorizontalAlignment="Left"
-                          VerticalAlignment="Top"
-                          FontWeight="Bold"
-                          ButtonSize="0"
-                          Dec="0"
-                          Height="21"
-                          Width="86"
-                          Margin="4,336,0,0"
-                          Name="neSearchSkl"
-                          Thousands="True"
-                          Background="White"
-                          Foreground="Black"
-                          FontFamily="Arial"
-                          FontSize="15"
-                          TabIndex="1" />
+        <wcl:ASEnterBox HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        FontWeight="Bold"
+                        ButtonSize="0"
+                        Height="21"
+                        Width="86"
+                        Margin="4,336,0,0"
+                        Name="ebSearchSklSifra"
+                        FieldName="searchSklSifra"
+                        Background="White"
+                        Foreground="Black"
+                        FontFamily="Arial"
+                        FontSize="15"
+                        TabIndex="1" />
+        <wcl:ASEnterBox HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        FontWeight="Bold"
+                        ButtonSize="0"
+                        Height="21"
+                        Width="150"
+                        Margin="95,336,0,0"
+                        Name="ebSearchSklNaziv"
+                        FieldName="searchSklNaziv"
+                        Background="White"
+                        Foreground="Black"
+                        FontFamily="Arial"
+                        FontSize="15"
+                        TabIndex="1" />
         <Button HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Height="32"

@@ -1,3 +1,7 @@
+function testRadioButton_onStart(){
+    rb2 = true;
+}
+
 CreateWindow("../../scripts/testRadioButton.xaml");
 
 DEFINE rb1, rb2, rb3 type l;
