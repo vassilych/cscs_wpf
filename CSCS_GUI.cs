@@ -80,6 +80,8 @@ namespace SplitAndMerge
             interpreter.RegisterFunction(Constants.HORIZONTAL_BAR, new HorizontalBarFunction());
             
             interpreter.RegisterFunction(Constants.DUAL_LIST_EXEC, new DUAL_LIST_EXECFunction());
+            
+            interpreter.RegisterFunction(Constants.GET_SELECTED_GRID_ROW, new GetSelectedGridRowFunction());
 
 
             interpreter.RegisterFunction("OpenFile", new OpenFileFunction(false));
@@ -281,6 +283,8 @@ namespace SplitAndMerge
         public const string HORIZONTAL_BAR = "HorizontalBar";
 
         public const string DUAL_LIST_EXEC = "DUAL_LIST_EXEC";
+
+        public const string GET_SELECTED_GRID_ROW = "GetSelectedGridRow";
         
         public const string CHART = "Chart";
         public const string PIE_CHART = "PieChart";
@@ -1810,11 +1814,35 @@ namespace WpfCSCS
             //        Variable.EmptyInstance, GetScript(win));
             //}
         }
-        
+
+        public Dictionary<string, List<object>> gridsSelectedRow = new Dictionary<string, List<object>>();
+
         private void Widget_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var widget = sender as Selector;
             var widgetName = GetWidgetName(widget);
+
+            if(widget is DataGrid)
+            {
+                try
+                {
+                    var dg = widget as DataGrid;
+
+                    var row = new List<object>();
+
+                    foreach (KeyValuePair<string, object> kvp in (dg.SelectedItem as ExpandoObject))
+                    {
+                        row.Add(kvp.Value);
+                    }
+
+                    gridsSelectedRow[widget.Name.ToLower()] = row;
+                }
+                catch (Exception ex)
+                {
+                    
+                }
+            }
+
             if (m_selChangedHandlers.TryGetValue(widgetName, out string funcName))
             {
                 var item = e.AddedItems.Count > 0 ? e.AddedItems[0].ToString() : e.RemovedItems.Count > 0 ? e.RemovedItems[0].ToString() : "";
@@ -2540,7 +2568,7 @@ namespace WpfCSCS
                             }
                             catch (Exception ex)
                             {
-                                MessageBox.Show("Vassili help needed");
+                                //MessageBox.Show("Vassili help needed");
                             }
                         }
                     }
@@ -3604,7 +3632,7 @@ namespace WpfCSCS
                 for (int i = 1; i < sqlResult.Tuple.Count; i++)
                 {
                     var data = sqlResult.Tuple[i];
-                    data.Tuple.RemoveAt(0);
+                    //data.Tuple.RemoveAt(0);
                     dynamic row = new ExpandoObject();
                     for (int j = 0; j < dg.Columns.Count; j++)
                     {
@@ -4738,6 +4766,35 @@ namespace WpfCSCS
             //    }
             //}
 
+            return Variable.EmptyInstance;
+        }
+    }
+    
+    class GetSelectedGridRowFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            var gui = CSCS_GUI.GetInstance(script);
+
+            var widgetName = Utils.GetSafeString(args, 0);
+            var widget = gui.GetWidget(widgetName);
+
+            if(widget is DataGrid)
+            {
+                Variable resultArray = new Variable();
+                resultArray.Type = Variable.VarType.ARRAY;
+                resultArray.Tuple = new List<Variable>();
+                foreach (var item in gui.gridsSelectedRow[widgetName.ToLower()])
+                {
+                    resultArray.Tuple.Add(new Variable(item));
+                }
+
+                return resultArray;
+            }
+            
             return Variable.EmptyInstance;
         }
     }
@@ -7103,10 +7160,12 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
 
                 foreach(string groupBox in CSCS_GUI.GroupBoxesAndRadioButtons.Keys)
                 {
-                    if(CSCS_GUI.GroupBoxesAndRadioButtons[groupBox].Any(p=>p == m_name.ToLower()))
+                    var firstRBName = CSCS_GUI.GroupBoxesAndRadioButtons[groupBox].FirstOrDefault(p => gui.GetWidget(p).DataContext.ToString().ToLower() == m_name.ToLower());
+                    if(firstRBName != null)
+                    //if (CSCS_GUI.GroupBoxesAndRadioButtons[groupBox].Any(p=> gui.GetWidget(p).DataContext.ToString().ToLower() == m_name.ToLower()))
                     {
-                        var widget = gui.Controls.First(p => (string)p.Value.DataContext == m_name.ToLower());
-                        var widget2 = gui.GetWidget(widget.Key.ToLower());
+                        //var widget = gui.Controls.First(p => (string)p.Value.DataContext == m_name.ToLower());
+                        var widget2 = gui.GetWidget(firstRBName.ToLower());
 
                         if(widget2 is RadioButton)
                         {

@@ -1,0 +1,9 @@
+MessageBox("asdasd");
+
+CreateWindow("../../scripts/nonExistingVarInEvent.xaml");
+
+function btn1@clicked(){
+    MessageBox("hello!");
+    MessageBox(varX);
+    MessageBox("never gets here.")
+}

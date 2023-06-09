@@ -1,0 +1,27 @@
+CreateWindow("../../scripts/NewBindSQL2.xaml");
+
+DEFINE selectedSifraArtikla type a size 50;
+selectedSifraArtikla = "sadasd";
+
+//NewBindSQL("grid1", "select ARTI_ARTIKL, ARTI_NAZIV, id from nkmkarti");
+
+function btnF2@clicked(){
+    f2win = ModalWindow("../../scripts/NewBindSQL2F2Window.xaml");
+    NewBindSQL("grid1", "select ARTI_ARTIKL, ARTI_NAZIV, id from nkmkarti");
+}
+
+// function grid1@doubleClick(){
+//     selectedArray = GetSelectedGridRow("grid1");
+//     MessageBox(selectedArray);
+// }
+
+function btn1@clicked(){
+    selectedArray = GetSelectedGridRow("grid1");
+
+    MessageBox(selectedArray[0]);
+
+    selectedSifraArtikla = selectedArray[0];
+
+    CloseWindow(f2win);
+}
+
