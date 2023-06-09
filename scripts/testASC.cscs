@@ -1,0 +1,5 @@
+result = ASC("A");
+MessageBox(result);
+result = ASC("a");
+MessageBox(result);
+quit;

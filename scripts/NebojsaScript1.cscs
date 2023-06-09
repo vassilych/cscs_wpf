@@ -1,0 +1,16 @@
+
+result = FFILE("data??id*", "f");
+MessageBox(result);
+result = FFILE("data??id*", "n");
+MessageBox(result);
+result = FFILE("data??id*", "n");
+MessageBox(result);
+
+
+result = FFILE("arm64\lib*", "f");
+MessageBox(result);
+result = FFILE("d:\winx\tasrun*", "f");
+MessageBox(result);
+
+
+quit;

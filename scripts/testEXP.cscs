@@ -1,0 +1,4 @@
+result = EXP(5);
+MessageBox(result);
+
+quit;

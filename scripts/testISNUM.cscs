@@ -1,0 +1,9 @@
+result = ISNUM('1SAMPLE');
+MessageBox(result);
+result = ISNUM('!SAMPLE');
+MessageBox(result);
+result = ISNUM('sAMPLE');
+MessageBox(result);
+result = ISNUM('1aSAMPLE');
+MessageBox(result);
+quit;
