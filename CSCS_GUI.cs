@@ -6,12 +6,14 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Drawing.Printing;
 using System.Dynamic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,6 +27,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using WpfControlsLibrary;
 using WpfCSCS;
+
 using static WpfCSCS.Btrieve;
 
 namespace SplitAndMerge
@@ -82,6 +85,34 @@ namespace SplitAndMerge
             interpreter.RegisterFunction(Constants.DUAL_LIST_EXEC, new DUAL_LIST_EXECFunction());
             
             interpreter.RegisterFunction(Constants.GET_SELECTED_GRID_ROW, new GetSelectedGridRowFunction());
+
+            interpreter.RegisterFunction(Constants.FFILE, new FFILEFunction());
+            interpreter.RegisterFunction(Constants.LIKE, new LIKEFunction());
+            interpreter.RegisterFunction(Constants.PARSEFILE, new PARSEFILEFunction());
+            interpreter.RegisterFunction(Constants.LCHR, new LCHRFunction());
+            interpreter.RegisterFunction(Constants.ISUP, new ISUPFunction());
+            interpreter.RegisterFunction(Constants.ISNUM, new ISNUMFunction());
+            interpreter.RegisterFunction(Constants.ISLO, new ISLOFunction());
+            interpreter.RegisterFunction(Constants.ISAL, new ISALFunction());
+            interpreter.RegisterFunction(Constants.PRINTER_NAME, new PRINTER_NAMEFunction());
+            interpreter.RegisterFunction(Constants.DELF, new DELFFunction());
+            interpreter.RegisterFunction(Constants.BELL, new BELLFunction());
+            interpreter.RegisterFunction(Constants.CDOW, new CDOWFunction());
+            interpreter.RegisterFunction(Constants.CEIL, new CEILFunction());
+            interpreter.RegisterFunction(Constants.CPATH, new CPATHFunction());
+            interpreter.RegisterFunction(Constants.CHR, new CHRFunction());
+            interpreter.RegisterFunction(Constants.CMNTH, new CMNTHFunction());
+            interpreter.RegisterFunction(Constants.DIR_EXISTS, new DIR_EXISTSFunction());
+            interpreter.RegisterFunction(Constants.DEC, new DECFunction());
+            interpreter.RegisterFunction(Constants.LOC, new LOCFunction());
+            interpreter.RegisterFunction(Constants.ELOC, new ELOCFunction());
+            interpreter.RegisterFunction(Constants.ASC, new ASCFunction());
+            interpreter.RegisterFunction(Constants.EXP, new EXPFunction());
+            interpreter.RegisterFunction(Constants.INT, new INTFunction());
+            interpreter.RegisterFunction(Constants.DOM, new DOMFunction());
+            interpreter.RegisterFunction(Constants.DSPCE, new DSPCEFunction());
+            interpreter.RegisterFunction(Constants.HEX, new HEXFunction());
+            interpreter.RegisterFunction(Constants.REGEDIT, new REGEDITFunction());
 
 
             interpreter.RegisterFunction("OpenFile", new OpenFileFunction(false));
@@ -206,6 +237,9 @@ namespace SplitAndMerge
         public const string YEAR = "Year";
         public const string DOM = "DOM";
         public const string DOW = "DOW";
+        public const string DSPCE = "DSPCE";
+        public const string HEX = "HEX";
+        public const string REGEDIT = "REGEDIT";
 
         public const string FLERR = "Flerr";
 
@@ -283,6 +317,30 @@ namespace SplitAndMerge
         public const string HORIZONTAL_BAR = "HorizontalBar";
 
         public const string DUAL_LIST_EXEC = "DUAL_LIST_EXEC";
+
+        public const string LIKE = "LIKE";
+        public const string FFILE = "FFILE";
+        public const string PARSEFILE = "PARSEFILE";
+        public const string LCHR = "LCHR";
+        public const string ISUP = "ISUP";
+        public const string ISLO = "ISLO";
+        public const string ISNUM = "ISNUM";
+        public const string PRINTER_NAME = "PRINTER_NAME";
+        public const string DELF = "DELF";
+        public const string BELL = "BELL";
+        public const string CDOW = "CDOW";
+        public const string CEIL = "CEIL";
+        public const string CPATH = "CPATH";
+        public const string CHR = "CHR";
+        public const string CMNTH = "CMNTH";
+        public const string DIR_EXISTS = "DIR_EXISTS";
+        public const string ELOC = "ELOC";
+        public const string LOC = "LOC";
+        public const string DEC = "DEC";
+        public const string ASC = "ASC";
+        public const string EXP = "EXP";
+        public const string INT = "INT";
+        public const string ISAL = "ISAL";
 
         public const string GET_SELECTED_GRID_ROW = "GetSelectedGridRow";
         
@@ -4770,35 +4828,568 @@ namespace WpfCSCS
         }
     }
     
-    class GetSelectedGridRowFunction : ParserFunction
+    class FFILEFunction : ParserFunction
     {
+        List<string> fileEntries = null;
+        int index = 0;
+        string pattern = null;
+        string directory = null;
+        
         protected override Variable Evaluate(ParsingScript script)
         {
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 1, m_name);
 
-            var gui = CSCS_GUI.GetInstance(script);
+            var temp = Utils.GetSafeString(args, 0);
 
-            var widgetName = Utils.GetSafeString(args, 0);
-            var widget = gui.GetWidget(widgetName);
 
-            if(widget is DataGrid)
+            if (temp != pattern)
             {
-                Variable resultArray = new Variable();
-                resultArray.Type = Variable.VarType.ARRAY;
-                resultArray.Tuple = new List<Variable>();
-                foreach (var item in gui.gridsSelectedRow[widgetName.ToLower()])
+                pattern = temp;
+                index = 0;
+                directory = null;
+                if ((pattern.Contains("\\") || pattern.Contains("/")) && pattern.ToArray()[1] == ':')
                 {
-                    resultArray.Tuple.Add(new Variable(item));
-                }
+                    var dir = pattern.Substring(0, pattern.Length - pattern.LastIndexOf("\\")-1);
+                    pattern = pattern.Substring(pattern.LastIndexOf("\\")+1);
+                    directory = dir;
 
-                return resultArray;
+                }
+                else if ((pattern.Contains("\\") || pattern.Contains("/")) && pattern.ToArray()[1] != ':')
+                {
+                    var dir = pattern.Substring(0, pattern.Length - pattern.LastIndexOf("\\"));
+                    pattern = pattern.Substring(pattern.LastIndexOf("\\") + 1);
+                    directory = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, dir);
+                    if (directory.StartsWith("\\"))
+                    {
+                        directory.Remove(1, 1);
+                    }
+                }
+                else
+                    directory = System.AppDomain.CurrentDomain.BaseDirectory;
+
+                if(Directory.Exists(directory))
+                    fileEntries = Directory.GetFiles(directory, pattern).ToList();
+                else
+                    return Variable.EmptyInstance;
             }
-            
+            var secondArg = Utils.GetSafeString(args, 1).ToLower(); 
+            if (fileEntries.Count < 1)
+            {
+                return Variable.EmptyInstance;
+            }
+            if (secondArg == "f")
+            {
+               return new Variable(Path.GetFileName(fileEntries[0]));
+            }
+            else if (secondArg == "n")
+            {
+                index++;
+                if(fileEntries.Count <= index)
+                    return Variable.EmptyInstance;
+                return new Variable(Path.GetFileName( fileEntries[index]));
+            }
+            else
+             return Variable.EmptyInstance;
+        }
+    }
+    class PARSEFILEFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 2, m_name);
+            var path = Utils.GetSafeString(args, 0);
+            var naredba = Utils.GetSafeString(args, 1);
+            switch (naredba.ToLower())
+            {
+                case "pfpath":
+                    path = Path.GetDirectoryName(path) + "\\";
+                    return new Variable(path);
+                    break;
+                case "pfname":
+                    return new Variable(Path.GetFileNameWithoutExtension(path));
+                    break; 
+                case "pfext":
+                    path = path.Remove(0, 1);
+                    return new Variable(Path.GetExtension(path));
+                    break;
+                default:
+                    return Variable.EmptyInstance;
+                    break;
+            }
             return Variable.EmptyInstance;
         }
     }
+    class PRINTER_NAMEFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            PrinterSettings settings = new PrinterSettings();
+            return new Variable(settings.PrinterName);
+        }
+    }
+    class DELFFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var path = Utils.GetSafeString(args, 0);
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+            return Variable.EmptyInstance;
+        }
+    }
+    class BELLFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            System.Media.SystemSounds.Beep.Play();
+            return Variable.EmptyInstance;
+        }
+    }
+    class CDOWFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var dateVariable = Utils.GetSafeVariable(args, 0);
 
+            return new Variable(dateVariable.DateTime.DayOfWeek.ToString());
+        }
+    }
+    class CEILFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var numberVariable = Utils.GetSafeDouble(args, 0);
+            return new Variable(Math.Ceiling(numberVariable));
+        }
+    }
+    class CHRFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var numberVariable = Utils.GetSafeDouble(args, 0);
+
+            return new Variable(((char)numberVariable).ToString());
+        }
+    }
+    class CMNTHFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var dateVariable = Utils.GetSafeVariable(args, 0);
+
+            return new Variable(dateVariable.DateTime.ToString("MMMM"));
+        }
+    } 
+    class DIR_EXISTSFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var dir = Utils.GetSafeString(args, 0);
+            if(Directory.Exists(dir))
+             return new Variable(true);
+            else
+                return new Variable(false);
+        }
+    }
+    class DECFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var num = Utils.GetSafeDouble(args, 0);
+            return new Variable(--num);
+        }
+    }
+    class HEXFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var num = Utils.GetSafeInt(args, 0);
+            //byte[] bytes = BitConverter.he(num);
+            //return new Variable(BitConverter.ToString(bytes));
+            //decimal aaa= (decimal)num;
+            //decimal aaa= Convert.ToInt64(num, 16)
+            return new Variable(num.ToString("X"));
+        }
+    }
+    class EXPFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var num = Utils.GetSafeDouble(args, 0);
+            return new Variable(num*num);
+        }
+    }
+    class INTFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var num = Utils.GetSafeDouble(args, 0);
+            return new Variable((int)num);
+        }
+    }
+    class ISALFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var rijec = Utils.GetSafeString(args, 0);
+            return new Variable(Char.IsLetter(rijec, 0));
+        }
+    }
+    class ISLOFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var rijec = Utils.GetSafeString(args, 0);
+            return new Variable(Char.IsLower(rijec, 0));
+        }
+    } 
+    class ISNUMFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var rijec = Utils.GetSafeString(args, 0);
+            return new Variable(Char.IsNumber(rijec, 0));
+        }
+    }
+    class LCHRFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var rijec = Utils.GetSafeString(args, 0);
+            var param = Utils.GetSafeString(args,1);
+            if(string.IsNullOrEmpty (param) || param.ToUpper() == "C")
+            {
+                var temp = rijec.TrimEnd();
+                var x = temp[temp.Length - 1];
+                return new Variable(x.ToString());
+            }
+            return new Variable(rijec.TrimEnd().Count());
+        }
+    }
+    class LIKEFunction : ParserFunction
+    {
+        bool IsMatchRegex(string str, string pat, char singleWildcard, char multipleWildcard)
+        {
+
+            string escapedSingle = Regex.Escape(new string(singleWildcard, 1));
+            string escapedMultiple = Regex.Escape(new string(multipleWildcard, 1));
+
+            pat = Regex.Escape(pat);
+            pat = pat.Replace(escapedSingle, ".");
+            pat = "^" + pat.Replace(escapedMultiple, ".*") + "$";
+
+            Regex reg = new Regex(pat);
+
+            return reg.IsMatch(str);
+
+        }
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 2, m_name);
+            var rijec1 = Utils.GetSafeString(args, 0);
+            var rijec2 = Utils.GetSafeString(args,1);
+           
+            return new Variable(IsMatchRegex(rijec2, rijec1,'?','*'));
+        }
+    }
+    class ISUPFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var rijec = Utils.GetSafeString(args, 0);
+            return new Variable(Char.IsUpper(rijec, 0));
+        }
+    }
+    class ASCFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var chr = Utils.GetSafeString(args, 0);
+            if(chr.Length != 1)
+            {
+                return Variable.EmptyInstance;
+            }
+            else
+            {
+                    return new Variable((int)chr.First());
+            }
+        }
+    }
+    class ELOCFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 2, m_name);
+            var fieldToCheckFor = Utils.GetSafeString(args, 0);
+            var fieldToCheckWithin = Utils.GetSafeString(args, 1);
+            var startPos = Utils.GetSafeInt(args, 2);
+            var numChars = Utils.GetSafeInt(args, 3);
+            var ignoreCase = Utils.GetSafeString(args, 4);
+            if (ignoreCase.ToLower() == "t")
+            {
+                ignoreCase = "true";
+            }
+            if (ignoreCase.ToLower() == "f")
+            {
+                ignoreCase = "false";
+            }
+            if (string.IsNullOrEmpty(fieldToCheckFor) || string.IsNullOrEmpty(fieldToCheckWithin))
+                return new Variable(0);
+
+            if (startPos <  0 || startPos > fieldToCheckWithin.Length)
+                startPos = fieldToCheckWithin.Length;
+            if (startPos > 0)
+                startPos++;
+            if (numChars < 0 || numChars > fieldToCheckWithin.Length - startPos)
+                numChars = fieldToCheckWithin.Length - startPos ;
+
+            string substringToFind = fieldToCheckFor;
+            string substringToSearchWithin = "";
+            if (numChars == 0)
+            {
+                substringToSearchWithin = fieldToCheckWithin.Substring(0, fieldToCheckWithin.Length - startPos);
+            }
+            else
+            {
+                substringToSearchWithin = fieldToCheckWithin.Substring(fieldToCheckWithin.Length - startPos - numChars, numChars);
+            }
+            bool ign = false;
+            Boolean.TryParse(ignoreCase, out ign);
+            if (ign)
+            {
+                substringToFind = substringToFind.ToLower();
+                substringToSearchWithin = substringToSearchWithin.ToLower();
+            }
+
+            int index = substringToSearchWithin.LastIndexOf(substringToFind);
+
+            if (index >= 0)
+                return new Variable(index+1);
+
+            return new Variable(0);
+        }
+    }
+    class LOCFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 2, m_name);
+            var fieldToCheckFor = Utils.GetSafeString(args, 0);
+            var fieldToCheckWithin = Utils.GetSafeString(args, 1);
+            var startPos = Utils.GetSafeInt(args, 2);
+            var numChars = Utils.GetSafeInt(args, 3);
+            var ignoreCase = Utils.GetSafeString(args, 4);
+            if (ignoreCase.ToLower() == "t")
+            {
+                ignoreCase = "true";
+            }
+            if (ignoreCase.ToLower() == "f")
+            {
+                ignoreCase = "false";
+            }
+            if (string.IsNullOrEmpty(fieldToCheckFor) || string.IsNullOrEmpty(fieldToCheckWithin))
+                return new Variable(0);
+
+            if (startPos < 0 || startPos > fieldToCheckWithin.Length)
+                startPos = 0;
+            if (startPos > 0)
+                startPos--;
+            if (numChars < 0 || numChars > fieldToCheckWithin.Length - startPos)
+                numChars = fieldToCheckWithin.Length - startPos;
+
+            string substringToFind = fieldToCheckFor;
+            string substringToSearchWithin = "";
+            if (numChars == 0)
+            {
+                substringToSearchWithin = fieldToCheckWithin.Substring(startPos, fieldToCheckWithin.Length - startPos);
+            }
+            else
+            {
+                substringToSearchWithin = fieldToCheckWithin.Substring(startPos, numChars);
+            }
+            bool ign = false;
+            Boolean.TryParse(ignoreCase, out ign);
+            if (ign)
+            {
+                substringToFind = substringToFind.ToLower();
+                substringToSearchWithin = substringToSearchWithin.ToLower();
+            }
+
+            int index = substringToSearchWithin.IndexOf(substringToFind);
+
+            if (index >= 0)
+                return new Variable(index + 1);
+
+            return new Variable(0);
+        }
+    }
+    class DSPCEFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            foreach (DriveInfo drive in DriveInfo.GetDrives())
+            {
+                var tmp = System.AppDomain.CurrentDomain.BaseDirectory.Substring(0,3);
+                if (drive.IsReady && drive.Name.ToLower() ==tmp.ToLower() )
+                {
+                    return new Variable(drive.TotalFreeSpace);;
+                }
+            }
+            return Variable.EmptyInstance;
+        }
+    }
+    class CPATHFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var numberVariable = Utils.GetSafeDouble(args, 0);
+            return new Variable(System.AppDomain.CurrentDomain.BaseDirectory);
+        }
+    }
+    class REGEDITFunction : ParserFunction, INumericFunction
+    {
+        private bool canStart = false;
+        private string path = "";
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count,1, m_name, false);
+            var va0 = Utils.GetSafeString(args, 0);
+            var sekcija_path = Utils.GetSafeString(args, 1);
+            var polje = Utils.GetSafeString(args, 2);
+            var vrijednost = Utils.GetSafeString(args, 3);
+            
+            
+            switch (va0.ToLower())
+            {
+                case "regopen":
+                    path = sekcija_path;
+                    if (polje.ToLower() == "rtFile".ToLower() && !File.Exists(sekcija_path))
+                    {
+                        return new Variable(false);
+                    }
+                    using (var fs = File.Open(sekcija_path, FileMode.Open))
+                    {
+                        canStart = fs.CanWrite;
+                            return new Variable(canStart);
+                    }
+                    break;
+                case "regreadint":
+                    if(!canStart)
+                        return new Variable(false);
+                    var tmp = new IniFileUtil(path).Read(polje, sekcija_path);
+                    return new Variable(int.Parse( tmp));
+                case "regreadstr":
+                    if (!canStart)
+                        return new Variable(false);
+                    var tmp1 = new IniFileUtil(path).Read(polje, sekcija_path);
+                    return new Variable(tmp1);
+                case "regreadbool":
+                    if (!canStart)
+                        return new Variable(false);
+                    var tmp2 = new IniFileUtil(path).Read(polje, sekcija_path);
+                    return new Variable(bool.Parse( tmp2));
+                case "regwriteint":
+                    if (!canStart )
+                        return new Variable(false);
+                    new IniFileUtil(path).Write(polje, vrijednost.ToString(), sekcija_path);
+                    return new Variable(true);
+                case "regwritestr":
+                    if (!canStart)
+                        return new Variable(false);
+                    new IniFileUtil(path).Write(polje, vrijednost.ToString(), sekcija_path);
+                    return new Variable(true);
+                case "regwritebool":
+                    if (!canStart)
+                        return new Variable(false);
+                    new IniFileUtil(path).Write(polje, vrijednost.ToString(), sekcija_path);
+                    return new Variable(true);
+                case "regdelete":
+                    new IniFileUtil(path).DeleteSection( sekcija_path);
+                    return new Variable(true);
+                case "regclose":
+                    return new Variable(true);
+                default:
+                    return new Variable(false);
+            }
+            return new Variable(false);
+        }
+        public override string Description()
+        {
+            return "Returns the natural (base e) logarithm of a specified number.";
+        }
+    }
+  
+  class GetSelectedGridRowFunction : ParserFunction
+{
+	protected override Variable Evaluate(ParsingScript script)
+    {
+        List<Variable> args = script.GetFunctionArgs();
+        Utils.CheckArgs(args.Count, 1, m_name)
+		
+		var gui = CSCS_GUI.GetInstance(script);
+
+        var widgetName = Utils.GetSafeString(args, 0);
+        var widget = gui.GetWidget(widgetName);
+
+        if(widget is DataGrid)
+        {
+            Variable resultArray = new Variable();
+            resultArray.Type = Variable.VarType.ARRAY;
+            resultArray.Tuple = new List<Variable>();
+            foreach (var item in gui.gridsSelectedRow[widgetName.ToLower()])
+            {
+                resultArray.Tuple.Add(new Variable(item));
+            }
+
+            return resultArray;
+        }
+        
+        return Variable.EmptyInstance;
+    }
+}
+  
     class OpenFileFunction : ParserFunction
     {
         bool m_getFileContents;

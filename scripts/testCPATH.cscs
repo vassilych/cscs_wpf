@@ -1,0 +1,4 @@
+result = CPATH();
+MessageBox(result);
+
+quit;

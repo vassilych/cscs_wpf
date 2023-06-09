@@ -237,6 +237,7 @@
     <Compile Include="CSCS\InterpreterManagerInstance.cs" />
     <Compile Include="CSCS\InterpreterManagerModule.cs" />
     <Compile Include="Excel.cs" />
+    <Compile Include="IniFileUtil.cs" />
     <Compile Include="Locking.cs" />
     <Compile Include="NavigatorClass.cs" />
     <Compile Include="Reporting.cs" />

@@ -1,0 +1,7 @@
+result = LCHR("sAMPLE    ","c");
+MessageBox(result);
+result = LCHR("sAMPLE    ");
+MessageBox(result);
+result = LCHR("sAMPLE    ","l");
+MessageBox(result);
+quit;

@@ -1,0 +1,4 @@
+result = DOM();
+MessageBox(result);
+
+quit;

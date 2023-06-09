@@ -1,0 +1,10 @@
+result = ELOC("CD", "ABCDEFGHCDIJ");
+MessageBox(result);
+result = ELOC("CD","ABCDEFGHCDIJ",3);
+MessageBox(result);
+result = ELOC("G","ABCDEFGHCDIJ", 3, 2);
+MessageBox(result);
+result = ELOC("g","ABCDEFGHCDIJ", 3, 2, "f");
+MessageBox(result);
+
+quit;

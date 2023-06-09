@@ -1,0 +1,5 @@
+result = ISUP('sAMPLE');
+MessageBox(result);
+result = ISUP('SAMPLE');
+MessageBox(result);
+quit;

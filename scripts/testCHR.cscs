@@ -1,0 +1,4 @@
+result = CHR(66);
+MessageBox(result);
+
+quit;

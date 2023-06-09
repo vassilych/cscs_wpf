@@ -58,6 +58,9 @@ function mainMenuWindow_OnDisplay(){
     
     AddMenuSeparator("ScriptsDC");
     AddMenuItem("ScriptsDC", "IvanDC", "Ivan");
+    
+    AddMenuSeparator("ScriptsDC");
+    AddMenuItem("ScriptsDC", "NebojsaDC", "Nebojsa");
 
     //------------ BTRIEVE ------------------------
 
@@ -363,7 +366,37 @@ function mainMenuWindow_OnDisplay(){
     AddMenuSeparator("IvanDC");
 
     AddMenuItem("IvanDC", "wlistf_primjer.cscs", "wlistf_primjer", "runScript");    
-    //------ WLISTM ------------------------------
+    //----- NEBOJSA -------------------------------  
+
+    AddMenuItem("NebojsaDC", "NebojsaScript1.cscs", "NebojsaScript1", "runScript");
+    AddMenuItem("NebojsaDC", "testParseFile.cscs", "testParseFile", "runScript");
+    AddMenuItem("NebojsaDC", "testPrinter_Name.cscs", "testPrinter_Name", "runScript");
+    AddMenuItem("NebojsaDC", "testDELF.cscs", "testDELF", "runScript");
+    AddMenuItem("NebojsaDC", "testBELL.cscs", "testBELL", "runScript");
+    AddMenuItem("NebojsaDC", "testCDOW.cscs", "testCDOW", "runScript");
+    AddMenuItem("NebojsaDC", "testCEIL.cscs", "testCEIL", "runScript");
+    AddMenuItem("NebojsaDC", "testCPATH.cscs", "testCPATH", "runScript");
+    AddMenuItem("NebojsaDC", "testCHR.cscs", "testCHR", "runScript");
+    AddMenuItem("NebojsaDC", "testCMNTH.cscs", "testCMNTH", "runScript");
+    AddMenuItem("NebojsaDC", "testDOM.cscs", "testDOM", "runScript");
+    AddMenuItem("NebojsaDC", "testDSPCE.cscs", "testDSPCE", "runScript");
+    AddMenuItem("NebojsaDC", "testDIR_EXISTS.cscs", "testDIR_EXISTS", "runScript");
+    AddMenuItem("NebojsaDC", "testDEC.cscs", "testDEC", "runScript");
+    AddMenuItem("NebojsaDC", "testASC.cscs", "testASC", "runScript");
+    AddMenuItem("NebojsaDC", "testELOC.cscs", "testELOC", "runScript");
+    AddMenuItem("NebojsaDC", "testLOC.cscs", "testLOC", "runScript");
+    AddMenuItem("NebojsaDC", "testEXP.cscs", "testEXP", "runScript");
+    AddMenuItem("NebojsaDC", "testHEX.cscs", "testHEX", "runScript");
+    AddMenuItem("NebojsaDC", "testINT.cscs", "testINT", "runScript");
+    AddMenuItem("NebojsaDC", "testISAL.cscs", "testISAL", "runScript");
+    AddMenuItem("NebojsaDC", "testISLO.cscs", "testISLO", "runScript");
+    AddMenuItem("NebojsaDC", "testISNUM.cscs", "testISNUM", "runScript");
+    AddMenuItem("NebojsaDC", "testISUP.cscs", "testISUP", "runScript");
+    AddMenuItem("NebojsaDC", "testLCHR.cscs", "testLCHR", "runScript");
+    AddMenuItem("NebojsaDC", "testLIKE.cscs", "testLIKE", "runScript");
+    AddMenuItem("NebojsaDC", "testLOG.cscs", "testLOG", "runScript");
+    AddMenuItem("NebojsaDC", "REGEDIT.cscs", "REGEDIT", "runScript");
+
 
     //----------------------   
 }

@@ -1,0 +1,4 @@
+result = CEIL(-2,36);
+MessageBox(result);
+
+quit;

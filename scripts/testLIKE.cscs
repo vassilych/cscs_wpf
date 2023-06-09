@@ -1,0 +1,12 @@
+result = LIKE("sAMPLE","sAMPLE");
+MessageBox(result);
+result = LIKE("sAMPLE ","sAMPLE");
+MessageBox(result);
+result = LIKE("SAMPLE","sAMPLE");
+MessageBox(result);
+result = LIKE("S*","sAMPLE");
+MessageBox(result);
+result = LIKE("s*","sAMPLE");
+MessageBox(result);
+result = LIKE("sA???E","sAMPLE");
+MessageBox(result);

@@ -1,0 +1,4 @@
+result = INT(110.77);
+MessageBox(result);
+
+quit;
