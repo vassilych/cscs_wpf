@@ -667,6 +667,34 @@ namespace WpfCSCS
             Excel.Init(Interpreter);
             NavigatorClassInstance.Init(Interpreter);
             CommandsInstance.Init(this);
+
+            LoadCompilerConstantsTxt();
+        }
+
+        private void LoadCompilerConstantsTxt()
+        {
+            var lines = File.ReadLines(Path.Combine(Directory.GetCurrentDirectory(), "CompilerConstants.txt"));
+            foreach (var line in lines)
+            {
+                if(line.StartsWith("{") || line.StartsWith(";") || line.Trim().Count() == 0)
+                {
+                    continue;
+                }
+
+                var lineParts = line.Split('=');
+                if(lineParts.Count() != 2)
+                {
+                    continue;
+                }
+
+                DefineVariable newDefVar = new DefineVariable(lineParts[0], lineParts[1], "i", 3, 0);
+
+                if(int.TryParse(lineParts[1], out int parsed))
+                {
+                    Variable newVar = new Variable(parsed);
+                    newDefVar.InitVariable(newVar, this);
+                }                
+            }
         }
 
         private static void InterpreterCreated(object sender, EventArgs e)
@@ -5360,35 +5388,35 @@ namespace WpfCSCS
             return "Returns the natural (base e) logarithm of a specified number.";
         }
     }
-  
-  class GetSelectedGridRowFunction : ParserFunction
-{
-	protected override Variable Evaluate(ParsingScript script)
+
+    class GetSelectedGridRowFunction : ParserFunction
     {
-        List<Variable> args = script.GetFunctionArgs();
-        Utils.CheckArgs(args.Count, 1, m_name)
-		
-		var gui = CSCS_GUI.GetInstance(script);
-
-        var widgetName = Utils.GetSafeString(args, 0);
-        var widget = gui.GetWidget(widgetName);
-
-        if(widget is DataGrid)
+        protected override Variable Evaluate(ParsingScript script)
         {
-            Variable resultArray = new Variable();
-            resultArray.Type = Variable.VarType.ARRAY;
-            resultArray.Tuple = new List<Variable>();
-            foreach (var item in gui.gridsSelectedRow[widgetName.ToLower()])
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            var gui = CSCS_GUI.GetInstance(script);
+
+            var widgetName = Utils.GetSafeString(args, 0);
+            var widget = gui.GetWidget(widgetName);
+
+            if (widget is DataGrid)
             {
-                resultArray.Tuple.Add(new Variable(item));
+                Variable resultArray = new Variable();
+                resultArray.Type = Variable.VarType.ARRAY;
+                resultArray.Tuple = new List<Variable>();
+                foreach (var item in gui.gridsSelectedRow[widgetName.ToLower()])
+                {
+                    resultArray.Tuple.Add(new Variable(item));
+                }
+
+                return resultArray;
             }
 
-            return resultArray;
+            return Variable.EmptyInstance;
         }
-        
-        return Variable.EmptyInstance;
     }
-}
   
     class OpenFileFunction : ParserFunction
     {

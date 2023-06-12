@@ -94,15 +94,29 @@ namespace WpfCSCS
             string toDisplay = "";
             if (elementWithFocus is FrameworkElement)
             {
-                //DataContext
-                toDisplay += "Bound variable: " + (elementWithFocus as FrameworkElement).DataContext?.ToString();
-                
                 //Name
+                //?
+                toDisplay += "Widget name: " + "(not implemented)"; //(elementWithFocus as FrameworkElement).Name + "(?)";
 
+                var varName = (elementWithFocus as FrameworkElement).DataContext?.ToString();
 
+                //DataContext
+                toDisplay += "\nBound variable name: " + varName;
+
+                if(Gui.DEFINES.TryGetValue(varName.ToLower(), out DefineVariable defVar))
+                {
+                    //VarType and VarSize
+                    toDisplay += "\nBound variable type: " + defVar.DefType.ToLower();
+                    toDisplay += "\nBound variable size: " + defVar.Size;
+                }
+                else
+                {
+                    toDisplay += "(not DEFINEd)";
+                }
+                
             }
 
-            if(toDisplay.Length > 0)
+            if (toDisplay.Length > 0)
                 MessageBox.Show(toDisplay);
         }
 
