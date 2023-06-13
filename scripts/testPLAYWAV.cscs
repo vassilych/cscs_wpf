@@ -1,0 +1,3 @@
+result =PLAYWAV("d:\temp\camerashutter.wav");
+
+//MessageBox(result);

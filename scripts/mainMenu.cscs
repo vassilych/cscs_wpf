@@ -395,7 +395,11 @@ function mainMenuWindow_OnDisplay(){
     AddMenuItem("NebojsaDC", "testLCHR.cscs", "testLCHR", "runScript");
     AddMenuItem("NebojsaDC", "testLIKE.cscs", "testLIKE", "runScript");
     AddMenuItem("NebojsaDC", "testLOG.cscs", "testLOG", "runScript");
-    AddMenuItem("NebojsaDC", "REGEDIT.cscs", "REGEDIT", "runScript");
+    AddMenuItem("NebojsaDC", "testREGEDIT.cscs", "testREGEDIT", "runScript");
+    AddMenuItem("NebojsaDC", "testFILE_STORE.cscs", "testFILE_STORE", "runScript");
+    AddMenuItem("NebojsaDC", "testPLAYWAV.cscs", "testPLAYWAV", "runScript");
+    AddMenuItem("NebojsaDC", "testWAIT.cscs", "testWAIT", "runScript");
+    AddMenuItem("NebojsaDC", "testEmail.cscs", "testEmail", "runScript");
 
 
     //----------------------   

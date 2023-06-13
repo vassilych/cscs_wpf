@@ -1,0 +1,23 @@
+CreateWindow("../../scripts/testEmail.xaml");
+
+function btn1@clicked(){
+    MessageBox(emlSendMsg);
+    EMAIL("test","aaaa", "memobox1");
+}
+function btn2@clicked(){
+    test = Strings("memobox1", "", stGetText, "neki tekst\nasdkljhasd\n");   
+     MessageBox(test);    
+}
+function sendButtonPop@clicked(){
+    test = Strings("memobox1", "", stGetText, "neki tekst\nasdkljhasd\n");
+    EMAIL(emlSendMsg, "memobox1");   
+     MessageBox(test);    
+}
+
+
+function testEmail_onStart(){
+    Strings("memobox1", "", stSetText, "neki tekst\nasdkljhasd\n");              
+          
+    @memobox1.text="gfdhbgd";
+}
+
