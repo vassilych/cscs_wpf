@@ -1,0 +1,5 @@
+MessageBox(stLoad);
+
+result =XPATH();
+
+MessageBox(result);

@@ -99,6 +99,9 @@ namespace SplitAndMerge
             interpreter.RegisterFunction(Constants.BELL, new BELLFunction());
             interpreter.RegisterFunction(Constants.CDOW, new CDOWFunction());
             interpreter.RegisterFunction(Constants.CEIL, new CEILFunction());
+            interpreter.RegisterFunction(Constants.XPATH, new XPATHFunction());
+            interpreter.RegisterFunction(Constants.PLAYWAV, new PLAYWAVFunction());
+            interpreter.RegisterFunction(Constants.FILE_STORE, new FILE_STOREFunction());
             interpreter.RegisterFunction(Constants.CPATH, new CPATHFunction());
             interpreter.RegisterFunction(Constants.CHR, new CHRFunction());
             interpreter.RegisterFunction(Constants.CMNTH, new CMNTHFunction());
@@ -113,6 +116,7 @@ namespace SplitAndMerge
             interpreter.RegisterFunction(Constants.DSPCE, new DSPCEFunction());
             interpreter.RegisterFunction(Constants.HEX, new HEXFunction());
             interpreter.RegisterFunction(Constants.REGEDIT, new REGEDITFunction());
+            interpreter.RegisterFunction(Constants.EMAIL, new EMAILFunction());
 
 
             interpreter.RegisterFunction("OpenFile", new OpenFileFunction(false));
@@ -240,6 +244,7 @@ namespace SplitAndMerge
         public const string DSPCE = "DSPCE";
         public const string HEX = "HEX";
         public const string REGEDIT = "REGEDIT";
+        public const string EMAIL = "EMAIL";
 
         public const string FLERR = "Flerr";
 
@@ -331,6 +336,9 @@ namespace SplitAndMerge
         public const string CDOW = "CDOW";
         public const string CEIL = "CEIL";
         public const string CPATH = "CPATH";
+        public const string XPATH = "XPATH";
+        public const string PLAYWAV = "PLAYWAV";
+        public const string FILE_STORE = "FILE_STORE";
         public const string CHR = "CHR";
         public const string CMNTH = "CMNTH";
         public const string DIR_EXISTS = "DIR_EXISTS";
@@ -687,13 +695,16 @@ namespace WpfCSCS
                     continue;
                 }
 
-                DefineVariable newDefVar = new DefineVariable(lineParts[0], lineParts[1], "i", 3, 0);
+                //DefineVariable newDefVar = new DefineVariable(lineParts[0], lineParts[0], "a", 300, 0);
 
-                if(int.TryParse(lineParts[1], out int parsed))
-                {
-                    Variable newVar = new Variable(parsed);
-                    newDefVar.InitVariable(newVar, this);
-                }                
+                //if(int.TryParse(lineParts[1], out int parsed))
+                //{
+                //    Variable newVar = new Variable(parsed);
+                //    newDefVar.InitVariable(newVar, this);
+                //}                
+                
+                DefineVariable newDefVar = new DefineVariable(lineParts[0], null, "a", 300, 0);
+                newDefVar.InitVariable(new Variable(lineParts[0]), this);
             }
         }
 
@@ -5310,8 +5321,78 @@ namespace WpfCSCS
         protected override Variable Evaluate(ParsingScript script)
         {
             List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 0, m_name);
+            return new Variable(System.AppDomain.CurrentDomain.BaseDirectory);
+        }
+    }
+    class XPATHFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 0, m_name);
+            return new Variable(System.AppDomain.CurrentDomain.BaseDirectory);
+        }
+    }
+    class PLAYWAVFunction : ParserFunction
+    { 
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 1, m_name);
-            var numberVariable = Utils.GetSafeDouble(args, 0);
+            var wav = Utils.GetSafeString(args, 0);
+            if (File.Exists(wav))
+            {
+                System.Media.SoundPlayer player = new System.Media.SoundPlayer(wav);
+                player.Play();
+            }
+          
+            return Variable.EmptyInstance;
+        }
+    }
+    class FILE_STOREFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count,2, m_name);
+
+            var gui = script.Context as CSCS_GUI;
+
+            var destinationVarName = Utils.GetSafeString(args, 0);
+            var sourceVarName = Utils.GetSafeString(args, 1);
+            var operation = Utils.GetSafeString(args, 2);
+            if (string.IsNullOrEmpty(operation))
+            {
+                operation = "fsimport";
+            }
+            switch (operation.ToLower())
+            {
+                case "fsimport":
+                    if (!File.Exists(sourceVarName))
+                    {
+                        return new Variable(false);
+                    }
+                    destinationVarName = File.ReadAllText(sourceVarName);
+                    if (gui.DEFINES.TryGetValue(sourceVarName.ToLower(), out DefineVariable defVarSource))
+                    {
+                        if (gui.DEFINES.TryGetValue(destinationVarName.ToLower(), out DefineVariable defVarDest))
+                        {
+                            defVarDest.InitVariable(new Variable(defVarSource.String), gui);
+                        }
+                    }
+                    break;
+                case "fsemport":
+                    // code block
+                    break;
+                case "fscopy":
+                    // code block
+                    break;
+                default:
+                    // code block
+                    break;
+            }
+
             return new Variable(System.AppDomain.CurrentDomain.BaseDirectory);
         }
     }
@@ -5386,6 +5467,243 @@ namespace WpfCSCS
         public override string Description()
         {
             return "Returns the natural (base e) logarithm of a specified number.";
+        }
+    }
+    
+    class EMAILFunction : ParserFunction
+    {
+        private bool PosaljiMail(string podaci)
+        {
+            var to = IzvuciTo(podaci);
+            var subject = IzvuciSubject(podaci);
+            var body = IzvuciBody(podaci);
+            var cc = IzvucCC(podaci);
+            var bcc = IzvucBCC(podaci);
+            var atch = IzvucATCH(podaci);
+            return true;
+        }
+
+        private List<string> IzvuciTo(string podaci)
+        {
+            bool pocetak = false;
+            string adrese = null;
+            using (StringReader reader = new StringReader(podaci))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    line = line.Trim();
+                    if (line.ToLower().StartsWith(@"\") )
+                    {
+                        pocetak = false;
+                    }
+                    if (pocetak)
+                    {
+                        adrese += line;
+                    }
+                    if (line.ToLower().StartsWith(@"\to"))
+                    {
+                        pocetak = true;
+                    }
+                  
+                }
+            }
+           return adrese.Split(',').ToList();
+
+        }
+        private List<string> IzvuciSubject(string podaci)
+        {
+            bool pocetak = false;
+            string adrese = null;
+            using (StringReader reader = new StringReader(podaci))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    line = line.Trim();
+                    if (line.ToLower().StartsWith(@"\"))
+                    {
+                        pocetak = false;
+                    }
+                    if (pocetak)
+                    {
+                        adrese += line;
+                    }
+                    if (line.ToLower().StartsWith(@"\subject"))
+                    {
+                        pocetak = true;
+                    }
+
+                }
+            }
+            return adrese.Split(',').ToList();
+
+        }
+        private string IzvuciBody(string podaci)
+        {
+            bool pocetak = false;
+            string body = null;
+            using (StringReader reader = new StringReader(podaci))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (line.TrimStart().ToLower().StartsWith(@"\"))
+                    {
+                        pocetak = false;
+                    }
+                    if (pocetak)
+                    {
+                        body += line + System.Environment.NewLine;
+                    }
+                    if (line.TrimStart().ToLower().StartsWith(@"\body"))
+                    {
+                        pocetak = true;
+                    }
+
+                }
+            }
+            return body;
+
+        }
+        private List<string> IzvucCC(string podaci)
+        {
+            bool pocetak = false;
+            string adrese = null;
+            using (StringReader reader = new StringReader(podaci))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    line = line.Trim();
+                    if (line.ToLower().StartsWith(@"\"))
+                    {
+                        pocetak = false;
+                    }
+                    if (pocetak)
+                    {
+                        adrese += line;
+                    }
+                    if (line.ToLower().StartsWith(@"\cc"))
+                    {
+                        pocetak = true;
+                    }
+
+                }
+            }
+            return adrese.Split(',').ToList();
+
+        }
+        private List<string> IzvucBCC(string podaci)
+        {
+            bool pocetak = false;
+            string adrese = null;
+            using (StringReader reader = new StringReader(podaci))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    line = line.Trim();
+                    if (line.ToLower().StartsWith(@"\"))
+                    {
+                        pocetak = false;
+                    }
+                    if (pocetak)
+                    {
+                        adrese += line;
+                    }
+                    if (line.ToLower().StartsWith(@"\bcc"))
+                    {
+                        pocetak = true;
+                    }
+
+                }
+            }
+            return adrese.Split(',').ToList();
+
+        }
+        private List<string> IzvucATCH(string podaci)
+        {
+            bool pocetak = false;
+            string adrese = null;
+            using (StringReader reader = new StringReader(podaci))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    line = line.Trim();
+                    if (line.ToLower().StartsWith(@"\"))
+                    {
+                        pocetak = false;
+                    }
+                    if (pocetak)
+                    {
+                        adrese += line;
+                    }
+                    if (line.ToLower().StartsWith(@"\attachments"))
+                    {
+                        pocetak = true;
+                    }
+
+                }
+            }
+            return adrese.Split(',').ToList();
+
+        }
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 2, m_name);
+
+            var gui = CSCS_GUI.GetInstance(script);
+
+            var option = Utils.GetSafeString(args, 0);
+            var podaci = Utils.GetSafeString(args, 1);
+            var widgetName = Utils.GetSafeString(args, 2);
+            switch (option.ToLower())
+            {
+                case "emlsendmsg":
+                    var widget1 = gui.GetWidget(podaci);
+                    if (widget1 is ASMemoBox)
+                    {
+                        var asmemobox = widget1 as ASMemoBox;
+                        return new Variable(PosaljiMail(asmemobox.Text));
+                    }
+                    return new Variable(false);
+                case "test":
+                    var widget = gui.GetWidget(widgetName);
+                    if (widget is ASMemoBox)
+                    {
+                        var asmemobox = widget as ASMemoBox;
+                        asmemobox.Text =
+        @"
+                    \TO
+                    nebojsa@aurasoft.hr, matija@aurasoft
+,sanja@aurasoft
+\CC
+                    lidija@aurasoft.hr
+,lorena@aurasoft
+  \BCC
+                    enzo@aurasoft.hr, boris@aurasoft
+                    \SUBJECT
+                    Nebki naslov
+                    \BODY
+                    neki text u body-u
+                    fsfvs fsdv skjsvsdv
+                    sdvsvs
+                    dvsdv ssdvs sd svf wsdv
+\Attachments
+d:\temp\aaa.txt, d:\temp\ggg.txt, 
+                    ";
+                        var text = asmemobox.Text;
+                    }
+                    break;
+                default:
+                    // code block
+                    break;
+            }
+           
+            return Variable.EmptyInstance;
         }
     }
 
