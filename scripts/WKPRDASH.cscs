@@ -259,11 +259,13 @@ function gbPripremi@clicked(){
 
     setCustomerDataGrid();
     setLast10InvoicesDataGrid();
+
     setTop10InvoicesDataGrid();
+
     setTop10Products();
 
 	setRegionPieChart();
-    
+
 	cursor("dflt");
 }
 
@@ -1511,7 +1513,7 @@ function setTop10Products(){
     define top10Art_ar type i size 2 array 10;
     define indexArt_ar type n size 4 dec 0 array 10;
     define ArtikliCntr type i size 2;
-	SQL_str  = "SET query_governor_cost_limit 150000;" ;
+	SQL_str  = "SET query_governor_cost_limit 500000;" ;
 	sql_str =  sql_str +  "WITH sales AS";
 	if ( bezPdvaField == true )
 	{
