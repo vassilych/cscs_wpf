@@ -270,6 +270,7 @@
     <Compile Include="CSCS\Utils.Parsing.cs" />
     <Compile Include="CSCS\Variable.cs" />
     <Compile Include="CSCS_GUI.cs" />
+    <Compile Include="TasFunctions.cs" />
     <Page Include="scripts\DefaultWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

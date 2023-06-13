@@ -1,7 +1,5 @@
 CreateWindow("../../scripts/WKPRDASH.xaml");
 
-MessageBox(stClear);
-
 Import("CSCS.Math");
 
 DEFINE skladiste type i size 3;
