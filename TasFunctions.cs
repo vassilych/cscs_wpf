@@ -6,6 +6,8 @@ using System.Drawing.Printing;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -1240,7 +1242,7 @@ namespace WpfCSCS
 
     class EMAILFunction : ParserFunction
     {
-        private bool PosaljiMail(string podaci)
+        private bool PripremiMail(string podaci, string outgoingServer, string password, string username, string senderMail, string senderUsername)
         {
             var to = IzvuciTo(podaci);
             var subject = IzvuciSubject(podaci);
@@ -1248,9 +1250,55 @@ namespace WpfCSCS
             var cc = IzvucCC(podaci);
             var bcc = IzvucBCC(podaci);
             var atch = IzvucATCH(podaci);
+            if (to.Contains(","))
+            {
+
+            }
+            else
+                return Salji(to.First(), "", subject, body, outgoingServer, username,password,cc,bcc);
+
             return true;
         }
+        public bool Salji(string adresaTo, string adresaFrom, string subject, string body, string outgoingServer , string username, string password, List<string> cc, List<string> bcc)
+        {
+            MailAddress to = new MailAddress(adresaTo);
+            MailAddress from = new MailAddress(adresaFrom);
 
+            MailMessage email = new MailMessage(from, to);
+            if (cc != null)
+            {
+                foreach (var item in cc)
+                {
+                    email.CC.Add(item);
+                }
+            }
+            if (bcc != null)
+            {
+                foreach (var item in bcc)
+                {
+                    email.Bcc.Add(item);
+                }
+            }
+            email.Subject = subject;
+            email.Body = body;
+
+            SmtpClient smtp = new SmtpClient();
+            smtp.Host = outgoingServer;
+            smtp.Port = 25;
+            smtp.Credentials = new NetworkCredential(username, password);
+            smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+            smtp.EnableSsl = true;
+
+            try
+            {
+                smtp.Send(email);
+                return true;
+            }
+            catch (SmtpException ex)
+            {
+                return false;
+            }
+        }
         private List<string> IzvuciTo(string podaci)
         {
             bool pocetak = false;
@@ -1261,7 +1309,7 @@ namespace WpfCSCS
                 while ((line = reader.ReadLine()) != null)
                 {
                     line = line.Trim();
-                    if (line.ToLower().StartsWith(@"\"))
+                    if (line.ToLower().StartsWith(@"\") )
                     {
                         pocetak = false;
                     }
@@ -1273,16 +1321,16 @@ namespace WpfCSCS
                     {
                         pocetak = true;
                     }
-
+                  
                 }
             }
-            return adrese.Split(',').ToList();
+           return adrese.Split(',').ToList();
 
         }
-        private List<string> IzvuciSubject(string podaci)
+        private string IzvuciSubject(string podaci)
         {
             bool pocetak = false;
-            string adrese = null;
+            string subject = null;
             using (StringReader reader = new StringReader(podaci))
             {
                 string line;
@@ -1295,7 +1343,7 @@ namespace WpfCSCS
                     }
                     if (pocetak)
                     {
-                        adrese += line;
+                        subject += line;
                     }
                     if (line.ToLower().StartsWith(@"\subject"))
                     {
@@ -1304,7 +1352,7 @@ namespace WpfCSCS
 
                 }
             }
-            return adrese.Split(',').ToList();
+            return subject;
 
         }
         private string IzvuciBody(string podaci)
@@ -1428,6 +1476,12 @@ namespace WpfCSCS
             var option = Utils.GetSafeString(args, 0);
             var podaci = Utils.GetSafeString(args, 1);
             var widgetName = Utils.GetSafeString(args, 2);
+            var saveAttachsFolder = Utils.GetSafeString(args,3);
+            var outgoingServer = Utils.GetSafeString(args,4);
+            var password = Utils.GetSafeString(args,5);
+            var username = Utils.GetSafeString(args,6);
+            var senderMail = Utils.GetSafeString(args,7);
+            var senderUsername = Utils.GetSafeString(args,8);
             switch (option.ToLower())
             {
                 case "emlsendmsg":
@@ -1435,7 +1489,7 @@ namespace WpfCSCS
                     if (widget1 is ASMemoBox)
                     {
                         var asmemobox = widget1 as ASMemoBox;
-                        return new Variable(PosaljiMail(asmemobox.Text));
+                        return new Variable(PripremiMail(asmemobox.Text, outgoingServer, password, username, senderMail, senderUsername));
                     }
                     return new Variable(false);
                 case "test":
@@ -1470,7 +1524,7 @@ d:\temp\aaa.txt, d:\temp\ggg.txt,
                     // code block
                     break;
             }
-
+           
             return Variable.EmptyInstance;
         }
     }

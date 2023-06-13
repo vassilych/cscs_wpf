@@ -10,7 +10,7 @@ function btn2@clicked(){
 }
 function sendButtonPop@clicked(){
     test = Strings("memobox1", "", stGetText, "neki tekst\nasdkljhasd\n");
-    EMAIL(emlSendMsg, "memobox1");   
+    EMAIL(emlSendMsg, "memobox1","","", "mail.aurasoft.hr", "H]$R7MKP#[2A", "ivan@aurasoft.hr", "ivan@aurasoft.hr", "ivan");   
      MessageBox(test);    
 }
 
