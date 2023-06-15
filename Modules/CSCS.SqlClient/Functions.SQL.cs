@@ -390,6 +390,7 @@ namespace SplitAndMerge
                     {
                         cmd.Parameters.AddRange(sp.ToArray());
                     }
+                    cmd.CommandTimeout = 60;
                     SqlDataAdapter dap = new SqlDataAdapter(cmd);
                     con.Open();
                     dap.Fill(table);
