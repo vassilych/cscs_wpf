@@ -237,6 +237,7 @@
     <Compile Include="CSCS\InterpreterManagerInstance.cs" />
     <Compile Include="CSCS\InterpreterManagerModule.cs" />
     <Compile Include="Excel.cs" />
+    <Compile Include="IniFileUtil.cs" />
     <Compile Include="Locking.cs" />
     <Compile Include="NavigatorClass.cs" />
     <Compile Include="Reporting.cs" />
@@ -269,6 +270,7 @@
     <Compile Include="CSCS\Utils.Parsing.cs" />
     <Compile Include="CSCS\Variable.cs" />
     <Compile Include="CSCS_GUI.cs" />
+    <Compile Include="TasFunctions.cs" />
     <Page Include="scripts\DefaultWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -281,11 +283,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="scripts\testEmail.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="scripts\Window2.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="scripts\Window3.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="scripts\WKPRDASH.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

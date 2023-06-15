@@ -102,7 +102,8 @@ namespace WpfControlsLibrary
 
                 BarFill.Width = Math.Abs(Width * BarWidth / 100);
                 InsideText.Text = Text;
-                InsideText.FontSize = FontSize;
+                if(FontSize != 0)
+                    InsideText.FontSize = FontSize;
 
 
 

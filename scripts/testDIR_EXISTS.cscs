@@ -1,0 +1,11 @@
+result = DIR_EXISTS("d:\winx");
+if(result)
+ {
+    
+    MessageBox("true");
+}
+else
+{
+     MessageBox("false");
+}
+quit;

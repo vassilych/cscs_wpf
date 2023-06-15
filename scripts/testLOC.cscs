@@ -1,0 +1,10 @@
+result = LOC("CD", "ABCDEFGHCDIJ");
+MessageBox(result);
+result = LOC("CD","ABCDEFGHCDIJ",3);
+MessageBox(result);
+result = LOC("G","ABCDEFGHCDIJ", 3, 7);
+MessageBox(result);
+result = LOC("g","ABCDEFGHCDIJ", 3, 7, "t");
+MessageBox(result);
+
+quit;

@@ -25,6 +25,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using WpfControlsLibrary;
 using WpfCSCS;
+
 using static WpfCSCS.Btrieve;
 
 namespace SplitAndMerge
@@ -45,13 +46,6 @@ namespace SplitAndMerge
     {
         public CscsGuiModuleInstance(Interpreter interpreter)
         {
-            interpreter.RegisterFunction(Constants.MAINMENU, new MAINMENUcommand());
-            interpreter.RegisterFunction(Constants.WINFORM, new WINFORMcommand(true));
-
-            interpreter.RegisterFunction(Constants.READ_XML_FILE, new ReadXmlFileFunction());
-            interpreter.RegisterFunction(Constants.READ_TAGCONTENT_FROM_XMLSTRING,
-                new ReadTagContentFromXmlStringFunction());
-
             interpreter.RegisterFunction(Constants.MSG, new VariableArgsFunction(true));
             interpreter.RegisterFunction(Constants.DEFINE, new VariableArgsFunction(true));
             interpreter.RegisterFunction(Constants.SET_OBJECT, new VariableArgsFunction(true));
@@ -68,19 +62,6 @@ namespace SplitAndMerge
 
             interpreter.RegisterFunction(Constants.WITH, new ConstantsFunction());
             interpreter.RegisterFunction(Constants.NEWRUNTIME, new ConstantsFunction());
-
-            interpreter.RegisterFunction(Constants.SET_FOCUS, new SetFocusFunction());
-            interpreter.RegisterFunction(Constants.LAST_OBJ, new LastObjFunction());
-            interpreter.RegisterFunction(Constants.LAST_OBJ_CLICKED, new LastObjClickedFunction());
-
-            interpreter.RegisterFunction(Constants.STRINGS, new StringsFunction());
-
-            interpreter.RegisterFunction(Constants.STATUS_BAR, new StatusBarFunction());
-            
-            interpreter.RegisterFunction(Constants.HORIZONTAL_BAR, new HorizontalBarFunction());
-            
-            interpreter.RegisterFunction(Constants.DUAL_LIST_EXEC, new DUAL_LIST_EXECFunction());
-
 
             interpreter.RegisterFunction("OpenFile", new OpenFileFunction(false));
             interpreter.RegisterFunction("OpenFileContents", new OpenFileFunction(true));
@@ -99,14 +80,6 @@ namespace SplitAndMerge
             interpreter.RegisterFunction("SetImage", new SetImageFunction());
 
             interpreter.RegisterFunction("DisplayArrFunc", new DisplayArrFuncFunction());
-
-            interpreter.RegisterFunction("FillOutGrid", new FillOutGridFunction());
-            interpreter.RegisterFunction("FillOutGridFromDB", new FillOutGridFunction(true));
-            interpreter.RegisterFunction("BindSQL", new BindSQLFunction());
-
-            interpreter.RegisterFunction("NewBindSQL", new NewBindSQLFunction());
-            
-            interpreter.RegisterFunction("WhoAmI", new WhoAmIFunction());
 
             interpreter.RegisterFunction("MessageBox", new MessageBoxFunction());
             interpreter.RegisterFunction("SendToPrinter", new PrintFunction());
@@ -204,6 +177,10 @@ namespace SplitAndMerge
         public const string YEAR = "Year";
         public const string DOM = "DOM";
         public const string DOW = "DOW";
+        public const string DSPCE = "DSPCE";
+        public const string HEX = "HEX";
+        public const string REGEDIT = "REGEDIT";
+        public const string EMAIL = "EMAIL";
 
         public const string FLERR = "Flerr";
 
@@ -277,10 +254,39 @@ namespace SplitAndMerge
         public const string STRINGS = "Strings";
 
         public const string STATUS_BAR = "StatusBar";
+        public const string GET_FILE = "GET_FILE";
 
         public const string HORIZONTAL_BAR = "HorizontalBar";
 
         public const string DUAL_LIST_EXEC = "DUAL_LIST_EXEC";
+
+        public const string LIKE = "LIKE";
+        public const string FFILE = "FFILE";
+        public const string PARSEFILE = "PARSEFILE";
+        public const string LCHR = "LCHR";
+        public const string ISUP = "ISUP";
+        public const string ISLO = "ISLO";
+        public const string ISNUM = "ISNUM";
+        public const string PRINTER_NAME = "PRINTER_NAME";
+        public const string DELF = "DELF";
+        public const string BELL = "BELL";
+        public const string CDOW = "CDOW";
+        public const string CPATH = "CPATH";
+        public const string XPATH = "XPATH";
+        public const string PLAYWAV = "PLAYWAV";
+        public const string FILE_STORE = "FILE_STORE";
+        public const string CHR = "CHR";
+        public const string CMNTH = "CMNTH";
+        public const string DIR_EXISTS = "DIR_EXISTS";
+        public const string ELOC = "ELOC";
+        public const string LOC = "LOC";
+        public const string DEC = "DEC";
+        public const string ASC = "ASC";
+        public const string EXP = "EXP";
+        public const string INT = "INT";
+        public const string ISAL = "ISAL";
+
+        public const string GET_SELECTED_GRID_ROW = "GetSelectedGridRow";
         
         public const string CHART = "Chart";
         public const string PIE_CHART = "PieChart";
@@ -307,56 +313,12 @@ namespace SplitAndMerge
 
 namespace WpfCSCS
 {
-    class ReadXmlFileFunction : ParserFunction
-    {
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            List<Variable> args = script.GetFunctionArgs();
-            Utils.CheckArgs(args.Count, 1, m_name);
-            var xmlPath = args[0];
-
-            string lala = xmlPath.AsString();
-
-            string xmlString = File.ReadAllText(lala);
-
-            return new Variable(xmlString);
-        }
-    }
-
-    class ReadTagContentFromXmlStringFunction : ParserFunction
-    {
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            List<Variable> args = script.GetFunctionArgs();
-            Utils.CheckArgs(args.Count, 2, m_name);
-            var xmlString = args[0];
-            var xmlTag = args[1];
-
-            return new Variable(ExtractTag(xmlString.AsString(), xmlTag.AsString()));
-        }
-
-        private string ExtractTag(string xml, string tag)
-        {
-            var start = xml.IndexOf("<" + tag + ">");
-            if (start < 0)
-            {
-                return "";
-            }
-            var wordStart = start + tag.Length + 2;
-            var end = xml.IndexOf("</" + tag + ">", wordStart);
-            if (end < 0)
-            {
-                return "";
-            }
-            var result = xml.Substring(wordStart, end - wordStart);
-            return result.Trim();
-        }
-    }
 
     public class CSCS_GUI
     {
         public NavigatorClass NavigatorClass { get; set; } = new NavigatorClass();
         public Btrieve Btrieve { get; set; } = new Btrieve();
+        public TasFunctions TasFunctions { get; set; } = new TasFunctions();
 
         public string LastObjWidgetName;
         public string LastObjClickedWidgetName;
@@ -513,6 +475,7 @@ namespace WpfCSCS
 
         internal CSCS_SQL SQLInstance { get; set; } = new CSCS_SQL();
         internal Btrieve BtrieveInstance { get; set; } = new Btrieve();
+        internal TasFunctions TasFunctionsInstance { get; set; } = new TasFunctions();
         internal Charts ChartsInstance { get; set; } = new Charts();
         internal NavigatorClass NavigatorClassInstance { get; set; } = new NavigatorClass();
         internal Commands CommandsInstance { get; set; } = new Commands();
@@ -600,11 +563,43 @@ namespace WpfCSCS
             FillDatabasesDictionary();
 
             BtrieveInstance.Init(this);
+            TasFunctionsInstance.Init(this);
             ChartsInstance.Init(this);
             ReportFunction.Init(Interpreter);
             Excel.Init(Interpreter);
             NavigatorClassInstance.Init(Interpreter);
             CommandsInstance.Init(this);
+
+            LoadCompilerConstantsTxt();
+        }
+
+        private void LoadCompilerConstantsTxt()
+        {
+            var lines = File.ReadLines(Path.Combine(Directory.GetCurrentDirectory(), "CompilerConstants.txt"));
+            foreach (var line in lines)
+            {
+                if(line.StartsWith("{") || line.StartsWith(";") || line.Trim().Count() == 0)
+                {
+                    continue;
+                }
+
+                var lineParts = line.Split('=');
+                if(lineParts.Count() != 2)
+                {
+                    continue;
+                }
+
+                //DefineVariable newDefVar = new DefineVariable(lineParts[0], lineParts[0], "a", 300, 0);
+
+                //if(int.TryParse(lineParts[1], out int parsed))
+                //{
+                //    Variable newVar = new Variable(parsed);
+                //    newDefVar.InitVariable(newVar, this);
+                //}                
+                
+                DefineVariable newDefVar = new DefineVariable(lineParts[0], null, "a", 300, 0);
+                newDefVar.InitVariable(new Variable(lineParts[0]), this);
+            }
         }
 
         private static void InterpreterCreated(object sender, EventArgs e)
@@ -1810,11 +1805,35 @@ namespace WpfCSCS
             //        Variable.EmptyInstance, GetScript(win));
             //}
         }
-        
+
+        public Dictionary<string, List<object>> gridsSelectedRow = new Dictionary<string, List<object>>();
+
         private void Widget_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var widget = sender as Selector;
             var widgetName = GetWidgetName(widget);
+
+            if(widget is DataGrid)
+            {
+                try
+                {
+                    var dg = widget as DataGrid;
+
+                    var row = new List<object>();
+
+                    foreach (KeyValuePair<string, object> kvp in (dg.SelectedItem as ExpandoObject))
+                    {
+                        row.Add(kvp.Value);
+                    }
+
+                    gridsSelectedRow[widget.Name.ToLower()] = row;
+                }
+                catch (Exception ex)
+                {
+                    
+                }
+            }
+
             if (m_selChangedHandlers.TryGetValue(widgetName, out string funcName))
             {
                 var item = e.AddedItems.Count > 0 ? e.AddedItems[0].ToString() : e.RemovedItems.Count > 0 ? e.RemovedItems[0].ToString() : "";
@@ -2515,7 +2534,7 @@ namespace WpfCSCS
                         if(item is RadioButton)
                         {
                             CacheControl(item as FrameworkElement, win, controls);
-                            if (!GroupBoxesAndRadioButtons.Any(p => p.Key == groupBox.Name.ToLower()))
+                            if (!GroupBoxesAndRadioButtons.Any(p => p.Key.ToLower() == groupBox.Name.ToLower()))
                                 GroupBoxesAndRadioButtons.Add(groupBox.Name, new List<string>());
                             if(!GroupBoxesAndRadioButtons[groupBox.Name].Any(p=> p == (item as RadioButton).Name.ToLower()))
                                 GroupBoxesAndRadioButtons[groupBox.Name].Add((item as RadioButton).Name.ToLower());
@@ -2540,7 +2559,7 @@ namespace WpfCSCS
                             }
                             catch (Exception ex)
                             {
-                                MessageBox.Show("Vassili help needed");
+                                //MessageBox.Show("Vassili help needed");
                             }
                         }
                     }
@@ -3271,382 +3290,6 @@ namespace WpfCSCS
         }
     }
 
-    class FillOutGridFunction : ParserFunction
-    {
-        bool m_fromDB;
-        public FillOutGridFunction(bool fromDB = false)
-        {
-            m_fromDB = fromDB;
-        }
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            List<Variable> args = script.GetFunctionArgs();
-            Utils.CheckArgs(args.Count, 1, m_name);
-
-            var widgetName = Utils.GetSafeString(args, 0);
-            var gui = CSCS_GUI.GetInstance(script);
-            var gridVar = VariableArgsFunction.GetDatagridData(gui, widgetName, out CSCS_GUI.WidgetData wd);
-            DataGrid dg = gridVar != null ? gridVar.Object as DataGrid : gui.GetWidget(widgetName) as DataGrid;
-            if (dg == null)
-            {
-                return Variable.EmptyInstance;
-            }
-
-            int maxElems = -1;
-            if (wd != null && !string.IsNullOrWhiteSpace(wd.maxElemsName))
-            {
-                var maxVar = gui.Interpreter.GetVariableValue(wd.maxElemsName);
-                maxElems = maxVar == null ? -1 : maxVar.AsInt();
-            }
-
-            ObservableCollection<Row> list = new ObservableCollection<Row>();
-            if (m_fromDB)
-            {
-                var tableName = Utils.GetSafeString(args, 1);
-                FillOutFromDB(dg, tableName, maxElems, list);
-            }
-            else
-            {
-                var firstCol = Utils.GetSafeVariable(args, 1);
-                var rows = firstCol.Tuple.Count;
-                for (int i = 0; i < rows && (maxElems < 0 || i < maxElems); i++)
-                {
-                    var row = new Row(list.Count);
-                    for (int j = 1; j < args.Count; j++)
-                    {
-                        var current = args[j].Tuple[i];
-                        if (current.Type == Variable.VarType.STRING)
-                        {
-                            row.AddCol(current.String);
-                        }
-                        else if (current.Type == Variable.VarType.NUMBER)
-                        {
-                            row.AddCol(current.AsBool());
-                        }
-
-                    }
-                    list.Add(row);
-                }
-            }
-            dg.ItemsSource = list;
-
-            if (wd != null)
-            {
-                wd.actualElems = dg.Items.Count;
-                wd.actualElemsVar = new Variable(wd.actualElems);
-                if (!string.IsNullOrWhiteSpace(wd.actualElemsName))
-                {
-                    gui.Interpreter.AddGlobal(wd.actualElemsName, new GetVarFunction(wd.actualElemsVar), false);
-                }
-            }
-
-            return new Variable(dg.Items.Count);
-        }
-        protected ObservableCollection<Row> FillOutFromDB(DataGrid dg, string tableName, int maxElems,
-            ObservableCollection<Row> list)
-        {
-            var query = "select * from " + tableName;
-            var sqlResult = SQLQueryFunction.GetData(query, tableName);
-
-            for (int i = 1; i < sqlResult.Tuple.Count && (maxElems < 0 || i <= maxElems); i++)
-            {
-                var data = sqlResult.Tuple[i];
-                var row = new Row(list.Count);
-                for (int j = 0; j < dg.Columns.Count; j++)
-                {
-                    //var column = dg.Columns[j] as DataGridTemplateColumn;
-                    var elem = data.Tuple[j];
-                    if (elem.Original == Variable.OriginalType.BOOL)
-                    {
-                        row.AddCol(elem.AsBool());
-                    }
-                    else
-                    {
-                        row.AddCol(elem.AsString());
-                    }
-                }
-                list.Add(row);
-            }
-            return list;
-        }
-
-        public class Row
-        {
-            int strIndex = 0;
-            int boolIndex = 0;
-            public int RowNumber { get; set; }
-
-            public Row(int rowNumber)
-            {
-                RowNumber = rowNumber;
-            }
-
-            public void AddCol(string str)
-            {
-                switch (strIndex)
-                {
-                    case 0: S1 = str; break;
-                    case 1: S2 = str; break;
-                    case 2: S3 = str; break;
-                    case 3: S4 = str; break;
-                    case 4: S5 = str; break;
-                    case 5: S6 = str; break;
-                    case 6: S7 = str; break;
-                    case 7: S8 = str; break;
-                    case 8: S9 = str; break;
-                    case 9: S10 = str; break;
-                }
-                strIndex++;
-            }
-            public void AddCol(bool b)
-            {
-                switch (boolIndex)
-                {
-                    case 0: B1 = b; break;
-                    case 1: B2 = b; break;
-                    case 2: B3 = b; break;
-                    case 3: B4 = b; break;
-                    case 4: B5 = b; break;
-                }
-                boolIndex++;
-            }
-            public string S1 { get; set; }
-            public string S2 { get; set; }
-            public string S3 { get; set; }
-            public string S4 { get; set; }
-            public string S5 { get; set; }
-            public string S6 { get; set; }
-            public string S7 { get; set; }
-            public string S8 { get; set; }
-            public string S9 { get; set; }
-            public string S10 { get; set; }
-            public bool B1 { get; set; }
-            public bool B2 { get; set; }
-            public bool B3 { get; set; }
-            public bool B4 { get; set; }
-            public bool B5 { get; set; }
-
-        }
-    }
-
-    class BindSQLFunction : ParserFunction
-    {
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            List<Variable> args = script.GetFunctionArgs();
-            Utils.CheckArgs(args.Count, 2, m_name);
-
-            var widgetName = Utils.GetSafeString(args, 0);
-            var gui = CSCS_GUI.GetInstance(script);
-            var widget = gui.GetWidget(widgetName);
-            if (widget == null)
-            {
-                return Variable.EmptyInstance;
-            }
-            var tableName = Utils.GetSafeString(args, 1);
-
-            if (widget is DataGrid)
-            {
-                var dg = widget as DataGrid;
-                dg.Items.Clear();
-                dg.Columns.Clear();
-                Variable columns = SQLColumnsFunction.GetColsData(tableName);
-                for (int i = 0; i < columns.Tuple.Count; i += 2)
-                {
-                    string label = columns.Tuple[i].AsString();
-                    DataGridTextColumn column = new DataGridTextColumn();
-                    column.Header = label;
-                    column.Binding = new Binding(label.Replace(' ', '_'));
-
-                    dg.Columns.Add(column);
-                }
-
-                var query = "select * from " + tableName;
-                var sqlResult = SQLQueryFunction.GetData(query, tableName);
-
-                for (int i = 1; i < sqlResult.Tuple.Count; i++)
-                {
-                    var data = sqlResult.Tuple[i];
-                    dynamic row = new ExpandoObject();
-                    for (int j = 0; j < dg.Columns.Count; j++)
-                    {
-                        var column = dg.Columns[j].Header.ToString();
-                        var val = data.Tuple.Count > j ? data.Tuple[j].AsString() : "";
-                        ((IDictionary<String, Object>)row)[column.Replace(' ', '_')] = val;
-                    }
-                    dg.Items.Add(row);
-                }
-                return new Variable(sqlResult.Tuple.Count);
-            }
-
-            return Variable.EmptyInstance;
-        }
-    }
-
-    class NewBindSQLFunction : ParserFunction
-    {
-        public static Dictionary<string, List<string>> gridsHeaders = new Dictionary<string, List<string>>();
-        public static Dictionary<string, List<string>> gridsTags = new Dictionary<string, List<string>>();
-        public static Dictionary<string, List<Variable.VarType>> gridsTypes = new Dictionary<string, List<Variable.VarType>>();
-
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            List<Variable> args = script.GetFunctionArgs();
-            Utils.CheckArgs(args.Count, 2, m_name);
-
-            var gui = CSCS_GUI.GetInstance(script);
-            var widgetName = Utils.GetSafeString(args, 0);
-            var widget = gui.GetWidget(widgetName);
-            if (widget == null)
-            {
-                return Variable.EmptyInstance;
-            }
-            var queryString = Utils.GetSafeString(args, 1);
-
-            if (widget is DataGrid)
-            {
-                var dg = widget as DataGrid;
-
-                //--------------------
-
-                if(!gridsHeaders.ContainsKey(widgetName.ToLower()))
-                    gridsHeaders[widgetName.ToLower()] = new List<string>();
-
-                if (!gridsTags.ContainsKey(widgetName.ToLower()))
-                    gridsTags[widgetName.ToLower()] = new List<string>();
-
-                if (!gridsTypes.ContainsKey(widgetName.ToLower()))
-                    gridsTypes[widgetName.ToLower()] = new List<Variable.VarType>();
-
-                var dgColumns = dg.Columns;
-                for (int i = 0; i < dgColumns.Count; i++)
-                {
-                    var column = dg.Columns.ElementAt(i);
-
-                    if (column is DataGridTemplateColumn)
-                    {
-                        var dgtc = column as DataGridTemplateColumn;
-
-                        var cell = dgtc.CellTemplate.LoadContent();
-
-                        gridsHeaders[widgetName.ToLower()].Add(dgtc.Header.ToString());
-
-                        if (cell is ASTimeEditer)
-                        {
-                            var te = cell as ASTimeEditer;
-                            if (te.Tag != null)
-                            {
-                                gridsTags[widgetName.ToLower()].Add(te.Tag.ToString());
-                                //tagsAndTypes.Add(te.Tag.ToString(), typeof(TimeSpan));
-                                //tagsAndHeaders.Add(te.Tag.ToString(), dgtc.Header.ToString());
-                                //timeAndDateEditerTagsAndSizes[te.Tag.ToString()] = te.DisplaySize;
-                            }
-                        }
-                        else if (cell is ASDateEditer)
-                        {
-                            var de = cell as ASDateEditer;
-                            if (de.Tag != null)
-                            {
-                                gridsTags[widgetName.ToLower()].Add(de.Tag.ToString());
-                                //tagsAndTypes.Add(de.Tag.ToString(), typeof(DateTime));
-                                //tagsAndHeaders.Add(de.Tag.ToString(), dgtc.Header.ToString());
-                                //timeAndDateEditerTagsAndSizes[de.Tag.ToString()] = de.DisplaySize;
-                            }
-                        }
-                        else if (cell is CheckBox)
-                        {
-                            var cb = cell as CheckBox;
-                            if (cb.Tag != null)
-                            {
-                                gridsTags[widgetName.ToLower()].Add(cb.Tag.ToString());
-                                //tagsAndTypes.Add(cb.Tag.ToString(), typeof(bool));
-                                //tagsAndHeaders.Add(cb.Tag.ToString(), dgtc.Header.ToString());
-                            }
-                        }
-                        else if (cell is TextBox)
-                        {
-                            var tb = cell as TextBox;
-                            if (tb.Tag != null)
-                            {
-                                gridsTags[widgetName.ToLower()].Add(tb.Tag.ToString());
-                                //tagsAndTypes.Add(tb.Tag.ToString(), typeof(string));
-                                //tagsAndHeaders.Add(tb.Tag.ToString(), dgtc.Header.ToString());
-                            }
-                        }
-                    }
-                }
-
-                //------------------
-
-                dg.Items.Clear();
-                dg.Columns.Clear();
-
-                //var query = "select * from " + tableName;
-                var sqlResult = SQLQueryFunction.GetData(queryString/*, tableName*/);
-
-                Variable columns = sqlResult.Tuple[0];
-                columns.Tuple.RemoveAll(p => p.String.ToLower() == "id");
-                for (int i = 0; i < columns.Tuple.Count; i += 1)
-                {
-                    string label = columns.Tuple[i].AsString();
-                    if (label.ToLower() == "id")
-                    {
-                        continue;
-                    }
-                    DataGridTextColumn column = new DataGridTextColumn();
-                    //column.Header = label;
-                    column.Header = gridsHeaders[widgetName.ToLower()][i];
-                    column.Binding = new Binding(label.Replace(' ', '_'));
-
-                    dg.Columns.Add(column);
-                }
-
-                for (int i = 1; i < sqlResult.Tuple.Count; i++)
-                {
-                    var data = sqlResult.Tuple[i];
-                    data.Tuple.RemoveAt(0);
-                    dynamic row = new ExpandoObject();
-                    for (int j = 0; j < dg.Columns.Count; j++)
-                    {
-                        gridsTypes[widgetName.ToLower()].Add(data.Tuple[j].Type);
-                        //var column = dg.Columns[j].Header.ToString();
-                        var column = gridsTags[widgetName.ToLower()][j];
-                        string val = "";
-                        if (data.Tuple[j].Type == Variable.VarType.DATETIME)
-                        {
-                            val = data.Tuple.Count > j ? data.Tuple[j].DateTime.ToString("dd/MM/yyyy") : "";
-                        }
-                        else
-                        {
-                            val = data.Tuple.Count > j ? data.Tuple[j].AsString() : "";
-                        }
-                        ((IDictionary<String, Object>)row)[column.Replace(' ', '_')] = val;
-                    }
-                    dg.Items.Add(row);
-                    Console.WriteLine(i);
-                }
-
-                return new Variable(sqlResult.Tuple.Count);
-            }
-
-            return Variable.EmptyInstance;
-        }
-    }
-    
-    class WhoAmIFunction : ParserFunction
-    {
-
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            List<Variable> args = script.GetFunctionArgs();
-            Utils.CheckArgs(args.Count, 0, m_name, true);
-
-            var gui = CSCS_GUI.GetInstance(script);
-                   
-            return new Variable(Path.GetFileNameWithoutExtension(script.Filename));
-        }
-    }
-
     public class RunExecFunction : ParserFunction
     {
         protected override Variable Evaluate(ParsingScript script)
@@ -4341,407 +3984,13 @@ namespace WpfCSCS
         }
     }
 
-
-    class SetFocusFunction : ParserFunction
-    {
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            List<Variable> args = script.GetFunctionArgs();
-            Utils.CheckArgs(args.Count, 1, m_name);
-
-            var gui = CSCS_GUI.GetInstance(script);
-            var widgetName = Utils.GetSafeString(args, 0);
-            var widget = gui.GetWidget(widgetName);
-            if (widget == null || !(widget is Control))
-            {
-                return Variable.EmptyInstance;
-            }
-            //CSCS_GUI.skipPostEvent = true;
-            widget.Focus();
-
-            return Variable.EmptyInstance;
-        }
-    }
-
-
-
-    class LastObjFunction : ParserFunction
-    {
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            List<Variable> args = script.GetFunctionArgs();
-            Utils.CheckArgs(args.Count, 0, m_name);
-
-            var gui = CSCS_GUI.GetInstance(script);
-            if (string.IsNullOrEmpty(gui.LastObjWidgetName))
-            {
-                return Variable.EmptyInstance;
-            }
-            else
-            {
-                return new Variable(gui.LastObjWidgetName);
-            }
-        }
-    }
-
-    class LastObjClickedFunction : ParserFunction
-    {
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            List<Variable> args = script.GetFunctionArgs();
-            Utils.CheckArgs(args.Count, 0, m_name);
-
-            var gui = CSCS_GUI.GetInstance(script);
-            if (string.IsNullOrEmpty(gui.LastObjClickedWidgetName))
-            {
-                return Variable.EmptyInstance;
-            }
-            else
-            {
-                return new Variable(gui.LastObjClickedWidgetName);
-            }
-        }
-    }
-
-    class StringsFunction : ParserFunction
-    {
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            List<Variable> args = script.GetFunctionArgs();
-            Utils.CheckArgs(args.Count, 1, m_name);
-
-            var gui = CSCS_GUI.GetInstance(script);
-
-            var widgetName = Utils.GetSafeString(args, 0);
-            var listName = Utils.GetSafeString(args, 1);
-            var option = Utils.GetSafeString(args, 2);
-            var argStr = Utils.GetSafeString(args, 3);
-            var argNum = Utils.GetSafeInt(args, 4);
-            //var arg3 = Utils.GetSafeString(args, 4);
-
-            var widget = gui.GetWidget(widgetName);
-            if (widget is ASMemoBox)
-            {
-                var mtb = widget as ASMemoBox;
-                List<string> lines = mtb.Text.Split('\n').ToList();
-
-                if (option == "stCount")
-                    return new Variable(lines.Count);
-                else if (option == "stGetLine")
-                {
-                    return new Variable(lines[argNum]);
-                }
-                else if (option == "stGetText")
-                {
-                    return new Variable(mtb.Text);
-                }
-                else if (option == "stSetLine")
-                {
-                    lines[argNum] = argStr;
-                    mtb.Text = string.Join("\n", lines);
-                    return Variable.EmptyInstance;
-                }
-                else if (option == "stSetText")
-                {
-                    mtb.Text = argStr;
-                    return Variable.EmptyInstance;
-                }
-                else if (option == "stClear")
-                {
-                    mtb.Text = "";
-                    return Variable.EmptyInstance;
-                }
-                else if (option == "stAddLine")
-                {
-                    lines.Add(argStr);
-                    mtb.Text = string.Join("\n", lines);
-                    return Variable.EmptyInstance;
-                }
-                else if (option == "stDelLine")
-                {
-                    lines.RemoveAt(argNum);
-                    mtb.Text = string.Join("\n", lines);
-                    return Variable.EmptyInstance;
-                }
-                else if (option == "stInsLine")
-                {
-                    lines.Insert(argNum, argStr);
-                    mtb.Text = string.Join("\n", lines);
-                    return Variable.EmptyInstance;
-                }
-                else if (option == "stLoad")
-                {
-                    string text = File.ReadAllText(argStr);
-                    mtb.Text = text;
-                    return Variable.EmptyInstance;
-                }
-                else if (option == "stSave")
-                {
-                    File.WriteAllText(argStr, mtb.Text);
-                    return Variable.EmptyInstance;
-                }
-                else if (option == "stSort")
-                {
-                    lines.Sort();
-                    mtb.Text = string.Join("\n", lines);
-                    return Variable.EmptyInstance;
-                }
-                else if (option == "stFind" || option == "stLocate")
-                {
-                    var index = Int32.MaxValue;
-                    index = lines.FindIndex(p => p == argStr);
-                    return new Variable(index);
-                }
-            }
-            else if (widget is ASDualListDialogHelper)
-            {
-                var dldh = widget as ASDualListDialogHelper;
-                List<string> leftLines = dldh.List1;
-                List<string> rightLines = dldh.List2;
-
-                if (option == "stAddLine")
-                {
-                    leftLines.Add(argStr);
-                    return Variable.EmptyInstance;
-                }
-                else if (option == "stGetLine")
-                {
-                    return new Variable(rightLines[argNum]);
-                }
-                else if (option == "stCount")
-                    return new Variable(rightLines.Count);
-                //else if (option == "stCount")
-                //    return new Variable(lines.Count);
-                //else if (option == "stGetLine")
-                //{
-                //    return new Variable(lines[argNum]);
-                //}
-                //else if (option == "stGetText")
-                //{
-                //    return new Variable(mtb.Text);
-                //}
-                //else if (option == "stSetLine")
-                //{
-                //    lines[argNum] = argStr;
-                //    mtb.Text = string.Join("\n", lines);
-                //    return Variable.EmptyInstance;
-                //}
-                //else if (option == "stSetText")
-                //{
-                //    mtb.Text = argStr;
-                //    return Variable.EmptyInstance;
-                //}
-                //else if (option == "stClear")
-                //{
-                //    mtb.Text = "";
-                //    return Variable.EmptyInstance;
-                //}
-                //else if (option == "stAddLine")
-                //{
-                //    lines.Add(argStr);
-                //    mtb.Text = string.Join("\n", lines);
-                //    return Variable.EmptyInstance;
-                //}
-                //else if (option == "stDelLine")
-                //{
-                //    lines.RemoveAt(argNum);
-                //    mtb.Text = string.Join("\n", lines);
-                //    return Variable.EmptyInstance;
-                //}
-                //else if (option == "stInsLine")
-                //{
-                //    lines.Insert(argNum, argStr);
-                //    mtb.Text = string.Join("\n", lines);
-                //    return Variable.EmptyInstance;
-                //}
-                //else if (option == "stLoad")
-                //{
-                //    string text = File.ReadAllText(argStr);
-                //    mtb.Text = text;
-                //    return Variable.EmptyInstance;
-                //}
-                //else if (option == "stSave")
-                //{
-                //    File.WriteAllText(argStr, mtb.Text);
-                //    return Variable.EmptyInstance;
-                //}
-                //else if (option == "stSort")
-                //{
-                //    lines.Sort();
-                //    mtb.Text = string.Join("\n", lines);
-                //    return Variable.EmptyInstance;
-                //}
-                //else if (option == "stFind" || option == "stLocate")
-                //{
-                //    var index = Int32.MaxValue;
-                //    index = lines.FindIndex(p => p == argStr);
-                //    return new Variable(index);
-                //}
-            }
-
-            return Variable.EmptyInstance;
-        }
-    }
-
-    class StatusBarFunction : ParserFunction
-    {
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            List<Variable> args = script.GetFunctionArgs();
-            Utils.CheckArgs(args.Count, 1, m_name);
-
-            var gui = CSCS_GUI.GetInstance(script);
-
-            var widgetName = Utils.GetSafeString(args, 0);
-            var position = Utils.GetSafeInt(args, 1);
-            var newText = Utils.GetSafeString(args, 2);
-
-            var widget = gui.GetWidget(widgetName);
-            if (widget is StatusBar)
-            {
-                var statusbar = widget as StatusBar;
-
-                var statusbarItems = statusbar.Items;
-
-                int x = 0;
-                for (int i = 0; i < statusbarItems.Count; i++)
-                {
-                    if (statusbarItems[i] is Separator)
-                        continue;
-
-                    if (position == x)
-                    {
-                        if (statusbar.Items[i] is StatusBarItem)
-                        {
-                            if ((statusbar.Items[i] as StatusBarItem).Content is TextBlock)
-                            {
-                                if (!string.IsNullOrEmpty(newText))
-                                    ((statusbar.Items[i] as StatusBarItem).Content as TextBlock).Text = newText;
-                                else
-                                    return new Variable(((statusbar.Items[i] as StatusBarItem).Content as TextBlock).Text);
-                            }
-                        }
-                        break;
-                    }
-                    else
-                    {
-                        x++;
-                    }
-                }
-            }
-
-            return Variable.EmptyInstance;
-        }
-    }
     
-    class HorizontalBarFunction : ParserFunction
-    {
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            List<Variable> args = script.GetFunctionArgs();
-            Utils.CheckArgs(args.Count, 3, m_name);
-
-            var gui = CSCS_GUI.GetInstance(script);
-
-            var widgetName = Utils.GetSafeString(args, 0);
-            var option = Utils.GetSafeString(args, 1).ToLower();
-            //var value = Utils.GetSafeVariable(args, 2);
-
-            var widget = gui.GetWidget(widgetName);
-            if (widget is ASHorizontalBar)
-            {
-                var ashb = widget as ASHorizontalBar;
-                if(option == "fontsize")
-                {
-                    ashb.FontSize = Utils.GetSafeInt(args, 2);
-                }
-                else if (option == "barwidth")
-                {
-                    ashb.BarWidth = Utils.GetSafeInt(args, 2);
-                }
-                else if (option == "text")
-                {
-                    ashb.Text = Utils.GetSafeString(args, 2);
-                }
-                else if (option == "color")
-                {
-                    var rgbArray = Utils.GetSafeVariable(args, 2).Tuple;
-
-                    ashb.BarColor = new SolidColorBrush(Color.FromRgb((byte)rgbArray[0].Value, (byte)rgbArray[1].Value, (byte)rgbArray[2].Value));
-                }
-            }
-
-            return Variable.EmptyInstance;
-        }
-    }
     
-    class DUAL_LIST_EXECFunction : ParserFunction
-    {
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            List<Variable> args = script.GetFunctionArgs();
-            Utils.CheckArgs(args.Count, 1, m_name);
+    
+    
 
-            var gui = CSCS_GUI.GetInstance(script);
-
-            var widgetName = Utils.GetSafeString(args, 0);
-            var widget = gui.GetWidget(widgetName);
-
-            if(widget is ASDualListDialogHelper)
-            {
-                var dldh = widget as ASDualListDialogHelper;
-                dldh.List2 = new List<string>();
-
-                ASDualListDialog dualListDialog = new ASDualListDialog();
-                dualListDialog.Title = dldh.Title;
-                dualListDialog.OkButtonCaption = dldh.OkButtonCaption;
-                dualListDialog.CancelButtonCaption = dldh.CancelButtonCaption;
-                dualListDialog.HelpButtonCaption = dldh.HelpButtonCaption;
-                dualListDialog.Label1Caption = dldh.Label1Caption;
-                dualListDialog.Label2Caption = dldh.Label2Caption;
-                
-                dualListDialog.Sorted = dldh.Sorted;
-                dualListDialog.ShowHelp = dldh.ShowHelp;
-
-                dualListDialog.LeftList = new ObservableCollection<string>(dldh.List1);
-                dualListDialog.RightList = new ObservableCollection<string>(dldh.List2);
-
-                dualListDialog.ShowDialog();
-
-                dldh.List2 = dualListDialog.RightList.ToList();
-            }
-            
-
-            return Variable.EmptyInstance;
-
-            //var widget = gui.GetWidget(widgetName);
-            //if (widget is ASHorizontalBar)
-            //{
-            //    var ashb = widget as ASHorizontalBar;
-            //    if(option == "fontsize")
-            //    {
-            //        ashb.FontSize = Utils.GetSafeInt(args, 2);
-            //    }
-            //    else if (option == "barwidth")
-            //    {
-            //        ashb.BarWidth = Utils.GetSafeInt(args, 2);
-            //    }
-            //    else if (option == "text")
-            //    {
-            //        ashb.Text = Utils.GetSafeString(args, 2);
-            //    }
-            //    else if (option == "color")
-            //    {
-            //        var rgbArray = Utils.GetSafeVariable(args, 2).Tuple;
-
-            //        ashb.BarColor = new SolidColorBrush(Color.FromRgb((byte)rgbArray[0].Value, (byte)rgbArray[1].Value, (byte)rgbArray[2].Value));
-            //    }
-            //}
-
-            return Variable.EmptyInstance;
-        }
-    }
-
+    
+  
     class OpenFileFunction : ParserFunction
     {
         bool m_getFileContents;
@@ -5211,63 +4460,8 @@ namespace WpfCSCS
         }
     }
 
-    class WINFORMcommand : NewWindowFunction
-    {
-        bool m_paramMode;
-
-        public WINFORMcommand(bool paramMode = false)
-        {
-            m_paramMode = paramMode;
-        }
-
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            Gui = CSCS_GUI.GetInstance(script);
-            if (m_paramMode)
-            {
-                var NameOrPathOfXamlForm = Utils.GetBodyBetween(script, '\0', '\0', Constants.END_STATEMENT);
-                if (NameOrPathOfXamlForm.EndsWith(".xaml") == false)
-                {
-                    NameOrPathOfXamlForm = NameOrPathOfXamlForm + ".xaml";
-                }
-                NameOrPathOfXamlForm = script.GetFilePath(NameOrPathOfXamlForm);
-                if (File.Exists(NameOrPathOfXamlForm))
-                {
-                    var parentWin = Gui.GetParentWindow(script);
-                    SpecialWindow modalwin;
-                    if (parentWin != null && script.ParentScript != null &&
-                        !script.ParentScript.OriginalScript.Contains(Constants.MAINMENU))
-                    {
-                        var winMode = SpecialWindow.MODE.SPECIAL_MODAL;
-                        modalwin = CreateNew(NameOrPathOfXamlForm, parentWin, winMode, script);
-                    }
-                    else
-                    {
-                        var winMode = SpecialWindow.MODE.NORMAL;
-                        modalwin = CreateNew(NameOrPathOfXamlForm, parentWin, winMode, script);
-                    }
-
-
-                    return new Variable(modalwin.Instance.Tag.ToString());
-                }
-                else
-                {
-                    MessageBox.Show($"The file {NameOrPathOfXamlForm} does not exist! Closing program.");
-                    Environment.Exit(0);
-                    return null;
-                }
-            }
-            else return null;
-        }
-    }
-
-    class MAINMENUcommand : ParserFunction
-    {
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            return Variable.EmptyInstance;
-        }
-    }
+    
+    
 
 
     class VariableArgsFunction : ParserFunction
@@ -7103,10 +6297,12 @@ L – logic/boolean (1 byte), internaly represented as 0 or 1, as constant as tr
 
                 foreach(string groupBox in CSCS_GUI.GroupBoxesAndRadioButtons.Keys)
                 {
-                    if(CSCS_GUI.GroupBoxesAndRadioButtons[groupBox].Any(p=>p == m_name.ToLower()))
+                    var firstRBName = CSCS_GUI.GroupBoxesAndRadioButtons[groupBox].FirstOrDefault(p => gui.GetWidget(p).DataContext.ToString().ToLower() == m_name.ToLower());
+                    if(firstRBName != null)
+                    //if (CSCS_GUI.GroupBoxesAndRadioButtons[groupBox].Any(p=> gui.GetWidget(p).DataContext.ToString().ToLower() == m_name.ToLower()))
                     {
-                        var widget = gui.Controls.First(p => (string)p.Value.DataContext == m_name.ToLower());
-                        var widget2 = gui.GetWidget(widget.Key.ToLower());
+                        //var widget = gui.Controls.First(p => (string)p.Value.DataContext == m_name.ToLower());
+                        var widget2 = gui.GetWidget(firstRBName.ToLower());
 
                         if(widget2 is RadioButton)
                         {

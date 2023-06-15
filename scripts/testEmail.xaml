@@ -1,0 +1,39 @@
+﻿<Window 
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TestiranjeTextboxEvenata"
+        xmlns:wcl="clr-namespace:WpfControlsLibrary;assembly=WpfControlsLibrary"
+        mc:Ignorable="d"
+        Title="Window1" Height="450" Width="900">
+
+    <Grid>
+        <Button Name="sendButtonPop" Margin="790,0,2,333" Content="Send Msg" Width="100"/>
+
+        <wcl:ASMemoBox DataContext="Body" Name="memobox1" Margin="7,150,0,90"/>
+
+        <ComboBox Margin="5,376,182,5"/>
+        <Button Name="btn1"  Margin="751,375,5,5" Content="Click"/>
+        <Label Content="Outgoing server:" HorizontalAlignment="Left" Margin="8,330,0,0" VerticalAlignment="Top"/>
+        <TextBox DataContext="outgoingServer" HorizontalAlignment="Left" Height="22" Name="OutgoingServerTextBox" Margin="11,352,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <Label Content="Username:" HorizontalAlignment="Left" Margin="142,328,0,0" VerticalAlignment="Top"/>
+        <TextBox DataContext="Username" HorizontalAlignment="Left" Height="24" Margin="144,350,0,0" TextWrapping="Wrap" Name="UsernameTextBox" Text="" VerticalAlignment="Top" Width="120"/>
+        <Label Content="Password:" HorizontalAlignment="Left" Margin="268,330,0,0" VerticalAlignment="Top"/>
+        <TextBox DataContext="Password" HorizontalAlignment="Left" Height="24" Margin="270,352,0,0" TextWrapping="Wrap" x:Name="PasswordTextBox" Text="" VerticalAlignment="Top" Width="120"/>
+        <Label Content="FromMail:" HorizontalAlignment="Left" Margin="392,330,0,0" VerticalAlignment="Top"/>
+        <TextBox DataContext="FromMail" HorizontalAlignment="Left" Height="24" Margin="394,352,0,0" TextWrapping="Wrap" x:Name="FromMailTextBox" Text="" VerticalAlignment="Top" Width="120"/>
+        <Label Content="MailSenderName:" HorizontalAlignment="Left" Margin="516,330,0,0" VerticalAlignment="Top"/>
+        <TextBox DataContext="MailSenderName" HorizontalAlignment="Left" Height="24" Margin="518,352,0,0" TextWrapping="Wrap" x:Name="MailSenderNameTextBox" Text="" VerticalAlignment="Top" Width="120"/>
+        <Label Content="To:" HorizontalAlignment="Left" Margin="4,6,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.026,0.019"/>
+        <TextBox DataContext="ToAddresses" HorizontalAlignment="Left" Height="23" Margin="40,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="738" Name="ToAddressesTextBox" />
+        <Label Content="CC:" HorizontalAlignment="Left" Margin="4,31,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.026,0.019"/>
+        <TextBox DataContext="CCAddresses" HorizontalAlignment="Left" Height="23" Margin="41,35,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="737" x:Name="CCAddressesTextBox" />
+        <Label Content="BCC:" HorizontalAlignment="Left" Margin="5,56,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.026,0.019"/>
+        <TextBox DataContext="BCCAddresses" HorizontalAlignment="Left" Height="23" Margin="38,60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="742" x:Name="BCCAddressesTextBox" />
+        <ListBox Name="stringListbox" Width="0" Height="0" IsHitTestVisible="False"/>
+        <Button Content="Attachments" HorizontalAlignment="Left" Height="51" Margin="790,92,0,0" VerticalAlignment="Top" Width="97" x:Name="AttachmentsButton"/>
+        <Label Content="Attachments:" HorizontalAlignment="Left" Margin="6,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.026,0.019"/>
+        <TextBox DataContext="attachments" HorizontalAlignment="Left" Height="23" Margin="93,108,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="688" x:Name="attachmentsTextBox" />
+    </Grid>
+</Window>

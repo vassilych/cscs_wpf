@@ -1,0 +1,9 @@
+result = ISLO('SAMPLE');
+MessageBox(result);
+result = ISLO('!SAMPLE');
+MessageBox(result);
+result = ISLO('sAMPLE');
+MessageBox(result);
+result = ISLO('aSAMPLE');
+MessageBox(result);
+quit;

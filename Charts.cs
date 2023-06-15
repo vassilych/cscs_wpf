@@ -1,5 +1,7 @@
 ﻿using LiveChartsCore;
+using LiveChartsCore.Kernel;
 using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Drawing.Geometries;
 using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.SkiaSharpView.VisualElements;
 using LiveChartsCore.SkiaSharpView.WPF;
@@ -149,6 +151,7 @@ namespace WpfCSCS
                         //    Padding = new LiveChartsCore.Drawing.Padding(15),
                         //    Paint = new SolidColorPaint(SKColors.DarkSlateGray)
                         //};
+                        
                     }
                     else if(optionString == "separatorstep")
                     {
@@ -228,8 +231,8 @@ namespace WpfCSCS
                         {
                             var temp = pieWidget.Series.ToList();
 
-                            temp.Add(new PieSeries<double>() { Values = new List<double>() { valueVariable.Value }/*, Fill = colorList[temp.Count]*/ });
-
+                            temp.Add(new PieSeries<double>() { Values = new List<double>() { valueVariable.Value }/*, Fill = colorList[temp.Count]*/ , TooltipLabelFormatter = tooltipFormater});
+                            
                             ////List<double> newList = new List<double>();
 
                             
@@ -323,6 +326,11 @@ namespace WpfCSCS
                 }
 
                 return Variable.EmptyInstance;
+            }
+
+            private string tooltipFormater(ChartPoint<double, DoughnutGeometry, LabelGeometry> arg)
+            {
+                return arg.PrimaryValue.ToString("N0");
             }
         }
     }

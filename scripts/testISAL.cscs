@@ -1,0 +1,9 @@
+result = ISAL('SAMPLE');
+MessageBox(result);
+result = ISAL('!SAMPLE');
+MessageBox(result);
+result = ISAL('2SAMPLE');
+MessageBox(result);
+result = ISAL('aSAMPLE');
+MessageBox(result);
+quit;

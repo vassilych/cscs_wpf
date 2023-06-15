@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Interop;
 using System.Xml;
 
@@ -85,6 +86,40 @@ namespace WpfCSCS
             }
         }
 
+        private void showProperties(object obj)
+        {
+            //IInputElement focusedControl = FocusManager.GetFocusedElement();
+            UIElement elementWithFocus = Keyboard.FocusedElement as UIElement;
+            
+            string toDisplay = "";
+            if (elementWithFocus is FrameworkElement)
+            {
+                //Name
+                //?
+                toDisplay += "Widget name: " + "(not implemented)"; //(elementWithFocus as FrameworkElement).Name + "(?)";
+
+                var varName = (elementWithFocus as FrameworkElement).DataContext?.ToString();
+
+                //DataContext
+                toDisplay += "\nBound variable name: " + varName;
+
+                if(Gui.DEFINES.TryGetValue(varName.ToLower(), out DefineVariable defVar))
+                {
+                    //VarType and VarSize
+                    toDisplay += "\nBound variable type: " + defVar.DefType.ToLower();
+                    toDisplay += "\nBound variable size: " + defVar.Size;
+                }
+                else
+                {
+                    toDisplay += "(not DEFINEd)";
+                }
+                
+            }
+
+            if (toDisplay.Length > 0)
+                MessageBox.Show(toDisplay);
+        }
+
         public SpecialWindow(CSCS_GUI gui, string filename, MODE mode = MODE.NORMAL, Window owner = null)
         {
             Mode = mode;
@@ -93,6 +128,13 @@ namespace WpfCSCS
             OwnerStyle = owner == null ? WindowStyle.None : owner.WindowStyle;
             Gui = gui;
             Instance = CreateWindow(filename);
+
+            
+            var ib = new InputBinding(
+                new ShiftF9Command((object arg1) => { return true; }, showProperties),
+                new KeyGesture(Key.F9, ModifierKeys.Shift));
+            Instance.InputBindings.Add(ib);
+
 
             IsMain = CSCS_GUI.MainWindow == null;
             if (!IsMain && mode != MODE.NORMAL)
@@ -236,6 +278,7 @@ namespace WpfCSCS
                 //Owner.Hide();
             }
         }
+
         private void Win_Unloaded(object sender, RoutedEventArgs e)
         {
             Window win = sender as Window;
@@ -348,4 +391,33 @@ namespace WpfCSCS
             return newInstance;
         }
     }
+
+    public class ShiftF9Command : ICommand
+    {
+        private readonly Predicate<object> _canExecute;
+        private readonly Action<object> _execute;
+
+        public ShiftF9Command(Predicate<object> canExecute, Action<object> execute)
+        {
+            _canExecute = canExecute;
+            _execute = execute;
+        }
+
+        public event EventHandler CanExecuteChanged
+        {
+            add => CommandManager.RequerySuggested += value;
+            remove => CommandManager.RequerySuggested -= value;
+        }
+
+        public bool CanExecute(object parameter)
+        {
+            return _canExecute(parameter);
+        }
+
+        public void Execute(object parameter)
+        {
+            _execute(parameter);
+        }
+    }
+
 }

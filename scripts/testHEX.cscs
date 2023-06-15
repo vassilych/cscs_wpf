@@ -1,0 +1,4 @@
+result = HEX(110);
+MessageBox(result);
+
+quit;

@@ -1,0 +1,7 @@
+result = PARSEFILE("d:\winx\data.txt", "pfPath");
+MessageBox(result);
+result = PARSEFILE("d:\winx\data.txt", "pfName");
+MessageBox(result);
+result = PARSEFILE("d:\winx\data.txt", "pfExt");
+MessageBox(result);
+quit;

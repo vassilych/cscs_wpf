@@ -1,0 +1,4 @@
+result = DEC(-40);
+MessageBox(result);
+
+quit;

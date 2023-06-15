@@ -1,0 +1,16 @@
+result =regedit("regOpen","d:\winx\aaa.ini","rtFile");
+
+MessageBox(result);
+
+result = regedit("regwriteint",'X-charge','printername',24);
+MessageBox(result);
+result = regedit("regReadInt",'X-charge','printername');
+MessageBox(result);
+result = regedit("regWriteStr",'aaaaa','bbbbb',"novo");
+MessageBox(result);
+result = regedit("regReadStr",'aaaaa','bbbbb');
+MessageBox(result);
+result = regedit("regDelete",'aaaaa');
+MessageBox(result);
+result = regedit("regClose");
+MessageBox(result);
