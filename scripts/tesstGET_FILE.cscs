@@ -1,0 +1,4 @@
+result =GET_FILE("TXT","C:\\","Find Text Files","Text files only (TXT)|*.TXT");
+
+
+MessageBox(result);

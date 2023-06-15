@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -40,6 +41,7 @@ namespace WpfCSCS
             interpreter.RegisterFunction(Constants.STRINGS, new StringsFunction());
 
             interpreter.RegisterFunction(Constants.STATUS_BAR, new StatusBarFunction());
+            interpreter.RegisterFunction(Constants.GET_FILE, new GET_FILEFunction());
 
             interpreter.RegisterFunction(Constants.HORIZONTAL_BAR, new HorizontalBarFunction());
 
@@ -70,8 +72,6 @@ namespace WpfCSCS
             interpreter.RegisterFunction(Constants.LOC, new LOCFunction());
             interpreter.RegisterFunction(Constants.ELOC, new ELOCFunction());
             interpreter.RegisterFunction(Constants.ASC, new ASCFunction());
-            interpreter.RegisterFunction(Constants.EXP, new EXPFunction());
-            interpreter.RegisterFunction(Constants.INT, new INTFunction());
             interpreter.RegisterFunction(Constants.DOM, new DOMFunction());
             interpreter.RegisterFunction(Constants.DSPCE, new DSPCEFunction());
             interpreter.RegisterFunction(Constants.HEX, new HEXFunction());
@@ -427,7 +427,75 @@ namespace WpfCSCS
                 //    return new Variable(index);
                 //}
             }
+            else if (widget is ListBox)
+            {
+                var dldh = widget as ListBox;
+                var lines = dldh.Items;
 
+                if (option == "stAddLine")
+                {
+                    lines.Add(new ListBoxItem() { Content = argStr});
+                    return Variable.EmptyInstance;
+                }
+                else if (option == "stGetLine")
+                {
+                    return new Variable(dldh.Items[argNum]);
+                }
+                else if (option == "stGetText")
+                {
+                    string text = null;
+                    foreach (var item in lines)
+                    {
+                        text = text + (item as ListBoxItem).Content + System.Environment.NewLine;
+                    }
+                    return new Variable(text);
+                }
+                else if (option == "stCount")
+                    return new Variable(dldh.Items.Count);  
+                else if (option.ToLower() == "stclear")
+                {
+                    dldh.Items.Clear();// = new ItemCollection();
+                    return new Variable(true);
+                }
+             
+            }
+            return Variable.EmptyInstance;
+        }
+    }
+    class GET_FILEFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            var gui = CSCS_GUI.GetInstance(script);
+
+            var extension = Utils.GetSafeString(args, 0);
+            var startPath = Utils.GetSafeString(args, 1);
+            var dialogTitle = Utils.GetSafeString(args, 2);
+            var filter = Utils.GetSafeString(args, 3);
+            Microsoft.Win32.OpenFileDialog openFileDialog1 = new Microsoft.Win32.OpenFileDialog
+            {
+                InitialDirectory = startPath,
+                Title = dialogTitle,
+
+                CheckFileExists = true,
+                CheckPathExists = true,
+
+                DefaultExt = extension,
+                Filter = filter,
+                FilterIndex = 2,
+                RestoreDirectory = true,
+
+                ReadOnlyChecked = true,
+                ShowReadOnly = true
+            };
+
+            if ((bool)openFileDialog1.ShowDialog())
+            {
+                return new Variable(openFileDialog1.FileName);
+            }
             return Variable.EmptyInstance;
         }
     }
@@ -824,27 +892,7 @@ namespace WpfCSCS
         }
     }
 
-    class EXPFunction : ParserFunction
-    {
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            List<Variable> args = script.GetFunctionArgs();
-            Utils.CheckArgs(args.Count, 1, m_name);
-            var num = Utils.GetSafeDouble(args, 0);
-            return new Variable(num * num);
-        }
-    }
-    
-    class INTFunction : ParserFunction
-    {
-        protected override Variable Evaluate(ParsingScript script)
-        {
-            List<Variable> args = script.GetFunctionArgs();
-            Utils.CheckArgs(args.Count, 1, m_name);
-            var num = Utils.GetSafeDouble(args, 0);
-            return new Variable((int)num);
-        }
-    }
+ 
     
     class ISALFunction : ParserFunction
     {
@@ -1175,20 +1223,20 @@ namespace WpfCSCS
             List<Variable> args = script.GetFunctionArgs();
             Utils.CheckArgs(args.Count, 1, m_name, false);
             var va0 = Utils.GetSafeString(args, 0);
-            var sekcija_path = Utils.GetSafeString(args, 1);
-            var polje = Utils.GetSafeString(args, 2);
-            var vrijednost = Utils.GetSafeString(args, 3);
+            var section_path = Utils.GetSafeString(args, 1);
+            var field = Utils.GetSafeString(args, 2);
+            var value = Utils.GetSafeString(args, 3);
 
 
             switch (va0.ToLower())
             {
                 case "regopen":
-                    path = sekcija_path;
-                    if (polje.ToLower() == "rtFile".ToLower() && !File.Exists(sekcija_path))
+                    path = section_path;
+                    if (field.ToLower() == "rtFile".ToLower() && !File.Exists(section_path))
                     {
                         return new Variable(false);
                     }
-                    using (var fs = File.Open(sekcija_path, FileMode.Open))
+                    using (var fs = File.Open(section_path, FileMode.Open))
                     {
                         canStart = fs.CanWrite;
                         return new Variable(canStart);
@@ -1197,35 +1245,35 @@ namespace WpfCSCS
                 case "regreadint":
                     if (!canStart)
                         return new Variable(false);
-                    var tmp = new IniFileUtil(path).Read(polje, sekcija_path);
+                    var tmp = new IniFileUtil(path).Read(field, section_path);
                     return new Variable(int.Parse(tmp));
                 case "regreadstr":
                     if (!canStart)
                         return new Variable(false);
-                    var tmp1 = new IniFileUtil(path).Read(polje, sekcija_path);
+                    var tmp1 = new IniFileUtil(path).Read(field, section_path);
                     return new Variable(tmp1);
                 case "regreadbool":
                     if (!canStart)
                         return new Variable(false);
-                    var tmp2 = new IniFileUtil(path).Read(polje, sekcija_path);
+                    var tmp2 = new IniFileUtil(path).Read(field, section_path);
                     return new Variable(bool.Parse(tmp2));
                 case "regwriteint":
                     if (!canStart)
                         return new Variable(false);
-                    new IniFileUtil(path).Write(polje, vrijednost.ToString(), sekcija_path);
+                    new IniFileUtil(path).Write(field, value.ToString(), section_path);
                     return new Variable(true);
                 case "regwritestr":
                     if (!canStart)
                         return new Variable(false);
-                    new IniFileUtil(path).Write(polje, vrijednost.ToString(), sekcija_path);
+                    new IniFileUtil(path).Write(field, value.ToString(), section_path);
                     return new Variable(true);
                 case "regwritebool":
                     if (!canStart)
                         return new Variable(false);
-                    new IniFileUtil(path).Write(polje, vrijednost.ToString(), sekcija_path);
+                    new IniFileUtil(path).Write(field, value.ToString(), section_path);
                     return new Variable(true);
                 case "regdelete":
-                    new IniFileUtil(path).DeleteSection(sekcija_path);
+                    new IniFileUtil(path).DeleteSection(section_path);
                     return new Variable(true);
                 case "regclose":
                     return new Variable(true);
@@ -1236,47 +1284,58 @@ namespace WpfCSCS
         }
         public override string Description()
         {
-            return "Returns the natural (base e) logarithm of a specified number.";
+            return "Read or write entries to the .INI file.";
         }
     }
 
     class EMAILFunction : ParserFunction
     {
-        private bool PripremiMail(string podaci, string outgoingServer, string password, string username, string senderMail, string senderUsername)
+        private bool SetupMail(string podaci, string outgoingServer, string password, string username, string senderMail, string senderUsername)
         {
-            var to = IzvuciTo(podaci);
-            var subject = IzvuciSubject(podaci);
-            var body = IzvuciBody(podaci);
-            var cc = IzvucCC(podaci);
-            var bcc = IzvucBCC(podaci);
-            var atch = IzvucATCH(podaci);
-            if (to.Contains(","))
+            bool ok = true;
+            var to = GetTo(podaci);
+            var subject = GetSubject(podaci);
+            var body = GetiBody(podaci);
+            var cc = GetCC(podaci);
+            var bcc = GetBCC(podaci);
+            var atch = GetATCH(podaci);
+            
+            foreach (var item in to)
             {
-
+                if(ok)
+                ok =  Send(item, senderMail, subject + DateTime.Now.ToString("ddMMYY HHmmss"), body, outgoingServer, username, password, cc, bcc, atch);
             }
-            else
-                return Salji(to.First(), "", subject, body, outgoingServer, username,password,cc,bcc);
-
-            return true;
+            return ok;
         }
-        public bool Salji(string adresaTo, string adresaFrom, string subject, string body, string outgoingServer , string username, string password, List<string> cc, List<string> bcc)
+        public bool Send(string addressTo, string addressFrom, string subject, string body, string outgoingServer , string username, string password, List<string> cc, List<string> bcc, List<string> atchs)
         {
-            MailAddress to = new MailAddress(adresaTo);
-            MailAddress from = new MailAddress(adresaFrom);
+            MailAddress to = new MailAddress(addressTo);
+            MailAddress from = new MailAddress(addressFrom);
 
             MailMessage email = new MailMessage(from, to);
             if (cc != null)
             {
                 foreach (var item in cc)
                 {
-                    email.CC.Add(item);
+                    if(!string.IsNullOrEmpty(item))
+                        email.CC.Add(item);
                 }
             }
+            if (atchs != null)
+            {
+                foreach (var item in atchs)
+                {
+                    if(!string.IsNullOrEmpty(item) && File.Exists(item))
+                        email.Attachments.Add(new Attachment(item));
+                }
+            }
+
             if (bcc != null)
             {
                 foreach (var item in bcc)
                 {
-                    email.Bcc.Add(item);
+                    if (!string.IsNullOrEmpty(item))
+                        email.Bcc.Add(item);
                 }
             }
             email.Subject = subject;
@@ -1299,10 +1358,10 @@ namespace WpfCSCS
                 return false;
             }
         }
-        private List<string> IzvuciTo(string podaci)
+        private List<string> GetTo(string podaci)
         {
-            bool pocetak = false;
-            string adrese = null;
+            bool start = false;
+            string address = null;
             using (StringReader reader = new StringReader(podaci))
             {
                 string line;
@@ -1311,25 +1370,25 @@ namespace WpfCSCS
                     line = line.Trim();
                     if (line.ToLower().StartsWith(@"\") )
                     {
-                        pocetak = false;
+                        start = false;
                     }
-                    if (pocetak)
+                    if (start)
                     {
-                        adrese += line;
+                        address += line;
                     }
                     if (line.ToLower().StartsWith(@"\to"))
                     {
-                        pocetak = true;
+                        start = true;
                     }
                   
                 }
             }
-           return adrese.Split(',').ToList();
+           return address.Split(',').ToList();
 
         }
-        private string IzvuciSubject(string podaci)
+        private string GetSubject(string podaci)
         {
-            bool pocetak = false;
+            bool start = false;
             string subject = null;
             using (StringReader reader = new StringReader(podaci))
             {
@@ -1339,15 +1398,15 @@ namespace WpfCSCS
                     line = line.Trim();
                     if (line.ToLower().StartsWith(@"\"))
                     {
-                        pocetak = false;
+                        start = false;
                     }
-                    if (pocetak)
+                    if (start)
                     {
                         subject += line;
                     }
                     if (line.ToLower().StartsWith(@"\subject"))
                     {
-                        pocetak = true;
+                        start = true;
                     }
 
                 }
@@ -1355,9 +1414,9 @@ namespace WpfCSCS
             return subject;
 
         }
-        private string IzvuciBody(string podaci)
+        private string GetiBody(string podaci)
         {
-            bool pocetak = false;
+            bool start = false;
             string body = null;
             using (StringReader reader = new StringReader(podaci))
             {
@@ -1366,15 +1425,15 @@ namespace WpfCSCS
                 {
                     if (line.TrimStart().ToLower().StartsWith(@"\"))
                     {
-                        pocetak = false;
+                        start = false;
                     }
-                    if (pocetak)
+                    if (start)
                     {
                         body += line + System.Environment.NewLine;
                     }
                     if (line.TrimStart().ToLower().StartsWith(@"\body"))
                     {
-                        pocetak = true;
+                        start = true;
                     }
 
                 }
@@ -1382,10 +1441,10 @@ namespace WpfCSCS
             return body;
 
         }
-        private List<string> IzvucCC(string podaci)
+        private List<string> GetCC(string podaci)
         {
-            bool pocetak = false;
-            string adrese = null;
+            bool start = false;
+            string address = null;
             using (StringReader reader = new StringReader(podaci))
             {
                 string line;
@@ -1394,26 +1453,26 @@ namespace WpfCSCS
                     line = line.Trim();
                     if (line.ToLower().StartsWith(@"\"))
                     {
-                        pocetak = false;
+                        start = false;
                     }
-                    if (pocetak)
+                    if (start)
                     {
-                        adrese += line;
+                        address += line;
                     }
                     if (line.ToLower().StartsWith(@"\cc"))
                     {
-                        pocetak = true;
+                        start = true;
                     }
 
                 }
             }
-            return adrese.Split(',').ToList();
+            return address.Split(',').ToList();
 
         }
-        private List<string> IzvucBCC(string podaci)
+        private List<string> GetBCC(string podaci)
         {
-            bool pocetak = false;
-            string adrese = null;
+            bool start = false;
+            string address = null;
             using (StringReader reader = new StringReader(podaci))
             {
                 string line;
@@ -1422,26 +1481,26 @@ namespace WpfCSCS
                     line = line.Trim();
                     if (line.ToLower().StartsWith(@"\"))
                     {
-                        pocetak = false;
+                        start = false;
                     }
-                    if (pocetak)
+                    if (start)
                     {
-                        adrese += line;
+                        address += line;
                     }
                     if (line.ToLower().StartsWith(@"\bcc"))
                     {
-                        pocetak = true;
+                        start = true;
                     }
 
                 }
             }
-            return adrese.Split(',').ToList();
+            return address.Split(',').ToList();
 
         }
-        private List<string> IzvucATCH(string podaci)
+        private List<string> GetATCH(string podaci)
         {
-            bool pocetak = false;
-            string adrese = null;
+            bool start = false;
+            string address = null;
             using (StringReader reader = new StringReader(podaci))
             {
                 string line;
@@ -1450,20 +1509,22 @@ namespace WpfCSCS
                     line = line.Trim();
                     if (line.ToLower().StartsWith(@"\"))
                     {
-                        pocetak = false;
+                        start = false;
                     }
-                    if (pocetak)
+                    if (start)
                     {
-                        adrese += line;
+                        address += line;
                     }
                     if (line.ToLower().StartsWith(@"\attachments"))
                     {
-                        pocetak = true;
+                        start = true;
                     }
 
                 }
             }
-            return adrese.Split(',').ToList();
+            if (address == null)
+                return null;
+            return address.Split(',').ToList();
 
         }
         protected override Variable Evaluate(ParsingScript script)
@@ -1486,10 +1547,15 @@ namespace WpfCSCS
             {
                 case "emlsendmsg":
                     var widget1 = gui.GetWidget(podaci);
-                    if (widget1 is ASMemoBox)
+                    if (widget1 is ListBox)
                     {
-                        var asmemobox = widget1 as ASMemoBox;
-                        return new Variable(PripremiMail(asmemobox.Text, outgoingServer, password, username, senderMail, senderUsername));
+                        string text = null;
+                        var asmemobox = widget1 as ListBox;
+                        foreach (var item in asmemobox.Items)
+                        {
+                            text = text +((ListBoxItem) item).Content + System.Environment.NewLine;
+                        }
+                        return new Variable(SetupMail(text, outgoingServer, password, username, senderMail, senderUsername));
                     }
                     return new Variable(false);
                 case "test":
@@ -1500,16 +1566,17 @@ namespace WpfCSCS
                         asmemobox.Text =
         @"
                     \TO
-                    nebojsa@aurasoft.hr, matija@aurasoft
-,sanja@aurasoft
+                    nebojsa@aurasoft.hr, matija@aurasoft.hr
+,sanja@aurasoft.hr
 \CC
                     lidija@aurasoft.hr
-,lorena@aurasoft
+,lorena@aurasoft.hr
   \BCC
-                    enzo@aurasoft.hr, boris@aurasoft
+                    enzo@aurasoft.hr, boris@aurasoft.hr
                     \SUBJECT
                     Nebki naslov
                     \BODY
+ovo je testni mail!!
                     neki text u body-u
                     fsfvs fsdv skjsvsdv
                     sdvsvs

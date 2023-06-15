@@ -1,23 +1,63 @@
 CreateWindow("../../scripts/testEmail.xaml");
+outgoingServer = "mail.aurasoft.hr";
+Username="ivan@aurasoft.hr";
+Password = "H]$R7MKP#[2A";
+FromMail = "ivan@aurasoft.hr";
+MailSenderName =  "ivan";
+DEFINE ToAddresses type a size 100;
+ToAddresses="nebojsa@aurasoft.hr, matija@aurasoft.hr\n,sanja@aurasoft.hr";
+DEFINE CCAddresses type a size 100;
+CCAddresses="lidija@aurasoft.hr,lorena@aurasoft.hr";
+DEFINE BCCAddresses type a size 100;
+BCCAddresses="enzo@aurasoft.hr, boris@aurasoft.hr";
+DEFINE Body type a size 100;
+Body="neki tekst\nasdkljhasd\n";
+DEFINE attachments type a size 100;
+attachments="d:\text.txt";
+
+
 
 function btn1@clicked(){
-    MessageBox(emlSendMsg);
+    outgoingServer="bbbbbbbbbbbbbbbb";
     EMAIL("test","aaaa", "memobox1");
 }
 function btn2@clicked(){
     test = Strings("memobox1", "", stGetText, "neki tekst\nasdkljhasd\n");   
      MessageBox(test);    
 }
+function AttachmentsButton@clicked(){
+    tmp = GET_FILE("TXT","C:\\","Find Text Files","Text files only (TXT)|*.TXT");
+    if(tmp != "")
+    attachments = attachments + "," + tmp;
+
+}
 function sendButtonPop@clicked(){
-    test = Strings("memobox1", "", stGetText, "neki tekst\nasdkljhasd\n");
-    EMAIL(emlSendMsg, "memobox1","","", "mail.aurasoft.hr", "H]$R7MKP#[2A", "ivan@aurasoft.hr", "ivan@aurasoft.hr", "ivan");   
-     MessageBox(test);    
+    Body = Strings("memobox1", "", stGetText);
+    Strings("stringListbox", "", stAddLine, "\TO");  
+    Strings("stringListbox", "", stAddLine, ToAddresses);  
+    Strings("stringListbox", "", stAddLine, "\CC");  
+    Strings("stringListbox", "", stAddLine, CCAddresses);  
+    Strings("stringListbox", "", stAddLine, "\BCC");  
+    Strings("stringListbox", "", stAddLine, BCCAddresses);  
+    Strings("stringListbox", "", stAddLine, "\Body");  
+    Strings("stringListbox", "", stAddLine, Body);   
+    test2 = Strings("stringListbox", "", stGetText); 
+    
+    ok  = EMAIL(emlSendMsg, "stringListbox","","", outgoingServer, Password, Username, FromMail,MailSenderName);   
+    MessageBox(ok);  
+    ToAddresses=null;
+    CCAddresses=null;
+    BCCAddresses=null;
+    Body=null;
+    attachments=null;
+    Strings("stringListbox", "", stClear ); 
 }
 
 
 function testEmail_onStart(){
-    Strings("memobox1", "", stSetText, "neki tekst\nasdkljhasd\n");              
-          
-    @memobox1.text="gfdhbgd";
+
+    test2 = Strings("stringListbox", "", stGetText, "neki tekst\nasdkljhasd\n");  
+    // MessageBox(test2);  
+    //@memobox1.text="gfdhbgd";
 }
 
