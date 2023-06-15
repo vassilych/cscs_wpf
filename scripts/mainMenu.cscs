@@ -400,6 +400,7 @@ function mainMenuWindow_OnDisplay(){
     AddMenuItem("NebojsaDC", "testPLAYWAV.cscs", "testPLAYWAV", "runScript");
     AddMenuItem("NebojsaDC", "testWAIT.cscs", "testWAIT", "runScript");
     AddMenuItem("NebojsaDC", "testEmail.cscs", "testEmail", "runScript");
+    AddMenuItem("NebojsaDC", "tesstGET_FILE.cscs", "tesstGET_FILE", "runScript");
 
 
     //----------------------   

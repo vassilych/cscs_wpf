@@ -254,6 +254,7 @@ namespace SplitAndMerge
         public const string STRINGS = "Strings";
 
         public const string STATUS_BAR = "StatusBar";
+        public const string GET_FILE = "GET_FILE";
 
         public const string HORIZONTAL_BAR = "HorizontalBar";
 
