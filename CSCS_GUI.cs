@@ -2533,7 +2533,7 @@ namespace WpfCSCS
                         if(item is RadioButton)
                         {
                             CacheControl(item as FrameworkElement, win, controls);
-                            if (!GroupBoxesAndRadioButtons.Any(p => p.Key == groupBox.Name.ToLower()))
+                            if (!GroupBoxesAndRadioButtons.Any(p => p.Key.ToLower() == groupBox.Name.ToLower()))
                                 GroupBoxesAndRadioButtons.Add(groupBox.Name, new List<string>());
                             if(!GroupBoxesAndRadioButtons[groupBox.Name].Any(p=> p == (item as RadioButton).Name.ToLower()))
                                 GroupBoxesAndRadioButtons[groupBox.Name].Add((item as RadioButton).Name.ToLower());

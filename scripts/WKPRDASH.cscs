@@ -19,9 +19,9 @@ DEFINE PKMK_SKL_NAZIV_arr type a size 50 array 300;
 DEFINE cntr1 type i;
 
 DEFINE tot_ovagod type n size 14 dec 0 ; 
-DEFINE tot_lani type n size 14 dec 2 ; 
-DEFINE tot_ovajmj type n size 14 dec 2 ; 
-DEFINE tot_proslimj type n size 14 dec 2 ; 
+DEFINE tot_lani type n size 14 dec 0 ; 
+DEFINE tot_ovajmj type n size 14 dec 0 ; 
+DEFINE tot_proslimj type n size 14 dec 0 ; 
 DEFINE postotak type n size 10 dec 2 ; 
 DEFINE postotakMj type n size 10 dec 2 ; 
 define postotakTj type n size 10 dec 2 ;
@@ -59,6 +59,14 @@ DEFINE searchPartnerSifra type a size 50;
 DEFINE searchPartnerNaziv type a size 50;
 DEFINE searchRegijaSifra type a size 50;
 DEFINE searchRegijaNaziv type a size 50;
+
+DEFINE regijeRB type l;
+DEFINE drzaveRB type l;
+DEFINE gradoviRB type l;
+
+DEFINE nazivFirme type a size 100;
+
+DEFINE pripremljeno type l;
 
 function WKPRDASH_onDisplay(){
     sqlQueryString = "select SY_CC_USER, SY_CC_YEAR, SY_CC_DBASE from " + CommonDBGet() + ".dbo.NKSYCCYR WHERE SY_CC_CODE = '" + Substring(CoGet(), 1, 2) + "'";
@@ -109,6 +117,16 @@ function WKPRDASH_onDisplay(){
     proslimjesec0X = proslimjesec.length == 1 ? "0" + proslimjesec : proslimjesec;
 
     do_mjeseca = true;
+
+	sqlQueryString = " SELECT TOP 1 kpsy_comp_name FROM " + trenutnaGodinaBaza + ".[dbo].[KPSYMSTR]";
+	try	{
+		sqlResult = sqlQuery(sqlQueryString);
+	}catch(exc){
+		MessageBox(exc);
+	}
+	nazivFirme = sqlResult[1][0].trim();
+
+	pripremljeno = false;
 }
 
 function neSkladiste@clicked(){
@@ -165,11 +183,16 @@ function ebSearchSklSifra@TextChange(){
 	searchSkladiste();
 }
 function ebSearchSklNaziv@TextChange(){
-	searchSkladiste();
+	MessageBox(searchSklNaziv.size);
+	MessageBox(size(searchSklNaziv));
+	// if(searchSklNaziv.size > 2 || searchSklNaziv.size == 0){
+	// 	MessageBox(">2 ili == 0");
+	// 	searchSkladiste();
+	// }
 }
 function searchSkladiste(){
 	cursor("wait");
-	NewBindSQL("dgSkl", "SELECT [PKMK_SKL_CODE], [PKMK_SKL_NAZIV] FROM  " + trenutnaGodinaBaza + ".[dbo].[PKMKSKLA] where PKMK_SKL_NAZIV like '%" + searchSklNaziv + "%' and PKMK_SKL_CODE like '%" + searchSklSifra + "%'");
+	NewBindSQL("dgSkl", "SELECT [PKMK_SKL_CODE], [PKMK_SKL_NAZIV] FROM  " + trenutnaGodinaBaza + ".[dbo].[PKMKSKLA] where PKMK_SKL_NAZIV like '%" + searchSklNaziv + "%' and PKMK_SKL_CODE like '" + searchSklSifra + "%'");
 	cursor("dflt");
 }
 
@@ -246,8 +269,7 @@ function gbRegijaOk@clicked(){
 //----------------------------------------
 
 function gbPripremi@clicked(){
-
-    cursor("wait");
+	cursor("wait");
     	
 	setChartByMonth();
 	setChartByDaysOfMonth();
@@ -264,6 +286,8 @@ function gbPripremi@clicked(){
 
     setTop10Products();
 
+	pripremljeno = true;
+
 	setRegionPieChart();
 
 	cursor("dflt");
@@ -272,7 +296,7 @@ function gbPripremi@clicked(){
 
 
 function setChartByMonth(){
-	SQL_str = "SET query_governor_cost_limit 150000;";
+	SQL_str = "SET query_governor_cost_limit 0;";
 	
 	if ( proslaGodinaBaza != "" )
 	{
@@ -412,7 +436,6 @@ function setChartByMonth(){
 
 	sql_str = sql_str + " GROUP BY [Wk_YYYYMM]";
 	sql_str = sql_str + " ORDER BY wk_yyyymm;";
-	SQL_str = sql_str + "SET query_governor_cost_limit 0;";
 	
 	try	{
 		queryResult = sqlquery(SQL_str);
@@ -1087,8 +1110,7 @@ function setCustomerDataGrid(){
     define sales1 type n size 16 dec 2;
     define sales2 type n size 16 dec 2;
 
-	SQL_str = "SET query_governor_cost_limit 150000;";
-	sql_str = sql_str + "WITH sales AS";
+	sql_str = "WITH sales AS";
 	if ( bezPdvaField == true )
 	{
 		sql_str = sql_str + " (SELECT nkpr_gl_cusnme , nkpr_gl_cuscod , SalesNew = ISNULL(SUM(CASE WHEN nkpr_gl_dviza = 'D' THEN nkpr_gl_tecaj * nkpr_ln_amt ELSE nkpr_ln_amt END) , 0),";
@@ -1138,7 +1160,7 @@ function setCustomerDataGrid(){
 	}
 	elif ( razlikaUCijeniField == true )
 	{
-		sql_str = sql_str + " (SELECT nkpr_gl_cusnme , nkpr_gl_cuscod , SalesNew = ISNULL(SUM(CASE WHEN nkpr_gl_dviza = 'D' THEN nkpr_gl_tecaj * (nkpr_ln_amt - nkpr_ln_cenan * nkpr_ln_qtyz) ELSE nkpr_ln_amt - nkpr_ln_cenan * nkpr_ln_qtyz END) , 0)";
+		sql_str = sql_str + " (SELECT nkpr_gl_cusnme , nkpr_gl_cuscod , SalesNew = ISNULL(SUM(CASE WHEN nkpr_gl_dviza = 'D' THEN nkpr_gl_tecaj * (nkpr_ln_amt - nkpr_ln_cenan * nkpr_ln_qtyz) ELSE nkpr_ln_amt - nkpr_ln_cenan * nkpr_ln_qtyz END) , 0), ";
         sql_str = sql_str + " ROW_NUMBER() OVER( ORDER BY ISNULL(SUM(CASE WHEN nkpr_gl_dviza= 'D' THEN nkpr_gl_tecaj*nkpr_ln_amt ELSE nkpr_ln_amt END), 0) DESC ) As Num";
 		sql_str = sql_str + " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv";
 		sql_str = sql_str + " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkprinvl ON nkpr_gl_num = nkpr_ln_invnm";
@@ -1177,7 +1199,7 @@ function setCustomerDataGrid(){
 	}
 	elif ( tezina_dn == true )
 	{
-		sql_str = sql_str + " (SELECT nkpr_gl_cusnme , nkpr_gl_cuscod , SalesNew = ISNULL(SUM(nkpr_ln_tezinan) , 0)";
+		sql_str = sql_str + " (SELECT nkpr_gl_cusnme , nkpr_gl_cuscod , SalesNew = ISNULL(SUM(nkpr_ln_tezinan) , 0), ";
         sql_str = sql_str + " ROW_NUMBER() OVER( ORDER BY ISNULL(SUM(CASE WHEN nkpr_gl_dviza= 'D' THEN nkpr_gl_tecaj*nkpr_ln_amt ELSE nkpr_ln_amt END), 0) DESC ) As Num";
 		sql_str = sql_str + " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv";
 		//if regija<> ''
@@ -1301,8 +1323,6 @@ function setCustomerDataGrid(){
     sql_str = sql_str + " and sales.salesNew != 0";
 
 	sql_str = sql_str + " ORDER BY sales1 DESC;";
-	SQL_str = sql_str + "SET query_governor_cost_limit 0;";
-
 
  	salesCntr = 0;    
 
@@ -1480,14 +1500,41 @@ function setTop10InvoicesDataGrid(){
 }
 
 function setRegionPieChart(){
-	sql_str = "SET query_governor_cost_limit 150000;";
-	sql_str = "With TopItems2 As";
-	sql_str = sql_str + " (SELECT nkpr_gl_cuscty AS CountryID , sum(nkpr_gl_total) AS Origin , ROW_NUMBER() OVER( ORDER BY sum(nkpr_gl_total) DESC ) As Num";
-	sql_str = sql_str + " FROM " + trenutnaGodinaBaza + " .dbo.nkprinv AS U GROUP BY nkpr_gl_cuscty)" ;
-	sql_str = sql_str + " Select countryID, round(Origin,0) as Iznos ";
-	sql_str = sql_str + " From TopItems2 Where Num <= 6 Union ALL Select 'ostali', round(sum(Origin),0) as Iznos ";
-	sql_str = sql_str + " From TopItems2 Where Num > 6 ;";
-	sql_str = sql_str + "SET query_governor_cost_limit 0;";
+	if(pripremljeno == false){
+		return;
+	}
+	
+	if (gradoviRB == true)
+    {
+        sql_str = "With TopItems2 As";
+        sql_str = sql_str + " (SELECT nkpr_gl_cuscty AS CountryID , sum(nkpr_gl_total) AS Origin , ROW_NUMBER() OVER( ORDER BY sum(nkpr_gl_total) DESC ) As Num";
+        sql_str = sql_str + " FROM " + trenutnaGodinaBaza + " .dbo.nkprinv AS U GROUP BY nkpr_gl_cuscty)" ;
+        sql_str = sql_str + " Select countryID, round(Origin,0) as Iznos ";
+        sql_str = sql_str + " From TopItems2 Where Num <= 6 Union ALL Select 'ostali', round(sum(Origin),0) as Iznos ";
+        sql_str = sql_str + " From TopItems2 Where Num > 6 ";
+    }
+    elif (regijeRB== true)
+    {
+        sql_str = "With TopItems2 As";
+        sql_str = sql_str + " (SELECT coalesce(ksdu_sf_opis1, 'nedefinirano') AS CountryID , sum(nkpr_gl_total) AS Origin , ROW_NUMBER() OVER( ORDER BY sum(nkpr_gl_total) DESC ) As Num";
+        sql_str = sql_str + " FROM " + trenutnaGodinaBaza + " .dbo.nkprinv AS U LEFT JOIN dbo.nkscpart ON nkpr_gl_cuscod= nksc_partcode " ;
+        sql_str = sql_str + " LEFT JOIN " + CommonDBGet() + ".dbo.KPSYSIFA a ON NKSC_REGIJA = a.ksdu_sf_code AND ksdu_sf_tip = 'V'";
+        sql_str = sql_str + " GROUP BY ksdu_sf_opis1)";
+        sql_str = sql_str + " Select countryID, round(Origin,0) as Iznos ";
+        sql_str = sql_str + " From TopItems2 Where Num <= 6 Union ALL Select 'ostali', coalesce(round(sum(Origin),0), 0) as Iznos ";
+        sql_str = sql_str + " From TopItems2 Where Num > 6 ";
+    }
+    else //drzave
+    {
+		sql_str = "With TopItems2 As";
+        sql_str = sql_str + " (SELECT coalesce(ksdu_sf_opis1, 'nedefinirano') AS CountryID , sum(nkpr_gl_total) AS Origin , ROW_NUMBER() OVER( ORDER BY sum(nkpr_gl_total) DESC ) As Num";
+        sql_str = sql_str + " FROM " + trenutnaGodinaBaza + " .dbo.nkprinv AS U" ;
+        sql_str = sql_str + " LEFT JOIN " + CommonDBGet() + ".dbo.KPSYSIFA a ON u.nkpr_gl_drzava = a.ksdu_sf_code AND ksdu_sf_tip = 'H'";
+        sql_str = sql_str + " GROUP BY ksdu_sf_opis1)";
+        sql_str = sql_str + " Select countryID, coalesce(round(Origin,0), 0) as Iznos ";
+        sql_str = sql_str + " From TopItems2 Where Num <= 6 Union ALL Select 'ostali', coalesce(round(sum(Origin),0), 0) as Iznos ";
+        sql_str = sql_str + " From TopItems2 Where Num > 6 ";
+    }
 
 	try	{
 		queryResult = sqlquery(sql_str);
@@ -1513,8 +1560,8 @@ function setTop10Products(){
     define top10Art_ar type i size 2 array 10;
     define indexArt_ar type n size 4 dec 0 array 10;
     define ArtikliCntr type i size 2;
-	SQL_str  = "SET query_governor_cost_limit 500000;" ;
-	sql_str =  sql_str +  "WITH sales AS";
+
+	sql_str = "WITH sales AS";
 	if ( bezPdvaField == true )
 	{
 		sql_str = sql_str +  " (SELECT TOP 10 arti_artikl , arti_naziv , Sales1 = ISNULL(SUM(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_ln_amt ELSE nkpr_ln_amt END) ,  0)";
@@ -1751,7 +1798,6 @@ function setTop10Products(){
 
 	sql_str =  sql_str +  " GROUP BY sales.arti_artikl , sales.arti_naziv" ;
 	sql_str =  sql_str +  " ORDER BY sales1 DESC;" ;
-	SQL_str  = sql_str +  "SET query_governor_cost_limit 0;" ;
 	
 	try	{
 		sqlResult = sqlQuery(sql_str);
@@ -1791,4 +1837,31 @@ function setTop10Products(){
 	}
 	
 	return;
+}
+
+//----------------------
+
+
+function regijeRB@changed(){
+	if(regijeRB == false){
+		return;
+	}
+
+	setRegionPieChart();
+}
+
+function drzaveRB@changed(){
+	if(drzaveRB == false){
+		return;
+	}
+
+	setRegionPieChart();
+}
+
+function gradoviRB@changed(){
+	if(gradoviRB == false){
+		return;
+	}
+
+	setRegionPieChart();
 }

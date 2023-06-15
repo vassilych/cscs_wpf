@@ -8819,7 +8819,8 @@ where ID = {rowId}
                         {
                             if (Gui.DEFINES.TryGetValue(varName.ToLower(), out DefineVariable inDefVar))
                             {
-                                recvDefVar.String = String.Format("{0:" + variablesStringFormats[varName] + "}", inDefVar.Value);
+                                //recvDefVar.String = String.Format("{0:" + variablesStringFormats[varName] + "}", inDefVar.Value);
+                                recvDefVar.String = String.Format("{0:" + variablesStringFormats[varName] + inDefVar.Dec + "}", inDefVar.Value);
                             }
 
                         }
