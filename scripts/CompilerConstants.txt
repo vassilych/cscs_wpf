@@ -1,0 +1,520 @@
+{NOTE:  All constants must be in the form of name=value}
+{       there can be no spaces around the = sign}
+{rf_strings}
+stCount=101
+stGetLine=102
+stGetText=103
+stSetLine=104
+stSetText=105
+stClear=106
+stAddLine=107
+stDelLine=108
+stInsLine=109
+stLoad=110
+stSave=111
+stSort=112
+stFind=113
+stLocate=114
+
+{color constants}
+clScrollBar=-2147483648
+clBackground=-2147483647
+clActiveCaption=-2147483646
+clInactiveCaption=-2147483645
+clMenu=-2147483644
+clWindow=-2147483643
+clWindowFrame=-2147483642
+clMenuText=-2147483641
+clWindowText=-2147483640
+clCaptionText=-2147483639
+clActiveBorder=-2147483638
+clInactiveBorder=-2147483637
+clAppWorkSpace=-2147483636
+clHighlight=-2147483635
+clHighlightText=-2147483634
+clBtnFace=-2147483633
+clBtnShadow=-2147483632
+clGrayText=-2147483631
+clBtnText=-2147483630
+clInactiveCaptionText=-2147483629
+clBtnHighlight=-2147483628
+clBlack=0
+clMaroon=128
+clGreen=32768
+clOlive=32896
+clNavy=8388608
+clPurple=8388736
+clTeal=8421376
+clGray=8421504
+clSilver=12632256
+clRed=255
+clLime=65280
+clYellow=65535
+clBlue=16711680
+clFuchsia=16711935
+clAqua=16776960
+clLtGray=12632256
+clDkGray=8421504
+clWhite=16777215
+
+{alignment - TTASDGColTemplate}
+taLeftJustify=0
+taRightJustify=1
+taCenter=2
+
+{character case - TTASDGColTemplate}
+ecNormal=0
+ecUpperCase=1
+ecLowerCase=2
+
+{editor - TTASDGColTemplate}
+edDefault=0
+edSpinEdit=1
+edComboEdit=2
+edComboList=3
+edEditBtn=4
+edCheckBox=5
+edDateEdit=6
+edTimeEdit=7
+edInteger=8
+edNumeric=9
+edPassword=10
+
+{WindowState - TTASForm}
+wsNormal=0
+wsMinimized=1
+wsMaximized=2
+
+{modal result constants}
+mrNone=0
+mrOk=1
+mrCancel=2
+mrAbort=3
+mrRetry=4
+mrIgnore=5
+mrYes=6
+mrNo=7
+mrAll=8
+mrNoToAll=9
+MrYesToAll=10
+
+{registry edit constants}
+regOpen=0
+regReadInt=1
+regReadStr=2
+regReadBool=3
+regWriteInt=4
+regWriteStr=5
+regWriteBool=6
+regDelete=7
+regClose=8
+
+rtRegistry=0
+rtFile=1
+
+{cursor options}
+crDefault=0
+crNone=-1
+crArrow=-2
+crCross=-3
+crIBeam=-4
+crSizeNESW=-6
+crSizeNS=-7
+crSizeNWSE=-8
+crSizeWE=-9
+crUpArrow=-10
+crHourGlass=-11
+crDrag=-12
+crNoDrop=-13
+crHSplit=-14
+crVSplit=-15
+crMultiDrag=-16
+crSQLWait=-17
+crNo=-18
+crAppStart=-19
+crHelp=-20
+crHandPoint=-21
+crSizeAll=-22
+
+{font pitch constants}
+fpDefault=0
+fpVariable=1
+fpFixed=2
+
+{border style}
+bsNone=0
+bsSingle=1
+
+{check box}
+cbUnchecked=0
+cbChecked=1
+
+{glyph kind}
+bkCustom=0
+bkOK=1
+bkCancel=2
+bkHelp=3
+bkYes=4
+bkNo=5
+bkClose=6
+bkAbort=7
+bkRetry=8
+bkIgnore=9
+bkAll=10
+
+{brush styles}
+bsSolid=0
+bsClear=1
+bsHorizontal=2
+bsVertical=3
+bsFDiagonal=4
+bsBDiagonal=5
+bsCross=6
+bsDiagCross=7
+
+{pen styles}
+psSolid=0
+psDash=1
+psDot=2
+psDashDot=3
+psDashDotDot=4
+psClear=5
+psInsideFrame=6
+
+{pen modes}
+pmBlack=0
+pmWhite=1
+pmNop=2
+pmNot=3
+pmCopy=4
+pmNotCopy=5
+pmMergePenNot=6
+pmMaskPenNot=7
+pmMergeNotPen=8
+pmMaskNotPen=9
+pmMerge=10
+pmNotMerge=11
+pmMask=12
+pmNotMask=13
+pmXor=14
+pmNotXor=15
+
+{shapes}
+stRectangle=0
+stSquare=1
+stRoundRect=2
+stRoundSquare=3
+stEllipse=4
+stCircle=5
+
+{ParseFile}
+pfPath=1
+pfName=2
+pfExt=3
+
+{commands/functions that have changed names}
+win_color=WCOLOR
+win_menu=WMENU
+win_help=WHELP
+win_print=PRINT_REPORT
+get_win_color=GET_WCOLOR
+win_mount=WMOUNT
+win_laser_prt=WLASER_PRT
+{FastSearchTypes}
+fsNum=0
+fsRec=1
+fsInt=2
+fsByte=3
+
+{TTASNavigator Buttons}
+nbFirst=0
+nbPrior=1
+nbNext=2
+nbLast=3
+nbInsert=4
+nbDelete=5
+nbEdit=6
+nbPost=7
+nbCancel=8
+nbRefresh=9
+
+{EMail constants}
+emlRecvSignOn=0
+emlRecvSignOff=1
+emlRecvMsgList=2
+emlRecvMsg=3
+emlRecvMsgBody=4
+emlRecvMsgAttach=5
+emlRecvMsgCC=6
+emlRecvMsgCount=7
+emlRecvMsgDel=8
+emlSendMsg=9
+emlRecvMsgListSL=10
+emlSendIMap=11
+
+{print to file constants}
+ptfRTF=1
+ptfPDF=2
+ptfCSS2=3
+ptfHTML=4
+ptfJPG=5
+ptfExcel=6
+ptfQuattro=7
+ptfLotus=8
+ptfRETF=9
+ptfText=10
+ptfBMP=11
+ptfTiff=12
+
+{compile source options}
+compFile=1
+compInt=2
+
+{get license info function}
+liSerialNum=1
+liUserType=2
+liMultiUserCode=3
+
+{Year digits for TTASDateEdit}
+dyDefault=0
+dyFour=1
+dyTwo=2
+
+{Rec_Lock options}
+recLock=0
+recUnlock=1
+recAnyLocked=2
+
+{click nav buttons}
+cnbCancel=0
+cnbDelete=1
+cnbFirst=2
+cnbLast=3
+cnbPrior=4
+cnbNext=5
+cnbPost=6
+cnbEdit=7
+
+{file store options}
+fsImport=0
+fsExport=1
+fsCopy=2
+
+{serial port options}
+spActivate=0
+spClose=1
+spRead=2
+spWrite=3
+
+{serial port settings}
+{baud rate}
+br110=0
+br300=1
+br600=2
+br1200=3
+br2400=4
+br4800=5
+br9600=6
+br14400=7
+br19200=8
+br38400=9
+br56000=10
+br57600=11
+br115200=12
+br128000=14
+br256000=15
+
+{data bits}
+db5=0
+db6=1
+db7=2
+db8=3
+
+{hardware flow control}
+hwfcOff=0
+hwfcRTSOn=1
+hwfcBothOn=2
+
+{Parity}
+parNone=0
+parOdd=1
+parEven=2
+parMark=3
+parSpace=4
+
+{software flow control}
+swfcOff=0
+swfcOn=1
+
+{stop bits}
+sb1=0
+sb1.5=1
+sb2=2
+
+{File_attrib options}
+faSet=1
+FaGet=0                               
+
+{registry options}
+reg
+
+{SQL Options}
+SQLOpenConnection=1
+SQLQuery=2
+SQLGetRecordCount=3
+SQLExecute=4
+SQLCloseRecordset=5
+SQLMoveNext=6
+SQLMovePrevious=7
+SQLCloseConnection=8
+SQLGetData=9
+SQLMoveFirst=10
+SQLMoveLast=11
+SQLQueryForward=12
+SQLGetFieldname=13
+SQLGetFieldCount=14
+SQLExecuteScalar=15
+SQLBind=16
+SQLGETTableNames=17
+SQLGETTableCount=18
+SQLGETFieldsize=19
+SQLGETFieldType=20
+sqlGetErrorCount=21
+sqlGetError=22
+sqlGetNativeError=23
+SQLBeginTrans=24
+SQLCommitTrans=25
+SQLRollBackTrans=26
+SQLInTrans=27
+SQLGetIsolation=28
+SQLSetIsolation=29
+
+#SQL Isolation Constances
+ilUnspecified=1
+ilChaos=2
+ilReadUncommitted=3
+ilBrowse=4
+ilCursorStability=5
+ilReadCommitted=6
+ilRepeatableRead=7
+ilSerializable=8
+ilIsolated=9
+
+
+
+{SQL Field Types}
+;Unknown or undetermined
+ftUnknown=0
+;Character or string field
+ftString=1
+;16-bit integer field
+ftSmallint=2
+;32-bit integer field
+ftInteger=3
+;16-bit unsigned integer field
+ftWord=4
+;Boolean field
+ftBoolean=5
+;Floating-point numeric field
+ftFloat=6
+;Money field
+ftCurrency=7
+;Binary-Coded Decimal field that can be converted to Currency type without a loss of precision.
+ftBCD=8
+;Date field
+ftDate=9
+;Time field
+ftTime=10
+;Date and time field
+ftDateTime=11
+;Fixed number of bytes (binary storage)
+ftBytes=12
+;Variable number of bytes (binary storage)
+ftVarBytes=13
+;Auto-incrementing 32-bit integer counter field
+ftAutoInc=14
+;Binary Large OBject field
+ftBlob=15
+;Text memo field
+ftMemo=16
+;Bitmap field
+ftGraphic=17
+;Formatted text memo field
+ftFmtMemo=18
+;Paradox OLE field
+ftParadoxOle=19
+;dBASE OLE field
+ftDBaseOle=20
+;Typed binary field
+ftTypedBinary=21
+;Output cursor from an Oracle stored procedure (TParam only)
+ftCursor=22
+;Fixed character field
+ftFixedChar=23
+;Wide string field
+ftWideString=24
+;Large integer field
+ftLargeint=25
+;Abstract Data Type field
+ftADT=26
+;Array field
+ftArray=27
+;REF field
+ftReference=28
+;DataSet field
+ftDataSet=29
+;BLOB fields in Oracle 8 tables
+ftOraBlob=30
+;CLOB fields in Oracle 8 tables
+ftOraClob=31
+;Data of unknown or undetermined type
+ftVariant=32
+;References to interfaces (IUnknown)
+ftInterface=33
+;References to IDispatch interfaces
+ftIDispatch=34
+;globally unique identifier (GUID) values
+ftGuid=35
+;Date and time field accessed through dbExpress
+ftTimeStamp=36
+;Binary-Coded Decimal field that is too large for ftBCD.
+ftFMTBcd=37
+
+
+;X-charge Constance
+Xnowait=1
+xSetup=1
+xSubmitCC=2
+xResponce=3
+XSubmitDebit=4
+XVoidCC=5
+XCreditReturn=6
+XVoidReturn=7
+XForceSale=8
+XPreAuth=9
+XDebitReturn=10
+XGuarDL=11
+XGuarMirc=12
+XReport=13
+PPInitalize=14
+PPConfig=15
+PPPrompt=16
+PPClose=17
+PPDisplaytext=18
+PPDisplayLogo=19
+PPPromptSignature=20
+
+; Hash file
+GetMD5=0
+GetSHA1=1
+VERIFYMD5=2
+VERIFYSHA1=3
+;String encrypt/Decrypt
+SETWOFISH=0                        
+SEBLOWFISH=1
+SEDES=2
+SERC2=3
+
+
+
+

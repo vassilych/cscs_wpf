@@ -575,7 +575,8 @@ namespace WpfCSCS
 
         private void LoadCompilerConstantsTxt()
         {
-            var lines = File.ReadLines(Path.Combine(Directory.GetCurrentDirectory(), "CompilerConstants.txt"));
+            var curr = Directory.GetCurrentDirectory();
+            var lines = File.ReadLines(Path.Combine(curr, "../../scripts/CompilerConstants.txt"));
             foreach (var line in lines)
             {
                 if(line.StartsWith("{") || line.StartsWith(";") || line.Trim().Count() == 0)
@@ -836,6 +837,8 @@ namespace WpfCSCS
                 {
                     Console.WriteLine("Exception: " + exc.Message);
                     Console.WriteLine(exc.StackTrace);
+                    MessageBoxFunction.ShowMessageBox(exc.Message, "Error", "ok", "error");
+                    throw;
                 }
             }
             return Variable.EmptyInstance;
