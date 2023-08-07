@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Drawing.Printing;
 using System.Dynamic;
 using System.IO;
@@ -85,6 +86,8 @@ namespace WpfCSCS
             interpreter.RegisterFunction("NewBindSQL", new NewBindSQLFunction());
 
             interpreter.RegisterFunction("WhoAmI", new WhoAmIFunction());
+
+            interpreter.RegisterFunction("ProgressBar", new ProgressBarFunction());
         }
 
     }
@@ -1969,6 +1972,47 @@ d:\temp\aaa.txt, d:\temp\ggg.txt,
             var gui = CSCS_GUI.GetInstance(script);
 
             return new Variable(Path.GetFileNameWithoutExtension(script.Filename));
+        }
+    }
+    
+    class ProgressBarFunction : ParserFunction
+    {
+
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 2, m_name, true);
+
+            var gui = CSCS_GUI.GetInstance(script);
+            var widgetName = Utils.GetSafeString(args, 0);
+            var newValue = Utils.GetSafeInt(args, 1);
+            var widget = gui.GetWidget(widgetName);
+            if (widget == null)
+            {
+                return Variable.EmptyInstance;
+            }
+
+            if(widget is ProgressBar)
+            {
+                var pb = widget as ProgressBar;
+
+                //var t = new Thread(() => {
+                //    Action action = () => { pb.Value = newValue; };
+
+                //    pb.Dispatcher.BeginInvoke(action);
+                //});
+                //t.Start();
+
+                ////---------------------
+                BackgroundWorker worker = new BackgroundWorker();
+                worker.WorkerReportsProgress = true;
+                worker.DoWork += (object sender, DoWorkEventArgs e) => { (sender as BackgroundWorker).ReportProgress(newValue); };
+                worker.ProgressChanged += (object sender, ProgressChangedEventArgs e) => { pb.Value = e.ProgressPercentage; };
+
+                worker.RunWorkerAsync();
+            }
+
+            return Variable.EmptyInstance;
         }
     }
 

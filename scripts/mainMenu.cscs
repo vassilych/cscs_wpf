@@ -348,6 +348,10 @@ function mainMenuWindow_OnDisplay(){
 
     AddMenuItem("OtherDC", "nonExistingVarInEvent.cscs", "nonExistingVarInEvent", "runScript");
     
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testProgressBar.cscs", "testProgressBar", "runScript");
+    
 
     //----- IVAN -------------------------------  
 
