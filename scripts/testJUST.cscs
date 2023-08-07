@@ -1,0 +1,8 @@
+
+result = JUST("aaaa baaaaaaaa            ","R");
+MessageBox(result);
+result = JUST("aaaa baaaaaaaa             ","c");
+MessageBox(result);
+result = JUST("aaaa baaaaaaaa            ","L");
+MessageBox(result);
+quit;

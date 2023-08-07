@@ -1,0 +1,5 @@
+result = ENCRYPTSTR("seTwoFish", "Enzo", "aurasoft");
+MessageBox("rezultat je: " + result);
+result = Decryptstr("seTwoFish", result, "aurasoft");
+MessageBox("rezultat je: " + result);
+quit;

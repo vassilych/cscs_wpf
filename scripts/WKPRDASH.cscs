@@ -155,13 +155,14 @@ function neArtikl@clicked(){
 
 function cePartner@clicked(){
 	partnerWin = ModalWindow("../../scripts/F2ListPartnera.xaml");
+	//gbPartOk.Text = "asdf";
 	cursor("wait");
 
 	searchPartnerSifra = partner;
 	searchPartnerNaziv = partnerNaziv;
 
 	NewBindSQL("dgPart", "SELECT [NKSC_PARTCODE]  ,[NKSC_PARTNAME] FROM  " + trenutnaGodinaBaza + ".[dbo].[NKSCPART] where NKSC_PARTCODE like '%" + searchPartnerSifra + "%' and NKSC_PARTNAME like '%" + searchPartnerNaziv + "%'");
-
+	
     cursor("dflt");
 }
 
@@ -173,7 +174,7 @@ function ceRegija@clicked(){
 	searchRegijaNaziv = regijaNaziv;
 
 	NewBindSQL("dgRegija", "SELECT [KSDU_SF_CODE], [KSDU_SF_OPIS1] FROM  " + CommonDBGet() + ".[dbo].[KPSYSIFA] WHERE [KSDU_SF_TIP] ='V' and KSDU_SF_CODE like '%" + searchRegijaSifra + "%' and KSDU_SF_OPIS1 like '%" + searchRegijaNaziv + "%'");
-
+	
     cursor("dflt");
 }
 

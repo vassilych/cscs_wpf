@@ -1,0 +1,3 @@
+result = ENCRYPTSTR("seTwoFish", "Enzo", "aurasoft");
+MessageBox("rezultat je: " + result);
+quit;

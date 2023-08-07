@@ -131,7 +131,7 @@ namespace WpfCSCS
 
             
             var ib = new InputBinding(
-                new ShiftF9Command((object arg1) => { return true; }, showProperties),
+                new KeyCommand((object arg1) => { return true; }, showProperties),
                 new KeyGesture(Key.F9, ModifierKeys.Shift));
             Instance.InputBindings.Add(ib);
 
@@ -392,12 +392,12 @@ namespace WpfCSCS
         }
     }
 
-    public class ShiftF9Command : ICommand
+    public class KeyCommand : ICommand
     {
         private readonly Predicate<object> _canExecute;
         private readonly Action<object> _execute;
 
-        public ShiftF9Command(Predicate<object> canExecute, Action<object> execute)
+        public KeyCommand(Predicate<object> canExecute, Action<object> execute)
         {
             _canExecute = canExecute;
             _execute = execute;

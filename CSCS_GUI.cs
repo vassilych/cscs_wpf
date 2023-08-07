@@ -262,11 +262,21 @@ namespace SplitAndMerge
 
         public const string LIKE = "LIKE";
         public const string FFILE = "FFILE";
+        public const string DLLFC = "DLLFC";
         public const string PARSEFILE = "PARSEFILE";
         public const string LCHR = "LCHR";
+        public const string MAKE_DIR = "MAKE_DIR";
+        public const string OS = "OS";
+        public const string DIFF = "DIFF";
+        public const string FARRAY = "FARRAY";
+        public const string TRAP = "TRAP";
+        public const string WebBrowse = "WebBrowse";
         public const string ISUP = "ISUP";
         public const string ISLO = "ISLO";
         public const string ISNUM = "ISNUM";
+        public const string GET_FORM_NAME = "GET_FORM_NAME";
+        public const string Decryptstr = "Decryptstr";
+        public const string ENCRYPTSTR = "ENCRYPTSTR";
         public const string PRINTER_NAME = "PRINTER_NAME";
         public const string DELF = "DELF";
         public const string BELL = "BELL";
@@ -285,6 +295,7 @@ namespace SplitAndMerge
         public const string EXP = "EXP";
         public const string INT = "INT";
         public const string ISAL = "ISAL";
+        public const string TPATH = "TPATH";
 
         public const string GET_SELECTED_GRID_ROW = "GetSelectedGridRow";
         
@@ -3817,6 +3828,7 @@ namespace WpfCSCS
                     dg.IsReadOnly = true;
                 }
             }
+
             else if (widget is TabControl)
             {
                 TabControl tc = widget as TabControl;
@@ -3827,6 +3839,7 @@ namespace WpfCSCS
                     settingTabControlPosition = false;
                 }
             }
+
             else if (widget is TextBox)
             {
                 TextBox tb = widget as TextBox;
@@ -3835,6 +3848,7 @@ namespace WpfCSCS
                     tb.Text = Utils.GetSafeString(args, 2);
                 }
             }
+
             else if (widget is Grid)
             {
                 //TextBox tb = widget as TextBox;
@@ -5174,7 +5188,7 @@ namespace WpfCSCS
         }
 
         protected override Variable Evaluate(ParsingScript script)
-         {
+        {
             List<Variable> args = script.GetFunctionArgs();
             Gui = CSCS_GUI.GetInstance(script);
 

@@ -1,0 +1,5 @@
+define y type a size 15 array 100;
+
+x = FARRAY(y);
+MessageBox(x);
+quit;

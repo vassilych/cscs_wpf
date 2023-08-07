@@ -1,0 +1,5 @@
+result = DIFF("translate","trnslt");
+MessageBox(result);
+result = DIFF("John","Pauaaaaaah");
+MessageBox(result);
+quit;

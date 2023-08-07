@@ -191,6 +191,9 @@ namespace SplitAndMerge
         public const string SUBSTRING     = "Substring";
         public const string TOKENIZE      = "Tokenize";
         public const string TRIM          = "Trim";
+        public const string GFLD	  = "GFLD";
+        public const string SNDX	  = "SNDX";
+        public const string JUST	  = "JUST";
         public const string UPPER         = "Upper";
 
         // Math Functions

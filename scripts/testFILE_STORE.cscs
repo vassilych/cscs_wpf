@@ -12,3 +12,4 @@ for(i = 0; i < 10000 ; i++){
 
 //MessageBox(result);
 MessageBox(b);
+quit;

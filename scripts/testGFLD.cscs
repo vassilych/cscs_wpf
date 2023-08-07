@@ -1,0 +1,7 @@
+result = GFLD(5,"",";","grgab;gregfe;www;555;few;33232");
+MessageBox("rezultat je: " + result);
+result = GFLD(2,"",";","grgab;gregfe;www;555;few;33232");
+MessageBox("rezultat je: " + result);
+result = GFLD(4,"",";","grgab;gregfe;www;555;few;33232");
+MessageBox("rezultat je: " + result);
+quit;

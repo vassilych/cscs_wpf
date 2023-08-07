@@ -1,0 +1,8 @@
+
+result = TRIM("aaaaaaaaaaaa            ", "t");
+MessageBox(result);
+MessageBox("aaaaaaaaaaaa            ");
+result = TRIM("              aaaaaaaaaaaa            ","L" );
+MessageBox("              aaaaaaaaaaaa            ");
+MessageBox(result);
+quit;

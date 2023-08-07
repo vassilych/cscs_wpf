@@ -62,6 +62,9 @@ function mainMenuWindow_OnDisplay(){
     AddMenuSeparator("ScriptsDC");
     AddMenuItem("ScriptsDC", "NebojsaDC", "Nebojsa");
 
+    AddMenuSeparator("ScriptsDC");
+    AddMenuItem("ScriptsDC", "TinoDC", "Tino");
+
     //------------ BTRIEVE ------------------------
 
     AddMenuItem("BtrieveDC", "testOpenv.cscs", "testOpenv", "runScript");
@@ -401,7 +404,25 @@ function mainMenuWindow_OnDisplay(){
     AddMenuItem("NebojsaDC", "testWAIT.cscs", "testWAIT", "runScript");
     AddMenuItem("NebojsaDC", "testEmail.cscs", "testEmail", "runScript");
     AddMenuItem("NebojsaDC", "tesstGET_FILE.cscs", "tesstGET_FILE", "runScript");
+    AddMenuItem("NebojsaDC", "tesstMAKE_DIR.cscs", "tesstMAKE_DIR", "runScript");
+    AddMenuItem("NebojsaDC", "testTRAP.cscs", "testTRAP", "runScript");
+    AddMenuItem("NebojsaDC", "testFARRAY.cscs", "testFARRAY", "runScript");
+    AddMenuItem("NebojsaDC", "testOS.cscs", "testOS", "runScript");
+    AddMenuItem("NebojsaDC", "testTRIM.cscs", "testTRIM", "runScript");
+    AddMenuItem("NebojsaDC", "testJUST.cscs", "testJUST", "runScript");
+    AddMenuItem("NebojsaDC", "testDIFF.cscs", "testDIFF", "runScript");
+    AddMenuItem("NebojsaDC", "testSNDX.cscs", "testSNDX", "runScript");
+    AddMenuItem("NebojsaDC", "testDLLFC.cscs", "testDLLFC", "runScript");
+    AddMenuItem("NebojsaDC", "testENCRYPTSTR.cscs", "testENCRYPTSTR", "runScript");
+    AddMenuItem("NebojsaDC", "testDecryptstr.cscs", "testDecryptstr", "runScript");
+    AddMenuItem("NebojsaDC", "testGET_FORM_NAME.cscs", "testGET_FORM_NAME", "runScript");
+    AddMenuItem("NebojsaDC", "testGFLD.cscs", "testGFLD", "runScript");
+    AddMenuItem("NebojsaDC", "testWeb.cscs", "testWeb", "runScript");
 
+    //----- TINO -------------------------------  
+    AddMenuItem("TinoDC","Tino.cscs", "Tino test script", "runScript");
+    AddMenuItem("TinoDC", "testTPATH.cscs", "testTPATH", "runScript");
+    AddMenuItem("TinoDC", "lalala.cscs", "lalala", "runScript");
 
     //----------------------   
 }

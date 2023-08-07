@@ -1,0 +1,7 @@
+result = SNDX("translate");
+MessageBox(result);
+result = SNDX("John");
+MessageBox(result);
+result = SNDX("Paul");
+MessageBox(result);
+quit;

@@ -1,19 +1,31 @@
-﻿using SplitAndMerge;
+﻿using Microsoft.Web.WebView2.Wpf;
+using Org.BouncyCastle.Crypto.Engines;
+using Org.BouncyCastle.Crypto.Paddings;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Security;
+using SplitAndMerge;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Drawing.Printing;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Net;
 using System.Net.Mail;
+using System.Reflection;
+using System.Security.AccessControl;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
 using WpfControlsLibrary;
 
@@ -49,17 +61,31 @@ namespace WpfCSCS
 
             interpreter.RegisterFunction(Constants.GET_SELECTED_GRID_ROW, new GetSelectedGridRowFunction());
 
+            interpreter.RegisterFunction(Constants.DLLFC, new DLLFCFunction());
             interpreter.RegisterFunction(Constants.FFILE, new FFILEFunction());
             interpreter.RegisterFunction(Constants.LIKE, new LIKEFunction());
             interpreter.RegisterFunction(Constants.PARSEFILE, new PARSEFILEFunction());
             interpreter.RegisterFunction(Constants.LCHR, new LCHRFunction());
             interpreter.RegisterFunction(Constants.ISUP, new ISUPFunction());
+            interpreter.RegisterFunction(Constants.MAKE_DIR, new MAKE_DIRFunction());
+            interpreter.RegisterFunction(Constants.TRIM, new TRIMFunction());
+            interpreter.RegisterFunction(Constants.GFLD, new GFLDFunction());
+            interpreter.RegisterFunction(Constants.SNDX, new SNDXFunction());
+            interpreter.RegisterFunction(Constants.JUST, new JUSTFunction());
+            interpreter.RegisterFunction(Constants.DIFF, new DIFFFunction());
+            interpreter.RegisterFunction(Constants.FARRAY, new FARRAYFunction());
+            interpreter.RegisterFunction(Constants.OS, new OSFunction());
+            interpreter.RegisterFunction(Constants.TRAP, new TRAPFunction());
+            interpreter.RegisterFunction(Constants.WebBrowse, new WebBrowseFunction());
             interpreter.RegisterFunction(Constants.ISNUM, new ISNUMFunction());
+            interpreter.RegisterFunction(Constants.GET_FORM_NAME, new GET_FORM_NAMEcommand());
             interpreter.RegisterFunction(Constants.ISLO, new ISLOFunction());
             interpreter.RegisterFunction(Constants.ISAL, new ISALFunction());
             interpreter.RegisterFunction(Constants.PRINTER_NAME, new PRINTER_NAMEFunction());
             interpreter.RegisterFunction(Constants.DELF, new DELFFunction());
             interpreter.RegisterFunction(Constants.BELL, new BELLFunction());
+            interpreter.RegisterFunction(Constants.ENCRYPTSTR, new ENCRYPTSTRFunction());
+            interpreter.RegisterFunction(Constants.Decryptstr, new DecryptstrFunction());
             interpreter.RegisterFunction(Constants.CDOW, new CDOWFunction());
             interpreter.RegisterFunction(Constants.XPATH, new XPATHFunction());
             interpreter.RegisterFunction(Constants.PLAYWAV, new PLAYWAVFunction());
@@ -77,6 +103,7 @@ namespace WpfCSCS
             interpreter.RegisterFunction(Constants.HEX, new HEXFunction());
             interpreter.RegisterFunction(Constants.REGEDIT, new REGEDITFunction());
             interpreter.RegisterFunction(Constants.EMAIL, new EMAILFunction());
+	  interpreter.RegisterFunction(Constants.TPATH, new TPATHFunction());
 
             interpreter.RegisterFunction("FillOutGrid", new FillOutGridFunction());
             interpreter.RegisterFunction("FillOutGridFromDB", new FillOutGridFunction(true));
@@ -96,7 +123,7 @@ namespace WpfCSCS
             return Variable.EmptyInstance;
         }
     }
-    
+
     class WINFORMcommand : NewWindowFunction
     {
         bool m_paramMode;
@@ -144,6 +171,29 @@ namespace WpfCSCS
                 }
             }
             else return null;
+        }
+    }
+    class GET_FORM_NAMEcommand : NewWindowFunction
+    {
+        bool m_paramMode;
+
+        public GET_FORM_NAMEcommand(bool paramMode = false)
+        {
+            m_paramMode = paramMode;
+        }
+
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            Gui = CSCS_GUI.GetInstance(script);
+            var gui = script.Context as CSCS_GUI;
+            Window win;
+            if (CSCS_GUI.File2Window.TryGetValue(script.Filename, out win))
+            {
+                //var ib = new InputBinding(new KeyCommand((object arg1) => { return true; }, (object obj) => { gui.Interpreter.Run(toRun.String, null, null, null, script); }), new KeyGesture(keyPressed));
+                //win.InputBindings.Add(ib);
+               return new Variable(win.Name);
+            }
+            return null;
         }
     }
 
@@ -687,6 +737,69 @@ namespace WpfCSCS
             return Variable.EmptyInstance;
         }
     }
+    class DLLFCFunction : ParserFunction
+    {
+        public T CallFunction<T>(string dllPath , string function, string parameters)  where T:struct
+        {
+            try
+            {
+               
+                var DLL = Assembly.LoadFile(dllPath);
+                //var assembly = Assembly.ReflectionOnlyLoadFrom(dllPath);
+
+                foreach (var type in DLL.GetTypes())
+                {
+                    Debug.WriteLine(type.Name);
+                    var logics = type.GetMethods();
+                    foreach (var item in logics)
+                    {
+                        if (item.Name.ToLower() == function.ToLower())
+                        {
+                            var c = Activator.CreateInstance(type);
+                            var method = type.GetMethod((item.Name));
+                            var xy = (T)method.Invoke(c, new object[] { parameters });
+                            return xy;
+                        }
+                    }
+                }
+                //var theType = DLL.GetType("LoginUtil.Util.PopuniAppInfoModelTas");
+
+               
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            return (T) (object) false;
+        }
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var dllPath = Utils.GetSafeString(args, 0);
+            var function = Utils.GetSafeString(args, 1);
+            var returnType = Utils.GetSafeString(args, 2);
+            var parameters = Utils.GetSafeString(args, 3);
+
+           if (File.Exists(dllPath))
+            {
+                if (returnType.ToLower() == "i")
+                {
+                    var xy = CallFunction<int>(dllPath, function, parameters);
+                    return new Variable(xy);
+                }
+                if (returnType.ToLower() == "r")
+                {
+                    var xy = CallFunction<decimal>(dllPath, function, parameters);
+                    return new Variable(xy);
+                }
+            }
+
+            return Variable.EmptyInstance;
+        }
+    }
 
     class FFILEFunction : ParserFunction
     {
@@ -767,19 +880,14 @@ namespace WpfCSCS
                 case "pfpath":
                     path = Path.GetDirectoryName(path) + "\\";
                     return new Variable(path);
-                    break;
                 case "pfname":
                     return new Variable(Path.GetFileNameWithoutExtension(path));
-                    break;
                 case "pfext":
                     path = path.Remove(0, 1);
                     return new Variable(Path.GetExtension(path));
-                    break;
                 default:
                     return Variable.EmptyInstance;
-                    break;
             }
-            return Variable.EmptyInstance;
         }
     }
 
@@ -807,6 +915,53 @@ namespace WpfCSCS
         }
     }
 
+    class ENCRYPTSTRFunction : ParserFunction
+    {
+        public string TwoFishEncryption(string plain, string key)
+        {
+
+            BCEngine bcEngine = new BCEngine(new TwofishEngine(), Encoding.ASCII);
+            bcEngine.SetPadding(new Pkcs7Padding());
+            return bcEngine.Encrypt(plain, key);
+        }
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 3, m_name);
+            var typeEnc = Utils.GetSafeString(args, 0);
+            var stringToEncrypt = Utils.GetSafeString(args,1);
+            var phrase = Utils.GetSafeString(args, 2);
+           if (typeEnc.ToLower() == "setwofish")
+            {
+               var enc = TwoFishEncryption(stringToEncrypt, phrase);
+                return new Variable(enc);
+            }
+            return Variable.EmptyInstance;
+        }
+    }
+    class DecryptstrFunction : ParserFunction
+    {
+        public string BlowFishDecryption(string cipher, string key)
+        {
+            BCEngine bcEngine = new BCEngine(new TwofishEngine(), Encoding.ASCII);
+            bcEngine.SetPadding(new Pkcs7Padding());
+            return bcEngine.Decrypt(cipher, key);
+        }
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 3, m_name);
+            var typeEnc = Utils.GetSafeString(args, 0);
+            var stringToDecrypt = Utils.GetSafeString(args, 1);
+            var phrase = Utils.GetSafeString(args, 2);
+            if (typeEnc.ToLower() == "setwofish")
+            {
+                var enc = BlowFishDecryption(stringToDecrypt, phrase);
+                return new Variable(enc);
+            }
+            return Variable.EmptyInstance;
+        }
+    }
     class BELLFunction : ParserFunction
     {
         protected override Variable Evaluate(ParsingScript script)
@@ -983,7 +1138,412 @@ namespace WpfCSCS
             return new Variable(Char.IsUpper(rijec, 0));
         }
     }
+    class MAKE_DIRFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var dir = Utils.GetSafeString(args, 0);
+            Directory.CreateDirectory(dir);
+            return new Variable(true);
+        }
+    }
+    class FARRAYFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var arrayVar = Utils.GetSafeVariable(args, 0);
+            return new Variable(arrayVar.Tuple.Count);
+        }
+    }
+    class DIFFFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 2, m_name);
+            var text1 = Utils.GetSafeString(args, 0);
+            var text2 = Utils.GetSafeString(args, 1);
+            return new Variable(Difference(text1,text2));
+        }
+        public string Soundex(string data)
+        {
+            StringBuilder result = new StringBuilder();
 
+            if (data != null && data.Length > 0)
+            {
+                string previousCode, currentCode;
+                result.Append(Char.ToUpper(data[0]));
+                previousCode = string.Empty;
+
+                for (int i = 1; i < data.Length; i++)
+                {
+                    currentCode = EncodeChar(data[i]);
+
+                    if (currentCode != previousCode)
+                        result.Append(currentCode);
+
+                    if (result.Length == 4) break;
+
+                    if (!currentCode.Equals(string.Empty))
+                        previousCode = currentCode;
+                }
+            }
+
+            if (result.Length < 4)
+                result.Append(new String('0', 4 - result.Length));
+
+            return result.ToString();
+        }
+        private string EncodeChar(char c)
+        {
+
+            switch (Char.ToLower(c))
+            {
+                case 'b':
+                case 'f':
+                case 'p':
+                case 'v':
+                    return "1";
+                case 'c':
+                case 'g':
+                case 'j':
+                case 'k':
+                case 'q':
+                case 's':
+                case 'x':
+                case 'z':
+                    return "2";
+                case 'd':
+                case 't':
+                    return "3";
+                case 'l':
+                    return "4";
+                case 'm':
+                case 'n':
+                    return "5";
+                case 'r':
+                    return "6";
+                default:
+                    return string.Empty;
+            }
+        }
+
+        public int Difference(string data1, string data2)
+        {
+            int result = 0;
+
+            if (data1.Equals(string.Empty) || data2.Equals(string.Empty))
+                return 0;
+
+            string soundex1 = Soundex(data1);
+            string soundex2 = Soundex(data2);
+
+            if (soundex1.Equals(soundex2))
+                result = 4;
+            else
+            {
+                if (soundex1[0] == soundex2[0])
+                    result = 1;
+
+                string sub1 = soundex1.Substring(1, 3); //characters 2, 3, 4
+
+                if (soundex2.IndexOf(sub1) > -1)
+                {
+                    result += 3;
+                    return result;
+                }
+
+                string sub2 = soundex1.Substring(2, 2); //characters 3, 4
+
+                if (soundex2.IndexOf(sub2) > -1)
+                {
+                    result += 2;
+                    return result;
+                }
+
+                string sub3 = soundex1.Substring(1, 2); //characters 2, 3
+
+                if (soundex2.IndexOf(sub3) > -1)
+                {
+                    result += 2;
+                    return result;
+                }
+
+                char sub4 = soundex1[1];
+                if (soundex2.IndexOf(sub4) > -1)
+                    result++;
+
+                char sub5 = soundex1[2];
+                if (soundex2.IndexOf(sub5) > -1)
+                    result++;
+
+                char sub6 = soundex1[3];
+                if (soundex2.IndexOf(sub6) > -1)
+                    result++;
+
+            }
+
+            return result;
+        }
+    }
+    class TRIMFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var text = Utils.GetSafeString(args, 0);
+            var start_end = Utils.GetSafeString(args, 1);
+            if (start_end == null || start_end.ToLower() == "t")
+            {
+                return new Variable(text.TrimEnd());
+            }
+            return new Variable(text.TrimStart());
+        }
+    }
+    class GFLDFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var fieldNum = Utils.GetSafeInt(args, 0);
+            var handle = Utils.GetSafeString(args, 1);
+            var delimiter = Utils.GetSafeString(args, 2);
+            var text = Utils.GetSafeString(args, 3);
+            return new Variable(text.Split(delimiter.ToCharArray().First())[fieldNum-1]);
+        }
+    }
+    class SNDXFunction : ParserFunction
+    {
+        public string For(string word)
+        {
+            const int MaxSoundexCodeLength = 4;
+
+            var soundexCode = new StringBuilder();
+            var previousWasHOrW = false;
+
+            // Upper case all letters in word and remove any punctuation
+            word = Regex.Replace(
+                word == null ? string.Empty : word.ToUpper(),
+                    @"[^\w\s]",
+                        string.Empty);
+
+            if (string.IsNullOrEmpty(word))
+                return string.Empty.PadRight(MaxSoundexCodeLength, '0');
+
+            // Retain the first letter
+            soundexCode.Append(word.First());
+
+            for (var i = 1; i < word.Length; i++)
+            {
+                var numberCharForCurrentLetter = GetCharNumberForLetter(word[i]);
+
+                // Skip this number if it matches the number for the first character
+                if (i == 1 &&
+                        numberCharForCurrentLetter == GetCharNumberForLetter(soundexCode[0]))
+                    continue;
+
+                // Skip this number if the previous letter was a 'H' or a 'W' 
+                // and this number matches the number assigned before that
+                if (soundexCode.Length > 2 && previousWasHOrW &&
+                        numberCharForCurrentLetter == soundexCode[soundexCode.Length - 2])
+                    continue;
+
+                // Skip this number if it was the last added
+                if (soundexCode.Length > 0 &&
+                        numberCharForCurrentLetter == soundexCode[soundexCode.Length - 1])
+                    continue;
+
+                soundexCode.Append(numberCharForCurrentLetter);
+
+                previousWasHOrW = "HW".Contains(word[i]);
+            }
+
+            return soundexCode
+                    .Replace("0", string.Empty)
+                        .ToString()
+                            .PadRight(MaxSoundexCodeLength, '0')
+                                .Substring(0, MaxSoundexCodeLength);
+        }
+
+        /// <summary>
+        /// Retrieves the soundex number for a given letter.
+        /// </summary>
+        /// <param name="letter">Letter to get the soundex number for.</param>
+        /// <returns>Soundex number (as a character) for letter.</returns>
+        private char GetCharNumberForLetter(char letter)
+        {
+            if ("BFPV".Contains(letter)) return '1';
+            if ("CGJKQSXZ".Contains(letter)) return '2';
+            if ("DT".Contains(letter)) return '3';
+            if ('L' == letter) return '4';
+            if ("MN".Contains(letter)) return '5';
+            if ('R' == letter) return '6';
+
+            return '0'; // i.e. letter is [AEIOUWYH]
+        }
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var text = Utils.GetSafeString(args, 0);
+            return new Variable(For(text));
+        }
+    }
+    class JUSTFunction : ParserFunction
+    {
+        private int End(string text)
+        {
+            int num = 0;
+            for (int i = text.Length - 1; i >= 0; i--)
+            {
+                if (text[i] == ' ')
+                {
+                    num++;
+                }
+                else
+                    break;
+            }
+            foreach (var item in text.ToCharArray())
+            {
+                if (item == ' ')
+                {
+                    num++;
+                }
+                else
+                    break;
+            }
+            return num;
+        }
+        private int Start(string text)
+        {
+            int num = 0;
+            foreach (var item in text.ToCharArray())
+            {
+                if (item == ' ')
+                {
+                    num++;
+                }
+                else
+                    break;
+            }
+            return num;
+        }
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 2, m_name);
+            var text = Utils.GetSafeString(args, 0);
+            var just = Utils.GetSafeString(args, 1);
+            string realText = text.Trim();
+            int numberOfStartSpaces = Start(text);
+            int numberOfEndSpaces = End(text);
+            int numberOfSpaces = numberOfEndSpaces + numberOfStartSpaces;
+            //int textLengst = text.Length - numberOfStartSpaces - numberOfEndSpaces;
+            if (just.ToLower() == "r")
+            {
+                string EmptSp = null;
+                for (int i = 0; i < numberOfSpaces; i++)
+                {
+                    EmptSp = EmptSp + " ";
+                }
+                return new Variable(EmptSp + realText);
+            }
+            else if (just.ToLower() == "l")
+            {
+                string EmptSp = null;
+                for (int i = 0; i < numberOfSpaces; i++)
+                {
+                    EmptSp = EmptSp + " ";
+                }
+                return new Variable(text.TrimEnd() + EmptSp);
+            }
+            else if (just.ToLower() == "c")
+            {
+                int numEmptySpaces = numberOfStartSpaces + numberOfEndSpaces;
+                if (numEmptySpaces % 2 == 0)
+                {
+                    for (int i = 0; i < numEmptySpaces / 2; i++)
+                    {
+                        realText = " " + realText + " ";
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < (numEmptySpaces - 1) / 2; i++)
+                    {
+                        realText = " " + realText + " ";
+                    }
+                    realText = realText + " ";
+                }
+                return new Variable(realText);
+            }
+            return  Variable.EmptyInstance;
+        }
+    }
+    class OSFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            var name = (from x in new ManagementObjectSearcher("SELECT Caption FROM Win32_OperatingSystem").Get().OfType<ManagementObject>()
+                        select x.GetPropertyValue("Caption")).FirstOrDefault();
+            return new Variable(name != null ? name.ToString() : "Unknown");
+        }
+    }
+    class TRAPFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 2, m_name);
+            var key = Utils.GetSafeString(args, 0);
+            var toRun = args.FirstOrDefault(p => p.CurrentAssign.ToLower() == "gosub");
+            var gui = script.Context as CSCS_GUI;
+            Window win;
+            Key keyPressed =new ReturnKeyUtil().ReturnKey(key);
+          
+
+            if (CSCS_GUI.File2Window.TryGetValue(script.Filename, out win))
+            {
+                var ib = new InputBinding(new KeyCommand((object arg1) => { return true; }, (object obj) => { gui.Interpreter.Run(toRun.String, null, null, null, script); }), new KeyGesture(keyPressed));
+                win.InputBindings.Add(ib);
+            }
+
+            return new Variable(true);
+        }
+    }
+    class WebBrowseFunction : ParserFunction
+    {
+        protected override  Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 2, m_name);
+            var browser = Utils.GetSafeString(args, 0);
+            var url = Utils.GetSafeString(args, 0);
+            var gui = script.Context as CSCS_GUI;
+            Window win;
+
+            WebView2 WebView1 = (WebView2)gui.GetWidget(browser);
+            WebView1.EnsureCoreWebView2Async().GetAwaiter();
+            if (WebView1 != null && WebView1.CoreWebView2 != null)
+            {
+                WebView1.CoreWebView2.Navigate(url);
+            }
+
+            //if (CSCS_GUI.File2Window.TryGetValue(script.Filename, out win))
+            //{
+            //    var ib = new InputBinding(new KeyCommand((object arg1) => { return true; }, (object obj) => { gui.Interpreter.Run(toRun.String, null, null, null, script); }), new KeyGesture(keyPressed));
+            //    win.InputBindings.Add(ib);
+            //}
+
+            return new Variable(true);
+        }
+    }
     class ASCFunction : ParserFunction
     {
         protected override Variable Evaluate(ParsingScript script)
@@ -1241,7 +1801,6 @@ namespace WpfCSCS
                         canStart = fs.CanWrite;
                         return new Variable(canStart);
                     }
-                    break;
                 case "regreadint":
                     if (!canStart)
                         return new Variable(false);
@@ -1280,7 +1839,6 @@ namespace WpfCSCS
                 default:
                     return new Variable(false);
             }
-            return new Variable(false);
         }
         public override string Description()
         {
@@ -1595,6 +2153,14 @@ d:\temp\aaa.txt, d:\temp\ggg.txt,
             return Variable.EmptyInstance;
         }
     }
+
+	class TPATHFunction : ParserFunction
+	{
+		protected override Variable Evaluate(ParsingScript script)
+		{
+			return new Variable(App.GetConfiguration("ScriptsPath", ""));
+		}
+	}
     
     class FillOutGridFunction : ParserFunction
     {

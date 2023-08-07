@@ -1,0 +1,3 @@
+x = Random(10, 100);
+
+MessageBox("rezultat je: " + Size(x), "info box tekst", "ok", "asterisk");
