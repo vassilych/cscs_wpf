@@ -224,6 +224,7 @@ namespace SplitAndMerge
         public const string X_FORMAT_COLUMN = "XFormatColumn";
         public const string X_LAST_ROW = "XLastRow";
         public const string X_LAST_COLUMN = "XLastColumn";
+        public const string X_LAST_COLUMN = "XLastColumn";
         public const string X_LAST_ADDRESS = "XLastAddress";
         public const string X_INSERT_ROWS = "XInsertRows";
         public const string X_DELETE_ROW = "XDeleteRow";
@@ -296,8 +297,12 @@ namespace SplitAndMerge
         public const string INT = "INT";
         public const string ISAL = "ISAL";
         public const string TPATH = "TPATH";
+	public const string GFLD = "GFLD";
+	public const string SNDX = "SNDX";
+	public const string JUST = "JUST";
 
-        public const string GET_SELECTED_GRID_ROW = "GetSelectedGridRow";
+
+		public const string GET_SELECTED_GRID_ROW = "GetSelectedGridRow";
         
         public const string CHART = "Chart";
         public const string PIE_CHART = "PieChart";
@@ -3777,6 +3782,9 @@ namespace WpfCSCS
 
             var gui = CSCS_GUI.GetInstance(script);
             var widget = gui.GetWidget(widgetName);
+
+	  
+
             if (widget is DataGrid)
             {
                 DataGrid dg = widget as DataGrid;
