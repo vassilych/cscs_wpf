@@ -15,15 +15,15 @@ CreateWindow("../../scripts/lalala.xaml");
 
 
 
-SQLConnectionString("Server=192.168.0.58;Database=adictionary;User Id=sa;Password=aura;");
-BindSQL("grid1", "SY_DATABASES");
+//SQLConnectionString("Server=192.168.0.58;Database=adictionary;User Id=sa;Password=aura;");
+//BindSQL("grid1", "SY_DATABASES");
 
 
 
 varijabla = "tekst varijable";
 
-//SetWidgetOptions("tb1", "FontColor", "red");
-
+SetWidgetOptions("tb1", "Text", "zxcv");
+//SetText("tb1", "asdf");
 
 
 

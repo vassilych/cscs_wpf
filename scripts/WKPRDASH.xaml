@@ -6,7 +6,6 @@
         xmlns:wcl="clr-namespace:WpfControlsLibrary;assembly=WpfControlsLibrary"
         xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
         mc:Ignorable="d"
-        xmlns:local="clr-namespace:wkprdash"
         Title="Prodaja"
         Height="1000"
         Width="1600">

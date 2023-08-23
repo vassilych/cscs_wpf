@@ -1,0 +1,4 @@
+CreateWindow("../../scripts/testTrap.xaml");
+result = GET_FORM_NAME();
+MessageBox("rezultat je: " + result);
+quit;

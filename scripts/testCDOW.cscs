@@ -1,6 +1,6 @@
-DEFINE dateVar type d size 10 init "06/06/2023";
+//DEFINE dateVar type d size 10 init "06/06/2023";
 
-//dateVar = "06/06/2023";
+dateVar = "06/06/2023";
 
 result = CDOW(dateVar);
 MessageBox(result);

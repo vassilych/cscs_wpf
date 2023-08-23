@@ -1,0 +1,17 @@
+CreateWindow("../../scripts/testTrap.xaml");
+
+//trap F1 gosub 'F1'
+TRAP("F1", gosub: "F1func");
+TRAP("F2", gosub: "F2func");
+TRAP("ENTER_KEY", gosub: "ENTER_KEYfunc");
+
+
+function F1func(){
+    MessageBox("F1");
+}
+function F2func(){
+    MessageBox("F2");
+}
+function ENTER_KEYfunc(){
+    MessageBox("ENTER_KEY");
+}

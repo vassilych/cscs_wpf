@@ -224,6 +224,7 @@ namespace SplitAndMerge
         public const string X_FORMAT_COLUMN = "XFormatColumn";
         public const string X_LAST_ROW = "XLastRow";
         public const string X_LAST_COLUMN = "XLastColumn";
+        public const string X_LAST_COLUMN = "XLastColumn";
         public const string X_LAST_ADDRESS = "XLastAddress";
         public const string X_INSERT_ROWS = "XInsertRows";
         public const string X_DELETE_ROW = "XDeleteRow";
@@ -262,11 +263,21 @@ namespace SplitAndMerge
 
         public const string LIKE = "LIKE";
         public const string FFILE = "FFILE";
+        public const string DLLFC = "DLLFC";
         public const string PARSEFILE = "PARSEFILE";
         public const string LCHR = "LCHR";
+        public const string MAKE_DIR = "MAKE_DIR";
+        public const string OS = "OS";
+        public const string DIFF = "DIFF";
+        public const string FARRAY = "FARRAY";
+        public const string TRAP = "TRAP";
+        public const string WebBrowse = "WebBrowse";
         public const string ISUP = "ISUP";
         public const string ISLO = "ISLO";
         public const string ISNUM = "ISNUM";
+        public const string GET_FORM_NAME = "GET_FORM_NAME";
+        public const string Decryptstr = "Decryptstr";
+        public const string ENCRYPTSTR = "ENCRYPTSTR";
         public const string PRINTER_NAME = "PRINTER_NAME";
         public const string DELF = "DELF";
         public const string BELL = "BELL";
@@ -285,8 +296,13 @@ namespace SplitAndMerge
         public const string EXP = "EXP";
         public const string INT = "INT";
         public const string ISAL = "ISAL";
+        public const string TPATH = "TPATH";
+	public const string GFLD = "GFLD";
+	public const string SNDX = "SNDX";
+	public const string JUST = "JUST";
 
-        public const string GET_SELECTED_GRID_ROW = "GetSelectedGridRow";
+
+		public const string GET_SELECTED_GRID_ROW = "GetSelectedGridRow";
         
         public const string CHART = "Chart";
         public const string PIE_CHART = "PieChart";
@@ -3766,6 +3782,9 @@ namespace WpfCSCS
 
             var gui = CSCS_GUI.GetInstance(script);
             var widget = gui.GetWidget(widgetName);
+
+	  
+
             if (widget is DataGrid)
             {
                 DataGrid dg = widget as DataGrid;
@@ -3817,6 +3836,7 @@ namespace WpfCSCS
                     dg.IsReadOnly = true;
                 }
             }
+
             else if (widget is TabControl)
             {
                 TabControl tc = widget as TabControl;
@@ -3827,6 +3847,7 @@ namespace WpfCSCS
                     settingTabControlPosition = false;
                 }
             }
+
             else if (widget is TextBox)
             {
                 TextBox tb = widget as TextBox;
@@ -3835,6 +3856,7 @@ namespace WpfCSCS
                     tb.Text = Utils.GetSafeString(args, 2);
                 }
             }
+
             else if (widget is Grid)
             {
                 //TextBox tb = widget as TextBox;
@@ -5174,7 +5196,7 @@ namespace WpfCSCS
         }
 
         protected override Variable Evaluate(ParsingScript script)
-         {
+        {
             List<Variable> args = script.GetFunctionArgs();
             Gui = CSCS_GUI.GetInstance(script);
 

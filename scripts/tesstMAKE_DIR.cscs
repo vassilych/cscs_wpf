@@ -1,0 +1,5 @@
+result = MAKE_DIR("d:\temp\aaa");
+
+
+MessageBox(result);
+quit;

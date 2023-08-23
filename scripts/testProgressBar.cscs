@@ -1,0 +1,19 @@
+CreateWindow("../../scripts/testProgressBar.xaml");
+
+
+
+// for(i = 0; i < 100; i++){
+//     ProgressBar("pb1", i);
+//     sleep(20);
+// }
+
+
+sleep(1000);
+ProgressBar("pb1", 20);
+sleep(1000);
+ProgressBar("pb1", 40);
+sleep(1000);
+ProgressBar("pb1", 60);
+sleep(1000);
+ProgressBar("pb1", 80);
+

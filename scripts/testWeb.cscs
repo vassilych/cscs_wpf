@@ -1,0 +1,3 @@
+CreateWindow("../../scripts/WebBrowsr.xaml");
+
+WebBrowse("WebView1", "https://www.bug.hr");

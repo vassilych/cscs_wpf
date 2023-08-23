@@ -1,0 +1,5 @@
+result = DLLFC("D:\winx\ClassLibrary1.dll","Zbroji","I", "2;2");
+MessageBox("rezultat je: " + result);
+result = DLLFC("D:\winx\ClassLibrary1.dll","Podjeli","R", "2;2");
+MessageBox("rezultat je: " + result);
+quit;

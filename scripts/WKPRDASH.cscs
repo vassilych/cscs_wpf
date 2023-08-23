@@ -155,13 +155,14 @@ function neArtikl@clicked(){
 
 function cePartner@clicked(){
 	partnerWin = ModalWindow("../../scripts/F2ListPartnera.xaml");
+	//gbPartOk.Text = "asdf";
 	cursor("wait");
 
 	searchPartnerSifra = partner;
 	searchPartnerNaziv = partnerNaziv;
 
 	NewBindSQL("dgPart", "SELECT [NKSC_PARTCODE]  ,[NKSC_PARTNAME] FROM  " + trenutnaGodinaBaza + ".[dbo].[NKSCPART] where NKSC_PARTCODE like '%" + searchPartnerSifra + "%' and NKSC_PARTNAME like '%" + searchPartnerNaziv + "%'");
-
+	
     cursor("dflt");
 }
 
@@ -173,7 +174,7 @@ function ceRegija@clicked(){
 	searchRegijaNaziv = regijaNaziv;
 
 	NewBindSQL("dgRegija", "SELECT [KSDU_SF_CODE], [KSDU_SF_OPIS1] FROM  " + CommonDBGet() + ".[dbo].[KPSYSIFA] WHERE [KSDU_SF_TIP] ='V' and KSDU_SF_CODE like '%" + searchRegijaSifra + "%' and KSDU_SF_OPIS1 like '%" + searchRegijaNaziv + "%'");
-
+	
     cursor("dflt");
 }
 
@@ -183,12 +184,9 @@ function ebSearchSklSifra@TextChange(){
 	searchSkladiste();
 }
 function ebSearchSklNaziv@TextChange(){
-	MessageBox(searchSklNaziv.size);
-	MessageBox(size(searchSklNaziv));
-	// if(searchSklNaziv.size > 2 || searchSklNaziv.size == 0){
-	// 	MessageBox(">2 ili == 0");
-	// 	searchSkladiste();
-	// }
+	if(searchSklNaziv.length > 2 || searchSklNaziv.length == 0){
+		searchSkladiste();
+	}
 }
 function searchSkladiste(){
 	cursor("wait");
@@ -200,7 +198,9 @@ function ebSearchArtiklSifra@TextChange(){
 	searchArtikl();
 }
 function ebSearchArtiklNaziv@TextChange(){
-	searchArtikl();
+	if(searchArtiklNaziv.length > 2 || searchArtiklNaziv.length == 0){
+		searchArtikl();
+	}
 }
 function searchArtikl(){
 	cursor("wait");
@@ -212,7 +212,9 @@ function ebSearchPartnerSifra@TextChange(){
 	searchPartner();
 }
 function ebSearchPartnerNaziv@TextChange(){
-	searchPartner();
+	if(searchPartnerNaziv.length > 2 || searchPartnerNaziv.length == 0){
+		searchPartner();
+	}
 }
 function searchPartner(){
 	cursor("wait");
@@ -224,7 +226,9 @@ function ebSearchRegijaSifra@TextChange(){
 	searchRegija();
 }
 function ebSearchRegijaNaziv@TextChange(){
-	searchRegija();
+	if(searchRegijaNaziv.length > 2 || searchRegijaNaziv.length == 0){
+		searchRegija();
+	}
 }
 function searchRegija(){
 	cursor("wait");
@@ -272,6 +276,7 @@ function gbPripremi@clicked(){
 	cursor("wait");
     	
 	setChartByMonth();
+
 	setChartByDaysOfMonth();
 
 	setHorizontalBars();
@@ -1246,11 +1251,13 @@ function setCustomerDataGrid(){
 	}
 	else 
 	{
-		sql_str = sql_str + " (SELECT nkpr_gl_cusnme , nkpr_gl_cuscod , SalesNew = ISNULL(SUM(CASE WHEN nkpr_gl_dviza = 'D' THEN nkpr_gl_tecaj * nkpr_gl_total ELSE nkpr_gl_total END) , 0)";
+		sql_str = sql_str + " (SELECT nkpr_gl_cusnme , nkpr_gl_cuscod , SalesNew = ISNULL(SUM(CASE WHEN nkpr_gl_dviza = 'D' THEN nkpr_gl_tecaj * nkpr_gl_total ELSE nkpr_gl_total END) , 0), ";
         sql_str = sql_str + " ROW_NUMBER() OVER( ORDER BY ISNULL(SUM(CASE WHEN nkpr_gl_dviza= 'D' THEN nkpr_gl_tecaj*nkpr_ln_amt ELSE nkpr_ln_amt END), 0) DESC ) As Num";
 		sql_str = sql_str + " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv";
 		//if regija<> ''
 		sql_str = sql_str + " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart g ON nkpr_gl_cuscod = g.nksc_partcode AND g.nksc_regija = '" + regija + "'";
+		
+		sql_str = sql_str + " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkprinvl ON nkpr_gl_num = nkpr_ln_invnm";
 		//endif
 		sql_str = sql_str + " WHERE 1 = 1";
 		if ( mjesec_h != "" )
