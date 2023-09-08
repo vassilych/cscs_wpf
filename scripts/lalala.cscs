@@ -2,13 +2,17 @@
 function btn1@Clicked(sender, load){
     //MessageBox(varijabla);
     varijabla += "x";
-
+SetWidgetOptions("tb2", "Visible", "False");
 }
 
 function tb1@textChange(sender, load){
     MessageBox("tb1@textChange");
 }
 
+function btn2@Clicked(sender, load){
+SetWidgetOptions("tb2", "IsEnabled", "False");
+
+}
 
 CreateWindow("../../scripts/lalala.xaml");
 
