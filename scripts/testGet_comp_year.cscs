@@ -1,0 +1,3 @@
+result = Get_comp_yearFunction("KAMEND","");
+MessageBox(result);
+quit;

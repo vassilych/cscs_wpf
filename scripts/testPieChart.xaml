@@ -5,19 +5,12 @@
         xmlns:local="clr-namespace:WpfCSCS"
         xmlns:wcl="clr-namespace:WpfControlsLibrary;assembly=WpfControlsLibrary"
         xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
-        xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts"
         mc:Ignorable="d"
         Title="NumericBox"
         Height="500"
         Width="500">
 	<Grid>
-		<lvc:PieChart LegendPosition="Bottom"
-                      x:Name="PieChart1"
-                      VerticalAlignment="Top"
-                      HorizontalAlignment="Left"
-                      Width="350"
-                      Height="350"
-                      Margin="25" />
+		
 		<Button x:Name="Button1"
                 Content="Refresh"
                 VerticalAlignment="Top"

@@ -74,6 +74,8 @@ namespace SplitAndMerge
 	     interpreter.RegisterFunction("SetText", new SetTextWidgetFunction());
 	     interpreter.RegisterFunction("AddWidgetData", new AddWidgetDataFunction());
 	     interpreter.RegisterFunction("SetWidgetOptions", new SetWidgetOptionsFunction());
+	     interpreter.RegisterFunction("Get_comp_yearFunction", new Get_comp_yearFunction());
+	     interpreter.RegisterFunction("Get_dbaseFunction", new Get_dbaseFunction());
 	     interpreter.RegisterFunction("GetSelected", new GetSelectedFunction());
 	     interpreter.RegisterFunction("SetBackgroundColor", new SetColorFunction(true));
 	     interpreter.RegisterFunction("SetForegroundColor", new SetColorFunction(false));
@@ -3764,7 +3766,81 @@ namespace WpfCSCS
 			return new Variable(itemsAdded);
 		}
 	}
+	public class Get_comp_yearFunction : ParserFunction
+	{
+		protected override Variable Evaluate(ParsingScript script)
+		{
+			List<Variable> args = script.GetFunctionArgs();
+			Utils.CheckArgs(args.Count, 2, m_name);
 
+			var comp_code = Utils.GetSafeString(args, 0).ToLower();
+			var type_of_code = Utils.GetSafeString(args, 1).ToLower();
+			SqlConnection conn = new SqlConnection(CSCS_SQL.ConnectionString);
+
+			conn.Open();
+
+			CSCS_GUI.Adictionary.SY_DATABASESList = AdictionaryLocal.CacheAdictionary.GetSY_DATABASES(conn);
+			var result = CSCS_GUI.Adictionary.SY_DATABASESList.FirstOrDefault(p => p.SYCD_COMPCODE.ToLower().TrimEnd() == comp_code.TrimEnd()).SYCD_YEAR;
+
+			conn.Close();
+			return new Variable(result); ;
+		}
+
+		
+	}
+	public class Get_dbaseFunction : ParserFunction
+	{
+		protected override Variable Evaluate(ParsingScript script)
+		{
+			List<Variable> args = script.GetFunctionArgs();
+			Utils.CheckArgs(args.Count, 2, m_name);
+
+			var USERCODE = Utils.GetSafeString(args, 0).ToLower();
+			var offset = Utils.GetSafeInt(args, 1);
+			SqlConnection conn = new SqlConnection(CSCS_SQL.ConnectionString);
+
+			conn.Open();
+
+			CSCS_GUI.Adictionary.SY_DATABASESList = AdictionaryLocal.CacheAdictionary.GetSY_DATABASES(conn);
+			var tmp = CSCS_GUI.Adictionary.SY_DATABASESList.FirstOrDefault(p => p.SYCD_USERCODE.ToLower().TrimEnd() == USERCODE.TrimEnd());
+			if (tmp != null)
+			{
+				var startYear = tmp.SYCD_YEAR;
+				var SYCD_COMPCODE = tmp.SYCD_COMPCODE;
+				var startYearWithOffset = int.Parse(startYear) + offset;
+				var tmp2 = CSCS_GUI.Adictionary.SY_DATABASESList.FirstOrDefault(p => p.SYCD_COMPCODE.ToLower().TrimEnd() == SYCD_COMPCODE.ToLower().TrimEnd() && p.SYCD_YEAR.ToLower().TrimEnd() == startYearWithOffset.ToString());
+				if (tmp2 != null)
+					return new Variable(tmp2.SYCD_DBASENAME);
+			}
+
+			conn.Close();
+			return new Variable() ;
+		}
+
+
+	}
+	//public class Get_comp_yearFunction : ParserFunction
+	//{
+	//	protected override Variable Evaluate(ParsingScript script)
+	//	{
+	//		List<Variable> args = script.GetFunctionArgs();
+	//		Utils.CheckArgs(args.Count, 2, m_name);
+
+	//		var comp_code = Utils.GetSafeString(args, 0).ToLower();
+	//		var type_of_code = Utils.GetSafeString(args, 1).ToLower();
+	//		SqlConnection conn = new SqlConnection(CSCS_SQL.ConnectionString);
+
+	//		conn.Open();
+
+	//		CSCS_GUI.Adictionary.SY_DATABASESList = AdictionaryLocal.CacheAdictionary.GetSY_DATABASES(conn);
+	//		var result = CSCS_GUI.Adictionary.SY_DATABASESList.FirstOrDefault(p => p.SYCD_COMPCODE.ToLower().TrimEnd() == comp_code.TrimEnd()).SYCD_YEAR;
+
+	//		conn.Close();
+	//		return new Variable(result); ;
+	//	}
+
+
+	//}
 	class SetWidgetOptionsFunction : ParserFunction
 	{
 		public static bool settingTabControlPosition;
@@ -3786,7 +3862,7 @@ namespace WpfCSCS
 
 			foreach (var prop in widget.GetType().GetProperties())
 			{
-				if (prop.Name == option)
+				if (prop.Name.ToLower() == option)
 				{
 					prop.SetValue(widget, Convert.ChangeType(parameter, prop.PropertyType), null);
 				}
@@ -3794,7 +3870,7 @@ namespace WpfCSCS
 
 			}
 
-
+			
 
 
 
