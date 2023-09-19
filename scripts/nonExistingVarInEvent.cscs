@@ -4,6 +4,6 @@ CreateWindow("../../scripts/nonExistingVarInEvent.xaml");
 
 function btn1@clicked(){
     MessageBox("hello!");
-    MessageBox(varX);
+    MessageBox(varXWWW);
     MessageBox("never gets here.")
 }
