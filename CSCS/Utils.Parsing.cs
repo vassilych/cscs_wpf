@@ -773,14 +773,18 @@ namespace SplitAndMerge
                     next == Constants.EMPTY);
         }
 
-        public static bool KeepSpace(Interpreter interpreter, StringBuilder sb, char next)
+        public static bool KeepSpace(Interpreter interpreter, string str, char next)
         {
             if (SpaceNotNeeded(next))
             {
                 return false;
             }
 
-            return EndsWithFunction(sb.ToString(), Constants.FUNCT_WITH_SPACE, interpreter?.Translation?.AdditionalFunctWithSpace);
+            return EndsWithFunction(str, Constants.FUNCT_WITH_SPACE, interpreter?.Translation?.AdditionalFunctWithSpace);
+        }
+        public static bool KeepSpace(Interpreter interpreter, StringBuilder sb, char next)
+        {
+            return KeepSpace(interpreter, sb.ToString(), next);
         }
         public static bool KeepSpaceOnce(Interpreter interpreter, StringBuilder sb, char next)
         {
@@ -1366,8 +1370,14 @@ namespace SplitAndMerge
                     continue;
                 }
                 string extracted = token;
+
                 if (!needed)
                 {
+                    if (script.TryCurrent() == ' ')
+                        if (KeepSpace(script.InterpreterInstance, extracted, script.TryNext()))
+                        {
+                            extracted += script.CurrentAndForward();
+                        }
                     extracted += GetBodyBetween(script, Constants.START_ARG, Constants.END_ARG, Constants.END_STATEMENT);
                 }
                 else

@@ -427,6 +427,7 @@ function mainMenuWindow_OnDisplay(){
     AddMenuItem("TinoDC","Tino.cscs", "Tino test script", "runScript");
     AddMenuItem("TinoDC", "testTPATH.cscs", "testTPATH", "runScript");
     AddMenuItem("TinoDC", "lalala.cscs", "lalala", "runScript");
+    AddMenuItem("TinoDC", "testCHAIN0.cscs", "testCHAIN0", "runScript");
 
     //----------------------   
 }
