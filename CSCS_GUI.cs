@@ -4522,7 +4522,7 @@ namespace WpfCSCS
 					argsStr = argsStr.Substring(0, argsStr.Length - 1);
 				}
 				string[] argsArray = argsStr.Split(separator);
-			string msg = "CmdArgs:";
+			//string msg = "CmdArgs:";
 				var fileFullName = script.GetFilePath(script.Filename);
 				if (!Gui.Parameters.TryGetValue(fileFullName, out parameters))
 				{
@@ -4532,7 +4532,7 @@ namespace WpfCSCS
 					for (int i = 0; i < cmdArgsArr.Length; i++)
 					{
 						parameters.Add(new Variable(cmdArgsArr[i]));
-						msg += "[" + cmdArgsArr[i] + "]";
+						//msg += "[" + cmdArgsArr[i] + "]";
 					}
 				}
 
@@ -4543,9 +4543,9 @@ namespace WpfCSCS
 					//script.StackLevel.Variables[argsArray[i]] = func;
 					script.InterpreterInstance.AddGlobalOrLocalVariable(func.Name, func);
 
-					msg += func.Name + "=[" + parameters[i].AsString() + "] ";
+					//msg += func.Name + "=[" + parameters[i].AsString() + "] ";
 				}
-				MessageBox.Show(msg, parameters.Count + " args", MessageBoxButton.OK, MessageBoxImage.Hand);
+				//MessageBox.Show(msg, parameters.Count + " args", MessageBoxButton.OK, MessageBoxImage.Hand);
 
 				Chains[script.Filename] = script;
 				CheckScriptIsMain(script.Filename);
@@ -4625,6 +4625,10 @@ namespace WpfCSCS
 				result = RunTask(Gui, split2, script, chainName);
 			}
 
+			if (result.Type == Variable.VarType.QUIT)
+			{
+				result.Type = Variable.VarType.NONE;
+            }
 			return result;
 		}
 

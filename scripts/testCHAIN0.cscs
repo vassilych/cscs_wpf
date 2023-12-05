@@ -6,4 +6,5 @@ bla4 = "_d33333";
 path = "C:\\cscs_wpf\\scripts\\script3.cscs";
 CHAIN path WITH myGrid,bla1+bla2,"22222",bla4;
 //it must return here after quiting in script3
-MessageBox("end");
+
+MessageBox("MUST SHOW testCHAIN0.cscs");
