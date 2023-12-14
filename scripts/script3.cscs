@@ -1,10 +1,12 @@
-MessageBox("script3.cscs");
+MessageBox("Starting script3.cscs");
 
 DEFINE arg4, arg5, arg6, arg7 type a size 20;
 
-PARAM arg4,arg5,arg6,arg7;
+PARAM (arg4,arg5,arg6,arg7);
 
 MessageBox("Got params:" + arg4 + " AND " + arg5 + " AND " + arg6 + " AND " + arg7);
 
-CreateWindow("../../scripts/tabControl.xaml");
-
+DEFINE lol type a size 30 RESET;
+lol = "to pass back";
+quit;
+MessageBox("MUST NOT SHOW script3.cscs");
