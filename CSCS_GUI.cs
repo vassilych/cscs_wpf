@@ -5067,8 +5067,14 @@ namespace WpfCSCS
 				newVar.InitVariable(dupVar != null ? dupVar.Init : init, gui, script);
                 if (reset && script.ParentScript != null)
                 {
+                    var guiParent = CSCS_GUI.GetInstance(script.ParentScript);
+                    if (guiParent.DEFINES.TryGetValue(objName.ToLower(), out DefineVariable parentVar))
+                    {
+                        init = parentVar;
+                        newVar.InitVariable(parentVar, gui, script);
+                    }
                     MyAssignFunction.AddVariableMap(objName, script.ParentScript);
-					CreateVariable(script.ParentScript, objName, value, init, type, size, dec, array, local, up, down, dup, false);
+					var newV = CreateVariable(script.ParentScript, objName, value, init, type, size, dec, array, local, up, down, dup, false);
                 }
             }
             return newVar;
