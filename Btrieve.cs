@@ -6885,7 +6885,7 @@ $@"EXECUTE sp_executesql N'
 
                 //------------------------------------------------------------------------
 
-                
+
 
                 gridsArrayClass[gridName].lineCntrVarName = lineCntrVarName.Type == Variable.VarType.STRING ? lineCntrVarName.String : null;
                 gridsArrayClass[gridName].actCntrVarName = actCntrVar.Type == Variable.VarType.STRING ? actCntrVar.String : null;

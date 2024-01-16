@@ -1,0 +1,162 @@
+﻿
+     // MessageBox("!!!");	
+     CreateWindow("../../scripts/emin.xaml");
+
+     function btnTest@clicked()
+     {
+	var a1 = {1,2,3};
+	var a2 = {4,5,6};
+	var a3 = {14,15,16};
+	var a4 = {40,50,60};
+
+	Chart("ChartPoMjesecima", "init");
+	Chart("ChartPoMjesecima", "seriesType", "Columnseries");
+
+	Chart("ChartPoMjesecima", "title", "Naslov grafa", 20);
+	Chart("ChartPoMjesecima", "labels", "y", 13);
+	Chart("ChartPoMjesecima", "labels", "x", 13, {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
+	Chart("ChartPoMjesecima", "xlabelsRotation", 0);
+	
+	Chart("ChartPoMjesecima", "values", a1, "aaaaaa1");
+	Chart("ChartPoMjesecima", "values", a2, "aaaaaa2");
+	Chart("ChartPoMjesecima", "values", a3, "aaaaaa3");
+	Chart("ChartPoMjesecima", "values", a4, "aaaaaa4");
+	
+	Chart("ChartPoMjesecima", "SeparatorStep", 1);
+	Chart("ChartPoMjesecima", "Margins", {50, 20, 0, 30});
+	Chart("ChartPoMjesecima", "TooltipDecimalPlaces", 2);
+
+	MessageBox("mijenjam boje");
+	SetWidgetOptions("ChartPoMjesecima", "Color.Series", { "Blue", "Yellow", "Green", "Red"});
+	//SetWidgetOptions("ChartPoMjesecima", "Color.Series", "Blue|Yellow|Green|Red");
+	
+	MessageBox("mijenjam imena");
+	SetWidgetOptions("ChartPoMjesecima", "Text.SeriesNames", { "Marko", "Slavko", "Treća", "Četvrta"});
+	//SetWidgetOptions("ChartPoMjesecima", "Text.SeriesNames", "Marko|Slavko|Treća|Četvrta"); // radi i ovo
+	
+	
+	
+	
+	
+	
+	
+	return;
+
+	MessageBox("1");
+	SetWidgetOptions("btnTest", "Color.Background", "Gold");
+	MessageBox("2");
+	SetWidgetOptions("ellipse1", "Color.Background", "Gold");
+	MessageBox("3");
+	SetWidgetOptions("b1", "Color.Background", "Gold");
+	MessageBox("4");
+	SetWidgetOptions("l1", "Color.Background", "Gold");
+	MessageBox("5");
+	SetWidgetOptions("textBlock1", "Color.Background", "Gold");
+	MessageBox("6");
+	SetWidgetOptions("dataGrid1", "Color.Background", "Gold");
+	MessageBox("7");
+
+	MessageBox("1.");
+	SetWidgetOptions("btnTest", "Color.Border", "White");
+	MessageBox("2.");
+	SetWidgetOptions("ellipse1", "Color.Border", "White");
+	MessageBox("3.");
+	SetWidgetOptions("b1", "Color.Border", "White");
+	MessageBox("4.");
+	SetWidgetOptions("l1", "Color.Border", "White");
+	MessageBox("5.");
+	SetWidgetOptions("textBlock1", "Color.Border", "White");
+	MessageBox("6.");
+	SetWidgetOptions("dataGrid1", "Color.Border", "White");
+	MessageBox("7.");
+
+	MessageBox("1..");
+	SetWidgetOptions("btnTest", "Text", "bla bla 1");
+	MessageBox("2..");
+	SetWidgetOptions("ellipse1", "Text", "bla bla 2");
+	MessageBox("3..");
+	SetWidgetOptions("b1", "Text", "bla bla 3");
+	MessageBox("4..");
+	SetWidgetOptions("l1", "Text", "bla bla 4");
+	MessageBox("5..");
+	SetWidgetOptions("textBlock1", "Text", "bla bla 5");
+	MessageBox("6..");
+	SetWidgetOptions("dataGrid1", "Text", "bla bla 6");
+	MessageBox("7..");
+
+	MessageBox("1...");
+	SetWidgetOptions("btnTest", "Color.Text", "Green");
+	MessageBox("2...");
+	SetWidgetOptions("ellipse1", "Color.Text", "Green");
+	MessageBox("3...");
+	SetWidgetOptions("b1", "Color.Text", "Green");
+	MessageBox("4...");
+	SetWidgetOptions("l1", "Color.Text", "Green");
+	MessageBox("5...");
+	SetWidgetOptions("textBlock1", "Color.Text", "Green");
+	MessageBox("6...");
+	SetWidgetOptions("dataGrid1", "Color.Text", "Green");
+	MessageBox("7...");
+
+	MessageBox("1....");
+	SetWidgetOptions("btnTest", "Enabled", "False");
+	MessageBox("2.....");
+	SetWidgetOptions("ellipse1", "Enabled", "False");
+	MessageBox("3....");
+	SetWidgetOptions("b1", "Enabled", "False");
+	MessageBox("4....");
+	SetWidgetOptions("l1", "Enabled", "False");
+	MessageBox("5....");
+	SetWidgetOptions("textBlock1", "Enabled", "False");
+	MessageBox("6....");
+	SetWidgetOptions("dataGrid1", "Enabled", "False");
+	MessageBox("7....");
+
+	MessageBox("1.....");
+	SetWidgetOptions("btnTest", "Visible", "False");
+	MessageBox("2.....");
+	SetWidgetOptions("ellipse1", "Visible", "False");
+	MessageBox("3.....");
+	SetWidgetOptions("b1", "Visible", "False");
+	MessageBox("4.....");
+	SetWidgetOptions("l1", "Visible", "False");
+	MessageBox("5.....");
+	SetWidgetOptions("textBlock1", "Visible", "False");
+	MessageBox("6.....");
+	SetWidgetOptions("dataGrid1", "Visible", "False");
+	MessageBox("7.....");
+
+
+	//image1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	// iz nekog razloga u CSCS_GUI.cs
+	// FrameworkElement widget = gui.GetWidget(widgetName);
+	// za grid kao first child u Windowu, vraća null
+	//SetWidgetOptions("grid1", "Color", "Blue");
+	//MessageBox("6");
+
+	//SetWidgetOptions("btnTest", "Text", "lalala");
+	//SetWidgetOptions("btnTest", "Color.Text", "Red");
+	//SetWidgetOptions("btnTest", "Visible", "True");
+	//SetWidgetOptions("btnTest", "Visible", "False");
+	//SetWidgetOptions("btnTest", "Visible", false);
+	//SetWidgetOptions("btnTest", "Enabled", "False");
+	//SetWidgetOptions("btnTest", "asdasd", false);
+
+     }
+
+
+

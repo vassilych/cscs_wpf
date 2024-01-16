@@ -1,8 +1,14 @@
-#MAINMENU;
-#WINFORM mainMenuWindow.xaml;
-//CreateWindow("../../scripts/mainMenuWindow.xaml");
-
 StartDebugger(13337, true, "*");
+
+#MAINMENU;
+//#WINFORM mainMenuWindow.xaml;
+CreateWindow("../../scripts/mainMenuWindow.xaml");
+
+
+//CHAIN ("../../scripts/emin.cscs");
+
+
+
 
 define mainMenuDC type a;
 
@@ -64,6 +70,14 @@ function mainMenuWindow_OnDisplay(){
 
     AddMenuSeparator("ScriptsDC");
     AddMenuItem("ScriptsDC", "TinoDC", "Tino");
+
+
+    AddMenuSeparator("ScriptsDC");
+    AddMenuItem("ScriptsDC", "EminDC", "Emin");
+
+    AddMenuItem("ScriptsDC", "wsbiprb.cscs", "wsbiprb", "runScript");
+
+
 
     //------------ BTRIEVE ------------------------
 
@@ -422,14 +436,17 @@ function mainMenuWindow_OnDisplay(){
     AddMenuItem("NebojsaDC", "testGET_FORM_NAME.cscs", "testGET_FORM_NAME", "runScript");
     AddMenuItem("NebojsaDC", "testGFLD.cscs", "testGFLD", "runScript");
     AddMenuItem("NebojsaDC", "testWeb.cscs", "testWeb", "runScript");
-    AddMenuItem("NebojsaDC", "testGet_comp_year.cscs", "testGet_comp_year", "runScript");
-    AddMenuItem("NebojsaDC", "testGet_dbase.cscs", "testGet_dbase", "runScript");
 
     //----- TINO -------------------------------  
     AddMenuItem("TinoDC","Tino.cscs", "Tino test script", "runScript");
     AddMenuItem("TinoDC", "testTPATH.cscs", "testTPATH", "runScript");
     AddMenuItem("TinoDC", "lalala.cscs", "lalala", "runScript");
     AddMenuItem("TinoDC", "testCHAIN0.cscs", "testCHAIN0", "runScript");
+
+    
+     //----- EMIN -------------------------------  
+    AddMenuItem("EminDC","emin.cscs", "Emin test script", "runScript");
+
 
     //----------------------   
 }

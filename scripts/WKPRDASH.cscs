@@ -1368,7 +1368,10 @@ function setCustomerDataGrid(){
 		Format("SALESPART2_AR", "nofd");
 		Format("SALESPART1_AR", "nofd");
 		
+
+		//MessageBox( Size(sqlResult) - 1);
 		DisplayArraySetup("dgStavke", counterFld: "cntr1", activeElements: Size(sqlResult) - 1, maxElements: 10);
+		
 		//MessageBox("KRAJ gbRecalc1");
 	}
 
