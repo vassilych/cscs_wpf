@@ -4593,8 +4593,12 @@ namespace WpfCSCS
 			if (m_paramMode)
 			{
 				var argsStr = Utils.GetBodyBetween(script, '\0', '\0', Constants.END_STATEMENT);
+				if (argsStr.EndsWith(")"))
+				{
+					argsStr = argsStr.Substring(0, argsStr.Length - 1);
+				}
 				string[] argsArray = argsStr.Split(separator);
-				//string msg = "CmdArgs:";
+			//string msg = "CmdArgs:";
 				var fileFullName = script.GetFilePath(script.Filename);
 				if (!Gui.Parameters.TryGetValue(fileFullName, out parameters))
 				{
@@ -4697,6 +4701,10 @@ namespace WpfCSCS
 				result = RunTask(Gui, split2, script, chainName);
 			}
 
+			if (result.Type == Variable.VarType.QUIT)
+			{
+				result.Type = Variable.VarType.NONE;
+            }
 			return result;
 		}
 
@@ -4805,8 +4813,9 @@ namespace WpfCSCS
 			while (script.Current != Constants.END_STATEMENT && script.StillValid())
 			{
 				var labelName = Utils.GetToken(script, Constants.TOKEN_SEPARATION).ToLower();
-				var value = labelName == "up" || labelName == "down" || labelName == "local" || labelName == "setup" || labelName == "close" ||
-				    labelName == "addrow" || labelName == "insertrow" || labelName == "deleterow" ?
+				var value = labelName == "up" || labelName == "down" || labelName == "local" || labelName == "setup" ||
+					labelName == "close" || labelName == "reset" ||
+                    labelName == "addrow" || labelName == "insertrow" || labelName == "deleterow" ?
 				    new Variable(true) :
 					  script.Current == Constants.END_STATEMENT ? Variable.EmptyInstance :
 					  new Variable(Utils.GetToken(script, separator));
@@ -4904,7 +4913,7 @@ namespace WpfCSCS
 			{
 				Variable newVar = CreateVariable(script, objectName, GetVariableParameter("value"), GetVariableParameter("init"),
 				    GetParameter("type"), GetIntParameter("size"), GetIntParameter("dec"), GetIntParameter("array"),
-				    GetBoolParameter("local"), GetBoolParameter("up"), GetBoolParameter("down"), GetParameter("dup"));
+				    GetBoolParameter("local"), GetBoolParameter("up"), GetBoolParameter("down"), GetParameter("dup"), GetBoolParameter("reset"));
 				return newVar;
 			}
 			if (Name == Constants.DISPLAY_ARRAY)
@@ -5112,7 +5121,8 @@ namespace WpfCSCS
 		}
 
 		public static Variable CreateVariable(ParsingScript script, string name, Variable value, Variable init,
-		    string type = "", int size = 0, int dec = 3, int array = 0, bool local = false, bool up = false, bool down = false, string dup = null)
+		    string type = "", int size = 0, int dec = 3, int array = 0, bool local = false,
+			bool up = false, bool down = false, string dup = null, bool reset = false)
 		{
 			var gui = CSCS_GUI.GetInstance(script);
 			DefineVariable dupVar = null;
@@ -5131,9 +5141,19 @@ namespace WpfCSCS
 				newVar = dupVar != null ? new DefineVariable(objName, dupVar, local) :
 						      new DefineVariable(objName, valueStr, type, size, dec, array, local, up, down);
 				newVar.InitVariable(dupVar != null ? dupVar.Init : init, gui, script);
-			}
-
-			return newVar;
+                if (reset && script.ParentScript != null)
+                {
+                    var guiParent = CSCS_GUI.GetInstance(script.ParentScript);
+                    if (guiParent.DEFINES.TryGetValue(objName.ToLower(), out DefineVariable parentVar))
+                    {
+                        init = parentVar;
+                        newVar.InitVariable(parentVar, gui, script);
+                    }
+                    MyAssignFunction.AddVariableMap(objName, script.ParentScript);
+					var newV = CreateVariable(script.ParentScript, objName, value, init, type, size, dec, array, local, up, down, dup, false);
+                }
+            }
+            return newVar;
 		}
 
 		DefineVariable DataGrid(ParsingScript script, string name, bool addrow, bool insertrow, bool deleterow, string action)

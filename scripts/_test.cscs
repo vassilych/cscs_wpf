@@ -1,0 +1,3 @@
+args = CommandLineArgs();
+
+MessageBox("args=" + args);

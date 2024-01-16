@@ -770,6 +770,9 @@ namespace SplitAndMerge
                 case "+":
                     leftCell.String = leftCell.AsString() + rightCell.AsString();
                     break;
+                case "*":
+                    leftCell.String = leftCell.AsString().Trim() + rightCell.AsString().Trim();
+                    break;
                 case "<":
                     string arg1 = leftCell.AsString();
                     string arg2 = rightCell.AsString();

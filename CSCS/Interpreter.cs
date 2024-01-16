@@ -183,6 +183,7 @@ namespace SplitAndMerge
             RegisterFunction(Constants.CANCEL, new CancelFunction());
             RegisterFunction(Constants.CANCEL_RUN, new ScheduleRunFunction(false));
             RegisterFunction(Constants.CHECK_LOADER_MAIN, new CheckLoaderMainFunction());
+            RegisterFunction(Constants.COMMLINE_ARGS, new CommandLineArgsFunction());
             RegisterFunction(Constants.CONTAINS, new ContainsFunction());
             RegisterFunction(Constants.CURRENT_PATH, new CurrentPathFunction());
             RegisterFunction(Constants.DATE_TIME, new DateTimeFunction(false));
@@ -299,6 +300,9 @@ namespace SplitAndMerge
             toParse.OriginalScript = script;
             toParse.Filename = filename;
             toParse.Context = context;
+
+            //var tokens = new HashSet<string>() { "function", "dllfunction", "define" };
+            //var first = Utils.GetSubscript(toParse, tokens);
 
             if (mainFile)
             {
@@ -1269,7 +1273,7 @@ namespace SplitAndMerge
                                           new Variable(exc.Message), args.Count > 0 ? args[0] : Variable.EmptyInstance, script);
                 if (task == null)
                 {
-                     throw;
+                    throw;
                 }
                 result = task.Result;
             }
