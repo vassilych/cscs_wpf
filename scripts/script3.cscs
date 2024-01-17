@@ -1,3 +1,4 @@
+
 MessageBox("Starting script3.cscs");
 
 DEFINE arg4, arg5, arg6, arg7 type a size 20;
@@ -5,6 +6,9 @@ DEFINE arg4, arg5, arg6, arg7 type a size 20;
 PARAM (arg4,arg5,arg6,arg7);
 
 MessageBox("Got params:" + arg4 + " AND " + arg5 + " AND " + arg6 + " AND " + arg7);
+
+resetfield("testCHAIN0", "lala");
+messageBox(lala);
 
 DEFINE lol type a size 30 RESET;
 MessageBox("In script3.cscs lol=[" + lol + "]");

@@ -6879,8 +6879,30 @@ $@"EXECUTE sp_executesql N'
                     //Gui.DEFINES.TryGetValue(lineCntrVarName.String.ToLower(), out DefineVariable defCntrVar){
                     //    defCntrVar = 
                     //}
-                    fillDataTable(gridName, Gui);
-                    return Variable.EmptyInstance;
+
+                    dg = Gui.GetWidget(gridName) as DataGrid;
+                    if (dg == null)
+                    {
+                        return Variable.EmptyInstance;
+                    }
+
+                    var dgColumns = dg.Columns;
+                    for (int i = 0; i < dgColumns.Count; i++)
+                    {
+                        var column = dg.Columns.ElementAt(i);
+
+                        if (column is DataGridTemplateColumn)
+                        {
+                            var dgtc = column as DataGridTemplateColumn;
+
+                            var cell = dgtc.CellTemplate.LoadContent();
+                            if (cell is ASGridCell == false)
+                            {
+                                fillDataTable(gridName, Gui);
+                                return Variable.EmptyInstance;
+                            }
+                        }
+                    }
                 }
 
                 //------------------------------------------------------------------------

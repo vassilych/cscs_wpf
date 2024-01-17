@@ -1,0 +1,6 @@
+DEFINE lala type a size 40;
+
+lala = "text";
+MessageBox("2: lala = " + lala);
+
+quit;

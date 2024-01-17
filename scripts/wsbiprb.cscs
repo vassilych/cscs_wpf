@@ -882,6 +882,9 @@ function wsbiprba_onDisplay()
 	//DisplayArraySetup("dgRacuniMjesec", counterFld: "cntr3", activeElements: Size(sqlResult) - 1, maxElements: 10);
 	//DisplayArray("dgRacuniMjesec", "redisplayFromEnd");
 	//MessageBox("kRAJ T10RacuniMj");
+
+    SetWidgetOptions("dgRacuniMjesec", "opcija", "vrijednost");
+
     }
 
 function wsbiprbb_onStart()

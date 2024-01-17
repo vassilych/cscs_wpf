@@ -593,8 +593,29 @@ namespace WpfCSCS
 
 		private void LoadCompilerConstantsTxt()
 		{
-			var curr = Directory.GetCurrentDirectory();
-			var lines = File.ReadLines(Path.Combine(curr, "../../scripts/CompilerConstants.txt"));
+			//var curr = Directory.GetCurrentDirectory();
+			//MessageBox.Show("curr = " + curr);
+
+			//var curr2 = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+			//MessageBox.Show("curr2 = " + curr2);
+
+			var curr3 = AppDomain.CurrentDomain.BaseDirectory;
+			//MessageBox.Show("curr3 = " + curr3);
+
+			//var curr4 = System.IO.Directory.GetCurrentDirectory();
+			//MessageBox.Show("curr4 = " + curr4);
+
+			//var curr5 = Environment.CurrentDirectory;
+			//MessageBox.Show("curr5 = " + curr5);
+
+			//var curr6 = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+			//MessageBox.Show("curr6 = " + curr6);
+
+			//var curr7 = System.IO.Path.GetDirectory(Application.ExecutablePath);
+			//MessageBox.Show("curr7 = " + curr7);
+
+
+			var lines = File.ReadLines(Path.Combine(curr3, "../../scripts/CompilerConstants.txt"));
 			foreach (var line in lines)
 			{
 				if (line.StartsWith("{") || line.StartsWith(";") || line.Trim().Count() == 0)

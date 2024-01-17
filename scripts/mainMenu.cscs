@@ -369,6 +369,14 @@ function mainMenuWindow_OnDisplay(){
 
     AddMenuItem("OtherDC", "testProgressBar.cscs", "testProgressBar", "runScript");
     
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testDEFINEvar1.cscs", "testDEFINEvar1", "runScript");
+    
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testDEFINEvar2.cscs", "testDEFINEvar2", "runScript");
+    
 
     //----- IVAN -------------------------------  
 
@@ -436,6 +444,8 @@ function mainMenuWindow_OnDisplay(){
     AddMenuItem("NebojsaDC", "testGET_FORM_NAME.cscs", "testGET_FORM_NAME", "runScript");
     AddMenuItem("NebojsaDC", "testGFLD.cscs", "testGFLD", "runScript");
     AddMenuItem("NebojsaDC", "testWeb.cscs", "testWeb", "runScript");
+    AddMenuItem("NebojsaDC", "testGet_comp_year.cscs", "testGet_comp_year", "runScript");
+    AddMenuItem("NebojsaDC", "testGet_dbase.cscs", "testGet_dbase", "runScript");
 
     //----- TINO -------------------------------  
     AddMenuItem("TinoDC","Tino.cscs", "Tino test script", "runScript");
