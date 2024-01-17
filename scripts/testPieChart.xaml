@@ -10,20 +10,20 @@
         Title="NumericBox"
         Height="500"
         Width="500">
-	<Grid>
-		<lvc:PieChart LegendPosition="Bottom"
+    <Grid>
+        <lvc:PieChart LegendPosition="Bottom"
                       x:Name="PieChart1"
                       VerticalAlignment="Top"
                       HorizontalAlignment="Left"
                       Width="350"
                       Height="350"
-                      Margin="25" />
-		<Button x:Name="Button1"
+                      Margin="32,92,0,0" />
+        <Button x:Name="Button1"
                 Content="Refresh"
                 VerticalAlignment="Top"
                 HorizontalAlignment="Left"
                 Width="150"
                 Height="50"
                 Margin="0" />
-	</Grid>
+    </Grid>
 </Window>

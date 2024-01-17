@@ -1,4 +1,3 @@
-
 define myGrid,bla1,bla2,bla3,bla4,lol type a size 20;
 define lala,y type a size 50;
 lala= "asdasda";
@@ -6,7 +5,7 @@ myGrid = "_aasd";
 bla1 = "_dfggf";
 bla2 = "xccvxcvxcv";
 bla4 = "_d33333";
-path = "C:\\users\\User\\Documents\\Github\\cscs_wpf\\scripts\\script3.cscs";
+path = "C:\\cscs_wpf\\scripts\\script3.cscs";
 lol="Value in testCHAIN0"; 
 CHAIN path WITH myGrid,bla1+bla2,"22222",bla4;
 //it must return here after quiting in script3
@@ -19,8 +18,6 @@ MessageBox("Got lalaaaaa: "+lala);
 
 function change(y)
 {
-    return "bbbb";
+return "bbbb";
 }
-
-//quit;
-exit;
+quit;

@@ -1,7 +1,7 @@
 
 MessageBox("script1.cscs");
 
-CreateWindow("../../scripts/tabControl.xaml");
+CreateWindow(strTrim(tpath()) +"tabControl.xaml");
 
 DEFINE varInScript1_2 type a size 20;
 varInScript1_2 = "varInScript1_2Value";
@@ -12,7 +12,7 @@ function func1(){
 }
 
 MessageBox("chaining to script2.cscs");
-CHAIN "../../scripts/script2.cscs" WITH "argument1",varInScript1_2,func1(),"argument4"+varInScript1_2;
+CHAIN strTrim(tpath()) +"script2.cscs" WITH "argument1",varInScript1_2,func1(),"argument4"+varInScript1_2;
 
 MessageBox("back in script1.cscs");
 

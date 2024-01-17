@@ -9,20 +9,21 @@
         Title="Prodaja"
         Height="600"
         Width="1200" WindowStartupLocation="CenterScreen">
-
     <Grid Margin="10,30,30,30">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+        <lvc:CartesianChart LegendPosition="Top"
+                            Name="ChartPoMjesecima"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Left"
+                            Width="400"
+                            Height="235"
+                            Margin="29,27,0,0"
+                            />
         <lvc:CartesianChart Name="ChartPoDanima"
-                            Grid.Column="1"
-                            Grid.Row="0"
-                            Margin="18,27,10,10" />
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Right"
+                            Width="562"
+                            Height="235"
+                            Margin="0,27,0,0" />
 
         <DataGrid GridLinesVisibility="Vertical"
                   VerticalGridLinesBrush="LightGray"
@@ -37,8 +38,6 @@
                   HorizontalScrollBarVisibility="Auto"
                   VerticalScrollBarVisibility="Auto"
                   Background="White"
-                  Grid.Column="0"
-                  Grid.Row="1"
                   TabIndex="4">
             <DataGrid.Resources>
                 <Style TargetType="{x:Type DataGridColumnHeader}">
@@ -124,15 +123,13 @@
                   VerticalAlignment="Top"
                   Height="216"
                   Width="470"
-                  Margin="64,28,0,0"
+                  Margin="644,298,0,0"
                   IsReadOnly="true"
                   Name="dgRacuniMjesec"
                   AlternatingRowBackground="LightGray"
                   HorizontalScrollBarVisibility="Auto"
                   VerticalScrollBarVisibility="Auto"
                   Background="White"
-                  Grid.Column="1"
-                  Grid.Row="1"
                   TabIndex="3">
             <DataGrid.Resources>
                 <Style TargetType="{x:Type DataGridColumnHeader}">
@@ -202,13 +199,6 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <TextBox HorizontalAlignment="Left" TextWrapping="Wrap" Text="Prodaja po mjesecima" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="156,10,0,0"/>
-        <Button Name="Buty"  Content="Button" Margin="544,39,521,118" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"/>
-        <lvc:CartesianChart LegendPosition="Right"
-                            x:Name="ChartPoMjesecima"
-                            VerticalAlignment="Top"
-                            HorizontalAlignment="Right"
-                            Width="544"
-                            Height="252" Margin="0,0,26,0" />
+        <Button x:Name="buttonRefresh" Content="Button" HorizontalAlignment="Left" Margin="987,187,0,0" VerticalAlignment="Top" Height="75" Width="143"/>
     </Grid>
 </Window>

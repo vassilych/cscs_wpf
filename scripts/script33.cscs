@@ -1,0 +1,16 @@
+MessageBox("Starting script3.cscs");
+
+DEFINE arg3,arg40, arg5, arg6, arg7,arg8 type a size 20;
+define bibli type a size 20 array 10;
+
+define num type n;
+define yn type l;
+define datexy,date2 type d size 8;
+PARAM datexy,yn,num,arg3,arg40,arg5,arg6,arg7,bibli,jsonstr,arg8;
+
+MessageBox("Got parameters:"  + datexy +" AND "  + yn +" AND "+ num +" AND " + arg3 +" AND "+ arg40 + " AND " + arg5 + " AND " + arg6 + " AND " + arg7);
+MessageBox("Got parameters II:"+arg5+" "+bibli[1]+" "+bibli[5]+" "+bibli[2]+" "+bibli[3]+" "+bibli[4]+" "+arg8);
+date2="10/10/22";
+MessageBox("Got parameters III:"+jsonstr);
+
+quit;

@@ -1,7 +1,7 @@
-    CreateWindow(strTrim(tpath()) +"wsbiprb.xaml");
-    //CreateWindow(strTrim(tpath()) +"testTabWin.xaml");
+    //CreateWindow(strTrim(tpath()) +"wsbiprb.xaml");
+    CreateWindow(strTrim(tpath()) +"dashSLA.xaml");
     //Import("C:\wpfcscs\Modules\CSCS.Math\bin\Debug\CSCS.Math");
-    Import("C:\cscs_wpf\Modules\CSCS.Math");
+    Import("C:\wpfcscs\Modules\CSCS.Math");
     DEFINE skladiste type i size 3;
     DEFINE skladisteNaziv type a size 50;
 
@@ -17,14 +17,13 @@
 
     DEFINE PKMK_SKL_NAZIV_arr type a size 50 array 300;
     DEFINE cntr1 type i;
-    define ovagod_h,lani_h type a size 4;
 
     DEFINE tot_ovagod type n size 14 dec 0 ;
     DEFINE tot_lani type n size 14 dec 0 ;
     DEFINE tot_ovajmj type n size 14 dec 0 ;
     DEFINE tot_proslimj type n size 14 dec 0 ;
     DEFINE postotak type n size 10 dec 2 ;
-    //DEFINE postotakMj type n size 10 dec 2 ;
+    DEFINE postotakMj type n size 10 dec 2 ;
     define postotakTj type n size 10 dec 2 ;
     DEFINE artiklNaziv type a size 30;
     define artikl type a size 15 ;
@@ -69,10 +68,9 @@
 
     DEFINE pripremljeno type l;
 
-function Wsbiprb_onDisplay()
-//function testTabWin_onDisplay()
+//function Wsbiprb_onDisplay()
+function dashSLA_onDisplay()
     {
-//messagebox("pocetak");
     sqlQueryString = "select SY_CC_USER, SY_CC_YEAR, SY_CC_DBASE from " + CommonDBGet() + ".dbo.NKSYCCYR WHERE SY_CC_CODE = '" + Substring(CoGet(), 1, 2) + "'";
     try
         {
@@ -82,25 +80,18 @@ function Wsbiprb_onDisplay()
         {
         MessageBox(exc);
         }
-//messagebox("pocetak1");
     RectangleA.Width="100";
     SetProperty("RectangleA","Width","100");
     setimage(strTrim(tpath())+"Blue Abstract Gradient Background Jamboard Background.png");
-messagebox("pocetak1");
-    postotakMj = 0;
-messagebox("pocetak2");
-    postotak= 0;
+    postotak = 0;
+    postotakMj= 0;
     skladiste = 0;
-messagebox("pocetak3");
     searchSklSifra = "";
     searchSklNaziv = "";
-messagebox("pocetak4");
     imeFirme = sqlResult[1][0].trim(); // KAMEND
     ovagod_h = sqlResult[1][1].trim(); // 2022
     lani_h = string(int(ovagod_h) - 1); // 2
-messagebox("pocetak5");
     trenutnaGodinaBaza = sqlResult[1][2].trim(); // ime baze
-messagebox("pocetak6");
     sqlQueryString = " SELECT FORMAT([KPSY_FISCAL_YR], 'yyyy-MM-dd') FROM " + trenutnaGodinaBaza + ".[dbo].[KPSYMSTR]";
     try
         {
@@ -126,12 +117,8 @@ messagebox("pocetak6");
     sqlNaDan = ovagod_h + "-12-31";
     sqlOdDana = string(int(ovagod_h) - 1) + "-01-01";
     danas_h = Now("dd/MM/yy");
-    if now("yyyy") > ovagod_h{
-        danas_h= "31/12/"+subString(ovagod_h,2,2);
-    }
     mjesec_h = Now("MM");
     mjesec_h = string(int(mjesec_h) - 1);
-    mjesec_h= Mjesec_h=< "0" ? "12" : mjesec_h;
     proslimjesec = string(int(mjesec_h) - 1);
     mjesec_h0X = mjesec_h.length == 1 ? "0" + mjesec_h : mjesec_h;
     proslimjesec0X = proslimjesec.length == 1 ? "0" + proslimjesec : proslimjesec;
@@ -152,10 +139,6 @@ messagebox("pocetak6");
 
 
 //MessageBox("sdsd :"+GETPROPERTYSTRINGS("dgStavke"));
-function gbExit@clicked()
-    {
-        quit
-    }
 
 function neSkladiste@clicked()
     {
@@ -321,21 +304,20 @@ function gbRegijaOk@clicked()
     }
     //----------------------------------------
 
-//
 function gbPripremi@clicked()
     {
     cursor("wait");
-    setChartByMonth();
-    setChartByDaysOfMonth();
-    setHorizontalBars();
+//    setChartByMonth();
+//    setChartByDaysOfMonth();
+//    setHorizontalBars();
     //setWeekComparison();
 //    setCustomerAndInvoiceCounts();
-    //setCustomerDataGrid();
+    setCustomerDataGrid();
     //setLast10InvoicesDataGrid();
     //setTop10InvoicesDataGrid();
     //setTop10Products();
     pripremljeno = true;
-    //setRegionPieChart();
+    setRegionPieChart();
     cursor("dflt");
     }
 
@@ -343,8 +325,6 @@ function gbPripremi@clicked()
     define prodaja_kup_og, prodaja_kup_lg type n size 14;
     define broj_rac_og, broj_rac_lg type r size 6;
     define prod_kup_indx type n size 10 dec 2;
-    //    DEFINE arrayProsla type n size 14 array 12;
-    //    DEFINE arrayTrenutna type n size 14 array 12;
 function setCustomerAndInvoiceCounts()
     {
         br_kupaca_og = 0;
@@ -728,32 +708,27 @@ function setChartByMonth()
         tot_ovajmj = 0;
         tot_ovagod = 0;
         tot_lani = 0;
-        //arrayProsla = {};
-        //arrayTrenutna = {};
+        arrayProsla = {};
+        arrayTrenutna = {};
         sales_ar = {};
         DEFINE CNTR type i size 3;
         DEFINE cntry type i size 3;
         cntry= 0
-        DEFINE arrayProsla type n size 14 array 12;
-        DEFINE arrayTrenutna type n size 14 array 12;
+        //DEFINE arrayProsla type n size 14 array 12;
+        //DEFINE arrayTrenutna type n size 14 array 12;
         //MessageBox("Koliko: "+Size(queryResult));
         for(i = 1; i < 13; i++)
         {
             if(i >= Size(queryResult))
             {
-/*                 arrayProsla.add(0);
+                arrayProsla.add(0);
                 sales_ar.add(0);
- */ 
-                arrayProsla[i-1]= 0; 
-                sales_ar[i-1]= 0; 
                 continue;
             }
             else
             {
-                //arrayProsla.add(math.round(queryResult[i][1]/1000,0));
-                //sales_ar.add(queryResult[i][1]);
-                arrayProsla[i-1]= math.round(queryResult[i][1]/1000,0); 
-                sales_ar[i-1]=queryResult[i][1];
+                arrayProsla.add(math.round(queryResult[i][1]/1000,0));
+                sales_ar.add(queryResult[i][1]);
                 if ( do_mjeseca == true )
                 {
                     if(i <= int(mjesec_h))
@@ -779,18 +754,14 @@ function setChartByMonth()
             cntry++;
             if(i >= Size(queryResult))
             {
-                //arrayTrenutna.add(0);
-                //sales_ar.add(0);
-                arrayTrenutna[i-13]= 0; 
-                sales_ar[i-1]= 0; 
+                arrayTrenutna.add(0);
+                sales_ar.add(0);
                 continue;
             }
             else
             {
-                //arrayTrenutna.add(math.round(queryResult[i][1]/1000,0));
-                //sales_ar.add(queryResult[i][1]);
-                arrayTrenutna[i-13]= math.round(queryResult[i][1]/1000,0); 
-                sales_ar[i-1]=queryResult[i][1];
+                arrayTrenutna.add(math.round(queryResult[i][1]/1000,0));
+                sales_ar.add(queryResult[i][1]);
                 //tot_ovagod = tot_ovagod + queryResult[i][1] ;
                 if ( do_mjeseca == true )
                 {
@@ -828,37 +799,31 @@ function setChartByMonth()
     define argument2 type r size 10;
     define argument3 type i size 5;
     define argument4 type n size 10 dec 2;
-    define sqlOdDana,sqlNaDan type a size 10;
     function gbProdaja1@clicked()
     {
         //MessageBox("Tu sam");
         modalWindow(strTrim(tpath()) +"wsbiprba.xaml"); //"wsbiprba.xaml");
-        //createWindow(strTrim(tpath()) +"wsbiprba.xaml"); //"wsbiprba.xaml");
         /*
         argument1= 'asdfghjh';
         argument2= 1234567890;
         argument3= 98765;
         argument4= 567.89;
+        CHAIN "wsbiprba.cscs" WITH "argument1" "argument2" "argument3" "argument4";
         */
-       //define path type a size 120;
-       //path= strTrim(tpath())  + "WSBIPRBA.CSCS";
-       // CHAIN path WITH skladiste,SqlOdDana,SQLnadan,ovagod_h,lani_h,trenutnaGodinaBaza,proslaGodinaBaza,bezPdvaField,proslaGodina,danas_h,mjesec_h,do_mjeseca;
-        //return
     }
 
     function gbProdaja2@clicked()
     {
-        //MessageBox("Tu sam: "+trenutnaGodinaBaza+" "+proslaGodinaBaza);
+        //MessageBox("Tu sam");
         modalWindow(strTrim(tpath()) +"wsbiprbb.xaml"); //"wsbiprba.xaml");
     }
 
 function wsbiprba_onStart()
     {
      //MessageBox("Tu sam on start xaml");
-
     Chart("ChartPoMjesecima", "init");
     Chart("ChartPoMjesecima", "seriesType", "Columnseries");
-    //Chart("ChartPoMjesecima", "title", "Naslov grafa", 20);
+    Chart("ChartPoMjesecima", "title", "Naslov grafa", 20);
     Chart("ChartPoMjesecima", "labels", "y", 13);
     Chart("ChartPoMjesecima", "labels", "x", 13, {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
     Chart("ChartPoMjesecima", "xlabelsRotation", 0);
@@ -866,54 +831,32 @@ function wsbiprba_onStart()
     Chart("ChartPoMjesecima", "values", arrayTrenutna, STRING(ovagod_h)); //!
     Chart("ChartPoMjesecima", "SeparatorStep", 1);
     Chart("ChartPoMjesecima", "Margins", {50, 20, 0, 30});
-    Chart("ChartPoMjesecima", "TooltipDecimalPlaces", 0);
-    SetWidgetOptions("ChartPoMjesecima", "Color.Series", { "Blue", "Green"}); 
-
+    Chart("ChartPoMjesecima", "TooltipDecimalPlaces", 2);
     //
     Chart("ChartPoDanima", "init");
     Chart("ChartPoDanima", "seriesType", "lineSeries");
     Chart("ChartPoDanima", "title", "Po Danima");
     //Chart("ChartPoDanima", "labels","y", 12);
-    Chart("ChartPoDanima", "labels","x", 15,  {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "1", "2", "3", "4", "5", "6", "7", "8", "9", "20", "1", "2", "3", "4", "5", "6", "7", "8", "9", "30", "1"});
+    Chart("ChartPoDanima", "labels","x", 15,  {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"});
     //Chart("ChartPoDanima", "labels", arrayDani);
     Chart("ChartPoDanima", "xlabelsRotation", 0);
     Chart("ChartPoDanima", "SeparatorStep", 1);
     Chart("ChartPoDanima", "values", arrayVrijednosti, "01");
     Chart("ChartPoDanima", "Margins", {60, 20, 0, 30});
-    cntr2= 0;
+
     setLast10InvoicesDataGrid();
+    setTop10InvoicesDataGrid();
 
     Format("T10IZNOSZ_AR", "nofd");
     Format("T10IZNOSMJ_AR", "nofd");
     DisplayArray("dgRacuniLast", "close");
-    DisplayArraySetup("dgRacuniLast", counterFld: cntr2, activeElements: Size(sqlResult2) - 1, maxElements: 10);
+    DisplayArraySetup("dgRacuniLast", counterFld: "cntr2", activeElements: Size(sqlResult) - 1, maxElements: 10);
 
+	DEFINE cntr3 type i;
 	DisplayArray("dgRacuniMjesec", "close");
-	//DisplayArraySetup("dgRacuniMjesec", counterFld: "cntr3", activeElements: Size(sqlResult) - 1, maxElements: 10);
-    setTop10InvoicesDataGrid();
-	DEFINE cntr3,cntr2 type i;
-    cntr3= 0;
-
-	//MessageBox("AAAA: "+size(sqlResult));
-	//DisplayArray("dgRacuniMjesec", "close");
-	//MessageBox("BBBB: "+size(sqlResult));
-	DisplayArraySetup("dgRacuniMjesec", counterFld: cntr3, activeElements: Size(sqlResult) - 1, maxElements: 10);
-	//MessageBox("BBBB: "+size(sqlResult));
-	//DisplayArraySetup("dgRacuniMjesec", counterFld: "cntr3", activeElements: Size(sqlResult) - 1, maxElements: 10);
-	//DisplayArray("dgRacuniMjesec", "redisplayFromEnd");
+	DisplayArraySetup("dgRacuniMjesec", counterFld: "cntr3", activeElements: Size(sqlResult) - 1, maxElements: 10);
 	//MessageBox("kRAJ T10RacuniMj");
     }
-
-function buty@clicked()
-{
-    //Chart("ChartPoMjesecima", "init");
-
-     refresh();
-     	DisplayArray("dgRacuniMjesec", "close");
-
-     SetWidgetOptions("ChartPoMjesecima", "Color.Series", { "Blue", "Green"}); 
-	DisplayArraySetup("dgRacuniMjesec", counterFld: cntr3, activeElements: Size(sqlResult) - 1, maxElements: 10);
-}    
 
 function wsbiprbb_onStart()
     {
@@ -930,6 +873,13 @@ function wsbiprbb_onStart()
 		PieChart("PieChart1", "values", int(queryResult[i][1]) , string(queryResult[i][0].trim()));
 	}
 	PieChart("PieChart1", "Margins", {0,0,0,0});
+    }
+
+    function Button1@clicked()
+    {
+        MessageBox("Tu sam button refresh xaml");
+        //setChartByMonth();
+        //refresh();
     }
 
 function refresh()
@@ -1039,9 +989,9 @@ function setChartByDaysOfMonth()
 
 function setHorizontalBars()
     {
-         bojeArray = {196, 224, 138};
+         bojeArray = {189, 187, 187};
          bojeArray2 = {200, 170, 80};
-         //MessageBox("AAAA lani: " + tot_lani + ", ovaGod: " + tot_ovagod);
+         //MessageBox("lani: " + tot_lani + ", ovaGod: " + tot_ovagod);
          if (tot_ovagod>tot_lani)
          {
               if(tot_lani != 0)
@@ -1070,7 +1020,6 @@ function setHorizontalBars()
                    A = tot_lani/tot_ovagod;
                    HorizontalBar("HorizontalBarLG", "BarWidth", 90);
                    HorizontalBar("HorizontalBarOG", "BarWidth", 90/A);
-                   HorizontalBar("HorizontalBarOG1", "BarWidth", 90/A);
               }
               else
               {
@@ -1166,15 +1115,8 @@ function setLast10InvoicesDataGrid(){
 	define t10Datumz_ar type d size 8 array 10;
 	define t10Timez_ar type t size 8 array 10;
 	define t10Racunz_ar type r size 8 array 10;
- /*   
-t10Iznosz_ar ={};
-	t10Namez_ar ={};
-	t10Cntrz_ar ={};
-	t10Datumz_ar={};
-	t10Timez_ar ={};
-	t10Racunz_ar ={};
- */
- 	define T10Cntrz type i;
+    
+	define T10Cntrz type i;
 	define t10DatRac type l;
 	if ( t10datrac == true )
 	{
@@ -1207,18 +1149,18 @@ t10Iznosz_ar ={};
 	}
  
 	try	{
-		sqlResult2 = sqlQuery(sql_str);
+		sqlResult = sqlQuery(sql_str);
 	}catch(exc){
 		MessageBox(exc);
 	}
 
-    for ( i = 1; i < Size(sqlResult2); i++ )
+    for ( i = 1; i < Size(sqlResult); i++ )
     {      
-        nkpr_gl_num = sqlResult2[i][0];  
-        nkpr_gl_cusnme = sqlResult2[i][1];
-        datecr = sqlResult2[i][2];
-        nkpr_gl_timecr = sqlResult2[i][3];
-        nkpr_gl_total= sqlResult2[i][4];
+        nkpr_gl_num = sqlResult[i][0];  
+        nkpr_gl_cusnme = sqlResult[i][1];
+        datecr = sqlResult[i][2];
+        nkpr_gl_timecr = sqlResult[i][3];
+        nkpr_gl_total= sqlResult[i][4];
 
         t10Namez_ar[i - 1] =  nkpr_gl_cusnme;
         t10Iznosz_ar[i - 1] =  nkpr_gl_total;
@@ -1226,15 +1168,8 @@ t10Iznosz_ar ={};
         t10Datumz_ar[i - 1] =  datecr;
         t10Racunz_ar[i - 1] =  nkpr_gl_num; 
         t10Timez_ar[i - 1] =  nkpr_gl_timecr;
+    }
     
-/* 		MessageBox(sqlResult2[i][1]);
-        t10Namez_ar[i - 1] =  sqlResult2[i][1];
-        t10Iznosz_ar[i - 1] = sqlResult2[i][4];
-        t10Datumz_ar[i - 1] = sqlResult2[i][2];
-        t10Racunz_ar[i - 1] =  sqlResult2[i][0];  
-        t10Timez_ar[i - 1] = sqlResult2[i][3];
-        t10Cntrz_ar[i - 1] =  i;
- */    }
     DEFINE cntr2 type i;
 /*
     Format("T10IZNOSZ_AR", "nofd");
@@ -1251,15 +1186,8 @@ function setTop10InvoicesDataGrid(){
 	define t10CntrMj_ar type i size 2 array 10;
 	define t10DatumMj_ar type d size 8 array 10;
 	define t10RacunMj_ar type r size 8 array 10;
-
-    define T10CntrMj type i;
-/*     t10IznosMj_ar={};
-	t10NameMj_ar={};
-	t10CntrMj_ar ={};
-	//t10DatumMj_ar={};
-	t10RacunMj_ar ={};
- */	
-    sql_str =  "SELECT TOP 10 nkpr_gl_num , nkpr_gl_cusnme , CONVERT(char(8) ,  nkpr_gl_invdte , 3) AS datecr , " ;
+	define T10CntrMj type i;
+	sql_str =  "SELECT TOP 10 nkpr_gl_num , nkpr_gl_cusnme , CONVERT(char(8) ,  nkpr_gl_invdte , 3) AS datecr , " ;
 	sql_str =  sql_str +  " CAST(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_gl_total ELSE nkpr_gl_total END as decimal (10,2))AS nkpr_gl_total ";
 	sql_str =  sql_str +  " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv" ;
 	if ( regija != "" )
@@ -1357,16 +1285,6 @@ function setRegionPieChart()
 	}catch(exc){
 		MessageBox(exc);
 	}
-    //
-	PieChart("PieChart1", "init");
-    PieChart("PieChart1", "seriesType", "pie");
-    PieChart("PieChart1", "title", "Pie Chart Title", 20);    
-	for(i = 1; i < queryResult.length; i++)
-	{
-		PieChart("PieChart1", "values", int(queryResult[i][1]) , string(queryResult[i][0].trim()));
-	}
-	PieChart("PieChart1", "Margins", {0,0,0,0});
-
 }
 
 function setTop10Products(){
