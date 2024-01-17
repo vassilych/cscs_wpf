@@ -583,8 +583,8 @@ namespace WpfCSCS
 			BtrieveInstance.Init(this);
 			TasFunctionsInstance.Init(this);
 			ChartsInstance.Init(this);
-			//ReportFunction.Init(Interpreter);
-			//Excel.Init(Interpreter);
+			ReportFunction.Init(Interpreter);
+			Excel.Init(Interpreter);
 			NavigatorClassInstance.Init(Interpreter);
 			CommandsInstance.Init(this);
 

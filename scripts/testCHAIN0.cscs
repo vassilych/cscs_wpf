@@ -14,13 +14,13 @@ CHAIN path WITH myGrid,bla1+bla2,"22222",bla4;
 MessageBox("Got back lol=[" + lol + "]");
 MessageBox("Got lala: "+lala);
 
+lala= change(lala);
+MessageBox("Got lalaaaaa: "+lala);
+
 function change(y)
 {
     return "bbbb";
 }
 
-lala= change(lala);
-MessageBox("Got lalaaaaa: "+lala);
-
-
-quit;
+//quit;
+exit;
