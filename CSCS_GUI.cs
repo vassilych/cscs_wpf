@@ -3132,6 +3132,11 @@ namespace WpfCSCS
 
 			PreprocessScripts();
 
+			//preprocess this file
+			var tokenSet = GetPreprocessTokens();
+			var scriptsDirStr = App.GetConfiguration("ScriptsPath", "");
+			Utils.PreprocessScriptFile(fileName, tokenSet, scriptsDirStr, this);
+			
 			Variable result = null;
 			try
 			{
