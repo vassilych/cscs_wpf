@@ -538,6 +538,23 @@
                                HorizontalAlignment="Center" />
                 </Grid>
             </Button>
+            <Button HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Height="41"
+                    Margin="1470,40,0,0"
+                    FontFamily="lato"
+                    Width="100"
+                    Visibility="Visible"
+                    Name="gbQuit">
+                <Grid>
+                    <TextBlock Grid.Column="1"
+                               FontSize="20"
+                               Foreground="Black"
+                               VerticalAlignment="Center"
+                               Text="QUIT"
+                               HorizontalAlignment="Center" />
+                </Grid>
+            </Button>
             <Label Name="NazivFirmeLabel" Content="" DataContext="nazivFirme" FontSize="23" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="1275,-1,0,0" VerticalAlignment="Top" Width="310"/>
 
         </Grid>

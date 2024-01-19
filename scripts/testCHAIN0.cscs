@@ -5,10 +5,12 @@ myGrid = "_aasd";
 bla1 = "_dfggf";
 bla2 = "xccvxcvxcv";
 bla4 = "_d33333";
-path = "C:\\cscs_wpf\\scripts\\script3.cscs";
+path = "C:\\users\\user\\Documents\\github\\cscs_wpf\\scripts\\script3.cscs";
 lol="Value in testCHAIN0"; 
 CHAIN path WITH myGrid,bla1+bla2,"22222",bla4;
 //it must return here after quiting in script3
+
+define ghij type a size 10;
 
 MessageBox("Got back lol=[" + lol + "]");
 MessageBox("Got lala: "+lala);

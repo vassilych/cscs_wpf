@@ -1,4 +1,6 @@
 
+define abcd type a size 10;
+
 MessageBox("Starting script3.cscs");
 
 DEFINE arg4, arg5, arg6, arg7 type a size 20;

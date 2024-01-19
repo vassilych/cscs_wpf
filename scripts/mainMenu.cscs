@@ -2,7 +2,7 @@
 #WINFORM mainMenuWindow.xaml;
 //CreateWindow("../../scripts/mainMenuWindow.xaml");
 
-StartDebugger(13337, true, "*");
+//StartDebugger(13337, true, "*");
 
 define mainMenuDC type a;
 

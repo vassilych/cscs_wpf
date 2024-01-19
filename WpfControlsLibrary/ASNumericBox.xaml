@@ -15,7 +15,7 @@
         </Grid.ColumnDefinitions>
             
         <local:ASNumericTextBox x:Name="numBoxTextBox" Grid.Column="0" HorizontalAlignment="Stretch" />
-        <Button Focusable="False" x:Name="numBoxButton" Grid.Column="1" Height="auto" Click="numBoxButton_Click" />
+        <Button Focusable="False" x:Name="numBoxButton" Grid.Column="1" Height="auto" Click="numBoxButton_Click" BorderThickness="0"/>
         
     </Grid>
 </UserControl>

@@ -365,7 +365,8 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Background="White"
-                        TabIndex="3" />
+                        TabIndex="3" 
+                        ButtonBackground="Aqua"/>
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="21"
                         FontWeight="Bold"
                         Size="0"
@@ -382,7 +383,8 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Background="White"
-                        TabIndex="4" />
+                        TabIndex="4" 
+                        ButtonBackground="Red"/>
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
                         FontWeight="Bold"
                         Size="4"
@@ -465,7 +467,8 @@
                           FontFamily="lato"
                           FontSize="14"
                           TabIndex="7"
-                          Thousands="False" />
+                          Thousands="False" 
+                          ButtonBackground="Blue"/>
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
                         FontWeight="Bold"
                         Size="0"

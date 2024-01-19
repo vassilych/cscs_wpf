@@ -1,7 +1,7 @@
     CreateWindow(strTrim(tpath()) +"wsbiprb.xaml");
     //CreateWindow(strTrim(tpath()) +"testTabWin.xaml");
     //Import("C:\wpfcscs\Modules\CSCS.Math\bin\Debug\CSCS.Math");
-    Import("C:\cscs_wpf\Modules\CSCS.Math");
+    Import("C:\Users\User\Documents\GitHub\cscs_wpf\Modules\CSCS.Math\bin\Debug\CSCS.Math.dll");
     DEFINE skladiste type i size 3;
     DEFINE skladisteNaziv type a size 50;
 
@@ -24,7 +24,7 @@
     DEFINE tot_ovajmj type n size 14 dec 0 ;
     DEFINE tot_proslimj type n size 14 dec 0 ;
     DEFINE postotak type n size 10 dec 2 ;
-    //DEFINE postotakMj type n size 10 dec 2 ;
+    DEFINE postotakMj type n size 10 dec 2 ;
     define postotakTj type n size 10 dec 2 ;
     DEFINE artiklNaziv type a size 30;
     define artikl type a size 15 ;
@@ -86,21 +86,15 @@ function Wsbiprb_onDisplay()
     RectangleA.Width="100";
     SetProperty("RectangleA","Width","100");
     setimage(strTrim(tpath())+"Blue Abstract Gradient Background Jamboard Background.png");
-messagebox("pocetak1");
     postotakMj = 0;
-messagebox("pocetak2");
     postotak= 0;
     skladiste = 0;
-messagebox("pocetak3");
     searchSklSifra = "";
     searchSklNaziv = "";
-messagebox("pocetak4");
     imeFirme = sqlResult[1][0].trim(); // KAMEND
     ovagod_h = sqlResult[1][1].trim(); // 2022
     lani_h = string(int(ovagod_h) - 1); // 2
-messagebox("pocetak5");
     trenutnaGodinaBaza = sqlResult[1][2].trim(); // ime baze
-messagebox("pocetak6");
     sqlQueryString = " SELECT FORMAT([KPSY_FISCAL_YR], 'yyyy-MM-dd') FROM " + trenutnaGodinaBaza + ".[dbo].[KPSYMSTR]";
     try
         {

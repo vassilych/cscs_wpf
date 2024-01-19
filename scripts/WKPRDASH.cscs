@@ -298,6 +298,10 @@ function gbPripremi@clicked(){
 	cursor("dflt");
 }
 
+function gbQuit@clicked(){
+	quit;
+}
+
 
 
 function setChartByMonth(){

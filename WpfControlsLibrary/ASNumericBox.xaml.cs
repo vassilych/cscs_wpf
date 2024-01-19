@@ -230,6 +230,20 @@ namespace WpfControlsLibrary
                 base.SetValue(HorizontalContentAlignmentProperty, value);
             }
         }
+        
+        public static readonly DependencyProperty ButtonBackgroundProperty = DependencyProperty.Register("ButtonBackground", typeof(Brush), typeof(ASNumericBox));
+        public Brush ButtonBackground
+        {
+            get
+            {
+                return (Brush)base.GetValue(ButtonBackgroundProperty);
+            }
+            set
+            {
+                base.SetValue(ButtonBackgroundProperty, value);
+            }
+        }
+        
 
 
         public ASNumericBox()
@@ -281,6 +295,8 @@ namespace WpfControlsLibrary
                 numBoxTextBox.Foreground = Foreground == null ? new SolidColorBrush() { Color = Colors.Black } : Foreground;
                 
                 numBoxTextBox.IsReadOnly = IsReadOnly;
+
+                numBoxButton.Background = ButtonBackground == null ? new SolidColorBrush() { Color = Colors.LightGray } : ButtonBackground;
 
                 numBoxTextBox.LoadedEvent();
 

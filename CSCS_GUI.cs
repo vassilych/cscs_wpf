@@ -456,7 +456,7 @@ namespace WpfCSCS
 
 		public static Dictionary<Window, string> Window2File { get; set; } = new Dictionary<Window, string>();
 		public static Dictionary<string, Window> File2Window { get; set; } = new Dictionary<string, Window>();
-		public static Dictionary<string, List<string>> GroupBoxesAndRadioButtons { get; set; } = new Dictionary<string, List<string>>();
+		public Dictionary<string, List<string>> GroupBoxesAndRadioButtons { get; set; } = new Dictionary<string, List<string>>();
 
 		public Interpreter Interpreter { get; private set; }
 
@@ -6781,9 +6781,9 @@ namespace WpfCSCS
 				Variable varValue = new Variable(Variable.VarType.NONE);
 				var result = DoAssign(script, m_name, defVar, ref varValue);
 
-				foreach (string groupBox in CSCS_GUI.GroupBoxesAndRadioButtons.Keys)
+				foreach (string groupBox in gui.GroupBoxesAndRadioButtons.Keys)
 				{
-					var firstRBName = CSCS_GUI.GroupBoxesAndRadioButtons[groupBox].FirstOrDefault(p => gui.GetWidget(p).DataContext.ToString().ToLower() == m_name.ToLower());
+					var firstRBName = gui.GroupBoxesAndRadioButtons[groupBox].FirstOrDefault(p => gui.GetWidget(p)?.DataContext.ToString().ToLower() == m_name.ToLower());
 					if (firstRBName != null)
 					//if (CSCS_GUI.GroupBoxesAndRadioButtons[groupBox].Any(p=> gui.GetWidget(p).DataContext.ToString().ToLower() == m_name.ToLower()))
 					{

@@ -14,7 +14,7 @@
         </Grid.ColumnDefinitions>
 
         <local:ASEnterTextBox x:Name="enterBoxTextBox" Grid.Column="0" HorizontalAlignment="Stretch" Background="White"/>
-        <Button Focusable="False" x:Name="enterBoxButton" Grid.Column="1" Height="auto">
+        <Button Focusable="False" x:Name="enterBoxButton" Grid.Column="1" Height="auto" BorderThickness="0">
             <Viewbox>
                 <Image Source="search.png"/>
             </Viewbox>
