@@ -249,7 +249,7 @@ namespace WpfCSCS
                     {
                         if (valueVariable.Value > 0)
                         {
-                            pieWidget.Series.Add(new PieSeries() { Values = new ChartValues<double>() { valueVariable.Value }, Name = value2Variable.String });
+                            pieWidget.Series.Add(new PieSeries() { Values = new ChartValues<double>() { valueVariable.Value }, Title = value2Variable.String });
                         }
                     }
                     
