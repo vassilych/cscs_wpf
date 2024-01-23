@@ -430,6 +430,7 @@
     <None Include="scripts\test2bind.cscs" />
     <None Include="scripts\testTPATH.cscs" />
     <None Include="scripts\wpfgui.cscs" />
+    <None Include="scripts\wsbiprb_inca.cscs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
