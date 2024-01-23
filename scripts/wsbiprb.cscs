@@ -1,13 +1,9 @@
     CreateWindow(strTrim(tpath()) +"wsbiprb.xaml");
     //CreateWindow(strTrim(tpath()) +"testTabWin.xaml");
     //Import("C:\wpfcscs\Modules\CSCS.Math\bin\Debug\CSCS.Math");
-<<<<<<< Updated upstream
-    Import("C:\Users\User\Documents\GitHub\cscs_wpf\Modules\CSCS.Math\bin\Debug\CSCS.Math.dll");
-=======
     Import("C:\cscs_wpf\Modules\CSCS.Math.dll");
     include(strTrim(tpath()) +"wsbiprb_inca.cscs");
 
->>>>>>> Stashed changes
     DEFINE skladiste type i size 3;
     DEFINE skladisteNaziv type a size 50;
 
@@ -125,7 +121,6 @@ function Wsbiprb_onDisplay()
     sqlNaDan = ovagod_h + "-12-31";
     sqlOdDana = string(int(ovagod_h) - 1) + "-01-01";
     danas_h = Now("dd/MM/yy");
-messagebox(danas_h+"  "+now("yyyy")+"  "+ovagod_h);    
     if now("yyyy") > ovagod_h{
         danas_h= "31/12/"+subString(ovagod_h,2,2);
     }

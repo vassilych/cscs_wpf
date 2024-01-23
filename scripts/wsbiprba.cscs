@@ -1,4 +1,4 @@
-﻿        //MessageBox("AAAA");
+        //MessageBox("AAAA");
 
 
     CreateWindow(strTrim(tpath()) +"wsbiprba.xaml");
@@ -69,7 +69,7 @@ function wsbiprba_onDisplay()
         {
         MessageBox(exc);
         }
-         MessageBox("CCCC");
+         //MessageBox("CCCC");
 
         //ovagod_h="";  
         // MessageBox("CC11");
@@ -174,7 +174,7 @@ function setLast10InvoicesDataGrid()
 //  messagebox("PP55");
 
 	try	{
-         SaveFile(sql_str);
+         //SaveFile(sql_str);
 
 		sqlResult = sqlQuery(sql_str);
 	}catch(exc){
