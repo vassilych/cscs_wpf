@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:wcl="clr-namespace:WpfControlsLibrary;assembly=WpfControlsLibrary"
-        xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         mc:Ignorable="d"
         Title="Prodaja"
         Height="1000"
@@ -555,12 +555,19 @@
                                HorizontalAlignment="Center" />
                 </Grid>
             </Button>
-            <Label Name="NazivFirmeLabel" Content="" DataContext="nazivFirme" FontSize="23" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="1275,-1,0,0" VerticalAlignment="Top" Width="310"/>
-
+            <Label Name="NazivFirmeLabel"
+                   Content=""
+                   DataContext="nazivFirme"
+                   FontSize="23"
+                   HorizontalContentAlignment="Right"
+                   HorizontalAlignment="Left"
+                   Margin="1275,-1,0,0"
+                   VerticalAlignment="Top"
+                   Width="310" />
         </Grid>
         <Grid Margin="5,20,-5,-20">
-            <lvc:CartesianChart LegendPosition="Right"
-                                Name="ChartPoMjesecima"
+            <lvc:CartesianChart LegendLocation="Right"
+                Name="ChartPoMjesecima"
                                 VerticalAlignment="Top"
                                 HorizontalAlignment="Left"
                                 Width="600"
@@ -572,16 +579,27 @@
                                 Width="700"
                                 Height="300"
                                 Margin="880,110,0,0" />
-            <Label Content="Prodaja po mjesecima" FontWeight="Bold" HorizontalAlignment="Left" Margin="205,115,0,0" VerticalAlignment="Top" Width="230"/>
-            <Label Content="Prodaja po danima" FontWeight="Bold" HorizontalAlignment="Left" Margin="1120,115,0,0" VerticalAlignment="Top" Width="215"/>
+            <Label Content="Prodaja po mjesecima"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Left"
+                   Margin="205,115,0,0"
+                   VerticalAlignment="Top"
+                   Width="230" />
+            <Label Content="Prodaja po danima"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Left"
+                   Margin="1120,115,0,0"
+                   VerticalAlignment="Top"
+                   Width="215" />
         </Grid>
-        <lvc:PieChart LegendPosition="Right"
+        <lvc:PieChart LegendLocation="Bottom"
+            InnerRadius="50"
                       Name="PieChart1"
                       VerticalAlignment="Top"
                       HorizontalAlignment="Left"
-                      Width="630"
-                      Height="240"
-                      Margin="440,715,0,0" />
+                      Width="520"
+                      Height="225"
+                      Margin="555,730,0,0" />
         <Label Name="PieChartLabel"
                VerticalAlignment="Top"
                HorizontalAlignment="Left"
@@ -1198,7 +1216,8 @@
                    Name="Label20_Copy"
                    FontSize="11"
                    Foreground="#FF934900"
-                   Text="Index %:" RenderTransformOrigin="0.795,0.667" />
+                   Text="Index %:"
+                   RenderTransformOrigin="0.795,0.667" />
         <wcl:ASNumericBox HorizontalAlignment="Left"
                           VerticalAlignment="Top"
                           FontWeight="Bold"
@@ -1227,7 +1246,7 @@
                    FontSize="11"
                    Foreground="black"
                    Text="Broj kupaca i računa"
-                   TextWrapping="Wrap"/>
+                   TextWrapping="Wrap" />
         <TextBlock HorizontalAlignment="Left"
                    VerticalAlignment="Top"
                    Height="15"
@@ -1238,7 +1257,7 @@
                    FontSize="11"
                    Foreground="black"
                    Text="OG"
-                   TextWrapping="Wrap"/>
+                   TextWrapping="Wrap" />
         <TextBlock HorizontalAlignment="Left"
                    VerticalAlignment="Top"
                    Height="15"
@@ -1249,17 +1268,16 @@
                    FontSize="11"
                    Foreground="black"
                    Text="LG"
-                   TextWrapping="Wrap"/>
-        <wcl:ASHorizontalBar
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Height="26"
-            Width="66"
-            Margin="719,455,0,0"
-            Name="HorizontalBarBrKupacaOG"
-            FontFamily="lato"
-            FontSize="19"
-            TabIndex="7" />
+                   TextWrapping="Wrap" />
+        <wcl:ASHorizontalBar HorizontalAlignment="Left"
+                             VerticalAlignment="Top"
+                             Height="26"
+                             Width="66"
+                             Margin="719,455,0,0"
+                             Name="HorizontalBarBrKupacaOG"
+                             FontFamily="lato"
+                             FontSize="19"
+                             TabIndex="7" />
         <wcl:ASHorizontalBar HorizontalAlignment="Left"
                              VerticalAlignment="Top"
                              Height="26"
@@ -1269,26 +1287,24 @@
                              FontFamily="lato"
                              FontSize="19"
                              TabIndex="7" />
-        <wcl:ASHorizontalBar
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Height="26"
-            Width="90"
-            Margin="790,455,0,0"
-            Name="HorizontalBarBrRacunaOG"
-            FontFamily="lato"
-            FontSize="19"
-            TabIndex="7" />
-        <wcl:ASHorizontalBar
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Height="26"
-            Width="90"
-            Margin="790,484,0,0"
-            Name="HorizontalBarBrRacunaLG"
-            FontFamily="lato"
-            FontSize="19"
-            TabIndex="7" />
+        <wcl:ASHorizontalBar HorizontalAlignment="Left"
+                             VerticalAlignment="Top"
+                             Height="26"
+                             Width="90"
+                             Margin="790,455,0,0"
+                             Name="HorizontalBarBrRacunaOG"
+                             FontFamily="lato"
+                             FontSize="19"
+                             TabIndex="7" />
+        <wcl:ASHorizontalBar HorizontalAlignment="Left"
+                             VerticalAlignment="Top"
+                             Height="26"
+                             Width="90"
+                             Margin="790,484,0,0"
+                             Name="HorizontalBarBrRacunaLG"
+                             FontFamily="lato"
+                             FontSize="19"
+                             TabIndex="7" />
         <TextBlock HorizontalAlignment="Left"
                    VerticalAlignment="Top"
                    Height="30"
@@ -1299,7 +1315,7 @@
                    FontSize="11"
                    Foreground="black"
                    Text="Prosj. prodaja po kupcu"
-                   TextWrapping="Wrap"/>
+                   TextWrapping="Wrap" />
         <TextBlock HorizontalAlignment="Left"
                    VerticalAlignment="Top"
                    Height="15"
@@ -1310,7 +1326,7 @@
                    FontSize="11"
                    Foreground="black"
                    Text="OG"
-                   TextWrapping="Wrap"/>
+                   TextWrapping="Wrap" />
         <TextBlock HorizontalAlignment="Left"
                    VerticalAlignment="Top"
                    Height="15"
@@ -1321,28 +1337,25 @@
                    FontSize="11"
                    Foreground="black"
                    Text="LG"
-                   TextWrapping="Wrap"/>
-        <wcl:ASHorizontalBar
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Height="26"
-            Width="126"
-            Margin="730,535,0,0"
-            Name="HorizontalBarProdajaKupOG"
-            FontFamily="lato"
-            FontSize="19"
-            TabIndex="13" />
-        <wcl:ASHorizontalBar
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Height="26"
-            Width="126"
-            Margin="729,564,0,0"
-            Name="HorizontalBarProdajaKupLG"
-            FontFamily="lato"
-            FontSize="19"
-            TabIndex="13" />
-
+                   TextWrapping="Wrap" />
+        <wcl:ASHorizontalBar HorizontalAlignment="Left"
+                             VerticalAlignment="Top"
+                             Height="26"
+                             Width="126"
+                             Margin="730,535,0,0"
+                             Name="HorizontalBarProdajaKupOG"
+                             FontFamily="lato"
+                             FontSize="19"
+                             TabIndex="13" />
+        <wcl:ASHorizontalBar HorizontalAlignment="Left"
+                             VerticalAlignment="Top"
+                             Height="26"
+                             Width="126"
+                             Margin="729,564,0,0"
+                             Name="HorizontalBarProdajaKupLG"
+                             FontFamily="lato"
+                             FontSize="19"
+                             TabIndex="13" />
         <GroupBox Padding="0"
                   HorizontalAlignment="Left"
                   VerticalAlignment="Top"

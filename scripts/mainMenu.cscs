@@ -364,6 +364,10 @@ AddMenuSeparator("OtherDC");
 
 AddMenuItem("OtherDC", "testProgressBar.cscs", "testProgressBar", "runScript");
 
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "emin.cscs", "emin", "runScript");
+
 
 //----- IVAN -------------------------------
 

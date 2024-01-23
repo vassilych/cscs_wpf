@@ -27,11 +27,11 @@
 	Chart("ChartPoMjesecima", "TooltipDecimalPlaces", 2);
 
 	MessageBox("mijenjam boje");
-	SetWidgetOptions("ChartPoMjesecima", "Color.Series", { "Blue", "Yellow", "Green", "Red"});
+	Chart("ChartPoMjesecima", "Color.Series", { "Blue", "Yellow", "Green", "Red"});
 	//SetWidgetOptions("ChartPoMjesecima", "Color.Series", "Blue|Yellow|Green|Red");
 	
 	MessageBox("mijenjam imena");
-	SetWidgetOptions("ChartPoMjesecima", "Text.SeriesNames", { "Marko", "Slavko", "Treća", "Četvrta"});
+	Chart("ChartPoMjesecima", "Text.SeriesNames", { "Marko", "Janko", "Treća", "Četvrta"});
 	//SetWidgetOptions("ChartPoMjesecima", "Text.SeriesNames", "Marko|Slavko|Treća|Četvrta"); // radi i ovo
 	
 	

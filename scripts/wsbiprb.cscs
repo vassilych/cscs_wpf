@@ -861,7 +861,7 @@ function wsbiprba_onStart()
     Chart("ChartPoMjesecima", "SeparatorStep", 1);
     Chart("ChartPoMjesecima", "Margins", {50, 20, 0, 30});
     Chart("ChartPoMjesecima", "TooltipDecimalPlaces", 0);
-    SetWidgetOptions("ChartPoMjesecima", "Color.Series", { "Blue", "Green"}); 
+    Chart("ChartPoMjesecima", "Color.Series", { "Blue", "Green"}); 
 
     //
     Chart("ChartPoDanima", "init");
@@ -905,7 +905,7 @@ function buty@clicked()
      refresh();
      	DisplayArray("dgRacuniMjesec", "close");
 
-     SetWidgetOptions("ChartPoMjesecima", "Color.Series", { "Blue", "Green"}); 
+     Chart("ChartPoMjesecima", "Color.Series", { "Blue", "Green"}); 
 	DisplayArraySetup("dgRacuniMjesec", counterFld: cntr3, activeElements: Size(sqlResult) - 1, maxElements: 10);
 }    
 

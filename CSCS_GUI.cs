@@ -3880,85 +3880,66 @@ namespace WpfCSCS
 		protected override Variable Evaluate(ParsingScript script)
 		{
 			List<Variable> args = script.GetFunctionArgs();
-			Utils.CheckArgs(args.Count, 2, m_name);
-			var widgetName = Utils.GetSafeString(args, 0).ToLower();
-			var option = Utils.GetSafeString(args, 1).ToLower();
-			var gui = CSCS_GUI.GetInstance(script);
-			FrameworkElement widget = gui.GetWidget(widgetName);
-			var parameter = Utils.GetSafeString(args, 2).ToLower();
-			var prop_mapped = WidgetPropertyMap // try mapped
-			.OrderBy(a => a.Item1 == "*" ? 1 : 0)  // first the non *'s
-			.Where(a => (a.Item1.ToLower() == widget.GetType().Name.ToLower() || a.Item1.ToLower() == "*") && a.Item2.ToLower() == option) // overrides or *'s
-			.Select(a => a.Item3).FirstOrDefault();// real mapped prop name
-			var prop_by_prop_mapped = widget.GetType().GetProperties().Where(a => a.Name.ToLower() == (prop_mapped ?? "").ToLower()).FirstOrDefault();
+            Utils.CheckArgs(args.Count, 2, m_name);
+            var widgetName = Utils.GetSafeString(args, 0).ToLower();
+            var option = Utils.GetSafeString(args, 1).ToLower();
+            var gui = CSCS_GUI.GetInstance(script);
+            FrameworkElement widget = gui.GetWidget(widgetName);
+            var parameter = Utils.GetSafeString(args, 2).ToLower();
+            var prop_mapped = WidgetPropertyMap // try mapped
+            .OrderBy(a => a.Item1 == "*" ? 1 : 0)  // first the non *'s
+            .Where(a => (a.Item1.ToLower() == widget.GetType().Name.ToLower() || a.Item1.ToLower() == "*") && a.Item2.ToLower() == option) // overrides or *'s
+            .Select(a => a.Item3).FirstOrDefault();// real mapped prop name
+            var prop_by_prop_mapped = widget.GetType().GetProperties().Where(a => a.Name.ToLower() == (prop_mapped ?? "").ToLower()).FirstOrDefault();
 
-			if (!string.IsNullOrEmpty(prop_mapped) && prop_by_prop_mapped != null)
-			{
-				//Chart("ChartPoMjesecima", "init");
-				//Chart("ChartPoMjesecima", "seriesType", "Columnseries");
-				//Chart("ChartPoMjesecima", "title", "Naslov grafa", 20);
-				//Chart("ChartPoMjesecima", "labels", "y", 13);
-				//Chart("ChartPoMjesecima", "labels", "x", 13, { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
-				//Chart("ChartPoMjesecima", "xlabelsRotation", 0);
-				//Chart("ChartPoMjesecima", "values", a1, "aaaaaa1");
-				//Chart("ChartPoMjesecima", "values", a2, "aaaaaa2");
-				//Chart("ChartPoMjesecima", "values", a3, "aaaaaa3");
-				//Chart("ChartPoMjesecima", "values", a4, "aaaaaa4");
-				//Chart("ChartPoMjesecima", "SeparatorStep", 1);
-				//Chart("ChartPoMjesecima", "Margins", { 50, 20, 0, 30});
-				//Chart("ChartPoMjesecima", "TooltipDecimalPlaces", 2);
+            if (!string.IsNullOrEmpty(prop_mapped) && prop_by_prop_mapped != null)
+            {
+                //Chart("ChartPoMjesecima", "init");
+                //Chart("ChartPoMjesecima", "seriesType", "Columnseries");
+                //Chart("ChartPoMjesecima", "title", "Naslov grafa", 20);
+                //Chart("ChartPoMjesecima", "labels", "y", 13);
+                //Chart("ChartPoMjesecima", "labels", "x", 13, { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
+                //Chart("ChartPoMjesecima", "xlabelsRotation", 0);
+                //Chart("ChartPoMjesecima", "values", a1, "aaaaaa1");
+                //Chart("ChartPoMjesecima", "values", a2, "aaaaaa2");
+                //Chart("ChartPoMjesecima", "values", a3, "aaaaaa3");
+                //Chart("ChartPoMjesecima", "values", a4, "aaaaaa4");
+                //Chart("ChartPoMjesecima", "SeparatorStep", 1);
+                //Chart("ChartPoMjesecima", "Margins", { 50, 20, 0, 30});
+                //Chart("ChartPoMjesecima", "TooltipDecimalPlaces", 2);
 
-				if (option.StartsWith("Color.Series".ToLower())) // from WidgetPropertyMap
-				{
-					var series_ienum_property = widget.GetType().GetProperty("Series");
-					var g = args[2].Type == Variable.VarType.ARRAY ? args[2].Tuple.Select(a => a.String).ToArray() : parameter.Split('|');
-					int i = 0;
+                if (option.StartsWith("Color".ToLower())) // from WidgetPropertyMap
+                {
+                    // simple fix for color
+                    prop_by_prop_mapped.SetValue(widget, new SolidColorBrush((Color)ColorConverter.ConvertFromString(parameter)), null);
+                }
+                else if (option.StartsWith("Visible".ToLower())) // from WidgetPropertyMap
+                {
+                    // fix for Visibility
+                    prop_by_prop_mapped.SetValue(widget, Set(parameter) ? Visibility.Visible : Visibility.Hidden, null);
+                }
+                else if (option.StartsWith("Enabled".ToLower())) // from WidgetPropertyMap
+                {
+                    // fix for Enabled
+                    prop_by_prop_mapped.SetValue(widget, Set(parameter), null);
+                }
+                else
+                {
+                    // try by name directly
+                    prop_by_prop_mapped.SetValue(widget, Convert.ChangeType(parameter, prop_by_prop_mapped.PropertyType), null);
+                }
+            }
+            else
+            {
+                // try generically
+                foreach (var prop in widget.GetType().GetProperties())
+                    if (prop.Name.ToLower() == option.ToLower())
+                        prop.SetValue(widget, Convert.ChangeType(parameter, prop.PropertyType), null);
+            }
 
-					foreach (var item in (System.Collections.IEnumerable)series_ienum_property.GetValue(widget, null))
-						item.GetType().GetProperty("Fill").SetValue(item, new LiveChartsCore.SkiaSharpView.Painting.SolidColorPaint(SkiaSharp.SKColor.Parse(ToHex((Color)ColorConverter.ConvertFromString(g[i++])))), null);
-				}
-				else if (option.StartsWith("Text.SeriesNames".ToLower())) // from WidgetPropertyMap
-				{
-					var series_ienum_property = widget.GetType().GetProperty("Series");
-					var g = args[2].Type == Variable.VarType.ARRAY ? args[2].Tuple.Select(a => a.String).ToArray() : parameter.Split('|');
-					int i = 0;
+            return new Variable(true);
 
-					foreach (var item in (System.Collections.IEnumerable)series_ienum_property.GetValue(widget, null))
-						item.GetType().GetProperty("Name").SetValue(item, g[i++], null);
-				}
-
-				else if (option.StartsWith("Color".ToLower())) // from WidgetPropertyMap
-				{
-					// simple fix for color
-					prop_by_prop_mapped.SetValue(widget, new SolidColorBrush((Color)ColorConverter.ConvertFromString(parameter)), null);
-				}
-				else if (option.StartsWith("Visible".ToLower())) // from WidgetPropertyMap
-				{
-					// fix for Visibility
-					prop_by_prop_mapped.SetValue(widget, Set(parameter) ? Visibility.Visible : Visibility.Hidden, null);
-				}
-				else if (option.StartsWith("Enabled".ToLower())) // from WidgetPropertyMap
-				{
-					// fix for Enabled
-					prop_by_prop_mapped.SetValue(widget, Set(parameter), null);
-				}
-				else
-				{
-					// try by name directly
-					prop_by_prop_mapped.SetValue(widget, Convert.ChangeType(parameter, prop_by_prop_mapped.PropertyType), null);
-				}
-			}
-			else
-			{
-				// try generically
-				foreach (var prop in widget.GetType().GetProperties())
-					if (prop.Name.ToLower() == option.ToLower())
-						prop.SetValue(widget, Convert.ChangeType(parameter, prop.PropertyType), null);
-			}
-
-			return new Variable(true);
-
-		}
+        }
 
 
 		public string ToHex(Color c) => $"#{c.R:X2}{c.G:X2}{c.B:X2}";
@@ -4196,7 +4177,7 @@ namespace WpfCSCS
 				case "enabled":
 					widget.IsEnabled = parameter == "true" ? true : false;
 					break;
-				case "with":
+				case "width":
 					widget.Width = int.Parse(parameter);
 					break;
 				case "height":

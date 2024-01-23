@@ -546,7 +546,7 @@ function setChartByMonth(){
     Chart("ChartPoMjesecima", "values", arrayProsla, STRING(proslaGodina)); // !
     Chart("ChartPoMjesecima", "values", arrayTrenutna, STRING(ovagod_h)); //!
     Chart("ChartPoMjesecima", "SeparatorStep", 1);
-    Chart("ChartPoMjesecima", "Margins", {50, 20, 0, 30});
+    //Chart("ChartPoMjesecima", "Margins", {50, 20, 0, 30});
     Chart("ChartPoMjesecima", "TooltipDecimalPlaces", 2);
 }
 
@@ -639,7 +639,7 @@ function setChartByDaysOfMonth(){
     Chart("ChartPoDanima", "xlabelsRotation", 0);
     Chart("ChartPoDanima", "SeparatorStep", 1);
     Chart("ChartPoDanima", "values", arrayVrijednosti, "01");
-    Chart("ChartPoDanima", "Margins", {60, 20, 0, 30});
+    //Chart("ChartPoDanima", "Margins", {60, 20, 0, 30});
 }
 
 function setHorizontalBars(){
@@ -1563,7 +1563,7 @@ function setRegionPieChart(){
 	{
 		PieChart("PieChart1", "values", int(queryResult[i][1]) , string(queryResult[i][0].trim()));
 	}
-	PieChart("PieChart1", "Margins", {0,0,0,0});
+	//PieChart("PieChart1", "Margins", {0,0,0,0});
 }
 
 function setTop10Products(){
