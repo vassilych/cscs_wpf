@@ -137,6 +137,11 @@ function gbSklOk@clicked()
     CloseWindow(skladisteWin);
     }
 
+    function gbSklVan@clicked()
+    {
+        closeWindow(skladisteWin);
+    }
+
 function gbArtiOk@clicked()
     {
     selectedArray = GetSelectedGridRow("dgArti");

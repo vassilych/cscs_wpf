@@ -5,7 +5,7 @@
         xmlns:local="clr-namespace:WpfCSCS"
         xmlns:wcl="clr-namespace:WpfControlsLibrary;assembly=WpfControlsLibrary"
         xmlns:asdads="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
-        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+        xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
         xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts"
         xmlns:SKCharts="clr-namespace:LiveChartsCore.SkiaSharpView.SKCharts;assembly=LiveChartsCore.SkiaSharpView"
         mc:Ignorable="d"
@@ -21,13 +21,13 @@
             <RowDefinition Height="65"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <lvc:PieChart InnerRadius="15"
+        <lvc:PieChart LegendPosition="Bottom"
                       Name="PieChart1"
                       VerticalAlignment="Top"
-                      HorizontalAlignment="Right"
+                      HorizontalAlignment="Left"
                       Width="452"
-                      Height="198"
-                      Margin="0,29,0,0" Grid.Row="1" Background="#FF85EFDA" FontSize="10" HorizontalContentAlignment="Right" UseLayoutRounding="True" ClipToBounds="True" />
+                      Height="330"
+                      Margin="0,0,0,0" Grid.RowSpan="2" FontSize="10" HorizontalContentAlignment="Left"/>
         <Label Name="PieChartLabel"
                VerticalAlignment="Top"
                HorizontalAlignment="Left"

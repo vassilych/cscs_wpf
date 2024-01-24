@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:wcl="clr-namespace:WpfControlsLibrary;assembly=WpfControlsLibrary"
-        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+        xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
         mc:Ignorable="d"
         Title="Prodaja"
         Height="600"
@@ -22,7 +22,7 @@
         <lvc:CartesianChart Name="ChartPoDanima"
                             Grid.Column="1"
                             Grid.Row="0"
-                            Margin="18,27,10,10" />
+                            Margin="0" />
 
         <DataGrid GridLinesVisibility="Vertical"
                   VerticalGridLinesBrush="LightGray"
@@ -204,11 +204,11 @@
         </DataGrid>
         <TextBox HorizontalAlignment="Left" TextWrapping="Wrap" Text="Prodaja po mjesecima" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="156,10,0,0"/>
         <Button Name="Buty"  Content="Button" Margin="544,39,521,118" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"/>
-        <lvc:CartesianChart LegendLocation="Right"
+        <lvc:CartesianChart LegendPosition="Right"
                             x:Name="ChartPoMjesecima"
                             VerticalAlignment="Top"
                             HorizontalAlignment="Right"
                             Width="544"
-                            Height="252" Margin="0,0,26,0" />
+                            Height="252" Margin="0" />
     </Grid>
 </Window>

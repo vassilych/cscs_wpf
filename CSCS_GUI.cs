@@ -74,8 +74,8 @@ namespace SplitAndMerge
 	     interpreter.RegisterFunction("SetText", new SetTextWidgetFunction());
 	     interpreter.RegisterFunction("AddWidgetData", new AddWidgetDataFunction());
 	     interpreter.RegisterFunction("SetWidgetOptions", new SetWidgetOptionsFunction());
-	     interpreter.RegisterFunction("Get_comp_yearFunction", new Get_comp_yearFunction());
-	     interpreter.RegisterFunction("Get_dbaseFunction", new Get_dbaseFunction());
+	     interpreter.RegisterFunction("Get_comp_year", new Get_comp_yearFunction());
+	     interpreter.RegisterFunction("Get_dbase", new Get_dbaseFunction());
 	     interpreter.RegisterFunction("GetSelected", new GetSelectedFunction());
 	     interpreter.RegisterFunction("SetBackgroundColor", new SetColorFunction(true));
 	     interpreter.RegisterFunction("SetForegroundColor", new SetColorFunction(false));
@@ -3819,7 +3819,7 @@ namespace WpfCSCS
 		protected override Variable Evaluate(ParsingScript script)
 		{
 			List<Variable> args = script.GetFunctionArgs();
-			Utils.CheckArgs(args.Count, 2, m_name);
+			Utils.CheckArgs(args.Count, 1, m_name);
 
 			var USERCODE = Utils.GetSafeString(args, 0).ToLower();
 			var offset = Utils.GetSafeInt(args, 1);

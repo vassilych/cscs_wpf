@@ -368,6 +368,10 @@ AddMenuSeparator("OtherDC");
 
 AddMenuItem("OtherDC", "emin.cscs", "emin", "runScript");
 
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "testGet_dbase.cscs", "testGet_dbase", "runScript");
+
 
 //----- IVAN -------------------------------
 

@@ -351,6 +351,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="scripts\F2ListSkladista.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="scripts\lalala.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
