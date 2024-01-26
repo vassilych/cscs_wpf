@@ -5671,7 +5671,7 @@ namespace WpfCSCS
 				var winMode = m_mode == MODE.NEW ? SpecialWindow.MODE.NORMAL : //SpecialWindow.MODE.SPECIAL_MODAL;
 				    parentWin == CSCS_GUI.MainWindow ? SpecialWindow.MODE.MODAL : SpecialWindow.MODE.SPECIAL_MODAL;
 				SpecialWindow modalwin = CreateNew(instanceName, parentWin, winMode, script);
-				modalwin.Instance.Title = string.IsNullOrWhiteSpace(title) ? modalwin.Instance.Title : title;
+				//modalwin.Instance.Title = string.IsNullOrWhiteSpace(title) ? modalwin.Instance.Title : title;
 				return new Variable(modalwin.Instance == null ? "" : modalwin.Instance.Tag.ToString());
 			}
 
@@ -5730,20 +5730,30 @@ namespace WpfCSCS
 			Gui.CacheWindow(wind, cscsFilename);
 			Gui.CacheParentWindow(tag, parentWin);
 
-			wind.Show();
-			/*if (parentWin == null || isMain)
-			{
-			    wind.Show();
-			}
-			else
-			{
-			    //parentWin.Hide();
-			    wind.Hide();
-			    wind.ShowDialog();
-			}*/
+            //wind.Show();
+
+			if(winMode == SpecialWindow.MODE.MODAL || winMode == SpecialWindow.MODE.SPECIAL_MODAL)
+            {
+				wind.ShowDialog();
+            }
+            else //NORMAL
+            {
+				wind.Show();
+            }
+
+            //if (parentWin == null /*|| isMain*/)
+            //{
+            //    wind.Show();
+            //}
+            //else
+            //{
+            //    //parentWin.Hide();
+            //    wind.Hide();
+            //    wind.ShowDialog();
+            //}
 
 
-			return modalwin;
+            return modalwin;
 		}
 
 		public static void RemoveWindow(Window wind)

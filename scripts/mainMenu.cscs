@@ -372,6 +372,10 @@ AddMenuSeparator("OtherDC");
 
 AddMenuItem("OtherDC", "testGet_dbase.cscs", "testGet_dbase", "runScript");
 
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "testCHAINModal.cscs", "testCHAINModal", "runScript");
+
 
 //----- IVAN -------------------------------
 
