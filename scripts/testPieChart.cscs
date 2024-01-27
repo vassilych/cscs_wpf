@@ -1,10 +1,10 @@
-CreateWindow("../../scripts/testPieChart.xaml");
+CreateWindow(strTrim(tpath()) +"testPieChart.xaml");
 
 function testPieChart_OnStart(){
     refresh();
 
     se = typeref("system.environment");
-    MessageBox(se.CurrentDirectory);
+    //MessageBox(se.CurrentDirectory);
 
     // wcch = typeref("WpfCSCS.Charts");
     // MessageBox(wcch.testString);

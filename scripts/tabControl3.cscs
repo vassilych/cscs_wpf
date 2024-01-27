@@ -1,0 +1,5 @@
+CreateWindow(strTrim(tpath()) +"tabControl3.xaml");
+function Button1@clicked(){
+    chain strTrim(tpath())+"testPieChart.cscs";
+}
+

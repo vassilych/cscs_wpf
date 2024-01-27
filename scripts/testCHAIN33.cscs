@@ -1,0 +1,38 @@
+define bla0,myGridy,bla1,bla2,bla3,bla4 type a size 20;
+define path type a size 120;
+define numer type n;
+define dn type l;
+define datex,date2 type d size 8;
+//define biblar type a size 20 array 10;
+dn= false;
+datex="21/11/22";
+myGridy = "nevio"; //mygridxss";
+bla1 = "_dfggf    ";
+bla2 = "xccvxcvxcv";
+bla4 = "_d33333";
+bla3= "123,456";
+date2="12/12/20";
+numer=456;
+biblar[1]= "AAA";
+biblar[5]= "BBB";
+biblar[2]= "ccc";
+biblar[3]= "ddd";
+biblar[4]= "eee";
+MessageBox("start1 date2:"+date2);
+path = "C:\\cscs_wpf\\scripts\\script33.cscs";
+//path= strTrim(tpath())+"script3.cscs";
+MessageBox(bla1*bla2+" "+datex);
+jsonString = '{ "eins" : 1, "zwei" : 2, "drei": "dreiString", "vier": 4.9, "mehr" : { "uno": "uno in spanish" },
+                "arrayValue" : [ "une", "deux" ] }';
+
+CHAIN path WITH datex,dn,numer,bla3,myGridy,bla1*bla2,"22222",bla4,biblar,jsonstring,get_Value();
+//CHAIN "C:\\cscs_wpf\\scripts\\wsbiprba.cscs"; // WITH datex,dn,numer,bla3,myGridy,bla1*bla2,"22222",bla4,biblar,jsonstring,get_Value();
+//it must return here after quiting in script3
+MessageBox("end date2:"+date2);
+
+function get_value(){
+return "WAU!!!";
+}
+
+
+quit;

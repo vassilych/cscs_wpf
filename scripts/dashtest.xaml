@@ -1,0 +1,64 @@
+<Window 
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:wcl="clr-namespace:WpfControlsLibrary;assembly=WpfControlsLibrary"
+        xmlns:local="clr-namespace:WpfCSCS"
+        xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+mc:Ignorable="d"
+Title="MainWindow" Height="698.19" Width="1256.267" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None">
+    <Grid>
+        <Grid HorizontalAlignment="Left" Height="698" VerticalAlignment="Top" Width="189" Background="#FF0045A5">
+            <Button Content="Home" HorizontalAlignment="Left" Margin="0,138,0,0" VerticalAlignment="Top" Width="189" Height="63" FontFamily="Century Gothic" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}">
+                <Button.Background>
+                    <ImageBrush/>
+                </Button.Background>
+            </Button>
+            <Button Content="Events" HorizontalAlignment="Left" Margin="0,210,0,0" VerticalAlignment="Top" Width="189" Height="63" Background="{x:Null}" FontFamily="Century Gothic" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}" />
+            <Button Content="Setting" HorizontalAlignment="Left" Margin="0,359,0,0" VerticalAlignment="Top" Width="189" Height="63" Background="{x:Null}" FontFamily="Century Gothic" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}"/>
+            <Button Content="Notify" HorizontalAlignment="Left" Margin="0,284,0,0" VerticalAlignment="Top" Width="189" Height="63" Background="{x:Null}" FontFamily="Century Gothic" FontSize="20" Foreground="#FFFBFBFB" RenderTransformOrigin="0.458,1.651" BorderBrush="{x:Null}"/>
+            <Button Content="About" HorizontalAlignment="Left" Margin="0,436,0,0" VerticalAlignment="Top" Width="189" Height="63" Background="{x:Null}" FontFamily="Century Gothic" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}"/>
+            <Button Content="Home" HorizontalAlignment="Left" Margin="0,138,0,0" VerticalAlignment="Top" Width="189" Height="63" FontFamily="Century Gothic" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}">
+                <Button.Background>
+                    <ImageBrush/>
+                </Button.Background>
+            </Button>
+        </Grid>
+        <Grid HorizontalAlignment="Left" Height="67" Margin="189,0,0,0" VerticalAlignment="Top" Width="1067" Background="#FF0045A5" >
+            <!--Image HorizontalAlignment="Left" Height="32" Margin="802,16,0,0" VerticalAlignment="Top" Width="35" Source="icon/icons8_notification_26px.png" RenderTransformOrigin="0.031,0.355"/-->
+            <!--Image HorizontalAlignment="Left" Height="32" Margin="751,16,0,0" VerticalAlignment="Top" Width="35" Source="icon/icons8_group_message_24px.png" RenderTransformOrigin="0.031,0.355"/-->
+            <Button Name= "btnExit" Content="X" HorizontalAlignment="Left" Margin="1013,3,0,0" VerticalAlignment="Top" Width="54" Height="64" FontSize="40" FontWeight="Bold" Background="{x:Null}" Foreground="White"/>
+            <Image HorizontalAlignment="Left" Height="32" Margin="853,16,0,0" VerticalAlignment="Top" Width="35" Source="c:\winx\ikone\Logout32_a.png" OpacityMask="#FFEF8585" />
+        </Grid>
+        <wcl:ASEnterBox ButtonSize="20"
+                            FontWeight="Bold"
+                            Size="30"
+                            FieldName="artiklNaziv"
+                            Foreground="black"
+                            Name="TASComboEnter9"
+                            FontSize="14"
+                            Case="Normal"
+                            Height="22"
+                            Width="207"
+                            Margin="319,98,0,0"
+                            FontFamily="lato"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Background="White"
+                            TabIndex="10" />
+
+        <DataGrid HorizontalAlignment="Left" Height="190" Margin="206,120,0,0" VerticalAlignment="Top" Width="334" Background="#FF15AC53"/>
+        <DataGrid HorizontalAlignment="Left" Height="190" Margin="552,120,0,0" VerticalAlignment="Top" Width="335" Background="#FF2F9BA0"/>
+        <DataGrid HorizontalAlignment="Left" Height="190" Margin="901,120,0,0" VerticalAlignment="Top" Width="335" Background="#FF15AC53"/>
+        <Label Content="Total Customers" HorizontalAlignment="Left" Margin="264,137,0,0" VerticalAlignment="Top" FontFamily="Century Gothic" FontSize="25" FontWeight="Medium" Background="Transparent" Foreground="#FFFFFBFB"/>
+        <Label Content="New Customers" HorizontalAlignment="Left" Margin="613,137,0,0" VerticalAlignment="Top" FontFamily="Century Gothic" FontSize="25" FontWeight="Medium" Background="Transparent" Foreground="#FFFFFBFB"/>
+        <Label Content="Total Products" HorizontalAlignment="Left" Margin="971,137,0,0" VerticalAlignment="Top" FontFamily="Century Gothic" FontSize="25" FontWeight="Medium" Background="Transparent" Foreground="#FFFFFBFB"/>
+        <Label Content="1110" HorizontalAlignment="Left" Margin="319,210,0,0" VerticalAlignment="Top" FontFamily="Century Gothic" FontSize="40" FontWeight="Bold" Background="Transparent" Foreground="#FFFFFBFB" RenderTransformOrigin="1.311,0.442"/>
+        <Label Content="110" HorizontalAlignment="Left" Margin="673,210,0,0" VerticalAlignment="Top" FontFamily="Century Gothic" FontSize="40" FontWeight="Bold" Background="Transparent" Foreground="#FFFFFBFB" RenderTransformOrigin="1.311,0.442"/>
+        <Label Content="5000" HorizontalAlignment="Left" Margin="1036,210,0,0" VerticalAlignment="Top" FontFamily="Century Gothic" FontSize="40" FontWeight="Bold" Background="Transparent" Foreground="#FFFFFBFB" RenderTransformOrigin="1.311,0.442"/>
+        <Grid HorizontalAlignment="Left" Height="308" Margin="194,364,0,0" VerticalAlignment="Top" Width="1062" Background="#FFE4DEDE"/>
+        <Label Content="RashiCode" HorizontalAlignment="Left" Margin="210,364,0,0" VerticalAlignment="Top" FontFamily="Century Gothic" FontSize="50" FontWeight="Bold" Background="Transparent" Foreground="#FFFFFBFB" RenderTransformOrigin="1.311,0.442"/>
+    </Grid>
+</Window>

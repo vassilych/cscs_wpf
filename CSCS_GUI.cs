@@ -74,6 +74,8 @@ namespace SplitAndMerge
 	     interpreter.RegisterFunction("SetText", new SetTextWidgetFunction());
 	     interpreter.RegisterFunction("AddWidgetData", new AddWidgetDataFunction());
 	     interpreter.RegisterFunction("SetWidgetOptions", new SetWidgetOptionsFunction());
+	     interpreter.RegisterFunction("Get_comp_year", new Get_comp_yearFunction());
+	     interpreter.RegisterFunction("Get_dbase", new Get_dbaseFunction());
 	     interpreter.RegisterFunction("GetSelected", new GetSelectedFunction());
 	     interpreter.RegisterFunction("SetBackgroundColor", new SetColorFunction(true));
 	     interpreter.RegisterFunction("SetForegroundColor", new SetColorFunction(false));
@@ -454,7 +456,7 @@ namespace WpfCSCS
 
 		public static Dictionary<Window, string> Window2File { get; set; } = new Dictionary<Window, string>();
 		public static Dictionary<string, Window> File2Window { get; set; } = new Dictionary<string, Window>();
-		public static Dictionary<string, List<string>> GroupBoxesAndRadioButtons { get; set; } = new Dictionary<string, List<string>>();
+		public Dictionary<string, List<string>> GroupBoxesAndRadioButtons { get; set; } = new Dictionary<string, List<string>>();
 
 		public Interpreter Interpreter { get; private set; }
 
@@ -581,8 +583,8 @@ namespace WpfCSCS
 			BtrieveInstance.Init(this);
 			TasFunctionsInstance.Init(this);
 			ChartsInstance.Init(this);
-			//ReportFunction.Init(Interpreter);
-			//Excel.Init(Interpreter);
+			ReportFunction.Init(Interpreter);
+			Excel.Init(Interpreter);
 			NavigatorClassInstance.Init(Interpreter);
 			CommandsInstance.Init(this);
 
@@ -591,8 +593,29 @@ namespace WpfCSCS
 
 		private void LoadCompilerConstantsTxt()
 		{
-			var curr = Directory.GetCurrentDirectory();
-			var lines = File.ReadLines(Path.Combine(curr, "../../scripts/CompilerConstants.txt"));
+			//var curr = Directory.GetCurrentDirectory();
+			//MessageBox.Show("curr = " + curr);
+
+			//var curr2 = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+			//MessageBox.Show("curr2 = " + curr2);
+
+			var curr3 = AppDomain.CurrentDomain.BaseDirectory;
+			//MessageBox.Show("curr3 = " + curr3);
+
+			//var curr4 = System.IO.Directory.GetCurrentDirectory();
+			//MessageBox.Show("curr4 = " + curr4);
+
+			//var curr5 = Environment.CurrentDirectory;
+			//MessageBox.Show("curr5 = " + curr5);
+
+			//var curr6 = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+			//MessageBox.Show("curr6 = " + curr6);
+
+			//var curr7 = System.IO.Path.GetDirectory(Application.ExecutablePath);
+			//MessageBox.Show("curr7 = " + curr7);
+
+
+			var lines = File.ReadLines(Path.Combine(curr3, "../../scripts/CompilerConstants.txt"));
 			foreach (var line in lines)
 			{
 				if (line.StartsWith("{") || line.StartsWith(";") || line.Trim().Count() == 0)
@@ -3109,6 +3132,11 @@ namespace WpfCSCS
 
 			PreprocessScripts();
 
+			//preprocess this file
+			var tokenSet = GetPreprocessTokens();
+			var scriptsDirStr = App.GetConfiguration("ScriptsPath", "");
+			Utils.PreprocessScriptFile(fileName, tokenSet, scriptsDirStr, this);
+			
 			Variable result = null;
 			try
 			{
@@ -3764,9 +3792,86 @@ namespace WpfCSCS
 			return new Variable(itemsAdded);
 		}
 	}
+	public class Get_comp_yearFunction : ParserFunction
+	{
+		protected override Variable Evaluate(ParsingScript script)
+		{
+			List<Variable> args = script.GetFunctionArgs();
+			Utils.CheckArgs(args.Count, 2, m_name);
+
+			var comp_code = Utils.GetSafeString(args, 0).ToLower();
+			var type_of_code = Utils.GetSafeString(args, 1).ToLower();
+			SqlConnection conn = new SqlConnection(CSCS_SQL.ConnectionString);
+
+			conn.Open();
+
+			CSCS_GUI.Adictionary.SY_DATABASESList = AdictionaryLocal.CacheAdictionary.GetSY_DATABASES(conn);
+			var result = CSCS_GUI.Adictionary.SY_DATABASESList.FirstOrDefault(p => p.SYCD_COMPCODE.ToLower().TrimEnd() == comp_code.TrimEnd()).SYCD_YEAR;
+
+			conn.Close();
+			return new Variable(result); ;
+		}
+
+		
+	}
+	public class Get_dbaseFunction : ParserFunction
+	{
+		protected override Variable Evaluate(ParsingScript script)
+		{
+			List<Variable> args = script.GetFunctionArgs();
+			Utils.CheckArgs(args.Count, 1, m_name);
+
+			var USERCODE = Utils.GetSafeString(args, 0).ToLower();
+			var offset = Utils.GetSafeInt(args, 1);
+			SqlConnection conn = new SqlConnection(CSCS_SQL.ConnectionString);
+
+			conn.Open();
+
+			CSCS_GUI.Adictionary.SY_DATABASESList = AdictionaryLocal.CacheAdictionary.GetSY_DATABASES(conn);
+			var tmp = CSCS_GUI.Adictionary.SY_DATABASESList.FirstOrDefault(p => p.SYCD_USERCODE.ToLower().TrimEnd() == USERCODE.TrimEnd());
+			if (tmp != null)
+			{
+				var startYear = tmp.SYCD_YEAR;
+				var SYCD_COMPCODE = tmp.SYCD_COMPCODE;
+				var startYearWithOffset = int.Parse(startYear) + offset;
+				var tmp2 = CSCS_GUI.Adictionary.SY_DATABASESList.FirstOrDefault(p => p.SYCD_COMPCODE.ToLower().TrimEnd() == SYCD_COMPCODE.ToLower().TrimEnd() && p.SYCD_YEAR.ToLower().TrimEnd() == startYearWithOffset.ToString());
+				if (tmp2 != null)
+					return new Variable(tmp2.SYCD_DBASENAME);
+			}
+
+			conn.Close();
+			return new Variable() ;
+		}
+
+
+	}
+	//public class Get_comp_yearFunction : ParserFunction
+	//{
+	//	protected override Variable Evaluate(ParsingScript script)
+	//	{
+	//		List<Variable> args = script.GetFunctionArgs();
+	//		Utils.CheckArgs(args.Count, 2, m_name);
+
+	//		var comp_code = Utils.GetSafeString(args, 0).ToLower();
+	//		var type_of_code = Utils.GetSafeString(args, 1).ToLower();
+	//		SqlConnection conn = new SqlConnection(CSCS_SQL.ConnectionString);
+
+	//		conn.Open();
+
+	//		CSCS_GUI.Adictionary.SY_DATABASESList = AdictionaryLocal.CacheAdictionary.GetSY_DATABASES(conn);
+	//		var result = CSCS_GUI.Adictionary.SY_DATABASESList.FirstOrDefault(p => p.SYCD_COMPCODE.ToLower().TrimEnd() == comp_code.TrimEnd()).SYCD_YEAR;
+
+	//		conn.Close();
+	//		return new Variable(result); ;
+	//	}
+
+
+	//}
 
 	class SetWidgetOptionsFunction : ParserFunction
 	{
+		//emin
+
 		public static bool settingTabControlPosition;
 
 		Dictionary<string, Color> m_bgcolors = new Dictionary<string, Color>();
@@ -3775,31 +3880,132 @@ namespace WpfCSCS
 		protected override Variable Evaluate(ParsingScript script)
 		{
 			List<Variable> args = script.GetFunctionArgs();
-			Utils.CheckArgs(args.Count, 2, m_name);
+            Utils.CheckArgs(args.Count, 2, m_name);
+            var widgetName = Utils.GetSafeString(args, 0).ToLower();
+            var option = Utils.GetSafeString(args, 1).ToLower();
+            var gui = CSCS_GUI.GetInstance(script);
+            FrameworkElement widget = gui.GetWidget(widgetName);
+            var parameter = Utils.GetSafeString(args, 2).ToLower();
+            var prop_mapped = WidgetPropertyMap // try mapped
+            .OrderBy(a => a.Item1 == "*" ? 1 : 0)  // first the non *'s
+            .Where(a => (a.Item1.ToLower() == widget.GetType().Name.ToLower() || a.Item1.ToLower() == "*") && a.Item2.ToLower() == option) // overrides or *'s
+            .Select(a => a.Item3).FirstOrDefault();// real mapped prop name
+            var prop_by_prop_mapped = widget.GetType().GetProperties().Where(a => a.Name.ToLower() == (prop_mapped ?? "").ToLower()).FirstOrDefault();
 
-			var widgetName = Utils.GetSafeString(args, 0).ToLower();
-			var option = Utils.GetSafeString(args, 1).ToLower();
+            if (!string.IsNullOrEmpty(prop_mapped) && prop_by_prop_mapped != null)
+            {
+                //Chart("ChartPoMjesecima", "init");
+                //Chart("ChartPoMjesecima", "seriesType", "Columnseries");
+                //Chart("ChartPoMjesecima", "title", "Naslov grafa", 20);
+                //Chart("ChartPoMjesecima", "labels", "y", 13);
+                //Chart("ChartPoMjesecima", "labels", "x", 13, { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
+                //Chart("ChartPoMjesecima", "xlabelsRotation", 0);
+                //Chart("ChartPoMjesecima", "values", a1, "aaaaaa1");
+                //Chart("ChartPoMjesecima", "values", a2, "aaaaaa2");
+                //Chart("ChartPoMjesecima", "values", a3, "aaaaaa3");
+                //Chart("ChartPoMjesecima", "values", a4, "aaaaaa4");
+                //Chart("ChartPoMjesecima", "SeparatorStep", 1);
+                //Chart("ChartPoMjesecima", "Margins", { 50, 20, 0, 30});
+                //Chart("ChartPoMjesecima", "TooltipDecimalPlaces", 2);
 
-			var gui = CSCS_GUI.GetInstance(script);
-			FrameworkElement widget = gui.GetWidget(widgetName);
-			var parameter = Utils.GetSafeString(args, 2).ToLower();
+                if (option.StartsWith("Color".ToLower())) // from WidgetPropertyMap
+                {
+                    // simple fix for color
+                    prop_by_prop_mapped.SetValue(widget, new SolidColorBrush((Color)ColorConverter.ConvertFromString(parameter)), null);
+                }
+                else if (option.StartsWith("Visible".ToLower())) // from WidgetPropertyMap
+                {
+                    // fix for Visibility
+                    prop_by_prop_mapped.SetValue(widget, Set(parameter) ? Visibility.Visible : Visibility.Hidden, null);
+                }
+                else if (option.StartsWith("Enabled".ToLower())) // from WidgetPropertyMap
+                {
+                    // fix for Enabled
+                    prop_by_prop_mapped.SetValue(widget, Set(parameter), null);
+                }
+                else
+                {
+                    // try by name directly
+                    prop_by_prop_mapped.SetValue(widget, Convert.ChangeType(parameter, prop_by_prop_mapped.PropertyType), null);
+                }
+            }
+            else
+            {
+                // try generically
+                foreach (var prop in widget.GetType().GetProperties())
+                    if (prop.Name.ToLower() == option.ToLower())
+                        prop.SetValue(widget, Convert.ChangeType(parameter, prop.PropertyType), null);
+            }
 
-			foreach (var prop in widget.GetType().GetProperties())
-			{
-				if (prop.Name == option)
-				{
-					prop.SetValue(widget, Convert.ChangeType(parameter, prop.PropertyType), null);
-				}
+            return new Variable(true);
+
+        }
 
 
-			}
+		public string ToHex(Color c) => $"#{c.R:X2}{c.G:X2}{c.B:X2}";
 
-
-
-
-
-			return new Variable(true);
+		private bool Set(string parameter)
+		{
+			return new List<string> { "True".ToLower(), "On".ToLower(), "Yes".ToLower(), "Enabled".ToLower(), "1", "👍" }.Contains(parameter.ToLower());
 		}
+
+		private static List<(string, string, string)> WidgetPropertyMap = new List<(string, string, string)>
+		  {
+               // common
+               ("*", "Text", "Content"),
+			   ("*", "Text.Hover", "ToolTip"),
+			   ("*", "Color", "Foreground"),
+			   ("*", "Color", "Color.Foreground"),
+			   ("*", "Color.Border", "BorderBrush"),
+			   ("*", "Color.Text", "Foreground"),
+			   ("*", "Color.Background", "Background"),
+			   ("*", "Enabled", "IsEnabled"),
+			   ("*", "Visible", "Visibility"),
+
+               //charts
+               ("*", "Color.Series", "Series"),
+			   ("*", "Text.SeriesNames", "Series"),
+
+
+			   ("Button", "Text.Description", ""),
+			   ("Button", "Text.Size", ""),
+			   ("Button", "Text.Name", ""),
+			   ("Button", "Text.Style", ""),
+
+			   ("Label", "Text.Description", ""),
+			   ("Label", "Text.Size", ""),
+			   ("Label", "Text.Name", ""),
+			   ("Label", "Text.Style", ""),
+
+			   ("Grid", "Text.Description", ""),
+			   ("Grid", "Text.Size", ""),
+			   ("Grid", "Text.Name", ""),
+			   ("Grid", "Text.Style", ""),
+
+			   ("Ellipse", "Color", "Fill"),
+			   ("Ellipse", "Color.Background", "Fill"),
+			   ("Ellipse", "Color.Foreground", "Fill"),
+			   ("Ellipse", "Color.Border", "Stroke"),
+			   ("Ellipse", "Text.Description", ""),
+			   ("Ellipse", "Text.Size", ""),
+			   ("Ellipse", "Text.Name", ""),
+			   ("Ellipse", "Text.Style", ""),
+
+               //("CartesianChart", "Color.Series", "Series"),
+               //("CartesianChart", "Text.SeriesNames", "Series")
+
+               //("PlaceholderToCopy", "Color", ""),
+               //("PlaceholderToCopy", "Color.Foreground", ""),
+               //("PlaceholderToCopy", "Color.Background", ""),
+               //("PlaceholderToCopy", "Color.Border", ""),
+               //("PlaceholderToCopy", "Color.Text", ""),
+               //("PlaceholderToCopy", "Text", ""),
+               //("PlaceholderToCopy", "Text.Description", ""),
+               //("PlaceholderToCopy", "Text.Hover", ""),
+               //("PlaceholderToCopy", "Text.Size", ""),
+               //("PlaceholderToCopy", "Text.Name", ""),
+               //("PlaceholderToCopy", "Text.Style", ""),
+          };
 
 		public static bool ClearWidget(CSCS_GUI gui, string widgetName, FrameworkElement widget = null)
 		{
@@ -3971,7 +4177,7 @@ namespace WpfCSCS
 				case "enabled":
 					widget.IsEnabled = parameter == "true" ? true : false;
 					break;
-				case "with":
+				case "width":
 					widget.Width = int.Parse(parameter);
 					break;
 				case "height":
@@ -4231,9 +4437,6 @@ namespace WpfCSCS
 			return color;
 		}
 	}
-
-
-
 
 	class OpenFileFunction : ParserFunction
 	{
@@ -5468,7 +5671,7 @@ namespace WpfCSCS
 				var winMode = m_mode == MODE.NEW ? SpecialWindow.MODE.NORMAL : //SpecialWindow.MODE.SPECIAL_MODAL;
 				    parentWin == CSCS_GUI.MainWindow ? SpecialWindow.MODE.MODAL : SpecialWindow.MODE.SPECIAL_MODAL;
 				SpecialWindow modalwin = CreateNew(instanceName, parentWin, winMode, script);
-				modalwin.Instance.Title = string.IsNullOrWhiteSpace(title) ? modalwin.Instance.Title : title;
+				//modalwin.Instance.Title = string.IsNullOrWhiteSpace(title) ? modalwin.Instance.Title : title;
 				return new Variable(modalwin.Instance == null ? "" : modalwin.Instance.Tag.ToString());
 			}
 
@@ -5527,20 +5730,30 @@ namespace WpfCSCS
 			Gui.CacheWindow(wind, cscsFilename);
 			Gui.CacheParentWindow(tag, parentWin);
 
-			wind.Show();
-			/*if (parentWin == null || isMain)
-			{
-			    wind.Show();
-			}
-			else
-			{
-			    //parentWin.Hide();
-			    wind.Hide();
-			    wind.ShowDialog();
-			}*/
+            //wind.Show();
+
+			if(winMode == SpecialWindow.MODE.MODAL || winMode == SpecialWindow.MODE.SPECIAL_MODAL)
+            {
+				wind.ShowDialog();
+            }
+            else //NORMAL
+            {
+				wind.Show();
+            }
+
+            //if (parentWin == null /*|| isMain*/)
+            //{
+            //    wind.Show();
+            //}
+            //else
+            //{
+            //    //parentWin.Hide();
+            //    wind.Hide();
+            //    wind.ShowDialog();
+            //}
 
 
-			return modalwin;
+            return modalwin;
 		}
 
 		public static void RemoveWindow(Window wind)
@@ -6559,9 +6772,9 @@ namespace WpfCSCS
 				Variable varValue = new Variable(Variable.VarType.NONE);
 				var result = DoAssign(script, m_name, defVar, ref varValue);
 
-				foreach (string groupBox in CSCS_GUI.GroupBoxesAndRadioButtons.Keys)
+				foreach (string groupBox in gui.GroupBoxesAndRadioButtons.Keys)
 				{
-					var firstRBName = CSCS_GUI.GroupBoxesAndRadioButtons[groupBox].FirstOrDefault(p => gui.GetWidget(p).DataContext.ToString().ToLower() == m_name.ToLower());
+					var firstRBName = gui.GroupBoxesAndRadioButtons[groupBox].FirstOrDefault(p => gui.GetWidget(p)?.DataContext.ToString().ToLower() == m_name.ToLower());
 					if (firstRBName != null)
 					//if (CSCS_GUI.GroupBoxesAndRadioButtons[groupBox].Any(p=> gui.GetWidget(p).DataContext.ToString().ToLower() == m_name.ToLower()))
 					{

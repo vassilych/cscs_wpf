@@ -1,3 +1,9 @@
 args = CommandLineArgs();
 
-MessageBox("args=" + args);
+MessageBox("size(args) = " + size(args));
+
+MessageBox("args = " + args);
+
+MessageBox("args = " + args[2]);
+
+exit;

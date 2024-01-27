@@ -2346,7 +2346,7 @@ namespace WpfCSCS
                     switch (weightTop)
                     {
                         case 1:
-                            worksheet.Cells[Row, Column].Style.Border.Top.Style = border;
+                            worksheet.Cells[Row, Column].Style.Border.Top.Style = ExcelBorderStyle.Thin;
                             break;
                         case 2:
                             worksheet.Cells[Row, Column].Style.Border.Top.Style = ExcelBorderStyle.Medium;

@@ -1,0 +1,3 @@
+result = Get_dbase("bd7");
+MessageBox(result);
+quit;

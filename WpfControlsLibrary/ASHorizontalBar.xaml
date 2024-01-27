@@ -13,7 +13,8 @@
             HorizontalAlignment="Left"
             VerticalAlignment="Stretch"
             Width="125"
-            Background="Salmon"/>
+            Background="Salmon"
+            />
         <TextBox
             x:Name="InsideText"
             Text="default"
@@ -23,7 +24,7 @@
             VerticalAlignment="Stretch"
             FontSize="25"
             Background="Transparent"
-            BorderThickness="0.7"
+            BorderThickness="0"
             BorderBrush="Black"/>
     </Grid>
 </UserControl>

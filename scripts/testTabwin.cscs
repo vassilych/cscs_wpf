@@ -1,0 +1,14 @@
+CreateWindow(strTrim(tpath()) +"testTabWin.xaml");
+//MessageBox("bbxx");
+define regijanaziv type a size 30;
+define lani_h type a size 10
+regijanaziv= "tzutzutzutzu";
+lani_h="2023";
+HorizontalBar("HorizontalBarOG", "Text", "asdfgh");
+tasenter2.text= "fghfghh";
+
+function testTabwin_ondisplay(){
+MessageBox("bbxxyy");
+HorizontalBar("HorizontalBarOG", "Text", "1000");
+regijanaziv= "tzutzutzutzu";
+}

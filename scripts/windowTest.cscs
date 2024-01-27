@@ -1,0 +1,27 @@
+CreateWindow(strTrim(tpath()) +"windowTest.xaml");
+//
+define ovagod_h type a size 4; 
+define proba type a size 20;
+define probaNum type n size 10 dec 2;
+function windowTest_onStart(){
+SetImage("Logo", "c:/winx/kamen-logo.jpg");
+//logo.source="c:/winx/kamen-logo.jpg"; NE DELA !!!
+//MessageBox("aaa");
+}
+
+function windowTest_onDisplay(){
+//MessageBox("On display");
+button1.content= "Klikni me!";
+ovagod_h= "2023";
+proba="samo za probu!";
+probaNum= 123456.20;
+
+}
+
+function button1@clicked(sender, load){
+MessageBox("bbbb");
+}
+
+function gbPripremi@clicked(){
+MessageBox("cccc");
+}

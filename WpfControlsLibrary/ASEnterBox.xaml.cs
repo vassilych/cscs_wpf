@@ -152,6 +152,19 @@ namespace WpfControlsLibrary
             }
         }
 
+        public static readonly DependencyProperty ButtonBackgroundProperty = DependencyProperty.Register("ButtonBackground", typeof(Brush), typeof(ASEnterBox));
+        public Brush ButtonBackground
+        {
+            get
+            {
+                return (Brush)base.GetValue(ButtonBackgroundProperty);
+            }
+            set
+            {
+                base.SetValue(ButtonBackgroundProperty, value);
+            }
+        }
+
 
         public ASEnterBox()
         {
@@ -176,6 +189,8 @@ namespace WpfControlsLibrary
                 enterBoxTextBox.Foreground = Foreground == null ? new SolidColorBrush() { Color = Colors.Black } : Foreground;
 
                 enterBoxButton.Width = ButtonSize;
+
+                enterBoxButton.Background = ButtonBackground == null ? new SolidColorBrush() { Color = Colors.LightGray } : ButtonBackground;
 
                 loaded = true;
             }

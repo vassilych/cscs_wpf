@@ -1,0 +1,10 @@
+createWindow("../../scripts/ChainChlid2.xaml");
+
+function ChainChlid_onDisplay(){
+    MessageBox("child");
+}
+
+function exitButton@clicked(){
+    quit;
+}
+
