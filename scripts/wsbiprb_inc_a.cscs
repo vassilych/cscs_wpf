@@ -394,40 +394,45 @@ function setChartByMonth()
         tot_lani = 0;
         //arrayProsla = {};
         //arrayTrenutna = {};
-        sales_ar = {};
+        DEFINE sales_month_ar type n size 14 dec 0 array 24;
+        //sales_month_ar = {};
         DEFINE CNTR type i size 3;
         DEFINE cntry type i size 3;
         cntry= 0
         DEFINE arrayProsla type n size 14 array 12;
         DEFINE arrayTrenutna type n size 14 array 12;
+        
+        MessageBox(Size(sales_month_ar));
+
         for(i = 1; i < 13; i++)
         {
             if(i >= Size(queryResult))
             {
                 arrayProsla[i-1]= 0; 
-                sales_ar[i-1]= 0; 
+                sales_month_ar[i-1]= 0; 
                 continue;
             }
             else
             {
                 arrayProsla[i-1]= math.round(queryResult[i][1]/1000,0); 
-                sales_ar[i-1]=queryResult[i][1];
+                sales_month_ar[i-1]=queryResult[i][1];
                 if ( do_mjeseca == true )
                 {
                     if(i <= int(mjesec_h))
                     {
-                        tot_lani = tot_lani + queryResult[i][1] ;
-                    }
+                        tot_lani = tot_lani + queryResult[i][1];
+                    }   
                 }
                 else
                 {
                     if(i == int(mjesec_h))
-                    {
-                        tot_lani =  queryResult[i][1] ;
+                    {   
+                        tot_lani =  queryResult[i][1] ;   
                     }
                 }
             }
         }
+
         //
         for(i = 13; i < 25; i++)
         {
@@ -435,15 +440,15 @@ function setChartByMonth()
             if(i >= Size(queryResult))
             {
                 //arrayTrenutna.add(0);
-                //sales_ar.add(0);
+                //sales_month_ar.add(0);
                 arrayTrenutna[i-13]= 0; 
-                sales_ar[i-1]= 0; 
+                sales_month_ar[i-1]= 0; 
                 continue;
             }
             else
             {
                 arrayTrenutna[i-13]= math.round(queryResult[i][1]/1000,0); 
-                sales_ar[i-1]=queryResult[i][1];
+                sales_month_ar[i-1]=queryResult[i][1];
                 if ( do_mjeseca == true )
                 {
                     if(cntry<= int(mjesec_h))
