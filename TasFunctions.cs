@@ -729,12 +729,15 @@ namespace WpfCSCS
                 Variable resultArray = new Variable();
                 resultArray.Type = Variable.VarType.ARRAY;
                 resultArray.Tuple = new List<Variable>();
-                foreach (var item in gui.gridsSelectedRow[widgetName.ToLower()])
+                if (gui.gridsSelectedRow.Any(p=> p.Key == widgetName.ToLower()))
                 {
-                    resultArray.Tuple.Add(new Variable(item));
-                }
+                    foreach (var item in gui.gridsSelectedRow[widgetName.ToLower()])
+                    {
+                        resultArray.Tuple.Add(new Variable(item));
+                    }
 
-                return resultArray;
+                    return resultArray;
+                }
             }
 
             return Variable.EmptyInstance;
