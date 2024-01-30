@@ -11,57 +11,57 @@
         mc:Ignorable="d"
         Title="NumericBox"
         Height="700"
-        Width="1000">
+        Width="1000" WindowStartupLocation="CenterScreen">
     <Grid Margin="25,0,-5,-20">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="462"/>
+            <ColumnDefinition Width="488"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="65"/>
+            <RowDefinition Height="362"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <lvc:PieChart LegendPosition="Bottom"
                       Name="PieChart1"
-                      VerticalAlignment="Top"
+                      VerticalAlignment="Center"
                       HorizontalAlignment="Left"
                       Width="452"
-                      Height="330"
-                      Margin="0,0,0,0" Grid.RowSpan="2" FontSize="10" HorizontalContentAlignment="Left"/>
+                      Height="330" FontSize="10" HorizontalContentAlignment="Left"/>
         <Label Name="PieChartLabel"
                VerticalAlignment="Top"
                HorizontalAlignment="Left"
                Width="195"
                Height="35"
-               Margin="30,5,0,0"
+               Margin="32,10,0,0"
                Content="Top 6 - prodaja"
-               FontWeight="Bold"
-               Grid.Row="1"/>
+               FontSize="16"
+               FontWeight="Bold"/>
 
         <DataGrid GridLinesVisibility="None"
-                  HorizontalAlignment="Right"
-                  VerticalAlignment="Bottom"
-                  Height="216"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Top"
+                  Height="266"
                   Width="450"
-                  Margin="0,0,0,117"
+                  Margin="0,42,0,0"
                   IsReadOnly="true"
                   Name="dgStavke"
                   AlternatingRowBackground="LightGray"
                   HorizontalScrollBarVisibility="Auto"
                   VerticalScrollBarVisibility="Auto"
                   Background="White"
-                  TabIndex="2" Grid.ColumnSpan="2" Grid.Row="1">
+                  TabIndex="2" Grid.Row="1" Grid.Column="1" BorderThickness="0,0,0,0">
             <DataGrid.Resources>
                 <Style TargetType="{x:Type DataGridColumnHeader}">
                     <Setter Property="Background"
                             Value="#FFAE0000" />
                     <Setter Property="Foreground"
                             Value="White" />
+                    <Setter Property="FontSize" Value="17"/>
                 </Style>
             </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="No."
-                                        Width="24">
+                                        Width="28">
                     <DataGridTemplateColumn.CellStyle>
                         <Style TargetType="{x:Type DataGridCell}">
                             <Setter Property="Background"
@@ -88,8 +88,8 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Prodaja ova god."
-                                        Width="108">
+                <DataGridTemplateColumn Header="Ova godina"
+                                        Width="100">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <wcl:ASGridCell FieldName="SALESPART1_AR"
@@ -102,8 +102,8 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Prodaja lani"
-                                        Width="102">
+                <DataGridTemplateColumn Header="Preth.godina"
+                                        Width="100">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <wcl:ASGridCell FieldName="SALESPART2_AR"
@@ -115,8 +115,8 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Indx%"
-                                        Width="38">
+                <DataGridTemplateColumn Header="Index%"
+                                        Width="54">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <wcl:ASGridCell FieldName="INDEXPART_AR"
@@ -133,8 +133,8 @@
         </DataGrid>
         <DataGrid GridLinesVisibility="None"
                   HorizontalAlignment="Left"
-                  VerticalAlignment="Bottom"
-                  Height="216"
+                  VerticalAlignment="Top"
+                  Height="266"
                   Width="470"
                   IsReadOnly="true"
                   Name="dgArtikli"
@@ -142,18 +142,19 @@
                   HorizontalScrollBarVisibility="Auto"
                   VerticalScrollBarVisibility="Auto"
                   Background="White"
-                  TabIndex="19" Margin="-8,0,0,117" Grid.Row="1" BorderThickness="0,0,0,0">
+                  TabIndex="19" Margin="0,42,0,0" Grid.Row="1" BorderThickness="0,0,0,0">
             <DataGrid.Resources>
                 <Style TargetType="{x:Type DataGridColumnHeader}">
                     <Setter Property="Background"
                             Value="#FF0000A0" />
                     <Setter Property="Foreground"
                             Value="White" />
+                    <Setter Property="FontSize" Value="17"/>
                 </Style>
             </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="No."
-                                        Width="24">
+                                        Width="28">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <wcl:ASGridCell FieldName="TOP10ART_AR"
@@ -164,7 +165,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTemplateColumn Header="Artikl"
-                                        Width="150">
+                                        Width="160">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <wcl:ASGridCell FieldName="NAMEART_AR"
@@ -174,8 +175,8 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Prodaja ova god."
-                                        Width="108">
+                <DataGridTemplateColumn Header="Ova godina"
+                                        Width="100">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <wcl:ASGridCell FieldName="SALESART1_AR"
@@ -185,8 +186,8 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Prodaja lani"
-                                        Width="102">
+                <DataGridTemplateColumn Header="Preth.godina"
+                                        Width="100">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <wcl:ASGridCell FieldName="SALESART2_AR"
@@ -197,8 +198,8 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Indx%"
-                                        Width="38">
+                <DataGridTemplateColumn Header="Index%"
+                                        Width="54">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <wcl:ASGridCell FieldName="INDEXART_AR"

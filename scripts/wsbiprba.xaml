@@ -10,7 +10,7 @@
         Height="600"
         Width="1200" WindowStartupLocation="CenterScreen">
 
-    <Grid Margin="10,30,30,30">
+    <Grid Margin="10,30,10,30">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
@@ -19,38 +19,45 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <lvc:CartesianChart Name="ChartPoDanima"
+        <lvc:CartesianChart LegendPosition="Right"
+                            x:Name="ChartPoMjesecima"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Center"
+                            Margin="0,5,0,0"
+                            Width="544"
+                            Height="247" />
+        <lvc:CartesianChart x:Name="ChartPoDanima"
                             Grid.Column="1"
                             Grid.Row="0"
-                            Margin="0" />
+                            Margin="5,5,5,10" />
 
         <DataGrid GridLinesVisibility="Vertical"
                   VerticalGridLinesBrush="LightGray"
-                  HorizontalAlignment="Left"
-                  VerticalAlignment="Bottom"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Top"
                   Height="216"
-                  Width="510"
-                  Margin="29,0,0,10"
+                  Width="544"
+                  Margin="0,28,0,0"
                   IsReadOnly="true"
-                  Name="dgRacuniLast"
+                  x:Name="dgRacuniLast"
                   AlternatingRowBackground="LightBlue"
                   HorizontalScrollBarVisibility="Auto"
                   VerticalScrollBarVisibility="Auto"
                   Background="White"
-                  Grid.Column="0"
                   Grid.Row="1"
-                  TabIndex="4">
+                  TabIndex="4" BorderThickness="0,0,0,0">
             <DataGrid.Resources>
                 <Style TargetType="{x:Type DataGridColumnHeader}">
                     <Setter Property="Background"
                             Value="#FF006393" />
                     <Setter Property="Foreground"
                             Value="White" />
+                    <Setter Property="FontSize" Value="17"/>
                 </Style>
             </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="No."
-                                        Width="24">
+                                        Width="28">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <wcl:ASGridCell FieldName="T10CNTRZ_AR"
@@ -93,7 +100,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTemplateColumn Header="Kupac"
-                                        Width="165">
+                                        Width="210">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <wcl:ASGridCell FieldName="T10NAMEZ_AR"
@@ -110,7 +117,7 @@
                             <wcl:ASGridCell FieldName="T10IZNOSZ_AR"
                                             Editor="edEditBtn"
                                             EditLength="0"
-                                            Name="clickTest"
+                                            x:Name="clickTest"
                                             Size="10"
                                             DecimalChrs="2"
                                             HorizontalContentAlignment="Right" />
@@ -123,28 +130,29 @@
                   HorizontalAlignment="Left"
                   VerticalAlignment="Top"
                   Height="216"
-                  Width="470"
-                  Margin="64,28,0,0"
+                  Width="546"
+                  Margin="24,28,0,0"
                   IsReadOnly="true"
-                  Name="dgRacuniMjesec"
+                  x:Name="dgRacuniMjesec"
                   AlternatingRowBackground="LightGray"
                   HorizontalScrollBarVisibility="Auto"
                   VerticalScrollBarVisibility="Auto"
                   Background="White"
                   Grid.Column="1"
                   Grid.Row="1"
-                  TabIndex="3">
+                  TabIndex="3" BorderThickness="0,0,0,0" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False">
             <DataGrid.Resources>
                 <Style TargetType="{x:Type DataGridColumnHeader}">
                     <Setter Property="Background"
                             Value="#FF326363" />
                     <Setter Property="Foreground"
                             Value="White" />
+                    <Setter Property="FontSize" Value="17"/>
                 </Style>
             </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="No."
-                                        Width="24">
+                                        Width="28">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <wcl:ASGridCell FieldName="T10CNTRMJ_AR"
@@ -176,7 +184,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTemplateColumn Header="Kupac"
-                                        Width="165">
+                                        Width="250">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <wcl:ASGridCell FieldName="T10NAMEMJ_AR"
@@ -185,14 +193,14 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Iznos s PDV-om"
+                <DataGridTemplateColumn Header="Iznos"
                                         Width="90">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <wcl:ASGridCell FieldName="T10IZNOSMJ_AR"
                                             Editor="edEditBtn"
                                             EditLength="0"
-                                            Name="clickTest"
+                                            x:Name="clickTest"
                                             Thousands="True"
                                             Size="10"
                                             DecimalChrs="2"
@@ -203,12 +211,5 @@
             </DataGrid.Columns>
         </DataGrid>
         <TextBox HorizontalAlignment="Left" TextWrapping="Wrap" Text="Prodaja po mjesecima" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="156,10,0,0"/>
-        <Button Name="Buty"  Content="Button" Margin="544,39,521,118" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"/>
-        <lvc:CartesianChart LegendPosition="Right"
-                            x:Name="ChartPoMjesecima"
-                            VerticalAlignment="Top"
-                            HorizontalAlignment="Right"
-                            Width="544"
-                            Height="252" Margin="0" />
     </Grid>
 </Window>
