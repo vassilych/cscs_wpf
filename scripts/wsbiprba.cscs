@@ -101,7 +101,7 @@ function wsbiprba_onDisplay()
     Chart("ChartPoDanima", "values", arrayVrijednosti, "01");
     Chart("ChartPoDanima", "Margins", {60, 20, 0, 30});
 //
-
+    cntr2= 0
     DisplayArray("dgRacuniLast", "close");
     setLast10InvoicesDataGrid();
 
@@ -180,13 +180,11 @@ function setLast10InvoicesDataGrid()
 	}catch(exc){
 		MessageBox(exc);
 	}
-    messagebox("PP65: "+Size(sqlResult));
     for ( i = 1; i < Size(sqlResult); i++ )
     {      
 
         //nkpr_gl_num = sqlResult[i][0];  
         t10Namez_ar[i - 1] = sqlResult[i][1];  
-  messagebox("PP65: "+sqlResult[i][1]);         
         t10Iznosz_ar[i - 1] =  sqlResult[i][4];
         t10Cntrz_ar[i - 1] =  i;
         t10Datumz_ar[i - 1] =  sqlResult[i][2];
@@ -273,7 +271,6 @@ function setTop10InvoicesDataGrid()
 		t10DatumMj_ar[i - 1] =  nkpr_gl_invdte;
 		t10RacunMj_ar[i - 1] =  nkpr_gl_num;
 	}        
-
 }
 
 function setChartByDaysOfMonth()
@@ -539,7 +536,6 @@ function setChartByMonth()
                 }
             }
         }
-        //
         for(i = 13; i < 25; i++)
         {
 

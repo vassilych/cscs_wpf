@@ -395,15 +395,12 @@ function setChartByMonth()
         //arrayProsla = {};
         //arrayTrenutna = {};
         DEFINE sales_month_ar type n size 14 dec 0 array 24;
-        //sales_month_ar = {};
+        sales_month_ar = {};
         DEFINE CNTR type i size 3;
         DEFINE cntry type i size 3;
         cntry= 0
         DEFINE arrayProsla type n size 14 array 12;
         DEFINE arrayTrenutna type n size 14 array 12;
-        
-        MessageBox(Size(sales_month_ar));
-
         for(i = 1; i < 13; i++)
         {
             if(i >= Size(queryResult))
@@ -432,7 +429,6 @@ function setChartByMonth()
                 }
             }
         }
-
         //
         for(i = 13; i < 25; i++)
         {
@@ -477,6 +473,7 @@ function setChartByMonth()
                 }
             }
         }
+
     }
     define dan2 type i;
 function setChartByDaysOfMonth()
