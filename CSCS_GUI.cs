@@ -5670,9 +5670,15 @@ namespace WpfCSCS
 				var title = Utils.GetSafeString(args, 1);
 				var winMode = m_mode == MODE.NEW ? SpecialWindow.MODE.NORMAL : //SpecialWindow.MODE.SPECIAL_MODAL;
 				    parentWin == CSCS_GUI.MainWindow ? SpecialWindow.MODE.MODAL : SpecialWindow.MODE.SPECIAL_MODAL;
-				SpecialWindow modalwin = CreateNew(instanceName, parentWin, winMode, script);
-				//modalwin.Instance.Title = string.IsNullOrWhiteSpace(title) ? modalwin.Instance.Title : title;
-				return new Variable(modalwin.Instance == null ? "" : modalwin.Instance.Tag.ToString());
+
+				Variable result = Variable.EmptyInstance;
+                Application.Current.Dispatcher.Invoke(new Action(() =>
+                {
+                    SpecialWindow modalwin = CreateNew(instanceName, parentWin, winMode, script);
+                    //modalwin.Instance.Title = string.IsNullOrWhiteSpace(title) ? modalwin.Instance.Title : title;
+					result = new Variable(modalwin.Instance == null ? "" : modalwin.Instance.Tag.ToString());
+                }));
+                return result;
 			}
 
 			if (!s_windows.TryGetValue(instanceName, out wind))
