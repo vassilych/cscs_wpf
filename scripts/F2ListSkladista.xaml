@@ -132,7 +132,7 @@
                 Width="87"
                 Visibility="Visible"
                 Name="gbSklVan">
-            <Grid>
+            <Grid Width="64">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
@@ -142,12 +142,11 @@
                        Margin="5"
                        VerticalAlignment="Center"
                        HorizontalAlignment="Center" />
-                <TextBlock Grid.Column="1"
+                <TextBlock
                            FontSize="13"
                            Foreground="Black"
-                           VerticalAlignment="Center"
                            Text="Odustani"
-                           HorizontalAlignment="Center" />
+                           HorizontalAlignment="Left" Width="54" Margin="5,0,0,0" Grid.ColumnSpan="2" />
             </Grid>
         </Button>
         <Button HorizontalAlignment="Left"
