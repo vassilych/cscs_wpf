@@ -78,7 +78,7 @@ function neSkladiste@clicked()
 
 function neArtikl@clicked()
 {
-    artikliWin = ModalWindow(strTrim(tpath()) +"F2ListArtikla.xaml");
+    result = ModalWindow(strTrim(tpath()) +"F2ListArtikla.xaml");
     cursor("wait");
     searchArtiklSifra = artikl;
     searchArtiklNaziv = artiklNaziv;
@@ -89,7 +89,7 @@ function neArtikl@clicked()
 function cePartner@clicked()
 {
     //ModalWindow("../../scripts/F2ListPartnera.xaml");
-    partnerWin = ModalWindow(strTrim(tpath()) +"F2ListPartnera.xaml");
+    result = ModalWindow(strTrim(tpath()) +"F2ListPartnera.xaml");
     //searchPartnerSifra = "";
     //searchPartnerNaziv = "";
     return;
@@ -98,7 +98,7 @@ function cePartner@clicked()
 function buttonTest@clicked()
 {
     //ModalWindow("../../scripts/F2ListPartnera.xaml");
-    partnerWin = ModalWindow(strTrim(tpath()) +"testwindow1.xaml");
+    result = ModalWindow(strTrim(tpath()) +"testwindow1.xaml");
     //searchPartnerSifra = "";
     //searchPartnerNaziv = "";
     return;
@@ -115,7 +115,7 @@ function f2ListPartner_onDisplay()
 
 function ceRegija@clicked()
 {
-    regijaWin = ModalWindow(strTrim(tpath()) +"F2ListRegija.xaml");
+    result = ModalWindow(strTrim(tpath()) +"F2ListRegija.xaml");
     cursor("wait");
     searchRegijaSifra = regija;
     searchRegijaNaziv = regijaNaziv;
@@ -218,7 +218,12 @@ function gbArtiOk@clicked()
     selectedArray = GetSelectedGridRow("dgArti");
     artikl = selectedArray[0];
     artiklNaziv = selectedArray[1];
-    CloseWindow(artikliWin);
+    SetWindowModalResult(true);
+}
+
+function gbArtiklVan@clicked()
+{
+    SetWindowModalResult(false);
 }
 
 function gbPartOk@clicked()
@@ -226,7 +231,12 @@ function gbPartOk@clicked()
     selectedArray = GetSelectedGridRow("dgPart");
     partner = selectedArray[0];
     partnerNaziv = selectedArray[1];
-    CloseWindow(partnerWin);
+    SetWindowModalResult(true);
+}
+
+function gbPartneriVan@clicked()
+{
+    SetWindowModalResult(false);
 }
 
 function gbRegijaOk@clicked()
@@ -234,6 +244,12 @@ function gbRegijaOk@clicked()
     selectedArray = GetSelectedGridRow("dgRegija");
     regija = selectedArray[0];
     regijaNaziv = selectedArray[1];
-    CloseWindow(regijaWin);
+    SetWindowModalResult(true);
 }
+
+function gbRegijaVan@clicked()
+{
+    SetWindowModalResult(false);
+}
+
     //----------------------------------------
