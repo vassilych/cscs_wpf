@@ -5677,7 +5677,7 @@ namespace WpfCSCS
 				    parentWin == CSCS_GUI.MainWindow ? SpecialWindow.MODE.MODAL : SpecialWindow.MODE.SPECIAL_MODAL;
 				SpecialWindow modalwin = CreateNew(instanceName, parentWin, winMode, script);
 				//modalwin.Instance.Title = string.IsNullOrWhiteSpace(title) ? modalwin.Instance.Title : title;
-				return new Variable(modalwin.DialogResult.ToString());
+				return new Variable(modalwin.DialogResult);
 			}
 
 			if (!s_windows.TryGetValue(instanceName, out wind))

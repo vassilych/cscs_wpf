@@ -1,22 +1,7 @@
 MessageBox("parent script");
 
 
-// res1 = modalWindow("../../scripts/ChainChlid.xaml");
-// MessageBox("modal window done");
-// MessageBox(res1);
+Chain("../../scripts/testCHAINModalChild.cscs");
 
 
-// res2 = createWindow("../../scripts/ChainChlid.xaml");
-// MessageBox("normal window done");
-// messagebox(res2);
-// function ChainChlid_onDisplay(){
-//     MessageBox("onDisplay");
-// }
-
-//createWindow("../../scripts/ChainChlid2.xaml");
-
-result = Chain("../../scripts/testCHAINModalChild.cscs");
-messagebox(result);
-
-
-MessageBox("parent script");
+MessageBox("parent script end");
