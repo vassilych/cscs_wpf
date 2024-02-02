@@ -131,23 +131,27 @@
                 FontFamily="Arial"
                 Width="87"
                 Visibility="Visible"
-                Name="gbSklVan">
-            <Grid>
+                Name="gbArtiklVan">
+            <Grid Width="68">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="11*"/>
+                    <RowDefinition Height="4*"/>
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <Image Source="Images\check.png"
                        Stretch="UniformToFill"
-                       Margin="5"
-                       VerticalAlignment="Center"
+                       Margin="0,7,0,0"
+                       VerticalAlignment="Top"
                        HorizontalAlignment="Center" />
-                <TextBlock Grid.Column="1"
+                <TextBlock
                            FontSize="13"
                            Foreground="Black"
-                           VerticalAlignment="Center"
+                           VerticalAlignment="Top"
                            Text="Odustani"
-                           HorizontalAlignment="Center" />
+                           HorizontalAlignment="Left" Width="75" Margin="10,0,0,0" Grid.ColumnSpan="2" Grid.RowSpan="2" />
             </Grid>
         </Button>
         <Button HorizontalAlignment="Left"

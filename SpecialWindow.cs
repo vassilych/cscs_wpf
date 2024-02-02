@@ -17,6 +17,7 @@ namespace WpfCSCS
     {
         static Dictionary<Window, SpecialWindow> s_windowCache = new Dictionary<Window, SpecialWindow>();
 
+        public bool? DialogResult { get; set; }
         public enum MODE { NORMAL, MODAL, SPECIAL_MODAL };
 
         [DllImport("user32.dll")]

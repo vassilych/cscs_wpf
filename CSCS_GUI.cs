@@ -115,6 +115,8 @@ namespace SplitAndMerge
 	     interpreter.RegisterFunction(Constants.EXIT, new TerminateFunction());
 	     interpreter.RegisterFunction(Constants.QUIT, new WpfQuitCommand());
 
+	     interpreter.RegisterFunction("SetWindowModalResult", new SetWindowModalResultFunction());
+
 	     interpreter.AddAction(Constants.ASSIGNMENT, new MyAssignFunction());
 	     interpreter.AddAction(Constants.INCREMENT, new MyAssignFunction(MyAssignFunction.MODE.INCREMENT));
 	     interpreter.AddAction(Constants.DECREMENT, new MyAssignFunction(MyAssignFunction.MODE.DECREMENT));
@@ -1861,14 +1863,17 @@ namespace WpfCSCS
 				{
 					var dg = widget as DataGrid;
 
-					var row = new List<object>();
+					if (dg.SelectedItem != null)
+                    {
+						var row = new List<object>();
 
-					foreach (KeyValuePair<string, object> kvp in (dg.SelectedItem as ExpandoObject))
-					{
-						row.Add(kvp.Value);
+						foreach (KeyValuePair<string, object> kvp in (dg.SelectedItem as ExpandoObject))
+						{
+							row.Add(kvp.Value);
+						}
+
+						gridsSelectedRow[widget.Name.ToLower()] = row;
 					}
-
-					gridsSelectedRow[widget.Name.ToLower()] = row;
 				}
 				catch (Exception ex)
 				{
@@ -5676,9 +5681,10 @@ namespace WpfCSCS
                 {
                     SpecialWindow modalwin = CreateNew(instanceName, parentWin, winMode, script);
                     //modalwin.Instance.Title = string.IsNullOrWhiteSpace(title) ? modalwin.Instance.Title : title;
-					result = new Variable(modalwin.Instance == null ? "" : modalwin.Instance.Tag.ToString());
+					result = new Variable(modalwin.DialogResult);
                 }));
                 return result;
+
 			}
 
 			if (!s_windows.TryGetValue(instanceName, out wind))
@@ -5740,11 +5746,18 @@ namespace WpfCSCS
 
 			if(winMode == SpecialWindow.MODE.MODAL || winMode == SpecialWindow.MODE.SPECIAL_MODAL)
             {
-				wind.ShowDialog();
+				modalwin.DialogResult = wind.ShowDialog();
             }
             else //NORMAL
             {
-				wind.Show();
+				if(parentWin == CSCS_GUI.MainWindow)
+                {
+					wind.Show();
+				}
+                else
+                {
+					wind.ShowDialog();
+                }
             }
 
             //if (parentWin == null /*|| isMain*/)
@@ -7130,6 +7143,25 @@ namespace WpfCSCS
 			gui.CloseAllWindows();
 
 			return QuitFunction.QuitScript(script, code);
+		}
+	}
+	
+	class SetWindowModalResultFunction : ParserFunction
+	{
+		protected override Variable Evaluate(ParsingScript script)
+		{
+			List<Variable> args = script.GetFunctionArgs();
+			Utils.CheckArgs(args.Count, 1, m_name);
+
+			//var windowName = Utils.GetSafeString(args, 0);
+			var modalResult = Utils.GetSafeVariable(args, 0).AsBool();
+
+			var gui = CSCS_GUI.GetInstance(script);
+
+			var scriptWindow = gui.GetScriptWindow(script);
+			scriptWindow.DialogResult = modalResult;
+			
+			return Variable.EmptyInstance;
 		}
 	}
 }

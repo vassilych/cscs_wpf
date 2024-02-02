@@ -376,6 +376,22 @@ AddMenuSeparator("OtherDC");
 
 AddMenuItem("OtherDC", "testCHAINModal.cscs", "testCHAINModal", "runScript");
 
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "Program1.cscs", "Program1", "runScript");
+
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "Program2.cscs", "Program2", "runScript");
+
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "Chain1.cscs", "Chain1", "runScript");
+
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "Chain2.cscs", "Chain2", "runScript");
+
 
 //----- IVAN -------------------------------
 

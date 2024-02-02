@@ -1,168 +1,255 @@
+    DEFINE skladiste type i size 3;
+    DEFINE skladisteNaziv type a size 50;
+
+    DEFINE ARTI_ARTIKL_ARR type a size 30 array 50000;
+    DEFINE ARTI_NAZIV_ARR type a size 50 array 50000;
+    DEFINE NKSC_PARTCODE_ARR type a size 10 array 50000;
+    DEFINE NKSC_PARTNAME_ARR type a size 50 array 50000;
+
+    DEFINE KSDU_SF_CODE_ARR type a size 6 array 5000;
+    DEFINE KSDU_SF_OPIS1_ARR type a size 30 array 5000;
+
+    DEFINE PKMK_SKL_CODE_arr type i size 3 array 300;
+
+    DEFINE PKMK_SKL_NAZIV_arr type a size 50 array 300;
+    DEFINE cntr1 type i;
+    define ovagod_h,lani_h type a size 4;
+
+    DEFINE tot_ovagod type n size 14 dec 0 ;
+    DEFINE tot_lani type n size 14 dec 0 ;
+    DEFINE tot_ovajmj type n size 14 dec 0 ;
+    DEFINE tot_proslimj type n size 14 dec 0 ;
+    DEFINE postotak type n size 10 dec 2 ;
+    DEFINE postotakMj type n size 10 dec 2 ;
+    define postotakTj type n size 10 dec 2 ;
+    DEFINE artiklNaziv type a size 30;
+    define artikl type a size 15 ;
+
+    DEFINE tot_ovagod_string type a size 20;
+    DEFINE tot_lani_string type a size 20;
+    DEFINE tot_ovajmj_string type a size 20;
+    DEFINE tot_proslimj_string type a size 20;
+    DEFINE tot_ovajTj_string type a size 20;
+    DEFINE tot_ProsliTj_string type a size 20;
+
+    define mjesec_h type a size 2 ;
+
+    define partner type a size 10 ;
+    define partnerNaziv a size 30 ;
+
+    define regija type a size 6 ;
+    define regijaNaziv a size 30 ;
+    define do_mjeseca type l;
+
+    define danas_h type d size 8;
+
+    DEFINE saPdvomField type l;
+    DEFINE bezPdvaField type l;
+    DEFINE razlikaUCijeniField type l;
+    DEFINE tezina_dn type l;
+
+    DEFINE searchSklSifra type a size 50;
+    DEFINE searchSklNaziv type a size 50;
+    DEFINE searchArtiklSifra type a size 50;
+    DEFINE searchArtiklNaziv type a size 50;
+    DEFINE searchPartnerSifra type a size 50;
+    DEFINE searchPartnerNaziv type a size 50;
+    DEFINE searchRegijaSifra type a size 50;
+    DEFINE searchRegijaNaziv type a size 50;
+
+    DEFINE regijeRB type l;
+    DEFINE drzaveRB type l;
+    DEFINE gradoviRB type l;
+
+    DEFINE nazivFirme type a size 100;
+
+    DEFINE pripremljeno type l;
+
 function neSkladiste@clicked()
-    {
-    skladisteWin = ModalWindow(strTrim(tpath()) +"F2ListSkladista.xaml");
+{
+    result = ModalWindow(strTrim(tpath()) +"F2ListSkladista.xaml");
+    //MessageBox("result = " + result);
     cursor("wait");
     searchSklSifra = skladiste;
     searchSklNaziv = skladisteNaziv;
     NewBindSQL("dgSkl", "SELECT [PKMK_SKL_CODE], [PKMK_SKL_NAZIV] FROM  " + trenutnaGodinaBaza + ".[dbo].[PKMKSKLA] where PKMK_SKL_NAZIV like '%" + searchSklNaziv + "%' and PKMK_SKL_CODE like '%" + searchSklSifra + "%'");
     cursor("dflt");
-    }
+}
 
 function neArtikl@clicked()
-    {
-    artikliWin = ModalWindow(strTrim(tpath()) +"F2ListArtikla.xaml");
+{
+    result = ModalWindow(strTrim(tpath()) +"F2ListArtikla.xaml");
     cursor("wait");
     searchArtiklSifra = artikl;
     searchArtiklNaziv = artiklNaziv;
     NewBindSQL("dgArti", "SELECT ARTI_ARTIKL, ARTI_NAZIV FROM  " + trenutnaGodinaBaza + ".[dbo].[NKMKARTI] where ARTI_ARTIKL like '%" + searchArtiklSifra + "%' and ARTI_NAZIV like '%" + searchArtiklNaziv + "%'");
     cursor("dflt");
-    }
+}
 
 function cePartner@clicked()
-    {
+{
     //ModalWindow("../../scripts/F2ListPartnera.xaml");
-    partnerWin = ModalWindow(strTrim(tpath()) +"F2ListPartnera.xaml");
+    result = ModalWindow(strTrim(tpath()) +"F2ListPartnera.xaml");
     //searchPartnerSifra = "";
     //searchPartnerNaziv = "";
     return;
-    }
+}
 
 function buttonTest@clicked()
-    {
+{
     //ModalWindow("../../scripts/F2ListPartnera.xaml");
-    partnerWin = ModalWindow(strTrim(tpath()) +"testwindow1.xaml");
+    result = ModalWindow(strTrim(tpath()) +"testwindow1.xaml");
     //searchPartnerSifra = "";
     //searchPartnerNaziv = "";
     return;
-    }
+}
 
 function f2ListPartner_onDisplay()
-    {
+{
     cursor("wait");
     searchPartnerSifra = partner;
     searchPartnerNaziv = partnerNaziv;
     NewBindSQL("dgPart", "SELECT [NKSC_PARTCODE]  ,[NKSC_PARTNAME] FROM  " + trenutnaGodinaBaza + ".[dbo].[NKSCPART] where NKSC_PARTCODE like '%" + searchPartnerSifra + "%' and NKSC_PARTNAME like '%" + searchPartnerNaziv + "%'");
     cursor("dflt");
-    }
+}
 
 function ceRegija@clicked()
-    {
-    regijaWin = ModalWindow(strTrim(tpath()) +"F2ListRegija.xaml");
+{
+    result = ModalWindow(strTrim(tpath()) +"F2ListRegija.xaml");
     cursor("wait");
     searchRegijaSifra = regija;
     searchRegijaNaziv = regijaNaziv;
     NewBindSQL("dgRegija", "SELECT [KSDU_SF_CODE], [KSDU_SF_OPIS1] FROM  " + CommonDBGet() + ".[dbo].[KPSYSIFA] WHERE [KSDU_SF_TIP] ='V' and KSDU_SF_CODE like '%" + searchRegijaSifra + "%' and KSDU_SF_OPIS1 like '%" + searchRegijaNaziv + "%'");
     cursor("dflt");
-    }
+}
 //----------------------
 function ebSearchSklSifra@TextChange()
-    {
+{
     searchSkladiste();
-    }
+}
 
 function ebSearchSklNaziv@TextChange()
-    {
+{
     if(searchSklNaziv.length > 2 || searchSklNaziv.length == 0){
         searchSkladiste();
     }
-    }
+}
 function searchSkladiste()
-    {
+{
     cursor("wait");
     NewBindSQL("dgSkl", "SELECT [PKMK_SKL_CODE], [PKMK_SKL_NAZIV] FROM  " + trenutnaGodinaBaza + ".[dbo].[PKMKSKLA] where PKMK_SKL_NAZIV like '%" + searchSklNaziv + "%' and PKMK_SKL_CODE like '" + searchSklSifra + "%'");
     cursor("dflt");
-    }
+}
 
 function ebSearchArtiklSifra@TextChange()
-    {
+{
     searchArtikl();
-    }
-    function ebSearchArtiklNaziv@TextChange()
-    {
+}
+function ebSearchArtiklNaziv@TextChange()
+{
     if(searchArtiklNaziv.length > 2 || searchArtiklNaziv.length == 0){
         searchArtikl();
     }
-    }
+}
 
 function searchArtikl()
-    {
+{
     cursor("wait");
     NewBindSQL("dgArti", "SELECT ARTI_ARTIKL, ARTI_NAZIV FROM  " + trenutnaGodinaBaza + ".[dbo].[NKMKARTI] where ARTI_ARTIKL like '%" + searchArtiklSifra + "%' and ARTI_NAZIV like '%" + searchArtiklNaziv + "%'");
     cursor("dflt");
-    }
+}
 
 function ebSearchPartnerSifra@TextChange()
-    {
+{
     searchPartner();
-    }
+}
 
 function ebSearchPartnerNaziv@TextChange()
-    {
+{
     if(searchPartnerNaziv.length > 2 || searchPartnerNaziv.length == 0){
         searchPartner();
-        }
     }
+}
 
 function searchPartner()
-    {
+{
     cursor("wait");
     NewBindSQL("dgPart", "SELECT [NKSC_PARTCODE]  ,[NKSC_PARTNAME] FROM  " + trenutnaGodinaBaza + ".[dbo].[NKSCPART] where NKSC_PARTCODE like '%" + searchPartnerSifra + "%' and NKSC_PARTNAME like '%" + searchPartnerNaziv + "%'");
     cursor("dflt");
-    }
+}
 
 function ebSearchRegijaSifra@TextChange()
-    {
+{
     searchRegija();
-    }
+}
 
 function ebSearchRegijaNaziv@TextChange()
-    {
+{
     if(searchRegijaNaziv.length > 2 || searchRegijaNaziv.length == 0){
         searchRegija();
-        }
     }
+}
 
 function searchRegija()
-    {
+{
     cursor("wait");
     NewBindSQL("dgRegija", "SELECT [KSDU_SF_CODE], [KSDU_SF_OPIS1] FROM  " + CommonDBGet() + ".[dbo].[KPSYSIFA] WHERE [KSDU_SF_TIP] ='V' and KSDU_SF_CODE like '%" + searchRegijaSifra + "%' and KSDU_SF_OPIS1 like '%" + searchRegijaNaziv + "%'");
     cursor("dflt");
-    }
+}
     //----------------------
 function gbSklOk@clicked()
-    {
+{
     selectedArray = GetSelectedGridRow("dgSkl");
-    skladiste = selectedArray[0];
-    skladistenaziv = selectedArray[1];
-    CloseWindow(skladisteWin);
+    if(Size(selectedArray) > 0){
+        skladiste = selectedArray[0];
+        skladistenaziv = selectedArray[1];
+        //CloseWindow(skladisteWin);
+        SetWindowModalResult(true);
     }
+}
 
-    function gbSklVan@clicked()
-    {
-        closeWindow(skladisteWin);
-    }
+function gbSklVan@clicked()
+{
+    SetWindowModalResult(false);
+}
 
 function gbArtiOk@clicked()
-    {
+{
     selectedArray = GetSelectedGridRow("dgArti");
     artikl = selectedArray[0];
     artiklNaziv = selectedArray[1];
-    CloseWindow(artikliWin);
-    }
+    SetWindowModalResult(true);
+}
+
+function gbArtiklVan@clicked()
+{
+    SetWindowModalResult(false);
+}
 
 function gbPartOk@clicked()
-    {
+{
     selectedArray = GetSelectedGridRow("dgPart");
     partner = selectedArray[0];
     partnerNaziv = selectedArray[1];
-    CloseWindow(partnerWin);
-    }
+    SetWindowModalResult(true);
+}
+
+function gbPartneriVan@clicked()
+{
+    SetWindowModalResult(false);
+}
 
 function gbRegijaOk@clicked()
-    {
+{
     selectedArray = GetSelectedGridRow("dgRegija");
     regija = selectedArray[0];
     regijaNaziv = selectedArray[1];
-    CloseWindow(regijaWin);
-    }
+    SetWindowModalResult(true);
+}
+
+function gbRegijaVan@clicked()
+{
+    SetWindowModalResult(false);
+}
+
     //----------------------------------------
