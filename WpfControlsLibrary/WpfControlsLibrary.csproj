@@ -49,8 +49,8 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="asdasdasdasd.xaml.cs">
-      <DependentUpon>asdasdasdasd.xaml</DependentUpon>
+    <Compile Include="ASButton.xaml.cs">
+      <DependentUpon>ASButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="ASDualListDialog.xaml.cs">
       <DependentUpon>ASDualListDialog.xaml</DependentUpon>
@@ -102,7 +102,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="asdasdasdasd.xaml">
+    <Page Include="ASButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

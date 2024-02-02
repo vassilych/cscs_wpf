@@ -2551,6 +2551,14 @@ namespace WpfCSCS
 						}
 					}
 				}
+				else if (child is ASButton)
+				{
+					var asButton = child as ASButton;
+					var insideButton = asButton.Content as Button;
+					
+					//CacheControl(insideButton as FrameworkElement, win, controls);
+					CacheASButton(asButton as FrameworkElement, win, controls, insideButton);
+				}
 				else if (child is ASEnterBox)
 				{
 					var enterBox = child as ASEnterBox;
@@ -2645,6 +2653,24 @@ namespace WpfCSCS
 			        Control2Window[widget] = win;
 			    }
 			}*/
+		}
+		
+		public void CacheASButton(FrameworkElement widget, Window win = null, List<FrameworkElement> controls = null, Button insideButton = null)
+		{
+			var temp = widget.Name;
+			widget.Name = temp + "_x";
+			insideButton.Name = temp;
+
+			var wName = GetWidgetName(widget);
+			if (!string.IsNullOrWhiteSpace(wName))
+			{
+				Controls[wName.ToLower()] = insideButton;
+				controls?.Add(insideButton);
+				if (win != null)
+				{
+					Control2Window[insideButton] = win;
+				}
+			}
 		}
 
 		public void CacheASEnterBoxChild(FrameworkElement widget, Window win = null, List<FrameworkElement> controls = null, ASEnterBox enterBox = null)

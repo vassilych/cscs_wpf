@@ -392,6 +392,10 @@ AddMenuSeparator("OtherDC");
 
 AddMenuItem("OtherDC", "Chain2.cscs", "Chain2", "runScript");
 
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "testASButton.cscs", "testASButton", "runScript");
+
 
 //----- IVAN -------------------------------
 
