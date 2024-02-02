@@ -1,0 +1,6 @@
+CreateWindow("../../scripts/Program1.xaml");
+
+function button1@clicked(){
+    CHAIN("../../scripts/Chain1.cscs");
+    MessageBox("back from Chain1");
+}

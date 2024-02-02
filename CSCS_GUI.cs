@@ -115,7 +115,7 @@ namespace SplitAndMerge
 	     interpreter.RegisterFunction(Constants.EXIT, new TerminateFunction());
 	     interpreter.RegisterFunction(Constants.QUIT, new WpfQuitCommand());
 
-	     interpreter.RegisterFunction(Constants.SetWindowModalResult, new SetWindowModalResultFunction());
+	     interpreter.RegisterFunction("SetWindowModalResult", new SetWindowModalResultFunction());
 
 	     interpreter.AddAction(Constants.ASSIGNMENT, new MyAssignFunction());
 	     interpreter.AddAction(Constants.INCREMENT, new MyAssignFunction(MyAssignFunction.MODE.INCREMENT));
@@ -5750,7 +5750,14 @@ namespace WpfCSCS
             }
             else //NORMAL
             {
-				wind.Show();
+				if(parentWin == CSCS_GUI.MainWindow)
+                {
+					wind.Show();
+				}
+                else
+                {
+					wind.ShowDialog();
+                }
             }
 
             //if (parentWin == null /*|| isMain*/)
