@@ -2493,7 +2493,7 @@ d:\temp\aaa.txt, d:\temp\ggg.txt,
                     DataGridTextColumn column = new DataGridTextColumn();
                     //column.Header = label;
                     column.Header = gridsHeaders[widgetName.ToLower()][i];
-                    column.Binding = new Binding(label.Replace(' ', '_'));
+                    column.Binding = new Binding(label.ToLower().Replace(' ', '_'));
 
                     dg.Columns.Add(column);
                 }
@@ -2517,7 +2517,7 @@ d:\temp\aaa.txt, d:\temp\ggg.txt,
                         {
                             val = data.Tuple.Count > j ? data.Tuple[j].AsString() : "";
                         }
-                        ((IDictionary<String, Object>)row)[column.Replace(' ', '_')] = val;
+                        ((IDictionary<String, Object>)row)[column.ToLower().Replace(' ', '_')] = val;
                     }
                     dg.Items.Add(row);
                     Console.WriteLine(i);

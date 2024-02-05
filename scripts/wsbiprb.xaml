@@ -924,15 +924,13 @@
                         Background="White"
                         TabIndex="4"
                         ButtonBackground="IndianRed"/>
-        <wcl:ASEnterBox Grid.Column="1" ButtonSize="21"
+        <wcl:ASNumericBox Grid.Column="1" ButtonSize="21"
                         FontWeight="Bold"
-                        Size="0"
                         FieldName="Rnalog"
                         Foreground="black"
                         x:Name="neRnalog"
                         FontSize="14"
                         KeyTraps="F2|neRnalog@clicked"
-                        Case="Normal"
                         Height="22"
                         Width="76"
                         Margin="107,192,0,0"
@@ -944,7 +942,6 @@
                         ButtonBackground="GreenYellow"/>
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
                         FontWeight="Bold"
-                        Size="4"
                         FieldName="regijaNaziv"
                         Foreground="black"
                         x:Name="TASComboEnter4"
@@ -960,7 +957,6 @@
                         TabIndex="5" />
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
                         FontWeight="Bold"
-                        Size="4"
                         FieldName="isporukaNaziv"
                         Foreground="black"
                         x:Name="TASComboEnter40"
@@ -976,7 +972,6 @@
                         TabIndex="5" />
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
                         FontWeight="Bold"
-                        Size="4"
                         FieldName="kategNaziv"
                         Foreground="black"
                         x:Name="TASComboEnter41"
@@ -992,7 +987,6 @@
                         TabIndex="5" />
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
                         FontWeight="Bold"
-                        Size="4"
                         FieldName="klasaNaziv"
                         Foreground="black"
                         x:Name="TASComboEnter42"
@@ -1008,7 +1002,6 @@
                         TabIndex="5" />
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
                         FontWeight="Bold"
-                        Size="4"
                         FieldName="komercNaziv"
                         Foreground="black"
                         x:Name="TASComboEnter43"
@@ -1024,7 +1017,6 @@
                         TabIndex="5" />
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
                         FontWeight="Bold"
-                        Size="4"
                         FieldName="rnalogNaziv"
                         Foreground="black"
                         x:Name="TASComboEnter44"
