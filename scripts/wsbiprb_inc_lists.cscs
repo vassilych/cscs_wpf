@@ -1,3 +1,6 @@
+    //include("../../scripts/F2ListLib.cscs");
+    include(strTrim(tpath()) +"F2ListLib.cscs");
+    
     DEFINE skladiste type i size 3;
     DEFINE skladisteNaziv type a size 50;
 
@@ -35,25 +38,25 @@
     define mjesec_h type a size 2 ;
 
     define partner type a size 10 ;
-    define partnerNaziv a size 30 ;
+    define partnerNaziv type a size 30 ;
 
     define regija type a size 6 ;
-    define regijaNaziv a size 30 ;
+    define regijaNaziv type a size 30 ;
 
     define kategorija type a size 6 ;
-    define kategorijaNaziv a size 50 ;
+    define kategorijaNaziv type a size 50 ;
 
     define klasa type a size 6 ;
-    define klasaNaziv a size 50 ;
+    define klasaNaziv type a size 50 ;
 
     define isporuka type a size 10 ;
-    define isporukaNaziv a size 50 ;
+    define isporukaNaziv type a size 50 ;
 
     define komercijalist type a size 6 ;
-    define komercijalistNaziv a size 50 ;
+    define komercijalistNaziv type a size 50 ;
 
     define rnalog type a size 8 ;
-    define rnalogNaziv a size 50 ;
+    define rnalogNaziv type a size 50 ;
 
     define do_mjeseca type l;
 
@@ -64,7 +67,7 @@
     DEFINE razlikaUCijeniField type l;
     DEFINE tezina_dn type l;
 
-    DEFINE searchSklSifra type a size 50;
+    DEFINE searchSklSifra type i size 5;
     DEFINE searchSklNaziv type a size 50;
     DEFINE searchArtiklSifra type a size 50;
     DEFINE searchArtiklNaziv type a size 50;
@@ -92,15 +95,42 @@
     DEFINE pripremljeno type l;
 
 //=============================================
+
+// // F2 SKLADISTA
+
+// function neSkladiste@clicked()
+// {
+//     F2ListQueryString = "SELECT ARTI_ARTIKL, ARTI_NAZIV, ARTI_TEZINA, ARTI_JED_MJERE, ARTI_TIP FROM " + trenutnaGodinaBaza + ".[dbo].[NKMKARTI] where ARTI_ARTIKL like '%{var1}%' and ARTI_NAZIV like '%{var2}%' ORDER BY arti_artikl";
+//     ShowF2List();
+// }
+// function F2List_onDisplay(){
+//     FormatF2ListDataGrid("F2 list ARTIKLI", "Šifra artikla", "Naziv Artikla", "težina", "jedinica mjere", "TIP");
+//     searchSifra = artikl;
+//     search();
+// }
+
+// function selected(){
+//     selectedArray = GetSelectedGridRow("dgF2List");
+//     if (size(selectedArray) !== 0)
+//     {
+//         searchSifra = "";
+//         searchNaziv = "";
+//         artikl = selectedArray[0];
+//         artiklNaziv = selectedArray[1];
+//         SetWindowModalResult(true);
+//     }
+// }
+
+//=============================================
+
 function neSkladiste@clicked()
 {
-    result = ModalWindow(strTrim(tpath()) +"F2ListSkladista.xaml");
-    //MessageBox("result = " + result);
-    cursor("wait");
+    result = ModalWindow(strTrim(tpath()) +"F2ListSkladista.xaml");    
+}
+function F2ListSkladista_onDisplay(){
     searchSklSifra = skladiste;
     searchSklNaziv = skladisteNaziv;
-    NewBindSQL("dgSkl", "SELECT [PKMK_SKL_CODE], [PKMK_SKL_NAZIV] FROM  " + trenutnaGodinaBaza + ".[dbo].[PKMKSKLA] where PKMK_SKL_NAZIV like '%" + searchSklNaziv + "%' and PKMK_SKL_CODE like '%" + searchSklSifra + "%' ORDER BY pkmk_skl_code");
-    cursor("dflt");
+    searchSkladiste();
 }
 
 function ebSearchSklSifra@TextChange()
@@ -117,7 +147,13 @@ function ebSearchSklNaziv@TextChange()
 function searchSkladiste()
 {
     cursor("wait");
-    NewBindSQL("dgSkl", "SELECT [PKMK_SKL_CODE], [PKMK_SKL_NAZIV] FROM  " + trenutnaGodinaBaza + ".[dbo].[PKMKSKLA] where PKMK_SKL_NAZIV like '%" + searchSklNaziv + "%' and PKMK_SKL_CODE like '" + searchSklSifra + "%' ORDER BY pkmk_skl_code");
+    queryString = "SELECT [PKMK_SKL_CODE], [PKMK_SKL_NAZIV] FROM  " + trenutnaGodinaBaza + ".[dbo].[PKMKSKLA] where PKMK_SKL_NAZIV like '%" + searchSklNaziv + "%'";
+    if(searchSklSifra != 0){
+        queryString += " and PKMK_SKL_CODE like '" + searchSklSifra + "%'";
+    }
+    queryString += "ORDER BY pkmk_skl_code";
+    
+    NewBindSQL("dgSkl", queryString);
     cursor("dflt");
 }
 
@@ -128,57 +164,32 @@ function gbSklOk@clicked()
     {
         skladiste = selectedArray[0];
         skladistenaziv = selectedArray[1];
+        searchSklSifra = 0;
+        searchSklNaziv = "";
         SetWindowModalResult(true);
     }
 }
 
 function gbSklVan@clicked()
 {
+    searchSklSifra = 0;
+    searchSklNaziv = "";
     SetWindowModalResult(false);
 }
 //==============================================
 
+// F2 ARTIKLI
+
 function neArtikl@clicked()
 {
-    result = ModalWindow(strTrim(tpath()) +"F2ListArtikla.xaml");
-    cursor("wait");
-    searchArtiklSifra = artikl;
-    searchArtiklNaziv = artiklNaziv;
-    NewBindSQL("dgArti", "SELECT ARTI_ARTIKL, ARTI_NAZIV FROM  " + trenutnaGodinaBaza + ".[dbo].[NKMKARTI] where ARTI_ARTIKL like '%" + searchArtiklSifra + "%' and ARTI_NAZIV like '%" + searchArtiklNaziv + "%' ORDER BY arti_artikl");
-    cursor("dflt");
-}
-function ebSearchArtiklSifra@TextChange()
-{
-    searchArtikl();
-}
-function ebSearchArtiklNaziv@TextChange()
-{
-    if(searchArtiklNaziv.length > 2 || searchArtiklNaziv.length == 0){
-        searchArtikl();
-    }
-}
+    F2ListQueryString = "SELECT ARTI_ARTIKL, ARTI_NAZIV, ARTI_TEZINA, ARTI_JED_MJERE, ARTI_TIP FROM " + trenutnaGodinaBaza + ".[dbo].[NKMKARTI] where ARTI_ARTIKL like '%{var1}%' and ARTI_NAZIV like '%{var2}%' ORDER BY arti_artikl";
+    
+    sifraFieldPointer -> artikl;
+    nazivFieldPointer -> artiklNaziv;
 
-function searchArtikl()
-{
-    cursor("wait");
-    NewBindSQL("dgArti", "SELECT ARTI_ARTIKL, ARTI_NAZIV FROM  " + trenutnaGodinaBaza + ".[dbo].[NKMKARTI] where ARTI_ARTIKL like '%" + searchArtiklSifra + "%' and ARTI_NAZIV like '%" + searchArtiklNaziv + "%' ORDER BY arti_artikl");
-    cursor("dflt");
-}
-
-function gbArtiOk@clicked()
-{
-    selectedArray = GetSelectedGridRow("dgArti");
-    if (size(selectedArray) !== 0)
-    {
-        artikl = selectedArray[0];
-        artiklNaziv = selectedArray[1];
-    }
-    SetWindowModalResult(true);
-}
-
-function gbArtiklVan@clicked()
-{
-    SetWindowModalResult(false);
+    windowTitle = "F2 list ARTIKLI";
+    headersArray = {"Šifra artikla", "Naziv Artikla", "težina", "jedinica mjere", "TIP"};
+    ShowF2List();
 }
 
 //==============================================================
@@ -191,13 +202,14 @@ function cePartner@clicked()
     return;
 }
 
-function f2ListPartner_onDisplay()
+function F2ListPartnera_onDisplay()
 {
-    cursor("wait");
+    //cursor("wait");
     searchPartnerSifra = partner;
     searchPartnerNaziv = partnerNaziv;
-    NewBindSQL("dgPart", "SELECT [NKSC_PARTCODE]  ,[NKSC_PARTNAME] FROM  " + trenutnaGodinaBaza + ".[dbo].[NKSCPART] where NKSC_PARTCODE like '%" + searchPartnerSifra + "%' and NKSC_PARTNAME like '%" + searchPartnerNaziv + "%' ORDER BY nksc_partcode");
-    cursor("dflt");
+    searchPartner();
+    //NewBindSQL("dgPart", "SELECT [NKSC_PARTCODE]  ,[NKSC_PARTNAME] FROM  " + trenutnaGodinaBaza + ".[dbo].[NKSCPART] where NKSC_PARTCODE like '%" + searchPartnerSifra + "%' and NKSC_PARTNAME like '%" + searchPartnerNaziv + "%' ORDER BY nksc_partcode");
+    //cursor("dflt");
 }
 
 function ebSearchPartnerSifra@TextChange()
@@ -223,14 +235,18 @@ function gbPartOk@clicked()
     selectedArray = GetSelectedGridRow("dgPart");
     if (size(selectedArray) !== 0)
     {
+        searchPartnerSifra = "";
+        searchPartnerNaziv = "";
         partner = selectedArray[0];
         partnerNaziv = selectedArray[1];
+        SetWindowModalResult(true);
     }
-    SetWindowModalResult(true);
 }
 
 function gbPartneriVan@clicked()
 {
+    searchPartnerSifra = "";
+    searchPartnerNaziv = "";
     SetWindowModalResult(false);
 }
 
@@ -238,13 +254,15 @@ function gbPartneriVan@clicked()
 function ceRegija@clicked()
 {
     result = ModalWindow(strTrim(tpath()) +"F2ListRegija.xaml");
-    cursor("wait");
+    // cursor("wait");
+    // NewBindSQL("dgRegija", "SELECT [KSDU_SF_CODE], [KSDU_SF_OPIS1] FROM  " + trenutnaGodinaBaza + ".[dbo].[KPSYSIFA] WHERE [KSDU_SF_TIP] ='V' and KSDU_SF_CODE like '%" + searchRegijaSifra + "%' and KSDU_SF_OPIS1 like '%" + searchRegijaNaziv + "%' ORDER BY ksdu_sf_code");
+    // cursor("dflt");
+}
+function F2ListRegija_onDisplay(){
     searchRegijaSifra = regija;
     searchRegijaNaziv = regijaNaziv;
-    NewBindSQL("dgRegija", "SELECT [KSDU_SF_CODE], [KSDU_SF_OPIS1] FROM  " + trenutnaGodinaBaza + ".[dbo].[KPSYSIFA] WHERE [KSDU_SF_TIP] ='V' and KSDU_SF_CODE like '%" + searchRegijaSifra + "%' and KSDU_SF_OPIS1 like '%" + searchRegijaNaziv + "%' ORDER BY ksdu_sf_code");
-    cursor("dflt");
+    searchRegija();
 }
-
 function ebSearchRegijaSifra@TextChange()
 {
     searchRegija();
@@ -268,14 +286,18 @@ function gbRegijaOk@clicked()
     selectedArray = GetSelectedGridRow("dgRegija");
     if (size(selectedArray) !== 0)
     {
+        searchRegijaSifra = "";
+        searchRegijaNaziv = "";
         regija = selectedArray[0];
         regijaNaziv = selectedArray[1];
+        SetWindowModalResult(true);
     }
-    SetWindowModalResult(true);
 }
 
 function gbRegijaVan@clicked()
 {
+    searchRegijaSifra = "";
+    searchRegijaNaziv = "";
     SetWindowModalResult(false);
 }
 
@@ -283,11 +305,11 @@ function gbRegijaVan@clicked()
 function ceKategorija@clicked()
 {
     result = ModalWindow(strTrim(tpath()) +"F2ListKategorija.xaml");
-    cursor("wait");
+}
+function F2ListKategorija_onDisplay(){
     searchKategorijaSifra = Kategorija;
     searchKategorijaNaziv = KategNaziv;
-    NewBindSQL("dgKategorija", "SELECT mkgr_grupa, SUBSTRING(mkgr_rezerva,1,50) as mkgr_rezerva FROM  " + trenutnaGodinaBaza + ".[dbo].[pkmkgrup] WHERE [mkgr_vrsta] ='K' AND mkgr_grupa like '%" + searchKategorijaSifra + "%' AND SUBSTRING(mkgr_rezerva,1,50) like '%" + searchKategorijaNaziv + "%' ORDER BY mkgr_grupa");
-    cursor("dflt");
+    searchKategorija();
 }
 
 function ebSearchKategorijaSifra@TextChange()
@@ -306,39 +328,51 @@ function searchKategorija()
 {
     cursor("wait");
     NewBindSQL("dgKategorija", "SELECT mkgr_grupa, SUBSTRING(mkgr_rezerva,1,50) as mkgr_rezerva FROM  " + trenutnaGodinaBaza + ".[dbo].[pkmkgrup] WHERE [mkgr_vrsta] ='K' and mkgr_grupa like '%" + searchKategorijaSifra + "%' AND SUBSTRING(mkgr_rezerva,1,50) like '%" + searchKategorijaNaziv + "%' ORDER BY mkgr_grupa");
-//    NewBindSQL("dgKategorija", "SELECT [KSDU_SF_CODE], [KSDU_SF_OPIS1] FROM  " + trenutnaGodinaBaza + ".[dbo].[KPSYSIFA] WHERE [KSDU_SF_TIP] ='V' and KSDU_SF_CODE like '%" + searchRegijaSifra + "%' and KSDU_SF_OPIS1 like '%" + searchRegijaNaziv + "%' ORDER BY ksdu_sf_code");
+    //NewBindSQL("dgKategorija", "SELECT [KSDU_SF_CODE], [KSDU_SF_OPIS1] FROM  " + trenutnaGodinaBaza + ".[dbo].[KPSYSIFA] WHERE [KSDU_SF_TIP] ='V' and KSDU_SF_CODE like '%" + searchRegijaSifra + "%' and KSDU_SF_OPIS1 like '%" + searchRegijaNaziv + "%' ORDER BY ksdu_sf_code");
     cursor("dflt");
 }
 function gbKategorijaOk@clicked()
 {
     selectedArray = GetSelectedGridRow("dgKategorija");
+    // if (size(selectedArray) != 0)
+    // {
+    //     Kategorija = selectedArray[0];
+    //     KategNaziv = selectedArray[1];
+    // }
+    // else{
+    //     Kategorija = "";
+    //     KategNaziv = "";
+    // }
     if (size(selectedArray) !== 0)
     {
+        searchKategorijaSifra = "";
+        searchKategorijaNaziv = "";
         Kategorija = selectedArray[0];
         KategNaziv = selectedArray[1];
+        SetWindowModalResult(true);
     }
-    else{
-        Kategorija = "";
-        KategNaziv = "";
-    }
-    SetWindowModalResult(true);
 }
 
 function gbKategorijaVan@clicked()
 {
+    searchKategorijaSifra = "";
+    searchKategorijaNaziv = "";
     SetWindowModalResult(false);
 }
 //====================================================================
 function ceKlasa@clicked()
 {
     result = ModalWindow(strTrim(tpath()) +"F2ListKlasa.xaml");
-    cursor("wait");
+    // cursor("wait");
+    
+    // NewBindSQL("dgKlasa", "SELECT mkgr_grupa, SUBSTRING(mkgr_rezerva,1,50) FROM  " + trenutnaGodinaBaza + ".[dbo].[pkmkgrup] WHERE [mkgr_vrsta] ='L' and mkgr_grupa like '%" + searchKategorijaSifra + "%' AND SUBSTRING(mkgr_rezerva,1,50) like '%" + searchKategorijaNaziv + "%' ORDER BY mkgr_grupa");
+    // cursor("dflt");
+}
+function F2ListKlasa_onDisplay(){
     searchKlasaSifra = Klasa;
     searchKlasaNaziv = KlasaNaziv;
-    NewBindSQL("dgKlasa", "SELECT mkgr_grupa, SUBSTRING(mkgr_rezerva,1,50) FROM  " + trenutnaGodinaBaza + ".[dbo].[pkmkgrup] WHERE [mkgr_vrsta] ='L' and mkgr_grupa like '%" + searchKategorijaSifra + "%' AND SUBSTRING(mkgr_rezerva,1,50) like '%" + searchKategorijaNaziv + "%' ORDER BY mkgr_grupa");
-    cursor("dflt");
+    searchKlasa();
 }
-
 function ebSearchKlasaSifra@TextChange()
 {
     searchKlasa();
@@ -363,14 +397,12 @@ function gbKlasaOk@clicked()
     selectedArray = GetSelectedGridRow("dgKlasa");
     if (size(selectedArray) !== 0)
     {
+        searchKlasaSifra = Klasa;
+        searchKlasaNaziv = KlasaNaziv;
         Klasa = selectedArray[0];
         KlasaNaziv = selectedArray[1];
+        SetWindowModalResult(true);
     }
-    else{
-        Klasa = "";
-        KlasaNaziv = "";
-    }
-    SetWindowModalResult(true);
 }
 
 function gbKlasaVan@clicked()
@@ -378,6 +410,8 @@ function gbKlasaVan@clicked()
     SetWindowModalResult(false);
 }
 //====================================================================
+
+
 
 /*
 ceKlasa.click:

@@ -793,7 +793,7 @@ namespace WpfCSCS
 			SetTextWidgetFunction.SetText(widget, newValue.AsString());
 			if (m_bound2Widgets.TryGetValue(widgetName, out List<FrameworkElement> widgets))
 			{
-				foreach (var wid in widgets)
+				foreach (var wid in widgets.ToList())
 				{
 					SetTextWidgetFunction.SetText(wid, newValue.AsString());
 				}
@@ -891,7 +891,8 @@ namespace WpfCSCS
 			Variable baseValue = text;// new Variable(text);
 			Interpreter.AddGlobal(name, new GetVarFunction(baseValue), false /* not native */);
 
-			var current = new Variable(widget);
+			//var current = new Variable(widget);
+			var current = new Variable(baseValue);
 			if (widget is DataGrid)
 			{
 				var dg = widget as DataGrid;
@@ -2677,7 +2678,7 @@ namespace WpfCSCS
 		{
 			if (widget is ASEnterTextBox)
 			{
-				widget.Name = enterBox.FieldName;
+				widget.Name += enterBox.Name;
 				widget.DataContext = enterBox.FieldName;
 				if (enterBox.FieldName != null && DEFINES.TryGetValue(enterBox.FieldName.ToLower(), out DefineVariable defVar))
 				{
@@ -2777,7 +2778,7 @@ namespace WpfCSCS
 			}
 			else if (widget is Button)
 			{
-				widget.Name = enterBox.Name;
+				widget.Name += enterBox.Name;
 				var wName = GetWidgetName(widget);
 				if (!string.IsNullOrWhiteSpace(wName))
 				{
@@ -2847,13 +2848,13 @@ namespace WpfCSCS
 		{
 			if (widget is ASNumericTextBox)
 			{
-				widget.Name = numBox.FieldName; // "_" + numBox.Name;
+				widget.Name += numBox.Name; // "_" + numBox.Name;
 				widget.DataContext = numBox.FieldName;
 				if (numBox.FieldName != null && DEFINES.TryGetValue(numBox.FieldName.ToLower(), out DefineVariable defVar))
 				{
-					if (defVar.Size < numBox.Size)
+					if (defVar.Size < (widget as ASNumericTextBox).Size)
 					{
-						numBox.Size = defVar.Size;
+						(widget as ASNumericTextBox).Size = defVar.Size;
 					}
 				}
 
@@ -2923,7 +2924,7 @@ namespace WpfCSCS
 			}
 			else if (widget is Button)
 			{
-				widget.Name = numBox.Name; //"button_" + numBox.Name;
+				widget.Name += numBox.Name; //"button_" + numBox.Name;
 				var wName = GetWidgetBindingName(widget);
 				if (!string.IsNullOrWhiteSpace(wName))
 				{
@@ -2961,23 +2962,23 @@ namespace WpfCSCS
 
 				if (widget is ASEnterTextBox)
 				{
-					//events
-					string textChangeAction = ASEnterBox.Name + "@TextChange";
-
-					string widgetPreAction = ASEnterBox.Name + "@Pre";
-					string widgetPostAction = ASEnterBox.Name + "@Post";
-
-					AddTextChangedHandler(ASEnterBox.FieldName, textChangeAction, widget);
-
-					AddWidgetPreHandler(ASEnterBox.FieldName, widgetPreAction, widget);
-					AddWidgetPostHandler(ASEnterBox.FieldName, widgetPostAction, widget);
-
 					//binding
 					var widgetBindingName = ASEnterBox.FieldName;
 					if (!string.IsNullOrWhiteSpace(widgetBindingName))
 					{
 						AddBinding(widgetBindingName, widget);
 					}
+
+					//events
+					string textChangeAction = ASEnterBox.Name + "@TextChange";
+
+					string widgetPreAction = ASEnterBox.Name + "@Pre";
+					string widgetPostAction = ASEnterBox.Name + "@Post";
+
+					AddTextChangedHandler(widget.Name, textChangeAction, widget);
+
+					AddWidgetPreHandler(widget.Name, widgetPreAction, widget);
+					AddWidgetPostHandler(widget.Name, widgetPostAction, widget);
 				}
 				else if (widget is Button)
 				{
@@ -2987,10 +2988,10 @@ namespace WpfCSCS
 					string widgetPreAction = ASEnterBox.Name + "@Pre";
 					string widgetPostAction = ASEnterBox.Name + "@Post";
 
-					AddActionHandler(ASEnterBox.Name, clickAction, widget);
+					AddActionHandler(widget.Name, clickAction, widget);
 
-					AddWidgetPreHandler(ASEnterBox.Name, widgetPreAction, widget);
-					AddWidgetPostHandler(ASEnterBox.Name, widgetPostAction, widget);
+					AddWidgetPreHandler(widget.Name, widgetPreAction, widget);
+					AddWidgetPostHandler(widget.Name, widgetPostAction, widget);
 				}
 			}
 			else if ((widget.Parent as FrameworkElement).Parent is ASNumericBox)
@@ -3017,10 +3018,10 @@ namespace WpfCSCS
 					//AddWidgetPreHandler(widget.Name, widgetPreAction, widget);
 					//AddWidgetPostHandler(widget.Name, widgetPostAction, widget);
 
-					AddTextChangedHandler(ASNumericBox.FieldName, textChangeAction, widget);
+					AddTextChangedHandler(widget.Name, textChangeAction, widget);
 
-					AddWidgetPreHandler(ASNumericBox.FieldName, widgetPreAction, widget);
-					AddWidgetPostHandler(ASNumericBox.FieldName, widgetPostAction, widget);
+					AddWidgetPreHandler(widget.Name, widgetPreAction, widget);
+					AddWidgetPostHandler(widget.Name, widgetPostAction, widget);
 
 					//binding
 					var widgetBindingName = ASNumericBox.FieldName;
@@ -3068,7 +3069,7 @@ namespace WpfCSCS
 						string selectionChangedAction = widgetName + "@Changed";
 
 						AddRadioButtonSelectedChangedHandler(widgetName, selectionChangedAction, widget);
-						AddRadioButtonClickedHandler(widget.Name, radioButtonClick, widget);
+						AddRadioButtonClickedHandler(widgetName, radioButtonClick, widget);
 					}
 					else
 					{
@@ -5776,7 +5777,7 @@ namespace WpfCSCS
             }
             else //NORMAL
             {
-				if(parentWin == CSCS_GUI.MainWindow)
+				if(parentWin == CSCS_GUI.MainWindow || parentWin == null)
                 {
 					wind.Show();
 				}

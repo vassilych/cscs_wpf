@@ -110,6 +110,7 @@ namespace WpfCSCS
             interpreter.RegisterFunction("FillOutGridFromDB", new FillOutGridFunction(true));
             interpreter.RegisterFunction("BindSQL", new BindSQLFunction());
 
+            interpreter.RegisterFunction("FormatF2ListDataGrid", new FormatF2ListDataGridFunction());
             interpreter.RegisterFunction("NewBindSQL", new NewBindSQLFunction());
 
             interpreter.RegisterFunction("WhoAmI", new WhoAmIFunction());
@@ -2380,6 +2381,55 @@ d:\temp\aaa.txt, d:\temp\ggg.txt,
         }
     }
 
+    class FormatF2ListDataGridFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 2, m_name);
+
+            var gui = CSCS_GUI.GetInstance(script);
+
+            var columnHeaders = new List<string>();
+            //var columnTags = new List<string>();
+
+            var windowTitle = Utils.GetSafeString(args, 0);
+            var columnHeadersVariableArray = Utils.GetSafeVariable(args, 1);
+            for(int i = 1; i < columnHeadersVariableArray.Tuple.Count; i++)
+            {
+                columnHeaders.Add(columnHeadersVariableArray.Tuple[i].String);
+            }
+
+            var widget = gui.GetWidget("dgF2List");
+
+            if (widget == null)
+            {
+                return Variable.EmptyInstance;
+            }
+
+            var window = gui.Control2Window[widget];
+            window.Title = windowTitle;
+
+            if (widget is DataGrid)
+            {
+                var dg = widget as DataGrid;
+
+                for (int i = 0; i < columnHeaders.Count; i++)
+                {
+                    var column = dg.Columns.ElementAt(i);
+
+                    if (column is DataGridTemplateColumn)
+                    {
+                        var dgtc = column as DataGridTemplateColumn;
+
+                        dgtc.Header = columnHeaders[i];
+                    }
+                }
+            }
+            return Variable.EmptyInstance;
+        }
+    }
+    
     class NewBindSQLFunction : ParserFunction
     {
         public static Dictionary<string, List<string>> gridsHeaders = new Dictionary<string, List<string>>();
@@ -2485,7 +2535,8 @@ d:\temp\aaa.txt, d:\temp\ggg.txt,
                 columns.Tuple.RemoveAll(p => p.String.ToLower() == "id");
                 for (int i = 0; i < columns.Tuple.Count; i += 1)
                 {
-                    string label = columns.Tuple[i].AsString();
+                    //string label = columns.Tuple[i].AsString();
+                    string label = "column" + (i + 1).ToString() + "Tag";
                     if (label.ToLower() == "id")
                     {
                         continue;

@@ -1,0 +1,77 @@
+
+DEFINE searchSifra type a size 50;
+DEFINE searchNaziv type a size 50;
+DEFINE search3 type a size 50;
+
+DEFINE F2ListQueryString type a size 1000;
+DEFINE finalQueryString type a size 1000;
+
+DEFINE sifraFieldPointer type f;
+DEFINE nazivFieldPointer type f;
+
+DEFINE windowTitle type a size 100;
+//DEFINE headersArray type a size 50 array 10; // max 10 kolona u datagridu
+
+function ShowF2List(){
+    ModalWindow(strTrim(tpath()) + "F2List.xaml");
+}
+
+function F2List_onDisplay(){
+    FormatF2ListDataGrid( windowTitle, headersArray);
+
+    MessageBox(sifraFieldPointer);
+    MessageBox(&sifraFieldPointer);
+    
+    searchSifra = &sifraFieldPointer;
+    search();
+}
+
+function search()
+{
+    cursor("wait");
+    finalQueryString = F2ListQueryString.replace("{var1}", searchSifra);
+    finalQueryString = finalQueryString.replace("{var2}", searchNaziv);
+    finalQueryString = finalQueryString.replace("{var3}", search3);
+    NewBindSQL("dgF2List", finalQueryString);
+    cursor("dflt");
+}
+
+function ebSifra@TextChange()
+{
+    search();
+}
+
+function ebNaziv@TextChange()
+{
+    if(searchNaziv.length > 2 || searchNaziv.length == 0){
+        search();
+    }
+}
+
+function dgF2List@select(){
+    selected();
+}
+
+function gbOk@clicked()
+{
+    selected();
+}
+
+function selected(){
+    selectedArray = GetSelectedGridRow("dgF2List");
+    if (size(selectedArray) !== 0)
+    {
+        searchSifra = "";
+        searchNaziv = "";
+        &sifraFieldPointer = selectedArray[0];
+        &nazivFieldPointer = selectedArray[1];
+        SetWindowModalResult(true);
+    }
+}
+
+function gbCancel@clicked()
+{
+    // searchSifra = "";
+    // searchNaziv = "";
+    SetWindowModalResult(false);
+}

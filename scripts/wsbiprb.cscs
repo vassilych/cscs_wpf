@@ -1,18 +1,30 @@
+DEFINE companyCode type a size 3 up;    
+    
     args = CommandLineArgs(); 
     if(Size(args) > 2){
-        MessageBox(args);
-    }   
+        //MessageBox(args);
+
+        // MessageBox(args[0]);
+        // MessageBox(args[1]);
+        // MessageBox(args[2]);
+        // MessageBox(args[3]);
+
+        companyCode = args[2];
+    }else{
+        companyCode = Substring(CoGet(), 1, 2);
+    }
 
     CreateWindow(strTrim(tpath()) +"wsbiprb.xaml");
-    Import("C:\wpfcscs\Modules\CSCS.Math.dll");
+    //Import("C:\wpfcscs\Modules\CSCS.Math.dll");
     //Import("C:\users\User\Documents\github\cscs_wpf\Modules\CSCS.Math.dll");
+    Import("T:\winx\CSCS.Math.dll");
     include(strTrim(tpath()) +"wsbiprb_inc_lists.cscs"); //look-up lists
     include(strTrim(tpath()) +"wsbiprb_inc_a.cscs"); //look-up lists
     include(strTrim(tpath()) +"wsbiprb_inc_b.cscs"); //look-up lists
 
 function Wsbiprb_onDisplay()
     {
-    sqlQueryString = "select SY_CC_USER, SY_CC_YEAR, SY_CC_DBASE from " + CommonDBGet() + ".dbo.NKSYCCYR WHERE SY_CC_CODE = '" + Substring(CoGet(), 1, 2) + "'";
+    sqlQueryString = "select SY_CC_USER, SY_CC_YEAR, SY_CC_DBASE from " + CommonDBGet() + ".dbo.NKSYCCYR WHERE SY_CC_CODE = '" + companyCode + "'";
     try
         {
         sqlResult = sqlQuery(sqlQueryString);
