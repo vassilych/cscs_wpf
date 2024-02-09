@@ -301,6 +301,7 @@ namespace SplitAndMerge
 	public const string INT = "INT";
 	public const string ISAL = "ISAL";
 	public const string TPATH = "TPATH";
+	public const string MPATH = "MPATH";
 	public const string GFLD = "GFLD";
 	public const string SNDX = "SNDX";
 	public const string JUST = "JUST";

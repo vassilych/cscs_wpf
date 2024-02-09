@@ -105,6 +105,7 @@ namespace WpfCSCS
             interpreter.RegisterFunction(Constants.REGEDIT, new REGEDITFunction());
             interpreter.RegisterFunction(Constants.EMAIL, new EMAILFunction());
 	  interpreter.RegisterFunction(Constants.TPATH, new TPATHFunction());
+	  interpreter.RegisterFunction(Constants.MPATH, new MPATHFunction());
 
             interpreter.RegisterFunction("FillOutGrid", new FillOutGridFunction());
             interpreter.RegisterFunction("FillOutGridFromDB", new FillOutGridFunction(true));
@@ -2166,6 +2167,14 @@ d:\temp\aaa.txt, d:\temp\ggg.txt,
 		protected override Variable Evaluate(ParsingScript script)
 		{
 			return new Variable(App.GetConfiguration("ScriptsPath", ""));
+		}
+	}
+    
+    class MPATHFunction : ParserFunction
+	{
+		protected override Variable Evaluate(ParsingScript script)
+		{
+			return new Variable(App.GetConfiguration("ModulesPath", ""));
 		}
 	}
     

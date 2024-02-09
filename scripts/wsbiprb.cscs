@@ -17,7 +17,7 @@ DEFINE companyCode type a size 3 up;
     CreateWindow(strTrim(tpath()) +"wsbiprb.xaml");
     //Import("C:\wpfcscs\Modules\CSCS.Math.dll");
     //Import("C:\users\User\Documents\github\cscs_wpf\Modules\CSCS.Math.dll");
-    Import("T:\winx\CSCS.Math.dll");
+    Import(strTrim(mpath()) + "CSCS.Math.dll");
     include(strTrim(tpath()) +"wsbiprb_inc_lists.cscs"); //look-up lists
     include(strTrim(tpath()) +"wsbiprb_inc_a.cscs"); //look-up lists
     include(strTrim(tpath()) +"wsbiprb_inc_b.cscs"); //look-up lists
