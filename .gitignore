@@ -11,7 +11,6 @@ packages/
 .vs/WpfCSCS/v17/.suo
 .vs/WpfCSCS/FileContentIndex/aecde625-ac7b-4bce-b730-d9a1ee894bbe.vsidx
 ourScripts/
-bin/Debug/WpfCSCS.exe.config
 *.vsidx
 *.1
 *.v2
@@ -21,3 +20,6 @@ bin/Debug/WpfCSCS.exe.config
 *.v2
 *.vsidx
 *.vsidx
+bin/Debug/WpfCSCS.exe.config
+bin/Debug/WpfCSCS.exe.config
+bin/Debug/WpfCSCS.exe.config
