@@ -1,6 +1,5 @@
 function wsbiprbb_onStart()
     {
-     //MessageBox("Tu sam on start wsbiprbb.xaml");
     setCustomerDataGrid();
     setTop10Products();
     setRegionPieChart();
@@ -66,7 +65,6 @@ function setRegionPieChart()
 		PieChart("PieChart1", "values", int(queryResult[i][1]) , string(queryResult[i][0].trim()));
 	}
 	//PieChart("PieChart1", "Margins", {0,0,0,0});
-
 }
 
 function setTop10Products(){
@@ -87,10 +85,6 @@ function setTop10Products(){
 		{
 			sql_str =  sql_str +  " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart g ON nkpr_gl_cuscod =  g.nksc_partcode" ;
 		}
-		// if ( razlikaUCijeniField == true )
-		// {
-		//  	sql_str =  sql_str +  " AND c.nkpr_gl_invcd<> ''" ;
-		// }
 		sql_str =  sql_str +  " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkprinvl ON nkpr_gl_num =  nkpr_ln_invnm" ;
 		sql_str =  sql_str +  " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkmkarti ON arti_artikl =  nkpr_ln_pcode" ;
 		sql_str =  sql_str +  " WHERE 1 = 1" ;
@@ -282,7 +276,6 @@ function setTop10Products(){
 			sql_str =  sql_str +  " ,  sales2 = ISNULL(SUM(CASE WHEN c.nkpr_gl_dviza =  'D' THEN c.nkpr_gl_tecaj * k.nkpr_ln_pext ELSE k.nkpr_ln_pext END) ,  0)" ;
 		}
 	}
-
 	sql_str =  sql_str +  " FROM sales" ;
 	if ( proslaGodinaBaza != "" )
 		{
@@ -307,12 +300,10 @@ function setTop10Products(){
 			sql_str =  sql_str +  " AND YEAR(c.nkpr_gl_datem) =  " + proslaGodina ;
 			}
 	}
-
 	if ( regija != "" )
 		{
 		sql_str =  sql_str +  " LEFT JOIN " + proslaGodinaBaza + ".dbo.nkscpart h ON c.nkpr_gl_cuscod =  h.nksc_partcode AND h.nksc_regija =  '" + regija + "'" ;
 	}
-
 	sql_str =  sql_str +  " GROUP BY sales.arti_artikl , sales.arti_naziv" ;
 	sql_str =  sql_str +  " ORDER BY sales1 DESC;" ;
 	
@@ -321,10 +312,6 @@ function setTop10Products(){
 	}catch(exc){
 		MessageBox(exc);
 	}
-
-	//MessageBox(Size(sqlResult));
-
-	//DisplayArray("dgArtikli", "close");
     cntr4= 0;
 
 	if(Size(sqlResult) > 1){
@@ -350,12 +337,7 @@ function setTop10Products(){
 		DEFINE cntr4 type i;
 		Format("SALESART1_AR", "nofd");
 		Format("SALESART2_AR", "nofd");
-        //Messagebox(SALESART1_AR[1]);
-        //Messagebox(SALESART1_AR[2]);
-		
 		DisplayArraySetup("dgArtikli", counterFld: "cntr4", activeElements: Size(sqlResult) - 1, maxElements: 10);
-		//DisplayArraySetup("dgArtikli", counterFld: "cntr4", "10", maxElements: 10);
-        //DisplayArray("dgArtikli", "RedisplayfromTop");
 	}
 	
 	return;
@@ -618,16 +600,11 @@ function setCustomerDataGrid(){
 				IndexPart_ar[i - 1] =  0;
 			}
 		} 
-	
-
 		DEFINE cntr1 type i;
 		Format("SALESPART2_AR", "nofd");
 		Format("SALESPART1_AR", "nofd");
 		
 		DisplayArraySetup("dgStavke", counterFld: "cntr1", activeElements: Size(sqlResult) - 1, maxElements: 10);
-		//MessageBox("KRAJ gbRecalc1");
 	}
-
     return;
 }
-
