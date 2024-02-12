@@ -14,15 +14,15 @@ DEFINE companyCode type a size 3 up;
         companyCode = Substring(CoGet(), 1, 2);
     }
 
-    CreateWindow(strTrim(tpath()) +"wsbiprb.xaml");
+    CreateWindow(strTrim(tpath()) +"wxbiprb.xaml");
     //Import("C:\wpfcscs\Modules\CSCS.Math.dll");
     //Import("C:\users\User\Documents\github\cscs_wpf\Modules\CSCS.Math.dll");
     Import(strTrim(mpath()) + "CSCS.Math.dll");
-    include(strTrim(tpath()) +"wsbiprb_inc_lists.cscs"); //look-up lists
-    include(strTrim(tpath()) +"wsbiprb_inc_a.cscs"); //look-up lists
-    include(strTrim(tpath()) +"wsbiprb_inc_b.cscs"); //look-up lists
+    include(strTrim(tpath()) +"wxbiprb_inc_lists.cscs"); //look-up lists
+    include(strTrim(tpath()) +"wxbiprb_inc_a.cscs"); //look-up lists
+    include(strTrim(tpath()) +"wxbiprb_inc_b.cscs"); //look-up lists
 
-function Wsbiprb_onDisplay()
+function Wxbiprb_onDisplay()
     {
     sqlQueryString = "select SY_CC_USER, SY_CC_YEAR, SY_CC_DBASE from " + CommonDBGet() + ".dbo.NKSYCCYR WHERE SY_CC_CODE = '" + companyCode + "'";
     try
@@ -125,7 +125,7 @@ function gbProdaja1@clicked()
     {
         if (pripremljeno == true) 
         {
-            result = modalWindow(strTrim(tpath()) +"wsbiprba.xaml");
+            result = modalWindow(strTrim(tpath()) +"wxbiprba.xaml");
         }
         else
         {
@@ -138,7 +138,7 @@ function gbProdaja2@clicked()
     {
         if pripremljeno == true 
         {
-            modalWindow(strTrim(tpath()) +"wsbiprbb.xaml");
+            modalWindow(strTrim(tpath()) +"wxbiprbb.xaml");
         }
         else
         {
