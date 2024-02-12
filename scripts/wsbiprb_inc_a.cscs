@@ -1,5 +1,5 @@
 function wsbiprba_onStart()
-    {
+{
     Chart("ChartPoMjesecima", "init");
     Chart("ChartPoMjesecima", "seriesType", "Lineseries");
     //Chart("ChartPoMjesecima", "title", "Naslov grafa", 20);
@@ -40,7 +40,7 @@ function wsbiprba_onStart()
 	DEFINE cntr3,cntr2 type i;
     cntr3= 0;
 	DisplayArraySetup("dgRacuniMjesec", counterFld: cntr3, activeElements: Size(sqlResult) - 1, maxElements: 10);
-    }
+}
 
 function buty@clicked()
 {

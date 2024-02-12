@@ -396,6 +396,10 @@ AddMenuSeparator("OtherDC");
 
 AddMenuItem("OtherDC", "testASButton.cscs", "testASButton", "runScript");
 
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "testAsync.cscs", "testAsync", "runScript");
+
 
 //----- IVAN -------------------------------
 

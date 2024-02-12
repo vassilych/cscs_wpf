@@ -740,8 +740,7 @@
                              Width="113"
                              Margin="8,47,0,0"
                              x:Name="Cbut4"
-                             DataContext="domaca_dn
-                             "
+                             DataContext="domaca_dn"
                              Content="Domaća prodaja"
                              Foreground="Black" Grid.ColumnSpan="2" />
             </Grid>
