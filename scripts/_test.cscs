@@ -7,3 +7,16 @@ MessageBox("args = " + args);
 MessageBox("args = " + args[2]);
 
 exit;
+
+// Select 4 lines below and press Ctrl+8:
+DEFINE b type a size 10;
+DEFINE a type F; //pointer type
+a -> b; //points to b
+&a= 10; //b equals 10
+
+// Not necessary to run MessageBox'es. Just put a cursor on one of the lines below and click on Ctrl+8
+b
+&a
+&a=30;
+//MessageBox(b);
+//MessageBox(&a);

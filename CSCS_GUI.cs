@@ -6722,30 +6722,51 @@ namespace WpfCSCS
 	{
 		protected override Variable Evaluate(ParsingScript script)
 		{
-			var gui = CSCS_GUI.GetInstance(script);
-			var pointer = script.Pointer;
 			List<string> args = Utils.GetTokens(script);
 			Utils.CheckArgs(args.Count, 1, m_name);
 
-			DefineVariable defVar;
-			if (!gui.DEFINES.TryGetValue(m_name, out defVar))
+			var result = PointerAssign(script, m_name, args[0]);
+			if (result == null)
 			{
-				script.Pointer = pointer;
 				return base.Evaluate(script);
 			}
-
-			defVar.Pointer = args[0];
-			var existing = gui.Interpreter.GetVariableValue(defVar.Pointer, script);
-			if (existing != null)
-			{
-				gui.Interpreter.AddGlobalOrLocalVariable(Constants.POINTER_REF + m_name,
-					     new GetVarFunction(existing));
-			}
-			return defVar;
+			return result;
 		}
-	}
+        public static Variable PointerAssign(ParsingScript script, string name, string pointerVal)
+        {
+            var gui = CSCS_GUI.GetInstance(script);
 
-	class MyAssignFunction : AssignFunction
+            DefineVariable defVar;
+            if (!gui.DEFINES.TryGetValue(name, out defVar))
+            {
+                return null;
+            }
+
+            defVar.Pointer = pointerVal;
+            var existing = gui.Interpreter.GetVariableValue(defVar.Pointer, script);
+            if (existing != null)
+            {
+                gui.Interpreter.AddGlobalOrLocalVariable(Constants.POINTER_REF + name,
+                         new GetVarFunction(existing));
+            }
+            return defVar;
+        }
+		public static Variable TryPointerAssign(ParsingScript script, string name)
+		{
+			var oper = Char.ToString(script.PrevPrev) + Char.ToString(script.Prev);
+			if (oper != Constants.POINTER)
+			{
+				return null;
+			}
+            List<string> args = Utils.GetTokens(script);
+            Utils.CheckArgs(args.Count, 1, name);
+
+            var result = PointerAssign(script, name, args[0]);
+			return result;
+        }
+    }
+
+    class MyAssignFunction : AssignFunction
 	{
 		public enum MODE { ASSIGN, INCREMENT, DECREMENT, ASSIGNPLUS, ASSIGNMINUS, ASSIGNMULTIPLY, ASSIGNDIVIDE }
 
@@ -6810,33 +6831,41 @@ namespace WpfCSCS
 
 		Variable ProcessLocalAssign(ParsingScript script)
 		{
+			var res = MyPointerFunction.TryPointerAssign(script, m_name);
+			if (res != null)
+			{
+				return res;
+			}
 			CSCS_GUI gui = (CSCS_GUI)script.Context;
 
 			InterpreterInstance = script.InterpreterInstance;
 			DefineVariable defVar = IsDefinedVariable(script);
-			if (defVar != null)
+            if (defVar != null)
 			{
 				Variable varValue = new Variable(Variable.VarType.NONE);
 				var result = DoAssign(script, m_name, defVar, ref varValue);
 
-				foreach (string groupBox in gui.GroupBoxesAndRadioButtons.Keys)
+				if (gui != null && gui.GroupBoxesAndRadioButtons != null)
 				{
-					var firstRBName = gui.GroupBoxesAndRadioButtons[groupBox].FirstOrDefault(p => gui.GetWidget(p)?.DataContext.ToString().ToLower() == m_name.ToLower());
-					if (firstRBName != null)
-					//if (CSCS_GUI.GroupBoxesAndRadioButtons[groupBox].Any(p=> gui.GetWidget(p).DataContext.ToString().ToLower() == m_name.ToLower()))
-					{
-						//var widget = gui.Controls.First(p => (string)p.Value.DataContext == m_name.ToLower());
-						var widget2 = gui.GetWidget(firstRBName.ToLower());
+                    foreach (string groupBox in gui.GroupBoxesAndRadioButtons.Keys)
+                    {
+                        var firstRBName = gui.GroupBoxesAndRadioButtons[groupBox].FirstOrDefault(p => gui.GetWidget(p)?.DataContext.ToString().ToLower() == m_name.ToLower());
+                        if (firstRBName != null)
+                        //if (CSCS_GUI.GroupBoxesAndRadioButtons[groupBox].Any(p=> gui.GetWidget(p).DataContext.ToString().ToLower() == m_name.ToLower()))
+                        {
+                            //var widget = gui.Controls.First(p => (string)p.Value.DataContext == m_name.ToLower());
+                            var widget2 = gui.GetWidget(firstRBName.ToLower());
 
-						if (widget2 is RadioButton)
-						{
-							var radioButton = widget2 as RadioButton;
-							radioButton.IsChecked = defVar.AsBool();
-						}
-					}
-				}
+                            if (widget2 is RadioButton)
+                            {
+                                var radioButton = widget2 as RadioButton;
+                                radioButton.IsChecked = defVar.AsBool();
+                            }
+                        }
+                    }
+                }
 
-				ProcessParentScript(script, m_name, varValue);
+                ProcessParentScript(script, m_name, varValue);
 				return result;
 			}
 			if (Mode == MODE.INCREMENT || Mode == MODE.DECREMENT)
