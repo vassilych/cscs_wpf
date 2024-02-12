@@ -422,18 +422,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="scripts\wsbiprb.xaml">
-      <SubType>Designer</SubType>
-      <Generator>XamlIntelliSenseFileGenerator</Generator>
-    </Page>
-    <Page Include="scripts\wsbiprba.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="scripts\wsbiprbb.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -469,7 +457,6 @@
     <None Include="scripts\test2bind.cscs" />
     <None Include="scripts\testTPATH.cscs" />
     <None Include="scripts\wpfgui.cscs" />
-    <None Include="scripts\wsbiprb_inca.cscs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
