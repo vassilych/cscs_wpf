@@ -1,4 +1,4 @@
-function wsbiprbb_onStart()
+function wxbiprbb_onStart()
     {
     setCustomerDataGrid();
     setTop10Products();
