@@ -146,7 +146,7 @@ function gbProdaja2@clicked()
     {
         if pripremljeno == true 
         {
-            result = modalWindow(strTrim(tpath()) +"wsbiprbb.xaml");
+            result = modalWindow(strTrim(tpath()) +"wxbiprbb.xaml");
         }
         else
         {
