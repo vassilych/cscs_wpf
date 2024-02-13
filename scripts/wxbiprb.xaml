@@ -282,7 +282,20 @@
                        Foreground="Black"
                        Text="Prošli mjesec:" Grid.Column="1" />
             <Label x:Name="labeltjedan" Content="Prodaja u tjednu" Grid.Column="2"  Grid.Row="0"  Margin="35,15,99,120" FontFamily="Lato" FontSize="22" FontWeight="Bold"/>
-
+            <wcl:ASDateEditer Grid.Column="2" HorizontalAlignment="Left"
+                          VerticalAlignment="Top"
+                          Height="22"
+                          ButtonWidth="19"
+                          FontSize="14"
+                          DisplaySize="8"
+                          Background="White"
+                          Foreground="black"
+                          Width="89"
+                          Margin="211,23,0,0"
+                          FontWeight="Bold"
+                          DisplayDate="01/01/23"    
+                          x:Name="deNaDan"
+                          DataContext="danas_h" />
             <wcl:ASHorizontalBar x:Name="HorizontalBarOT"
                                  HorizontalAlignment="Left"
                                  VerticalAlignment="Top"
@@ -461,16 +474,6 @@
         <Rectangle Grid.Row="0" Fill="#FFE6E6E6" Grid.Column="1" Margin="6,-2,-6,2" />
         <TextBlock Grid.Column="1" HorizontalAlignment="Left"
                    VerticalAlignment="Top"
-                   Height="18"
-                   Width="64"
-                   Margin="410,198,0,0"
-                   FontFamily="lato"
-                   x:Name="Label10"
-                   FontSize="14"
-                   Foreground="Black"
-                   Text="Na datum:" />
-        <TextBlock Grid.Column="1" HorizontalAlignment="Left"
-                   VerticalAlignment="Top"
 
                    Width="42"
                    Margin="10,55,0,0"
@@ -560,7 +563,7 @@
                    VerticalAlignment="Top"
                    Height="18"
                    Width="108"
-                   Margin="904,156,0,0"
+                   Margin="875,154,0,0"
                    FontFamily="lato"
                    x:Name="Label22"
                    FontSize="14"
@@ -592,19 +595,7 @@
                         VerticalAlignment="Top"
                         Background="White"
                         TabIndex="0" />
-        <wcl:ASDateEditer Grid.Column="1" HorizontalAlignment="Left"
-                          VerticalAlignment="Top"
-                          Height="22"
-                          ButtonWidth="19"
-                          FontSize="14"
-                          DisplaySize="8"
-                          Background="White"
-                          Foreground="black"
-                          Width="89"
-                          Margin="481,194,0,0"
-                          FontWeight="Bold"
-                          x:Name="TASDateEdit1"
-                          DataContext="danas_h" />
+
         <GroupBox Grid.Column="1" Padding="0"
                   HorizontalAlignment="Left"
                   VerticalAlignment="Top"
@@ -1172,7 +1163,7 @@
         </Button>
         <Label x:Name="NazivFirmeLabel" Grid.Column="1" Grid.Row="0" Content="Naziv firme" DataContext="nazivFirme" FontSize="23" FontWeight="Bold" HorizontalContentAlignment="Right" Margin="720,0,10,0" VerticalAlignment="Top" RenderTransformOrigin="-1.102,0.851" Height="41"/>
         <Image x:Name="Logo" Margin="5,0,5,9" Source="c:\winx\kamen-logo.jpg"/>
-        <ComboBox x:Name="comboBox1" DataContext="tip_racuna" Grid.Column="1" HorizontalAlignment="Left" Margin="904,176,0,0" VerticalAlignment="Top" Width="120" Height="22"/>
+        <ComboBox x:Name="cbTipRacuna" DataContext="tip_racuna" Grid.Column="1" HorizontalAlignment="Right" Margin="0,176,16,0" VerticalAlignment="Top" Width="149" Height="22"/>
         <!-- <wcl:ASNumericBox HorizontalAlignment="Left"
         VerticalAlignment="Top"
         FontWeight="Bold"

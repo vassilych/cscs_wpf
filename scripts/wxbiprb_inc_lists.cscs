@@ -1,6 +1,19 @@
     //include("../../scripts/F2ListLib.cscs");
     include(strTrim(tpath()) +"F2ListLib.cscs");
     
+    define kategorija,klasa type a size 6 up;
+    define kategNaziv,klasaNaziv,KomercNaziv type a size 50;
+    define komercijalist type r size 6;
+    define sveDrzave_dn,eu_dn,izvoz_dn,domaca_dn type l;
+    define eucountries type a size 200;
+    define usluge_dn, roba_dn, robaUsl_dn, avans_dn, povnak_dn type l;
+    define tip_racuna type a size 30;
+    define rnalog type r size 8;
+    define rnalogNaziv type a size 50;
+    define mx3_dn,mx2_dn,met_dn,kom_dn type l;
+
+    define tip_racuna type a size 30;
+    define gl_oznaka type a size 1 up;
     DEFINE skladiste type i size 3;
     DEFINE skladisteNaziv type a size 50;
 
@@ -129,7 +142,7 @@ function neSkladiste@clicked()
 }
 function F2ListSkladista_onDisplay(){
     searchSklSifra = skladiste;
-    searchSklNaziv = skladisteNaziv;
+    //searchSklNaziv = skladisteNaziv;
     searchSkladiste();
 }
 
@@ -185,7 +198,7 @@ function neArtikl@clicked()
     F2ListQueryString = "SELECT ARTI_ARTIKL, ARTI_NAZIV, ARTI_TEZINA, ARTI_JED_MJERE, ARTI_TIP FROM " + trenutnaGodinaBaza + ".[dbo].[NKMKARTI] where ARTI_ARTIKL like '%{var1}%' and ARTI_NAZIV like '%{var2}%' ORDER BY arti_artikl";
     
     sifraFieldPointer -> artikl;
-    nazivFieldPointer -> artiklNaziv;
+    //nazivFieldPointer -> artiklNaziv;
 
     windowTitle = "F2 list ARTIKLI";
     headersArray = {"Šifra artikla", "Naziv Artikla", "težina", "jedinica mjere", "TIP"};
