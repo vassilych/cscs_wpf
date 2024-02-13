@@ -618,7 +618,8 @@ namespace WpfCSCS
 			//MessageBox.Show("curr7 = " + curr7);
 
 
-			var lines = File.ReadLines(Path.Combine(curr3, "../../scripts/CompilerConstants.txt"));
+			//var lines = File.ReadLines(Path.Combine(curr3, "../../scripts/CompilerConstants.txt"));
+			var lines = File.ReadLines(Path.Combine(curr3, "CompilerConstants.txt"));
 			foreach (var line in lines)
 			{
 				if (line.StartsWith("{") || line.StartsWith(";") || line.Trim().Count() == 0)

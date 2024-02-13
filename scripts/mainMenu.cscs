@@ -400,6 +400,10 @@ AddMenuSeparator("OtherDC");
 
 AddMenuItem("OtherDC", "testAsync.cscs", "testAsync", "runScript");
 
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "testDateAndTime.cscs", "testDateAndTime", "runScript");
+
 
 //----- IVAN -------------------------------
 
