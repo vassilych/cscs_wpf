@@ -13,6 +13,7 @@ function wsbiprbb_onStart()
 	}
 	//PieChart("PieChart1", "Margins", {0,0,0,0});
     }
+	
 function setRegionPieChart()
 {
 	if(pripremljeno == false){
@@ -39,8 +40,9 @@ function setRegionPieChart()
         sql_str = sql_str + " From TopItems2 Where Num <= 6 Union ALL Select 'ostali', coalesce(round(sum(Origin),0), 0) as Iznos ";
         sql_str = sql_str + " From TopItems2 Where Num > 6 ";
     }
-    else //drzave
+    else 
     {
+		//drzave
 		sql_str = "With TopItems2 As";
         sql_str = sql_str + " (SELECT coalesce(ksdu_sf_opis1, 'nedefinirano') AS CountryID , sum(nkpr_gl_total) AS Origin , ROW_NUMBER() OVER( ORDER BY sum(nkpr_gl_total) DESC ) As Num";
         sql_str = sql_str + " FROM " + trenutnaGodinaBaza + " .dbo.nkprinv AS U" ;

@@ -59,9 +59,9 @@ function Wxbiprb_onDisplay()
         }
     if (size(sqlResult) !== 0)
     {
-        kpsy_fiscal_yr = sqlResult[1][0];
+        fiscal_yr = sqlResult[1][0];
         proslaGodina = (int(ovagod_h) - 1);
-    }    
+    } 
     bezPdvaField = true;
     sqlQueryString = "select SY_CC_DBASE from " + CommonDBGet() + ".dbo.NKSYCCYR WHERE SY_CC_USER = '" + imeFirme + "' AND SY_CC_YEAR = '" + (int(ovagod_h) - 1) + "'";
     try
@@ -75,7 +75,10 @@ function Wxbiprb_onDisplay()
     if (size(sqlResult) !== 0)
     {
         proslaGodinaBaza = sqlResult[1][0].trim();
-    }    
+    }  
+    DEFINE sqlNaDan type a size 10;  
+    DEFINE sqlOdDana type a size 10;  
+    DEFINE fiscal_yr type a size 10;  
     sqlNaDan = ovagod_h + "-12-31";
     sqlOdDana = string(int(ovagod_h) - 1) + "-01-01";
     danas_h = Now("dd/MM/yy");
@@ -104,18 +107,23 @@ function Wxbiprb_onDisplay()
     }
     pripremljeno = false;
     }
+
 function gbPripremi@clicked()
     {
     cursor("wait");
     setChartByMonth();
-
+//MessageBox("aaaa");
     setChartByDaysOfMonth();
+//MessageBox("bbbb");
 
     setHorizontalBars();
+//MessageBox("cccc");
 
     setWeekComparison();
+//MessageBox("dddd");
 
     setCustomerAndInvoiceCounts();
+//MessageBox("eeee");
 
     pripremljeno = true;
     cursor("dflt");
@@ -138,7 +146,7 @@ function gbProdaja2@clicked()
     {
         if pripremljeno == true 
         {
-            modalWindow(strTrim(tpath()) +"wxbiprbb.xaml");
+            result = modalWindow(strTrim(tpath()) +"wsbiprbb.xaml");
         }
         else
         {
@@ -149,7 +157,7 @@ function gbProdaja2@clicked()
 
 function gbExit@clicked()
     {
-        quit
+        quit;
     }
 
 //next routines is work out of above
@@ -582,11 +590,11 @@ function setWeekComparison(){
 	sql_str = sql_str + " FROM " + CommonDBGet() +  ".dbo.Kalendar a";
 	sql_str = sql_str + " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkprinv b ON a.[Wk_date] = b.nkpr_gl_datem "; //ON a.[Wk_Week] = datepart(week , b.nkpr_gl_datem) ";
 	sql_str = sql_str + " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkprinvl c ON b.nkpr_gl_num = c.nkpr_ln_invnm";
-	//WHERE a.[Wk_Week]  =  datepart(week , b.nkpr_gl_invdte) AND nkpr_gl_invdte> = '" +  sqlDate(kpsy_fiscal_yr) + "')"
-	//sql_str =  sql_str +  " WHERE [wk_Week]> =  datepart(week , '" + sqlDate(danas) * "') - 1 AND wk_Week< =  datepart(week , '" + sqlDate(danas) * "') AND wk_ISOyear = " +  year(kpsy_fiscal_yr)
+	//WHERE a.[Wk_Week]  =  datepart(week , b.nkpr_gl_invdte) AND nkpr_gl_invdte>= '" +  sqlDate(kpsy_fiscal_yr) + "')"
+	//sql_str =  sql_str +  " WHERE [wk_Week]>=  datepart(week , '" + sqlDate(danas) * "') - 1 AND wk_Week<=  datepart(week , '" + sqlDate(danas) * "') AND wk_ISOyear = " +  year(kpsy_fiscal_yr)
 	sql_str = sql_str + " WHERE wk_year = " + ovagod_h;
-	sql_str = sql_str + " AND nkpr_gl_datem> = '" + kpsy_fiscal_yr + "'";
-	sql_str = sql_str + " AND wk_Week< = datepart(week , '" + danas + "')";
+	sql_str = sql_str + " AND nkpr_gl_datem >= '" + fiscal_yr + "'";
+	sql_str = sql_str + " AND wk_Week <= datepart(week , '" + danas + "')";
 	
 	if ( partner != "" )
 	{
