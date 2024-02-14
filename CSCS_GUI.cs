@@ -286,6 +286,10 @@ namespace SplitAndMerge
 	public const string DELF = "DELF";
 	public const string BELL = "BELL";
 	public const string CDOW = "CDOW";
+	public const string DTOS = "DTOS";
+	public const string DTOC = "DTOC";
+	public const string CTOD = "CTOD";
+	public const string DTOSQL = "DTOSQL";
 	public const string CPATH = "CPATH";
 	public const string XPATH = "XPATH";
 	public const string PLAYWAV = "PLAYWAV";

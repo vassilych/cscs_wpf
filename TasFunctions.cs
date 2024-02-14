@@ -29,6 +29,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using WpfControlsLibrary;
+using System.Globalization;
 
 namespace WpfCSCS
 {
@@ -88,6 +89,10 @@ namespace WpfCSCS
             interpreter.RegisterFunction(Constants.ENCRYPTSTR, new ENCRYPTSTRFunction());
             interpreter.RegisterFunction(Constants.Decryptstr, new DecryptstrFunction());
             interpreter.RegisterFunction(Constants.CDOW, new CDOWFunction());
+            interpreter.RegisterFunction(Constants.DTOS, new DTOSFunction());
+            interpreter.RegisterFunction(Constants.DTOC, new DTOCFunction());
+            interpreter.RegisterFunction(Constants.CTOD, new CTODFunction());
+            interpreter.RegisterFunction(Constants.DTOSQL, new DTOSQLFunction());
             interpreter.RegisterFunction(Constants.XPATH, new XPATHFunction());
             interpreter.RegisterFunction(Constants.PLAYWAV, new PLAYWAVFunction());
             interpreter.RegisterFunction(Constants.FILE_STORE, new FILE_STOREFunction());
@@ -990,6 +995,70 @@ namespace WpfCSCS
             return new Variable(dateVariable.DateTime.DayOfWeek.ToString());
         }
     }
+
+    class DTOSFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var dateVariable = Utils.GetSafeVariable(args, 0);
+
+            return new Variable(dateVariable.DateTime.ToString("yyyyMMdd"));
+        }
+    }
+    class DTOSQLFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var dateVariable = Utils.GetSafeVariable(args, 0);
+
+            return new Variable(dateVariable.DateTime.ToString("yyyy-MM-dd"));
+        }
+    }
+    class DTOCFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var dateVariable = Utils.GetSafeVariable(args, 0);
+            var sizeArg = Utils.GetSafeInt(args, 1, 8);
+
+            var separator = App.GetConfiguration("DateSeparator", "/");
+            var formatString = $"dd{separator}MM{separator}yy" + (sizeArg == 10 ? "yy" : "");
+
+            return new Variable(dateVariable.DateTime.ToString(formatString));
+        }
+    }
+    
+    class CTODFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var dateString = Utils.GetSafeString(args, 0);
+
+            var dateSeparator = CultureInfo.CurrentCulture.DateTimeFormat.DateSeparator;
+
+            DateTime newDateTime = new DateTime();
+
+            if (dateString.Length == 10)
+            {
+                newDateTime = DateTime.ParseExact(dateString, $"dd{dateSeparator}MM{dateSeparator}yyyy", CultureInfo.InvariantCulture);
+            }
+            else if(dateString.Length == 8)
+            {
+                newDateTime = DateTime.ParseExact(dateString, $"dd{dateSeparator}MM{dateSeparator}yy", CultureInfo.InvariantCulture);
+            }
+
+            return new Variable(newDateTime);
+        }
+    }
+    
 
     class CHRFunction : ParserFunction
     {
