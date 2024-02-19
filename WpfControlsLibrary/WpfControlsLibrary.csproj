@@ -52,6 +52,7 @@
     <Compile Include="ASButton.xaml.cs">
       <DependentUpon>ASButton.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ASDateEditerConverter2.cs" />
     <Compile Include="ASDualListDialog.xaml.cs">
       <DependentUpon>ASDualListDialog.xaml</DependentUpon>
     </Compile>

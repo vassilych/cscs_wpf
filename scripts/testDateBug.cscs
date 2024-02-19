@@ -1,0 +1,13 @@
+DEFINE dateVar type d size 10;
+
+CreateWindow("../../scripts/testDateBug.xaml");
+
+function testDateBug_onDisplay(){
+    dateVar = "01/01/1900";
+    //dateVar += 5;
+}
+
+function btn1@clicked(){
+    MessageBox("dateVar = " + dateVar);
+    dateVar = "01/01/1900";
+}
