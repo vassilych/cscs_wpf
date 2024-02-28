@@ -827,7 +827,7 @@ namespace WpfCSCS
             Utils.CheckArgs(args.Count, 1, m_name);
 
             var temp = Utils.GetSafeString(args, 0);
-
+            temp = temp.Replace("/", "\\");
 
             if (temp != pattern)
             {
@@ -836,7 +836,8 @@ namespace WpfCSCS
                 directory = null;
                 if ((pattern.Contains("\\") || pattern.Contains("/")) && pattern.ToArray()[1] == ':')
                 {
-                    var dir = pattern.Substring(0, pattern.Length - pattern.LastIndexOf("\\") - 1);
+                    //var dir = pattern.Substring(0, pattern.Length - pattern.LastIndexOf("\\") - 1);
+                    var dir = pattern.Substring(0, pattern.LastIndexOf("\\") + 1);
                     pattern = pattern.Substring(pattern.LastIndexOf("\\") + 1);
                     directory = dir;
 

@@ -1,4 +1,14 @@
 
+result = FFILE(string(tpath()) + "test*", "f");
+MessageBox(result);
+for(i = 0; i < 5; i++){
+    MessageBox(ffile("test*", "n"));
+}
+
+result = FFILE("arm64\lib*", "f");
+MessageBox(result);
+
+
 result = FFILE("data??id*", "f");
 MessageBox(result);
 result = FFILE("data??id*", "n");
@@ -7,8 +17,7 @@ result = FFILE("data??id*", "n");
 MessageBox(result);
 
 
-result = FFILE("arm64\lib*", "f");
-MessageBox(result);
+
 result = FFILE("d:\winx\tasrun*", "f");
 MessageBox(result);
 

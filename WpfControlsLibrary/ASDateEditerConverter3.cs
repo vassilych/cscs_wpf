@@ -9,12 +9,45 @@ using System.Windows.Data;
 
 namespace WpfControlsLibrary
 {
-    public class ASDateEditerConverter2 : IValueConverter
+    public class ASDateEditerConverter3 : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            string strValue = value as string;
+            DateTime resultTimeSpan;
+
             int size = (int)parameter;
-            DateTime dateTime = new DateTime(1,1,1);
+            if (size == 8)
+            {
+                if (strValue == "00/00/00")
+                {
+                    return new DateTime(1900, 1, 1);
+                }
+                else if (DateTime.TryParseExact(strValue, "dd/MM/yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out resultTimeSpan))
+                {
+                    return resultTimeSpan;
+                }
+            }
+            else if (size == 10)
+            {
+                if (strValue == "00/00/0000")
+                {
+                    return new DateTime(1900, 1, 1);
+                }
+                else if (DateTime.TryParseExact(strValue, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out resultTimeSpan))
+                {
+                    return resultTimeSpan;
+                }
+            }
+            return DependencyProperty.UnsetValue;
+
+            
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            int size = (int)parameter;
+            DateTime dateTime = new DateTime(1, 1, 1);
             try
             {
                 dateTime = (DateTime)value;
@@ -39,37 +72,6 @@ namespace WpfControlsLibrary
             {
             }
             return "";
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-         {
-            string strValue = value as string;
-            DateTime resultTimeSpan;
-
-            int size = (int)parameter;
-            if (size == 8)
-            {
-                if(strValue == "00/00/00")
-                {
-                    return new DateTime(1900, 1, 1);
-                }
-                else if (DateTime.TryParseExact(strValue, "dd/MM/yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out resultTimeSpan))
-                {
-                    return resultTimeSpan;
-                }
-            }
-            else if (size == 10)
-            {
-                if (strValue == "00/00/0000")
-                {
-                    return new DateTime(1900, 1, 1);
-                }
-                else if (DateTime.TryParseExact(strValue, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out resultTimeSpan))
-                {
-                    return resultTimeSpan;
-                }
-            }
-            return DependencyProperty.UnsetValue;
         }
     }
 }

@@ -475,6 +475,7 @@ namespace WpfCSCS
 		Dictionary<string, string> m_keyDownHandlers = new Dictionary<string, string>();
 		Dictionary<string, string> m_keyUpHandlers = new Dictionary<string, string>();
 		Dictionary<string, string> m_textChangedHandlers = new Dictionary<string, string>();
+		Dictionary<string, string> m_lostFocusHandlers = new Dictionary<string, string>();
 		Dictionary<string, string> m_selChangedHandlers = new Dictionary<string, string>();
 		Dictionary<string, string> m_mouseHoverHandlers = new Dictionary<string, string>();
 		Dictionary<string, string> m_dateSelectedHandlers = new Dictionary<string, string>();
@@ -1103,11 +1104,39 @@ namespace WpfCSCS
 
 				return true;
 			}
+			else if (widget is ASDateEditer2)
+			{
+                var dateEditer2 = widget as ASDateEditer2;
+                if (dateEditer2 == null)
+                {
+                    return false;
+                }
+
+                m_textChangedHandlers[name] = action;
+                // x2
+                //dateEditer2.SelectedDateChanged -= new EventHandler<SelectionChangedEventArgs>(Widget_DateChanged);
+                //dateEditer2.SelectedDateChanged += new EventHandler<SelectionChangedEventArgs>(Widget_DateChanged);
+
+                return true;
+            }
 
 			var textable = widget as TextBoxBase;
 			if (textable == null)
 			{
 				return false;
+			}
+
+			if(textable.Parent is Grid grid)
+			{
+				if(grid.Parent is ASDateEditer2 asde2)
+				{
+                    m_textChangedHandlers[name] = action;
+
+                    textable.TextChanged -= dateEditer2_TextChanged;
+                    textable.TextChanged += dateEditer2_TextChanged;
+
+                    return true;
+                }
 			}
 
 			m_textChangedHandlers[name] = action;
@@ -1117,7 +1146,150 @@ namespace WpfCSCS
 
 			return true;
 		}
-		public bool AddSelectionChangedHandler(string name, string action, FrameworkElement widget)
+		
+		public bool AddLostFocusHandler(string name, string action, FrameworkElement widget)
+		{
+			var textable = widget as TextBoxBase;
+			if (textable == null)
+			{
+				return false;
+			}
+
+			if(textable.Parent is Grid grid)
+			{
+				if(grid.Parent is ASDateEditer2 asde2)
+				{
+                    m_lostFocusHandlers[name] = action;
+
+                    textable.LostFocus -= dateEditer2_LostFocus;
+                    textable.LostFocus += dateEditer2_LostFocus;
+
+                    return true;
+                }
+			}
+
+			return false;
+		}
+
+        private void dateEditer2_LostFocus(object sender, RoutedEventArgs e)
+        {
+            TextBoxBase widget = sender as TextBoxBase;
+            var widgetName = GetWidgetName(widget);
+            if (string.IsNullOrWhiteSpace(widgetName) ||
+                m_updatingWidget.Contains(widgetName))
+            {
+                return;
+            }
+
+            //if(sender is ASNumericTextBox)
+            //{
+            //    var asntb = (sender as ASNumericTextBox);
+            //    if (asntb.SkipWidgetTextChanged)
+            //    {
+            //        asntb.SkipWidgetTextChanged = false;
+            //        ///return;
+            //    }
+            //}
+
+            //m_updatingWidget.Add(widgetName);
+            var text = GetTextWidgetFunction.GetText(widget);
+            //UpdateVariable(widget, text);
+            //m_updatingWidget.Remove(widgetName);
+            //
+            TextBoxBase widget2 = sender as TextBoxBase;
+            var widgetName2 = GetWidgetBindingName(widget2);
+            if (string.IsNullOrWhiteSpace(widgetName2) ||
+                m_updatingWidget.Contains(widgetName2))
+            {
+                return;
+            }
+
+            m_updatingWidget.Add(widgetName2);
+            //var text = GetTextWidgetFunction.GetText(widget2);
+            if (DEFINES.TryGetValue(widgetName2.ToLower(), out DefineVariable defVar))
+            {
+                switch (defVar.DefType)
+                {
+                    case "a":
+                        UpdateVariable(widget2, text);
+                        break;
+
+                    case "i":
+                    case "n":
+                    case "r":
+                    case "b":
+                        if (double.TryParse(text.AsString(), out double parsedDouble))
+                        {
+                            if (text.AsString() == parsedDouble.ToString())
+                            {
+                                UpdateVariable(widget2, new Variable(parsedDouble));
+                            }
+
+                        }
+                        break;
+
+                    case "d":
+                        if (DateTime.TryParseExact(text.AsString(), defVar.GetDateFormat(), CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
+                        {
+                            UpdateVariable(widget2, text/*new Variable(dt)*/);
+                        }
+						else if(text.AsString() == "00/00/00")
+						{
+                            UpdateVariable(widget2, new Variable("01/01/00"));
+                        }
+						else if(text.AsString() == "00/00/0000")
+						{
+                            UpdateVariable(widget2, new Variable("01/01/1900"));
+                        }
+                        break;
+                    case "t":
+                        //if (true)
+                        //{
+                        //    if (TimeSpan.TryParse(text.AsString(), out TimeSpan result))
+                        //    {
+                        //        UpdateVariable(widget2, text);
+                        //    }
+                        //}
+                        break;
+
+                    default:
+                        //UpdateVariable(widget2, text);
+                        break;
+                }
+            }
+
+            string funcName;
+            if (m_lostFocusHandlers.TryGetValue(widgetName, out funcName))
+            {
+                Control2Window.TryGetValue(widget, out Window win);
+                Interpreter.Run(funcName, new Variable(widgetName), text,
+                    Variable.EmptyInstance, GetScript(win));
+            }
+            m_updatingWidget.Remove(widgetName2);
+        }
+
+        private void dateEditer2_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBoxBase widget = sender as TextBoxBase;
+            var widgetName = GetWidgetName(widget);
+            if (string.IsNullOrWhiteSpace(widgetName) ||
+                m_updatingWidget.Contains(widgetName))
+            {
+                return;
+            }
+
+            var text = GetTextWidgetFunction.GetText(widget);
+            
+            string funcName;
+            if (m_textChangedHandlers.TryGetValue(widgetName, out funcName))
+            {
+                Control2Window.TryGetValue(widget, out Window win);
+                Interpreter.Run(funcName, new Variable(widgetName), text,
+                    Variable.EmptyInstance, GetScript(win));
+            }
+        }
+
+        public bool AddSelectionChangedHandler(string name, string action, FrameworkElement widget)
 		{
 			var sel = widget as Selector;
 			if (sel == null)
@@ -2606,6 +2778,19 @@ namespace WpfCSCS
 							CacheControl(item as FrameworkElement, win, controls);
 					}
 				}
+				else if (child is ASDateEditer2)
+				{
+					//CacheControl(child as ASDateEditer2, win, controls);
+
+					var asde2 = child as ASDateEditer2;
+					var asde2Grid = asde2.Content as Grid;
+					foreach (var item in asde2Grid.Children)
+					{
+						var fe = (item as FrameworkElement);
+						fe.DataContext = asde2.FieldName;
+						CacheControl(fe, win, controls);
+					}
+				}
 				else
 				{
 					CacheControl(child as FrameworkElement, win, controls);
@@ -3053,6 +3238,64 @@ namespace WpfCSCS
 
 					AddWidgetPreHandler(widget.Name, widgetPreAction, widget);
 					AddWidgetPostHandler(widget.Name, widgetPostAction, widget);
+				}
+			}
+			else if ((widget.Parent as FrameworkElement).Parent is ASDateEditer2)
+			{
+				var ASDateEditer2 = (widget.Parent as FrameworkElement).Parent as ASDateEditer2;
+
+				if (widget is TextBox)
+				{
+					////events
+					string textChangeAction = ASDateEditer2.Name + "@TextChange";
+					string lostFocusAction = ASDateEditer2.Name + "@LostFocus";
+
+					//string widgetPreAction = ASDateEditer2.Name + "@Pre";
+					//string widgetPostAction = ASDateEditer2.Name + "@Post";
+
+					////AddTextChangedHandler("numBoxTextBox_" + ASNumericBox.Name, textChangeAction, widget);
+
+					////AddWidgetPreHandler("numBoxTextBox_" + ASNumericBox.Name, widgetPreAction, widget);
+					////AddWidgetPostHandler(/*"numBoxTextBox_" + */ASNumericBox.Name, widgetPostAction, widget);
+
+					///////////
+
+					////AddTextChangedHandler(widget.Name, textChangeAction, widget);
+
+					////AddWidgetPreHandler(widget.Name, widgetPreAction, widget);
+					////AddWidgetPostHandler(widget.Name, widgetPostAction, widget);
+
+					AddTextChangedHandler(widget.Name, textChangeAction, widget);
+					AddLostFocusHandler(widget.Name, lostFocusAction, widget);
+
+					//AddWidgetPreHandler(widget.Name, widgetPreAction, widget);
+					//AddWidgetPostHandler(widget.Name, widgetPostAction, widget);
+
+					//binding
+					var widgetBindingName = ASDateEditer2.FieldName;
+					if (!string.IsNullOrWhiteSpace(widgetBindingName))
+					{
+						//AddBinding(widgetBindingName, widget);
+						AddBinding(widgetBindingName, widget);
+					}
+				}
+				else if (widget is Button)
+				{
+					////events
+					//string clickAction = ASDateEditer2.Name + "@Clicked";
+
+					//string widgetPreAction = ASDateEditer2.Name + "@Pre";
+					//string widgetPostAction = ASDateEditer2.Name + "@Post";
+
+					////AddActionHandler("button_" + ASNumericBox.Name, clickAction, widget);
+
+					////AddWidgetPreHandler("button_" + ASNumericBox.Name, widgetPreAction, widget);
+					////AddWidgetPostHandler("button_" + ASNumericBox.Name, widgetPostAction, widget);
+
+					//AddActionHandler(widget.Name, clickAction, widget);
+
+					//AddWidgetPreHandler(widget.Name, widgetPreAction, widget);
+					//AddWidgetPostHandler(widget.Name, widgetPostAction, widget);
 				}
 			}
 			else
@@ -3622,6 +3865,35 @@ namespace WpfCSCS
 				var textBox = widget as TextBox;
 				dispatcher.Invoke(new Action(() =>
 				{
+					if(widget.Parent is Grid grid)
+					{
+						if(grid.Parent is ASDateEditer2 asde2)
+						{
+							if(text == "01/01/1900")
+							{
+                                //asde2.skipSelectedDateChangedHandler = true;
+                                //asde2.TempDate = DateTime.Now;
+                                textBox.Text = "00/00/0000";
+                                //
+                                return;
+                            }
+							//else if (text == "01/01/00")
+							//{
+       //                         //asde2.skipSelectedDateChangedHandler = true;
+       //                         //asde2.TempDate = DateTime.Now;
+                                
+							//	textBox.Text = "00/00/00";
+                                
+							//	return;
+       //                     }
+							else
+							{
+                                textBox.Text = text;
+								return;
+                            }
+                        }
+					}
+					
 					textBox.Text = text;
 				}));
 			}
@@ -3641,6 +3913,15 @@ namespace WpfCSCS
 				dispatcher.Invoke(new Action(() =>
 				{
 					dateEditer.SelectedDate = DateTime.ParseExact(text, format, CultureInfo.InvariantCulture);
+				}));
+			}
+			else if (widget is ASDateEditer2 && !string.IsNullOrWhiteSpace(text))
+			{
+				var dateEditer = widget as ASDateEditer2;
+				var format = text.Length == 10 ? "dd/MM/yyyy" : text.Length == 8 ? "dd/MM/yy" : "yyyy/MM/dd hh:mm:ss";
+				dispatcher.Invoke(new Action(() =>
+				{
+					dateEditer.TempDate = DateTime.ParseExact(text, format, CultureInfo.InvariantCulture);
 				}));
 			}
 			else if (widget is DatePicker && !string.IsNullOrWhiteSpace(text))
@@ -6542,6 +6823,7 @@ namespace WpfCSCS
 
 		public string GetDateFormat()
 		{
+			//return "dd/MM/yyyy";
 			if (!string.IsNullOrWhiteSpace(DATE_FORMAT))
 			{
 				return DATE_FORMAT;
@@ -6606,14 +6888,30 @@ namespace WpfCSCS
 
 		public DateTime ToDateTime(string strValue)
 		{
-			DateTime dt = DateTime.MinValue;
+			//DateTime dt = DateTime.MinValue;
+			DateTime dt = new DateTime(1900, 1, 1);
 			if (DefType == "d")
 			{
 				if (!string.IsNullOrWhiteSpace(strValue) &&
 				    !DateTime.TryParseExact(strValue, GetDateFormat(), CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
 				{
-					throw new ArgumentException("Error: Couldn't parse [" + strValue + "] with format [" + GetDateFormat() + "]");
+					if(strValue.Length == 10 && GetDateFormat().Length == 8)
+					{
+						var shortenedDate = strValue.Substring(0, 6) + strValue.Substring(8, 2);
+
+						if (!DateTime.TryParseExact(shortenedDate, GetDateFormat(), CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+						{
+							throw new ArgumentException("Error: Couldn't parse [" + strValue + "] with format [" + GetDateFormat() + "]");
+						}
+                    }
+					else
+						throw new ArgumentException("Error: Couldn't parse [" + strValue + "] with format [" + GetDateFormat() + "]");
 				}
+				else if (dt.CompareTo(new DateTime(1900, 1, 1)) < 0)
+				{
+					MessageBox.Show("Date range is out of limit: " + dt.ToString(GetDateFormat()) + "\nDate is set to 0");
+					dt = new DateTime(1900, 1, 1);
+                }
 			}
 			if (DefType == "t")
 			{

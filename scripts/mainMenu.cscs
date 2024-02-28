@@ -416,6 +416,18 @@ AddMenuSeparator("OtherDC");
 
 AddMenuItem("OtherDC", "testPostEvents.cscs", "testPostEvents", "runScript");
 
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "testNewDateEditerSize10.cscs", "testNewDateEditerSize10", "runScript");
+
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "testNewDateEditerSize8.cscs", "testNewDateEditerSize8", "runScript");
+
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "testDefineDate.cscs", "testDefineDate", "runScript");
+
 
 //----- IVAN -------------------------------
 

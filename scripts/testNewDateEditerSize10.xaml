@@ -10,13 +10,14 @@
         Height="407"
         Width="639">
     <Grid>
-        <wcl:ASDateEditer
+        <wcl:ASDateEditer2
             ButtonWidth="19"
-            DisplaySize="8"
+            DisplaySize="10"
             Name="de1"
-            Height="35" Width="100"
-            DataContext="dateVar"
-            ></wcl:ASDateEditer>
+            Height="35" Width="200"
+            FieldName="dateVar"
+            />
+        
 
         <Button
             Name="btn1"
