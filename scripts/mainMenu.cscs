@@ -408,6 +408,14 @@ AddMenuSeparator("OtherDC");
 
 AddMenuItem("OtherDC", "testConvertDates.cscs", "testConvertDates", "runScript");
 
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "testDateBug.cscs", "testDateBug", "runScript");
+
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "testPostEvents.cscs", "testPostEvents", "runScript");
+
 
 //----- IVAN -------------------------------
 
