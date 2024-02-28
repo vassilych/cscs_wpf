@@ -7,10 +7,11 @@
     define sveDrzave_dn,eu_dn,izvoz_dn,domaca_dn type l;
     define eucountries type a size 200;
     define usluge_dn, roba_dn, robaUsl_dn, avans_dn, povnak_dn type l;
-    define tip_racuna type a size 30;
     define rnalog type r size 8;
     define rnalogNaziv type a size 50;
     define mx3_dn,mx2_dn,met_dn,kom_dn type l;
+    define neto_dn,do_mjeseca,ruc_dn,bruto_dn,tezina_dn type l
+
 
     define tip_racuna type a size 30;
     define gl_oznaka type a size 1 up;
@@ -73,7 +74,7 @@
 
     define do_mjeseca type l;
 
-    define danas_h type d size 8;
+    define danas_h type d size 10;
 
     DEFINE saPdvomField type l;
     DEFINE bezPdvaField type l;

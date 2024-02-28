@@ -12,6 +12,7 @@ DEFINE companyCode type a size 3 up;
         companyCode = args[2];
     }else{
         companyCode = Substring(CoGet(), 1, 2);
+     //MessageBox(coGet()+"  "+companycode);   
     }
 
     CreateWindow(strTrim(tpath()) +"wxbiprb.xaml");
@@ -33,9 +34,28 @@ function Wxbiprb_onDisplay()
         {
         MessageBox(exc);
         }
-    RectangleA.Width="100";
-    SetProperty("RectangleA","Width","100");
-    setimage(strTrim(tpath())+"Blue Abstract Gradient Background Jamboard Background.png");
+    //RectangleA.Width="100";
+    //SetProperty("RectangleA","Width","100");
+    MessageBox("1111: "+ffile(strTrim(tpath())+"AuraSoftLogo.png",'f'));
+    if (ffile(strTrim(tpath())+"CompanyLogo.jpg",'f') == "CompanyLogo.jpg")
+    { 
+        setimage("Logo",strTrim(tpath())+"CompanyLogo.jpg");
+    }
+    else
+    {
+        if (ffile(strTrim(tpath())+"AuraSoftLogo.png",'f') == "AuraSoftLogo.png")
+        {
+           setimage("Logo",strTrim(tpath())+"AuraSoftLogo.png");
+        }
+        else
+        {
+            MessageBox("Molim da postavite logo znak firme kao: "+strTrim(tpath())+"CompanyLogo.jpg")
+        }
+    }
+    tableHndl = OPENV("KPSYMSTR", coGet());
+    InvHeadHndl = OPENV("NKPRINV", coGet());
+    sveDrzave_dn= true;
+    robaUsl_dn= true;
     postotakMj = 0;
     postotak= 0;
     skladiste = 0;
@@ -76,16 +96,19 @@ function Wxbiprb_onDisplay()
     {
         proslaGodinaBaza = sqlResult[1][0].trim();
     }  
+    EUCountries= "'AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GB', 'GR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK', 'QP', 'QR', 'QV'";
     DEFINE sqlNaDan type a size 10;  
     DEFINE sqlOdDana type a size 10;  
     DEFINE fiscal_yr type a size 10;  
     sqlNaDan = ovagod_h + "-12-31";
     sqlOdDana = string(int(ovagod_h) - 1) + "-01-01";
-    danas_h = Now("dd/MM/yy");
-  MessageBox("bbbb");  
+    //define danas_chr type a size 10;
+    //danas_chr= Now("dd/MM/yyyy");
+    danas_h = Now("dd/MM/yyyy");
+    //danas_h= danas_chr;
     if (now("yyyy") > ovagod_h)
     {
-        danas_h= "31/12/"+subString(ovagod_h,2,2);
+        //danas_h= "31/12/"+subString(ovagod_h,2,2); //riješiti kada dobijemo funkciju ctod()
     }
     mjesec_h = Now("MM");
     mjesec_h = string(int(mjesec_h) - 1);
@@ -106,11 +129,11 @@ function Wxbiprb_onDisplay()
     if (size(sqlResult) !== 0)
     {
         nazivFirme = sqlResult[1][0].trim();
-        kpsy_po_freight= = sqlResult[1][1].trim();
+        kpsy_po_freight= sqlResult[1][1].trim();
     }
-    comboItems = {"STANDARDNI", "PREDUJAM", "VL.POTROŠNJA", "REKLAMIRANI", "ODOBRENJE", "TEREĆENJE", "NEZARAČUNANI OBR.", "STORNO"};
+    comboItems = {"SVI TIPOVI","STANDARDNI", "PREDUJAM", "VL.POTROŠNJA", "REKLAMIRANI", "ODOBRENJE", "TEREĆENJE", "NEZARAČUNANI OBR.", "STORNO"};
     AddWidgetData(cbTipRacuna, comboItems);
-    tip_Racuna= "";
+    //tip_Racuna= "SVI TIPOVI";
     //SetText("cbTipRacuna", "");
 
     pripremljeno = false;
@@ -119,38 +142,38 @@ function Wxbiprb_onDisplay()
     }
 
 function gbPripremi@clicked()
-{
+    {
     cursor("wait");
     gl_oznaka= "";
-    if (tip_racuna= "STANDARDNI")
+    if (tip_racuna== "STANDARDNI")
     {
         GL_oznaka= "S";
     }
-    elif (tip_racuna= "PREDUJAM")
+    elif (tip_racuna== "PREDUJAM")
     {
         GL_oznaka= "P";
     }    
-    elif (tip_racuna= "VL.POTROŠNJA")
+    elif (tip_racuna== "VL.POTROŠNJA")
     {
         GL_oznaka= "V";
     }    
-    elif (tip_racuna= "REKLAMIRANI")
+    elif (tip_racuna== "REKLAMIRANI")
     {
         GL_oznaka= "R";
     }    
-    elif (tip_racuna= "ODOBRENJE")
+    elif (tip_racuna== "ODOBRENJE")
     {
         GL_oznaka= "O";
     }    
-    elif (tip_racuna= "TEREĆENJE")
+    elif (tip_racuna== "TEREĆENJE")
     {
         GL_oznaka= "T";
     }    
-    elif (tip_racuna= "NEZARAČUNANI OBR.")
+    elif (tip_racuna== "NEZARAČUNANI OBR.")
     {
         GL_oznaka= "N";
     }    
-    elif (tip_racuna= "STORNO")
+    elif (tip_racuna== "STORNO")
     {
         GL_oznaka= "X";
     }    
@@ -158,11 +181,11 @@ function gbPripremi@clicked()
     {
         GL_oznaka= "";
     }  
-  MessageBox("1111:"+gl_oznaka);  
+  //MessageBox("1111:"+gl_oznaka+"  "+tip_racuna);  
 
     setChartByMonth();
 //MessageBox("aaaa");
-    setChartByDaysOfMonth();
+//    setChartByDaysOfMonth();
 //MessageBox("bbbb");
 
     setHorizontalBars();
@@ -176,20 +199,20 @@ function gbPripremi@clicked()
 
     pripremljeno = true;
     cursor("dflt");
-}
+    }
 
 function gbProdaja1@clicked()
-{
-    if (pripremljeno == true) 
     {
-        result = modalWindow(strTrim(tpath()) +"wxbiprba.xaml");
+        if (pripremljeno == true) 
+        {
+            result = modalWindow(strTrim(tpath()) +"wxbiprba.xaml");
+        }
+        else
+        {
+           MessageBox("Molim pripremite osnovne podatke prije nastavka!"); 
+           setfocus("gbPripremi");
+        }    
     }
-    else
-    {
-        MessageBox("Molim pripremite osnovne podatke prije nastavka!"); 
-        setfocus("gbPripremi");
-    }    
-}
 
 function gbProdaja2@clicked()
     {
@@ -228,7 +251,7 @@ function setCustomerAndInvoiceCounts()
         {
             sql_str = sql_str + " LEFT JOIN " + proslaGodinaBaza + ".dbo.nkscpart g ON nkpr_gl_cuscod= g.nksc_partcode";
         }
-        sql_str = sql_str + " WHERE nkpr_gl_subtot > 0 AND nkpr_gl_oznaka= 'S'";
+        sql_str = sql_str + " WHERE 1=1"; //nkpr_gl_subtot > 0 AND nkpr_gl_oznaka= 'S'";
         if ( mjesec_h != "")
         {
             if(do_mjeseca == true)
@@ -246,6 +269,34 @@ function setCustomerAndInvoiceCounts()
         {
             sql_str= sql_str + " AND g.nksc_regija= '" + regija + "'";
         }
+        if (gl_oznaka != "")
+	    {
+            sql_str= sql_str+ " AND nkpr_gl_oznaka= '"+gl_oznaka+"'";
+    	    if (GL_oznaka == "X" || GL_oznaka == "O" || GL_oznaka == "R" )  //ako je to storno, odobrenje ili reklamacija neka okrene
+	    	{
+                sql_str= sql_str+ " AND nkpr_ln_pext< 0";
+		    }
+            else
+		    {
+                sql_str= sql_str+ " AND nkpr_ln_pext>= 0";
+		    }
+	    }
+        if (komercijalist != "")
+    	{
+            sql_str= sql_str+ " AND nkpr_gl_slsp= "+komercijalist;
+    	}
+        if (domaca_dn== true)
+    	{
+            sql_str= sql_str+ " AND nkpr_gl_drzava= '"+kpsy_po_freight+"'";
+	    }
+        elif (eu_dn== true)
+	    {
+            sql_str= sql_str+ " AND nkpr_gl_drzava IN ("+eucountries+")";
+	    }
+        elif (izvoz_dn== true)
+	    {
+            sql_str= sql_str+ " AND nkpr_gl_drzava<> '"+kpsy_po_freight+"' AND NOT nkpr_gl_drzava IN ("+eucountries+")";
+	    }
         sqlResult = SqlQuery(sql_str);
         if (size(sqlResult) !== 0)
         {
@@ -258,7 +309,7 @@ function setCustomerAndInvoiceCounts()
         {
             sql_str = sql_str + " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart g ON nkpr_gl_cuscod= g.nksc_partcode";
         }
-        sql_str = sql_str + " WHERE nkpr_gl_subtot> 0 AND nkpr_gl_oznaka= 'S'";
+        sql_str = sql_str + " WHERE 1=1"; //nkpr_gl_subtot> 0 AND nkpr_gl_oznaka= 'S'";
         if(mjesec_h != "")
         {
             if(do_mjeseca == true)
@@ -277,6 +328,34 @@ function setCustomerAndInvoiceCounts()
         {
             sql_str = sql_str + " AND g.nksc_regija= '" + regija + "'";
         }
+        if (gl_oznaka != "")
+	    {
+            sql_str= sql_str+ " AND nkpr_gl_oznaka= '"+gl_oznaka+"'";
+	        if (GL_oznaka == "X" || GL_oznaka == "O" || GL_oznaka == "R" )  //ako je to storno, odobrenje ili reklamacija neka okrene
+    		{
+                sql_str= sql_str+ " AND nkpr_ln_pext< 0";
+		    }
+            else
+    		{
+                sql_str= sql_str+ " AND nkpr_ln_pext>= 0";
+	    	}
+    	}
+        if (komercijalist != "")
+    	{
+            sql_str= sql_str+ " AND nkpr_gl_slsp= "+komercijalist;
+    	}
+        if (domaca_dn== true)
+    	{
+            sql_str= sql_str+ " AND nkpr_gl_drzava= '"+kpsy_po_freight+"'";
+	    }
+        elif (eu_dn== true)
+	    {
+            sql_str= sql_str+ " AND nkpr_gl_drzava IN ("+eucountries+")";
+	    }
+        elif (izvoz_dn== true)
+	    {
+            sql_str= sql_str+ " AND nkpr_gl_drzava<> '"+kpsy_po_freight+"' AND NOT nkpr_gl_drzava IN ("+eucountries+")";
+	    }
         sqlResult = SqlQuery(sql_str);
         if (size(sqlResult) !== 0)
         {
@@ -606,19 +685,21 @@ function setWeekComparison(){
 	define postotak type n size 10 dec 2;
 	define postotakMj type n size 10 dec 2;
 	//define postotakTj type n size 10 dec 2;
-	define week_c type i;
-	define week_p type i;
+	define week_c type a size 10;
+	define week_p type a size 10;
 	define week type i;
 	//tot_ovajTj = 0;
 	//tot_prosliTj = 0;
 	//postotakTj = 0;
-	week_c = 0;
-	week_p = 0;//dd/MM/yy
+	week_c = "";
+	week_p = "";//dd/MM/yy
 	
 	postotakTj = 0;
 	
-	danas = "20" + substring(danas_h, 6, 2) + "-" + substring(danas_h, 3,2) + "-" + substring(danas_h, 0, 2);//("yyyy-MM-dd");
-	sql_str = "SELECT TOP 2 [wk_firstofWeek] as weekStr,";
+	//danas = "20" + substring(danas_h, 6, 2) + "-" + substring(danas_h, 3,2) + "-" + substring(danas_h, 0, 2);//("yyyy-MM-dd");
+	danas = substring(danas_h, 6, 4) + "-" + substring(danas_h, 3,2) + "-" + substring(danas_h, 0, 2);//("yyyy-MM-dd");
+//MessageBox("aaaa: "+danas+"  "+danas_h);    
+	sql_str = "SELECT TOP 2 CONVERT(char(10), wk_firstofWeek,103) as prviutjednu,";
 	if ( bezPdvaField == true )
 	{
 		sql_str = sql_str + " Sales = round(ISNULL(SUM(CASE WHEN b.nkpr_gl_dviza = 'D' THEN b.nkpr_gl_tecaj * c.nkpr_ln_amt ELSE c.nkpr_ln_amt END) , 0),0)";
@@ -659,41 +740,32 @@ function setWeekComparison(){
     {
         sql_str= sql_str + " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkscpart ON nkpr_gl_cuscod= nksc_partcode"; // AND g.nksc_regija= '"+regija*"'"
     }
-MessageBox("1111");
 	//WHERE a.[Wk_Week]  =  datepart(week , b.nkpr_gl_invdte) AND nkpr_gl_invdte>= '" +  sqlDate(kpsy_fiscal_yr) + "')"
 	//sql_str =  sql_str +  " WHERE [wk_Week]>=  datepart(week , '" + sqlDate(danas) * "') - 1 AND wk_Week<=  datepart(week , '" + sqlDate(danas) * "') AND wk_ISOyear = " +  year(kpsy_fiscal_yr)
 	sql_str = sql_str + " WHERE wk_year = " + ovagod_h;
-MessageBox("2222");
 	sql_str = sql_str + " AND nkpr_gl_datem >= '" + fiscal_yr + "'";
-MessageBox("3333");
     if (kategorija!= ''){ sql_str= sql_str+ " AND arti_kategorija='"+kategorija+"'";}
     if (klasa!= ''){ sql_str= sql_str+ " AND arti_klasa='"+klasa+"'";}
     if (partner!= ''){ sql_str= sql_str+ " AND nkpr_gl_cuscod= '"+partner+"'";}
-MessageBox("4444");
     if (isporuka!= ''){ sql_str= sql_str+ " AND nkpr_gl_shpcod= '"+isporuka+"'";}
     if (regija!= ''){ sql_str= sql_str+ " AND nksc_regija= '"+regija+"'";}
-MessageBox("5555");
 
     if (artikl!= ''){ sql_str= sql_str+ " AND nkpr_ln_pcode= '"+artikl+"'";}
     if (gl_oznaka!= ''){ sql_str= sql_str+ " AND nkpr_gl_oznaka= '"+gl_oznaka+"'";}
-    if (komercijalist!= 0){ sql_str= sql_str+ " AND nkpr_gl_slsp= "+komercijalist;}
-MessageBox("6666");
-    if (rnalog!= 0){ sql_str= sql_str+ " AND nkpr_ln_rnalg= "+rnalog;}
-    if (ruc_dn= true){ sql_str= sql_str+ " AND nkpr_gl_invcd IN ('B','D')";}
-MessageBox("7777");
+    if (komercijalist!= ""){ sql_str= sql_str+ " AND nkpr_gl_slsp= "+komercijalist;}
+    if (rnalog!= ""){ sql_str= sql_str+ " AND nkpr_ln_rnalg= "+rnalog;}
+    if (ruc_dn== true){ sql_str= sql_str+ " AND nkpr_gl_invcd IN ('B','D')";}
 
     if (domaca_dn== true){ sql_str= sql_str+ " AND nkpr_gl_drzava= '"+kpsy_po_freight+"'";}
     elif (eu_dn== true){ sql_str= sql_str+ " AND nkpr_gl_drzava IN ("+eucountries+")";}
-    else (izvoz_dn== true){ sql_str= sql_str+ " AND nkpr_gl_drzava!= '"+kpsy_po_freight+"' AND NOT nkpr_gl_drzava IN ("+eucountries+")";}
-MessageBox("0000");
+    elif (izvoz_dn== true){ sql_str= sql_str+ " AND nkpr_gl_drzava!= '"+kpsy_po_freight+"' AND NOT nkpr_gl_drzava IN ("+eucountries+")";}
 
-    if (roba_dn= true){ sql_str= sql_str+ " AND nkpr_ln_ma_us IN ( 'R','G','S')";}
+    if (roba_dn== true){ sql_str= sql_str+ " AND nkpr_ln_ma_us IN ( 'R','G','S')";}
     elif (usluge_dn== true){ sql_str= sql_str+ " AND nkpr_ln_ma_us= 'N'";}
     elif (povnak_dn== true){ sql_str= sql_str+ " AND nkpr_ln_ma_us= 'P'";}
-    else (avans_dn== true){ sql_str= sql_str+ " AND nkpr_ln_ma_us= 'A'";}
+    elif (avans_dn== true){ sql_str= sql_str+ " AND nkpr_ln_ma_us= 'A'";}
 
-
-	sql_str = sql_str + " AND wk_Week <= datepart(week , '" + danas + "')";
+	sql_str = sql_str + " AND ((wk_ISOWeek = datepart(ISO_week , '" + danas +"')) OR (wk_ISOWeek = datepart(ISO_week , '" + danas+"')-1)) AND year('"+danas+"') = wk_year";
 	
 	if ( partner != "" )
 	{
@@ -701,17 +773,19 @@ MessageBox("0000");
 	}
 	sql_str = sql_str + " GROUP BY [wk_FirstOfWeek]";
 	sql_str = sql_str + " ORDER BY [wk_FirstOfWeek] DESC";
+	//SaveFile(sql_str);
 	try	{
 		sqlResult = sqlQuery(sql_str);
 	}catch(exc){
 		MessageBox(exc);
 	}
+
 	if (Size(sqlResult) <= 2)
 	{
 		tot_ovajTj= 0;
-		week_c= 0;
+		week_c= "";
 		tot_prosliTj= 0;
-		week_p= 0;
+		week_p= "";
 	}
 	else
 	{
@@ -743,4 +817,8 @@ MessageBox("0000");
 	HorizontalBar("HorizontalBarLT", "Text", tot_ProsliTj_string);
 	HorizontalBar("HorizontalBarLT", "Color", bojeArrayTJ);
 	return;
+}
+
+function deNadanxx@post(){
+    setWeekComparison();
 }
