@@ -573,7 +573,7 @@
                    VerticalAlignment="Top"
                    Height="15"
                    Width="50"
-                   Margin="410,174,0,0"
+                   Margin="411,180,0,0"
                    FontFamily="lato"
                    x:Name="Label21"
                    FontSize="14"
@@ -1037,20 +1037,6 @@
                         VerticalAlignment="Top"
                         Background="White"
                         TabIndex="6" />
-        <wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
-                        FontWeight="Bold"
-                        FieldName="skladisteNaziv"
-                        Foreground="black"
-                        x:Name="TASComboEnter1"
-                        FontSize="14"
-                        Case="Normal"
-                        Height="22"
-                        Width="267"
-                        Margin="134,2,0,0"
-                        FontFamily="lato"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        TabIndex="8" Background="White" />
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="21"
                         ButtonBackground="Yellow" 
                         FontWeight="Bold"
@@ -1069,25 +1055,22 @@
                         VerticalAlignment="Top"
                         Background="White"
                         TabIndex="9" />
-        <wcl:ASNumericBox Grid.Column="1" HorizontalAlignment="Left"
+        <wcl:ASEnterBox Grid.Column="1" HorizontalAlignment="Left"
                           VerticalAlignment="Top"
                           FontWeight="Bold"
                           Size="3"
-                          MaxValue="999"
-                          MinValue="1"
                           ButtonSize="21"
                           Height="22"
-                          Width="60"
+                          Width="332"
                           Margin="69,2,0,0"
-                          x:Name="neSkladiste"
+                          x:Name="ceSkladiste"
                           Background="White"
                           Foreground="black"
-                          KeyTraps="F2|neSkladiste@clicked"
-                          FieldName="SKLADiste"
+                          KeyTraps="F2|ceSkladiste@clicked"
+                          FieldName="SKLAD_str"
                           FontFamily="lato"
                           FontSize="14"
                           TabIndex="7"
-                          Thousands="False"
                           ButtonBackground="Blue" BorderBrush="#FFFFFDFF"/>
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
                         FontWeight="Bold"
@@ -1115,7 +1098,7 @@
                         Case="Normal"
                         Height="22"
                         Width="34"
-                        Margin="461,169,0,0"
+                        Margin="462,174,0,0"
                         FontFamily="lato"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
@@ -1123,30 +1106,29 @@
                         TabIndex="11" />
         <GroupBox Grid.Column="1" HorizontalAlignment="Left"
                   VerticalAlignment="Top"
-                  Height="34"
-                  Width="122"
+                  Height="29"
+                  Width="93"
                   BorderThickness="0"
-                  Margin="521,163,0,0">
-            <Grid Margin="-35,0,15,0" Height="34">
-                <CheckBox HorizontalAlignment="Center"
-                          Width="112"
+                  Margin="501,170,0,0">
+            <Grid Margin="-8,0,-12,0" Height="34">
+                <CheckBox HorizontalAlignment="Left"
+                          Width="89"
                           x:Name="cbMjesec"
                           DataContext="do_mjeseca"
                           Foreground="Black"
-                          Content="Do mjeseca" Margin="0,10,0,6" />
+                          Content="Do mjeseca" Margin="10,6,0,10" />
             </Grid>
         </GroupBox>
-        <Button Grid.Column="1" HorizontalAlignment="Left"
+        <Button Grid.Column="1"
                 VerticalAlignment="Top"
-                Height="42"
-                Margin="909,48,0,0"
+                Height="68"
+                Margin="914,12,16,0"
                 FontFamily="lato"
-                Width="110"
                 Visibility="Visible"
                 BorderBrush="Transparent"
                 BorderThickness="0"
                 Padding="-8"
-                x:Name="gbPripremi" Background="#FF5CA21A">
+                x:Name="gbPripremi" Background="#FF5CA21A" TabIndex="0">
             <Button.Resources>
                 <Style TargetType="{x:Type Border}">
                     <Setter Property="CornerRadius" Value="6"/>
@@ -1155,14 +1137,27 @@
             <Grid Grid.Column="1">
                 <TextBlock
                     FontSize="20"
-                    Foreground="Black"
+                    Foreground="#FFFDFDFD"
                     VerticalAlignment="Center"
                     Text="Pripremi"
                     HorizontalAlignment="Center" />
             </Grid>
         </Button>
-        <Label x:Name="NazivFirmeLabel" Grid.Column="1" Grid.Row="0" Content="Naziv firme" DataContext="nazivFirme" FontSize="23" FontWeight="Bold" HorizontalContentAlignment="Right" Margin="720,0,10,0" VerticalAlignment="Top" RenderTransformOrigin="-1.102,0.851" Height="41"/>
-        <Image x:Name="Logo" Margin="5,0,5,9" Source="c:\winx\kamen-logo.jpg"/>
+        <TextBox HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Height="49"
+                       Width="160"
+                       Margin="0,162,0,0"
+                       x:Name="CompName"
+                       IsReadOnly="True"
+                       FontFamily="Lato"
+                       FontSize="12"
+                       FontWeight="Bold"
+                       Foreground="black"
+                       Text="Naziv firme"
+                       DataContext="NazivFirme"
+                       Grid.Column="0" Grid.Row="0" TextWrapping="Wrap" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" UseLayoutRounding="True" BorderBrush="{x:Null}" SelectionBrush="{x:Null}" BorderThickness="0,0,0,0"/>
+        <Image x:Name="Logo" Margin="5,7,5,68" Source="c:\winx\kamen-logo.jpg"/>
         <ComboBox x:Name="cbTipRacuna" DataContext="tip_racuna" Grid.Column="1" HorizontalAlignment="Right" Margin="0,176,16,0" VerticalAlignment="Top" Width="149" Height="22"/>
         <!-- <wcl:ASNumericBox HorizontalAlignment="Left"
         VerticalAlignment="Top"

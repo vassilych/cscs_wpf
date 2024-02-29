@@ -36,7 +36,7 @@ function Wxbiprb_onDisplay()
         }
     //RectangleA.Width="100";
     //SetProperty("RectangleA","Width","100");
-    MessageBox("1111: "+ffile(strTrim(tpath())+"AuraSoftLogo.png",'f'));
+    //MessageBox("1111: "+ffile(strTrim(tpath())+"AuraSoftLogo.png",'f'));
     if (ffile(strTrim(tpath())+"CompanyLogo.jpg",'f') == "CompanyLogo.jpg")
     { 
         setimage("Logo",strTrim(tpath())+"CompanyLogo.jpg");
@@ -58,8 +58,9 @@ function Wxbiprb_onDisplay()
     robaUsl_dn= true;
     postotakMj = 0;
     postotak= 0;
-    skladiste = 0;
-    searchSklSifra = "";
+    //skladiste = 0;
+    sklad_str= "";
+    //searchSklSifra = "";
     searchSklNaziv = "";
     if (size(sqlResult) !== 0)
     {

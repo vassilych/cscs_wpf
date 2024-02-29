@@ -280,6 +280,7 @@ function setChartByDaysOfMonth()
 
 function setChartByMonth()
     {
+        MessageBox("aaaa: "+sklad_str);
         SQL_str = "SET query_governor_cost_limit 0;";
         if ( proslaGodinaBaza != "" )
         {
@@ -358,9 +359,9 @@ function setChartByMonth()
             {
                 sql_str = sql_str + " AND (e.nkpr_ln_pcode = '" + artikl + "' OR d.nkpr_ln_pcode = '" + artikl + "')";
             }
-            if ( skladiste != 0 )
+            if ( sklad_str != "" )
             {
-                sql_str = sql_str + " AND (d.nkpr_ln_loc = " + skladiste + " OR e.nkpr_ln_loc = " + skladiste + ")";
+                sql_str = sql_str + " AND (d.nkpr_ln_loc IN ("+sklad_str+") OR e.nkpr_ln_loc IN ("+sklad_str+")";
             }
         }
         else
@@ -410,9 +411,9 @@ function setChartByMonth()
             {
                 sql_str = sql_str + " AND e.nkpr_ln_pcode = '" + artikl + "'";
             }
-            if ( skladiste != 0 )
+            if ( sklad_str != "" )
             {
-                 sql_str = sql_str + " AND e.nkpr_ln_loc = " + skladiste;
+                 sql_str = sql_str + " AND e.nkpr_ln_loc IN ("+sklad_str+")";
             }
         }
 
