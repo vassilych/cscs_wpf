@@ -1,0 +1,30 @@
+DEFINE dateVar1 type d size 8 init "01/01/50";
+DEFINE dateVar2 type d size 10 init "25/05/2010";
+DEFINE dateVar3 type d size 10 init "27/05/2010";
+
+if(dateVar2 - dateVar3 > 0){
+    MessageBox("dateVar2 > dateVar3");
+}
+elif(dateVar3 - dateVar2 > 0){
+    MessageBox("dateVar3 > dateVar2");
+
+    DEFINE var1 type r;
+    var1 = dateVar3 - dateVar2;
+    MessageBox(var1);
+}
+
+quit;
+
+MessageBox(dateVar1);
+MessageBox(dateVar2);
+
+dateVar1 = dateVar2;
+MessageBox(dateVar1);//25/05/2010
+
+quit;
+
+DEFINE dateVar type d size 10;
+
+MessageBox(dateVar);
+
+quit;

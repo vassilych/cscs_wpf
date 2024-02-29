@@ -29,6 +29,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using WpfControlsLibrary;
+using System.Globalization;
 
 namespace WpfCSCS
 {
@@ -88,6 +89,10 @@ namespace WpfCSCS
             interpreter.RegisterFunction(Constants.ENCRYPTSTR, new ENCRYPTSTRFunction());
             interpreter.RegisterFunction(Constants.Decryptstr, new DecryptstrFunction());
             interpreter.RegisterFunction(Constants.CDOW, new CDOWFunction());
+            interpreter.RegisterFunction(Constants.DTOS, new DTOSFunction());
+            interpreter.RegisterFunction(Constants.DTOC, new DTOCFunction());
+            interpreter.RegisterFunction(Constants.CTOD, new CTODFunction());
+            interpreter.RegisterFunction(Constants.DTOSQL, new DTOSQLFunction());
             interpreter.RegisterFunction(Constants.XPATH, new XPATHFunction());
             interpreter.RegisterFunction(Constants.PLAYWAV, new PLAYWAVFunction());
             interpreter.RegisterFunction(Constants.FILE_STORE, new FILE_STOREFunction());
@@ -105,11 +110,13 @@ namespace WpfCSCS
             interpreter.RegisterFunction(Constants.REGEDIT, new REGEDITFunction());
             interpreter.RegisterFunction(Constants.EMAIL, new EMAILFunction());
 	  interpreter.RegisterFunction(Constants.TPATH, new TPATHFunction());
+	  interpreter.RegisterFunction(Constants.MPATH, new MPATHFunction());
 
             interpreter.RegisterFunction("FillOutGrid", new FillOutGridFunction());
             interpreter.RegisterFunction("FillOutGridFromDB", new FillOutGridFunction(true));
             interpreter.RegisterFunction("BindSQL", new BindSQLFunction());
 
+            interpreter.RegisterFunction("FormatF2ListDataGrid", new FormatF2ListDataGridFunction());
             interpreter.RegisterFunction("NewBindSQL", new NewBindSQLFunction());
 
             interpreter.RegisterFunction("WhoAmI", new WhoAmIFunction());
@@ -820,7 +827,7 @@ namespace WpfCSCS
             Utils.CheckArgs(args.Count, 1, m_name);
 
             var temp = Utils.GetSafeString(args, 0);
-
+            temp = temp.Replace("/", "\\");
 
             if (temp != pattern)
             {
@@ -829,7 +836,8 @@ namespace WpfCSCS
                 directory = null;
                 if ((pattern.Contains("\\") || pattern.Contains("/")) && pattern.ToArray()[1] == ':')
                 {
-                    var dir = pattern.Substring(0, pattern.Length - pattern.LastIndexOf("\\") - 1);
+                    //var dir = pattern.Substring(0, pattern.Length - pattern.LastIndexOf("\\") - 1);
+                    var dir = pattern.Substring(0, pattern.LastIndexOf("\\") + 1);
                     pattern = pattern.Substring(pattern.LastIndexOf("\\") + 1);
                     directory = dir;
 
@@ -988,6 +996,70 @@ namespace WpfCSCS
             return new Variable(dateVariable.DateTime.DayOfWeek.ToString());
         }
     }
+
+    class DTOSFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var dateVariable = Utils.GetSafeVariable(args, 0);
+
+            return new Variable(dateVariable.DateTime.ToString("yyyyMMdd"));
+        }
+    }
+    class DTOSQLFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var dateVariable = Utils.GetSafeVariable(args, 0);
+
+            return new Variable(dateVariable.DateTime.ToString("yyyy-MM-dd"));
+        }
+    }
+    class DTOCFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var dateVariable = Utils.GetSafeVariable(args, 0);
+            var sizeArg = Utils.GetSafeInt(args, 1, 8);
+
+            var separator = App.GetConfiguration("DateSeparator", "/");
+            var formatString = $"dd{separator}MM{separator}yy" + (sizeArg == 10 ? "yy" : "");
+
+            return new Variable(dateVariable.DateTime.ToString(formatString));
+        }
+    }
+    
+    class CTODFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+            var dateString = Utils.GetSafeString(args, 0);
+
+            var dateSeparator = CultureInfo.CurrentCulture.DateTimeFormat.DateSeparator;
+
+            DateTime newDateTime = new DateTime();
+
+            if (dateString.Length == 10)
+            {
+                newDateTime = DateTime.ParseExact(dateString, $"dd{dateSeparator}MM{dateSeparator}yyyy", CultureInfo.InvariantCulture);
+            }
+            else if(dateString.Length == 8)
+            {
+                newDateTime = DateTime.ParseExact(dateString, $"dd{dateSeparator}MM{dateSeparator}yy", CultureInfo.InvariantCulture);
+            }
+
+            return new Variable(newDateTime);
+        }
+    }
+    
 
     class CHRFunction : ParserFunction
     {
@@ -2168,6 +2240,14 @@ d:\temp\aaa.txt, d:\temp\ggg.txt,
 		}
 	}
     
+    class MPATHFunction : ParserFunction
+	{
+		protected override Variable Evaluate(ParsingScript script)
+		{
+			return new Variable(App.GetConfiguration("ModulesPath", ""));
+		}
+	}
+    
     class FillOutGridFunction : ParserFunction
     {
         bool m_fromDB;
@@ -2380,6 +2460,55 @@ d:\temp\aaa.txt, d:\temp\ggg.txt,
         }
     }
 
+    class FormatF2ListDataGridFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 2, m_name);
+
+            var gui = CSCS_GUI.GetInstance(script);
+
+            var columnHeaders = new List<string>();
+            //var columnTags = new List<string>();
+
+            var windowTitle = Utils.GetSafeString(args, 0);
+            var columnHeadersVariableArray = Utils.GetSafeVariable(args, 1);
+            for(int i = 1; i < columnHeadersVariableArray.Tuple.Count; i++)
+            {
+                columnHeaders.Add(columnHeadersVariableArray.Tuple[i].String);
+            }
+
+            var widget = gui.GetWidget("dgF2List");
+
+            if (widget == null)
+            {
+                return Variable.EmptyInstance;
+            }
+
+            var window = gui.Control2Window[widget];
+            window.Title = windowTitle;
+
+            if (widget is DataGrid)
+            {
+                var dg = widget as DataGrid;
+
+                for (int i = 0; i < columnHeaders.Count; i++)
+                {
+                    var column = dg.Columns.ElementAt(i);
+
+                    if (column is DataGridTemplateColumn)
+                    {
+                        var dgtc = column as DataGridTemplateColumn;
+
+                        dgtc.Header = columnHeaders[i];
+                    }
+                }
+            }
+            return Variable.EmptyInstance;
+        }
+    }
+    
     class NewBindSQLFunction : ParserFunction
     {
         public static Dictionary<string, List<string>> gridsHeaders = new Dictionary<string, List<string>>();
@@ -2485,7 +2614,8 @@ d:\temp\aaa.txt, d:\temp\ggg.txt,
                 columns.Tuple.RemoveAll(p => p.String.ToLower() == "id");
                 for (int i = 0; i < columns.Tuple.Count; i += 1)
                 {
-                    string label = columns.Tuple[i].AsString();
+                    //string label = columns.Tuple[i].AsString();
+                    string label = "column" + (i + 1).ToString() + "Tag";
                     if (label.ToLower() == "id")
                     {
                         continue;
@@ -2493,7 +2623,7 @@ d:\temp\aaa.txt, d:\temp\ggg.txt,
                     DataGridTextColumn column = new DataGridTextColumn();
                     //column.Header = label;
                     column.Header = gridsHeaders[widgetName.ToLower()][i];
-                    column.Binding = new Binding(label.Replace(' ', '_'));
+                    column.Binding = new Binding(label.ToLower().Replace(' ', '_'));
 
                     dg.Columns.Add(column);
                 }
@@ -2517,7 +2647,7 @@ d:\temp\aaa.txt, d:\temp\ggg.txt,
                         {
                             val = data.Tuple.Count > j ? data.Tuple[j].AsString() : "";
                         }
-                        ((IDictionary<String, Object>)row)[column.Replace(' ', '_')] = val;
+                        ((IDictionary<String, Object>)row)[column.ToLower().Replace(' ', '_')] = val;
                     }
                     dg.Items.Add(row);
                     Console.WriteLine(i);

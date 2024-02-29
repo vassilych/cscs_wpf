@@ -1,19 +1,9 @@
 
-MessageBox("asdasdas");
-// b = 0;
-// MessageBox(b);
-// aPointer -> b // get address of variable b in Dictionary
-// b = 5
-// MessageBox(&aPointer) // =5
-// &aPointer= 10 //means -set a value to variable where this pointer has to point, and this is b
-// MessageBox(&aPointer) //= 10
-// MessageBox(b) //= 10
+DEFINE b type i;
+DEFINE a type F;
+a -> b;
+&a = 10; // This case is not working
+MessageBox(&a); // message must be 10
+MessageBox(b); // message must be 10
 
-
-DEFINE b type a size 10;
-DEFINE a type F; //pointer type
-a -> b; //points to b
-&a= 10; //b equals 10
-MessageBox(b);
-b= 20;
-MessageBox(&a);
+quit;

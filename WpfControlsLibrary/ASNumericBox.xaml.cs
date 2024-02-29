@@ -249,6 +249,7 @@ namespace WpfControlsLibrary
         public ASNumericBox()
         {
             InitializeComponent();
+            numBoxTextBox.Size = Size == null ? 500 : (int)Size;
         }
 
 
@@ -271,7 +272,6 @@ namespace WpfControlsLibrary
         {
             if (!loaded)
             {
-                numBoxTextBox.Size = Size == null ? 500 : (int)Size;
                 numBoxTextBox.Dec = Dec == null ? 0 : (int)Dec;
                 numBoxTextBox.MinValue = MinValue != null ? (double)MinValue : double.MinValue;
                 numBoxTextBox.MaxValue = MaxValue != null ? (double)MaxValue : double.MaxValue;

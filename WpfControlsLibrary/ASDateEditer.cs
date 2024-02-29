@@ -27,11 +27,13 @@ namespace WpfControlsLibrary
             //this.Padding = new Thickness(0, 0, 0, 0);
             //this.Resources.
 
+            //this.DataContext = this;
+
             var root = this.Template.FindName("PART_Root", this) as Grid;
             if (root != null)
             {
             }
-            
+
             var textBox = this.Template.FindName("PART_TextBox", this) as UIElement;
             if (textBox != null)
             {
@@ -57,9 +59,24 @@ namespace WpfControlsLibrary
 
                 dptb.LostFocus += Dptb_LostFocus;
 
+                dptb.GotFocus += Dptb_GotFocus;
+                dptb.PreviewMouseUp += Dptb_PreviewMouseUp;
+
                 dptb.Loaded += Dptb_Loaded;
 
-                dptb.Focus();
+                //dptb.Focus();
+
+                //Binding bind = new Binding("Date");
+                //bind.Converter = new ASDateEditerConverter2();
+                //bind.ConverterParameter = DisplaySize;
+                ////bind.StringFormat = "dd..MM..yyyy";
+                //bind.RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(ASDateEditer), 2);
+                //bind.Mode = BindingMode.TwoWay;
+                //bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+                //dptb.SetBinding(TextProperty, bind);
+                //dptb.DataContext = this;
+
+                //var alskdj2 = dptb.GetBindingExpression(TextProperty);
             }
 
             var button = this.Template.FindName("PART_Button", this) as Button;
@@ -80,7 +97,7 @@ namespace WpfControlsLibrary
                 Style MyButtonStyle = new Style();
 
                 ControlTemplate templateButton = new ControlTemplate(typeof(Button));
-                
+
                 FrameworkElementFactory elemFactory = new FrameworkElementFactory(typeof(Image));
                 elemFactory.SetValue(Image.SourceProperty, new BitmapImage(new Uri("settings.png", UriKind.Relative)));
                 templateButton.VisualTree = elemFactory;
@@ -89,6 +106,18 @@ namespace WpfControlsLibrary
             }
         }
 
+        //public static readonly DependencyProperty DateProperty = DependencyProperty.Register("Date", typeof(DateTime), typeof(ASDateEditer));
+        //public DateTime Date
+        //{
+        //    get
+        //    {
+        //        return (DateTime)base.GetValue(DateProperty);
+        //    }
+        //    set
+        //    {
+        //        base.SetValue(DateProperty, value);
+        //    }
+        //}
         
         public static readonly DependencyProperty DisplaySizeProperty = DependencyProperty.Register("DisplaySize", typeof(int), typeof(ASDateEditer));
         public int DisplaySize
@@ -168,6 +197,36 @@ namespace WpfControlsLibrary
             }
         }
 
+        private void Dptb_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            var dptb = (e.Source as DatePickerTextBox);
+
+            if (firstClick)
+            {
+                firstClick = false;
+                e.Handled = true;
+                return;
+            }
+        }
+
+        bool firstClick;
+
+        private void Dptb_GotFocus(object sender, RoutedEventArgs e)
+        {
+            var dptb = (e.Source as DatePickerTextBox);
+
+            dptb.SelectionChanged -= dptb_SelectionChanged;
+
+            dptb.SelectAll();
+
+            if (dptb.IsMouseOver)
+            {
+                firstClick = true;
+            }
+
+            dptb.SelectionChanged += dptb_SelectionChanged;
+        }
+
         private void Dptb_Loaded(object sender, RoutedEventArgs e)
         {
             var dptb = (e.Source as DatePickerTextBox);
@@ -188,7 +247,7 @@ namespace WpfControlsLibrary
             {
                 dptb.SelectAll();
             }
-            
+
             dptb.SelectionChanged += dptb_SelectionChanged;
         }
 
@@ -197,6 +256,12 @@ namespace WpfControlsLibrary
             var dptb = (e.Source as DatePickerTextBox);
 
             dptb.SelectionChanged -= dptb_SelectionChanged;
+
+            if(dptb.SelectionStart == 0 && dptb.SelectionLength == dptb.Text.Length)
+            {
+                dptb.SelectionChanged += dptb_SelectionChanged;
+                return;
+            }
 
             int[] allowedPositions = { 0, 1, 3, 4, 6, 7, 8, 9};
             if (!allowedPositions.Contains(dptb.SelectionStart))
@@ -217,7 +282,7 @@ namespace WpfControlsLibrary
 
             if (e.Key == System.Windows.Input.Key.Delete || e.Key == System.Windows.Input.Key.Back)
             {
-                
+
                 if (dptb.SelectionLength == DisplaySize)
                 {
                     var date111 = new DateTime(1, 1, 1);
@@ -227,7 +292,7 @@ namespace WpfControlsLibrary
                 {
                     var index = dptb.SelectionStart;
                     var textArray = dptb.Text.ToArray();
-                   textArray[index] = '0';
+                    textArray[index] = '0';
                     dptb.Text = new string(textArray);
                     dptb.SelectionStart = index;
                 }
