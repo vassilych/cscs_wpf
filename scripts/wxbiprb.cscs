@@ -1,23 +1,11 @@
-DEFINE companyCode type a size 3 up;    
-    
     args = CommandLineArgs(); 
     if(Size(args) > 2){
-        //MessageBox(args);
-
-        // MessageBox(args[0]);
-        // MessageBox(args[1]);
-        // MessageBox(args[2]);
-        // MessageBox(args[3]);
-
         companyCode = args[2];
     }else{
         companyCode = Substring(CoGet(), 1, 2);
-     //MessageBox(coGet()+"  "+companycode);   
     }
 
     CreateWindow(strTrim(tpath()) +"wxbiprb.xaml");
-    //Import("C:\wpfcscs\Modules\CSCS.Math.dll");
-    //Import("C:\users\User\Documents\github\cscs_wpf\Modules\CSCS.Math.dll");
     Import(strTrim(mpath()) + "CSCS.Math.dll");
     include(strTrim(tpath()) +"wxbiprb_inc_lists.cscs"); //look-up lists
     include(strTrim(tpath()) +"wxbiprb_inc_a.cscs"); //look-up lists
@@ -34,9 +22,6 @@ function Wxbiprb_onDisplay()
         {
         MessageBox(exc);
         }
-    //RectangleA.Width="100";
-    //SetProperty("RectangleA","Width","100");
-    //MessageBox("1111: "+ffile(strTrim(tpath())+"AuraSoftLogo.png",'f'));
     if (ffile(strTrim(tpath())+"CompanyLogo.jpg",'f') == "CompanyLogo.jpg")
     { 
         setimage("Logo",strTrim(tpath())+"CompanyLogo.jpg");
@@ -52,8 +37,9 @@ function Wxbiprb_onDisplay()
             MessageBox("Molim da postavite logo znak firme kao: "+strTrim(tpath())+"CompanyLogo.jpg")
         }
     }
-    tableHndl = OPENV("KPSYMSTR", coGet());
-    InvHeadHndl = OPENV("NKPRINV", coGet());
+    tableHndl = OPENV("KPSYMSTR"); //, coGet());
+    InvHeadHndl = OPENV("NKPRINV"); //, coGet());
+    InvHeadHndl = OPENV("NKPRINVL"); //, coGet());
     sveDrzave_dn= true;
     robaUsl_dn= true;
     postotakMj = 0;
@@ -69,7 +55,7 @@ function Wxbiprb_onDisplay()
     }    
     lani_h = string(int(ovagod_h) - 1); // 2
     trenutnaGodinaBaza = sqlResult[1][2].trim(); // ime baze
-    sqlQueryString = " SELECT FORMAT([KPSY_FISCAL_YR], 'yyyy-MM-dd') FROM " + trenutnaGodinaBaza + ".[dbo].[KPSYMSTR]";
+    sqlQueryString = " SELECT TOP 1 kpsy_comp_name,kpsy_po_freight,FORMAT([KPSY_FISCAL_YR], 'yyyy-MM-dd') FROM " + trenutnaGodinaBaza + ".[dbo].[KPSYMSTR]";
     try
         {
         sqlResult = sqlQuery(sqlQueryString);
@@ -80,10 +66,13 @@ function Wxbiprb_onDisplay()
         }
     if (size(sqlResult) !== 0)
     {
-        fiscal_yr = sqlResult[1][0];
         proslaGodina = (int(ovagod_h) - 1);
+        nazivFirme = sqlResult[1][0].trim();
+        kpsy_po_freight= sqlResult[1][1].trim();
+        fiscal_yr = sqlResult[1][2];
     } 
     bezPdvaField = true;
+    //kasnije zamijenit sa funkcijom, kada se bude koristi adictionary
     sqlQueryString = "select SY_CC_DBASE from " + CommonDBGet() + ".dbo.NKSYCCYR WHERE SY_CC_USER = '" + imeFirme + "' AND SY_CC_YEAR = '" + (int(ovagod_h) - 1) + "'";
     try
         {
@@ -98,12 +87,8 @@ function Wxbiprb_onDisplay()
         proslaGodinaBaza = sqlResult[1][0].trim();
     }  
     EUCountries= "'AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GB', 'GR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK', 'QP', 'QR', 'QV'";
-    DEFINE sqlNaDan type a size 10;  
-    DEFINE sqlOdDana type a size 10;  
-    DEFINE fiscal_yr type a size 10;  
     sqlNaDan = ovagod_h + "-12-31";
     sqlOdDana = string(int(ovagod_h) - 1) + "-01-01";
-    //define danas_chr type a size 10;
     //danas_chr= Now("dd/MM/yyyy");
     danas_h = Now("dd/MM/yyyy");
     //danas_h= danas_chr;
@@ -118,27 +103,9 @@ function Wxbiprb_onDisplay()
     mjesec_h0X = mjesec_h.length == 1 ? "0" + mjesec_h : mjesec_h;
     proslimjesec0X = proslimjesec.length == 1 ? "0" + proslimjesec : proslimjesec;
     do_mjeseca = true;
-    sqlQueryString = " SELECT TOP 1 kpsy_comp_name,kpsy_po_freight FROM " + trenutnaGodinaBaza + ".[dbo].[KPSYMSTR]";
-    try
-        {
-        sqlResult = sqlQuery(sqlQueryString);
-        }
-    catch(exc)
-        {
-        MessageBox(exc);
-        }
-    if (size(sqlResult) !== 0)
-    {
-        nazivFirme = sqlResult[1][0].trim();
-        kpsy_po_freight= sqlResult[1][1].trim();
-    }
     comboItems = {"SVI TIPOVI","STANDARDNI", "PREDUJAM", "VL.POTROŠNJA", "REKLAMIRANI", "ODOBRENJE", "TEREĆENJE", "NEZARAČUNANI OBR.", "STORNO"};
     AddWidgetData(cbTipRacuna, comboItems);
-    //tip_Racuna= "SVI TIPOVI";
-    //SetText("cbTipRacuna", "");
-
     pripremljeno = false;
-    //
 
     }
 
@@ -182,22 +149,10 @@ function gbPripremi@clicked()
     {
         GL_oznaka= "";
     }  
-  //MessageBox("1111:"+gl_oznaka+"  "+tip_racuna);  
-
-    setChartByMonth();
-//MessageBox("aaaa");
-//    setChartByDaysOfMonth();
-//MessageBox("bbbb");
-
+    setChartByMonth()
     setHorizontalBars();
-//MessageBox("cccc");
-
     setWeekComparison();
-//MessageBox("dddd");
-
     setCustomerAndInvoiceCounts();
-//MessageBox("eeee");
-
     pripremljeno = true;
     cursor("dflt");
     }
@@ -234,12 +189,6 @@ function gbExit@clicked()
     }
 
 //next routines is work out of above
-    define br_kupaca_og, br_kupaca_lg type i size 5;
-    define prodaja_kup_og, prodaja_kup_lg type n size 14;
-    define broj_rac_og, broj_rac_lg type r size 6;
-    define prod_kup_indx type n size 10 dec 2;
-        DEFINE arrayProsla type n size 14 array 12;
-        DEFINE arrayTrenutna type n size 14 array 12;
 function setCustomerAndInvoiceCounts()
     {
         br_kupaca_og = 0;
@@ -405,7 +354,6 @@ function setCustomerAndInvoiceCounts()
                  }
             }
         }
-        DEFINE br_kupaca_og_string, br_kupaca_lg_string type a size 50;
         bojeArray = {250, 100, 250};
         Format("br_kupaca_og", "nofd", recv: "br_kupaca_og_string");
         HorizontalBar("HorizontalBarBrKupacaOG", "Text", br_kupaca_og_string);
@@ -456,7 +404,6 @@ function setCustomerAndInvoiceCounts()
                 }
             }
         }
-        DEFINE broj_rac_og_string, broj_rac_lg_string type a size 50;
         bojeArray = {220, 150, 250};
         Format("broj_rac_og", "nofd", recv: "broj_rac_og_string");
         HorizontalBar("HorizontalBarBrRacunaOG", "Text", broj_rac_og_string);
@@ -533,7 +480,6 @@ function setCustomerAndInvoiceCounts()
                 }
             }
         }
-        DEFINE prodaja_kup_og_string, prodaja_kup_lg_string type a size 50;
         bojeArray = {150, 190, 250};
         Format("prodaja_kup_og", "nofd", recv: "prodaja_kup_og_string");
         HorizontalBar("HorizontalBarProdajaKupOG", "Text", prodaja_kup_og_string);
@@ -680,15 +626,6 @@ function setHorizontalBars()
     }
 
 function setWeekComparison(){
-	define tot_ovajTj type n size 14;
-	define tot_prosliTj type n size 14;
-	define sales_ar type n size 14 dec 0 array 10;        
-	define postotak type n size 10 dec 2;
-	define postotakMj type n size 10 dec 2;
-	//define postotakTj type n size 10 dec 2;
-	define week_c type a size 10;
-	define week_p type a size 10;
-	define week type i;
 	//tot_ovajTj = 0;
 	//tot_prosliTj = 0;
 	//postotakTj = 0;

@@ -40,7 +40,6 @@ function wxbiprba_onStart()
 	DisplayArray("dgRacuniMjesec", "close");
 	//DisplayArraySetup("dgRacuniMjesec", counterFld: "cntr3", activeElements: Size(sqlResult) - 1, maxElements: 10);
     setTop10InvoicesDataGrid();
-	DEFINE cntr3,cntr2 type i;
     cntr3= 0;
 	DisplayArraySetup("dgRacuniMjesec", counterFld: cntr3, activeElements: Size(sqlResult) - 1, maxElements: 10);
     cursor("dflt");
@@ -64,9 +63,6 @@ function setLast10InvoicesDataGrid()
 	t10Timez_ar ={};
 	t10Racunz_ar ={};
     
-	define T10Cntrz type i;
-	define t10DatRac type l;
-   
 	if ( t10datrac == true )
 	{
 		//za sada ne koristimo ovo!
@@ -114,22 +110,14 @@ function setLast10InvoicesDataGrid()
         t10Racunz_ar[i - 1] =  sqlResult[i][0]; 
         t10Timez_ar[i - 1] =  sqlResult[i][3];
     }
-    DEFINE cntr2 type i;
 }
 
 function setTop10InvoicesDataGrid()
 {
-/*     define t10IznosMj_ar type n size 14 dec 2 array 10;
-	define t10NameMj_ar type a size 30 array 10;
-	define t10CntrMj_ar type i size 2 array 10;
-	define t10DatumMj_ar type d size 8 array 10;
-	define t10RacunMj_ar type r size 8 array 10;
- */	
 	t10NameMj_ar={}; // type a size 30 array 10;
 	t10CntrMj_ar={}; // type i size 2 array 10;
 	t10DatumMj_ar={}; // type d size 8 array 10;
 	t10RacunMj_ar={}; // type r size 8 array 10;
- define T10CntrMj type i;
 	sql_str =  "SELECT TOP 10 nkpr_gl_num , nkpr_gl_cusnme , CONVERT(char(8) ,  nkpr_gl_invdte , 3) AS datecr , " ;
 	sql_str =  sql_str +  " CAST(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_gl_total ELSE nkpr_gl_total END as decimal (10,2)) AS nkpr_gl_total ";
 	sql_str =  sql_str +  " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv" ;
@@ -264,8 +252,6 @@ function setChartByDaysOfMonth()
         {
               MessageBox(exc);
         }
-     //define arrayDani type a size 10; 
-     //define arrayvrijednosti type n size 14 dec 2; 
         arrayDani = {};
         arrayVrijednosti = {};
         for(i = 1; i < queryResult.length; i++)
@@ -280,7 +266,6 @@ function setChartByDaysOfMonth()
 
 function setChartByMonth()
     {
-        MessageBox("aaaa: "+sklad_str);
         SQL_str = "SET query_governor_cost_limit 0;";
         if ( proslaGodinaBaza != "" )
         {
@@ -421,7 +406,7 @@ function setChartByMonth()
         sql_str = sql_str + " ORDER BY wk_yyyymm;";
         try
         {
-           //  SaveFile(sql_str);
+             //SaveFile(sql_str);
              queryResult = sqlquery(SQL_str);
         }
         catch(exc)
@@ -434,13 +419,8 @@ function setChartByMonth()
         tot_lani = 0;
         //arrayProsla = {};
         //arrayTrenutna = {};
-        DEFINE sales_month_ar type n size 14 dec 0 array 24;
-        sales_month_ar = {};
-        DEFINE CNTR type i size 3;
-        DEFINE cntry type i size 3;
         cntry= 0
-        DEFINE arrayProsla type n size 14 array 12;
-        DEFINE arrayTrenutna type n size 14 array 12;
+        sales_month_ar = {};
         for(i = 1; i < 13; i++)
         {
             if(i >= Size(queryResult))
@@ -515,7 +495,6 @@ function setChartByMonth()
         }
 
     }
-    define dan2 type i;
 function setChartByDaysOfMonth()
     {
         if ( bezPdvaField == true )
@@ -591,37 +570,9 @@ function setChartByDaysOfMonth()
         {
             arrayVrijednosti.add(queryResult[i][1]);
         }
-        /*
-        Chart("ChartPoDanima", "init");
-        Chart("ChartPoDanima", "seriesType", "lineSeries");
-        Chart("ChartPoDanima", "title", "Po Danima");
-        //Chart("ChartPoDanima", "labels","y", 12);
-        Chart("ChartPoDanima", "labels","x", 15,  {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"});
-        //Chart("ChartPoDanima", "labels", arrayDani);
-        Chart("ChartPoDanima", "xlabelsRotation", 0);
-        Chart("ChartPoDanima", "SeparatorStep", 1);
-        Chart("ChartPoDanima", "values", arrayVrijednosti, "01");
-        Chart("ChartPoDanima", "Margins", {60, 20, 0, 30});
-        */
     }
 
 function setLast10InvoicesDataGrid(){
-	define t10Iznosz_ar type n size 14 dec 2 array 10;
-	define t10Namez_ar type a size 30 array 10;
-	define t10Cntrz_ar type i size 2 array 10;
-	define t10Datumz_ar type d size 8 array 10;
-	define t10Timez_ar type t size 8 array 10;
-	define t10Racunz_ar type r size 8 array 10;
- /*   
-t10Iznosz_ar ={};
-	t10Namez_ar ={};
-	t10Cntrz_ar ={};
-	t10Datumz_ar={};
-	t10Timez_ar ={};
-	t10Racunz_ar ={};
- */
- 	define T10Cntrz type i;
-	define t10DatRac type l;
 	if ( t10datrac == true )
 	{
 		//za sada ne koristimo ovo!
@@ -674,16 +625,8 @@ t10Iznosz_ar ={};
         t10Timez_ar[i - 1] =  nkpr_gl_timecr;
     
     }
-    DEFINE cntr2 type i;
 }
 function setTop10InvoicesDataGrid(){
-    define t10IznosMj_ar type n size 14 dec 2 array 10;
-	define t10NameMj_ar type a size 30 array 10;
-	define t10CntrMj_ar type i size 2 array 10;
-	define t10DatumMj_ar type d size 8 array 10;
-	define t10RacunMj_ar type r size 8 array 10;
-
-    define T10CntrMj type i;
     sql_str =  "SELECT TOP 10 nkpr_gl_num , nkpr_gl_cusnme , CONVERT(char(8) ,  nkpr_gl_invdte , 3) AS datecr , " ;
 	sql_str =  sql_str +  " CAST(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_gl_total ELSE nkpr_gl_total END as decimal (10,2))AS nkpr_gl_total ";
 	sql_str =  sql_str +  " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv" ;
