@@ -1,0 +1,12 @@
+MessageBox(get_dbase("BD2")); //K__DATAX_D2__BD2
+MessageBox(get_dbase("BD2", -1)); //K__DATAX_D1__BD1
+MessageBox(get_dbase("BD1", 1)); //K__DATAX_D2__BD2
+
+MessageBox(get_comp_year());//2022
+MessageBox(get_comp_year("BD2"));//2022
+MessageBox(get_comp_year("K__DATAX_D1__BD1", "Dbase")); //2021
+MessageBox(get_comp_year("aaa")); // ""
+
+
+
+quit;

@@ -4116,19 +4116,31 @@ namespace WpfCSCS
 		protected override Variable Evaluate(ParsingScript script)
 		{
 			List<Variable> args = script.GetFunctionArgs();
-			Utils.CheckArgs(args.Count, 2, m_name);
+			Utils.CheckArgs(args.Count, 0, m_name);
 
-			var comp_code = Utils.GetSafeString(args, 0).ToLower();
-			var type_of_code = Utils.GetSafeString(args, 1).ToLower();
-			SqlConnection conn = new SqlConnection(CSCS_SQL.ConnectionString);
+			if(args.Count == 0)
+			{
+                var result = CSCS_GUI.Adictionary.SY_DATABASESList.FirstOrDefault(p => p.SYCD_USERCODE.ToLower().TrimEnd() == CSCS_GUI.DefaultDB.ToLower().TrimEnd());
+				if(result != null)
+					return new Variable(result.SYCD_YEAR);
+            }
+            else if(args.Count == 1)
+			{
+                var result = CSCS_GUI.Adictionary.SY_DATABASESList.FirstOrDefault(p => p.SYCD_USERCODE.ToLower().TrimEnd() == Utils.GetSafeString(args, 0).ToLower());
+                if (result != null)
+                    return new Variable(result.SYCD_YEAR);
+            }
+			else if(args.Count == 2)
+			{
+				if(Utils.GetSafeString(args, 1).ToLower() == "dbase")
+				{
+                    var result = CSCS_GUI.Adictionary.SY_DATABASESList.FirstOrDefault(p => p.SYCD_DBASENAME.ToLower().TrimEnd() == Utils.GetSafeString(args, 0).ToLower());
+                    if (result != null)
+                        return new Variable(result.SYCD_YEAR);
+                }
+            }
 
-			conn.Open();
-
-			CSCS_GUI.Adictionary.SY_DATABASESList = AdictionaryLocal.CacheAdictionary.GetSY_DATABASES(conn);
-			var result = CSCS_GUI.Adictionary.SY_DATABASESList.FirstOrDefault(p => p.SYCD_COMPCODE.ToLower().TrimEnd() == comp_code.TrimEnd()).SYCD_YEAR;
-
-			conn.Close();
-			return new Variable(result); ;
+			return new Variable("");
 		}
 
 		
@@ -4142,11 +4154,11 @@ namespace WpfCSCS
 
 			var USERCODE = Utils.GetSafeString(args, 0).ToLower();
 			var offset = Utils.GetSafeInt(args, 1);
-			SqlConnection conn = new SqlConnection(CSCS_SQL.ConnectionString);
+			//SqlConnection conn = new SqlConnection(CSCS_SQL.ConnectionString);
 
-			conn.Open();
+			//conn.Open();
 
-			CSCS_GUI.Adictionary.SY_DATABASESList = AdictionaryLocal.CacheAdictionary.GetSY_DATABASES(conn);
+			//CSCS_GUI.Adictionary.SY_DATABASESList = AdictionaryLocal.CacheAdictionary.GetSY_DATABASES(conn);
 			var tmp = CSCS_GUI.Adictionary.SY_DATABASESList.FirstOrDefault(p => p.SYCD_USERCODE.ToLower().TrimEnd() == USERCODE.TrimEnd());
 			if (tmp != null)
 			{
@@ -4158,7 +4170,7 @@ namespace WpfCSCS
 					return new Variable(tmp2.SYCD_DBASENAME);
 			}
 
-			conn.Close();
+			//conn.Close();
 			return new Variable() ;
 		}
 
