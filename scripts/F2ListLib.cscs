@@ -24,8 +24,8 @@ function F2List_onDisplay(){
     //MessageBox(sifraFieldPointer);
     //MessageBox(&sifraFieldPointer);
     
-    searchSifra = &sifraFieldPointer;
-    searchNaziv = &NazivFieldPointer;
+    // searchSifra = &sifraFieldPointer;
+    // searchNaziv = &NazivFieldPointer;
     search();
 }
 
@@ -78,7 +78,7 @@ function selected(){
 
 function gbCancel@clicked()
 {
-    // searchSifra = "";
-    // searchNaziv = "";
+    searchSifra = "";
+    searchNaziv = "";
     SetWindowModalResult(false);
 }

@@ -2474,7 +2474,7 @@ d:\temp\aaa.txt, d:\temp\ggg.txt,
 
             var windowTitle = Utils.GetSafeString(args, 0);
             var columnHeadersVariableArray = Utils.GetSafeVariable(args, 1);
-            for(int i = 1; i < columnHeadersVariableArray.Tuple.Count; i++)
+            for(int i = 0; i < columnHeadersVariableArray.Tuple.Count; i++)
             {
                 columnHeaders.Add(columnHeadersVariableArray.Tuple[i].String);
             }
@@ -2543,6 +2543,15 @@ d:\temp\aaa.txt, d:\temp\ggg.txt,
 
                 if (!gridsTypes.ContainsKey(widgetName.ToLower()))
                     gridsTypes[widgetName.ToLower()] = new List<Variable.VarType>();
+
+                //first time
+                if ((dg.Columns.ElementAt(0) is DataGridTemplateColumn))
+                {
+                    if(widgetName.ToLower() == "dgf2list")
+                    {
+                        gridsHeaders[widgetName.ToLower()] = new List<string>();
+                    }
+                }
 
                 var dgColumns = dg.Columns;
                 for (int i = 0; i < dgColumns.Count; i++)

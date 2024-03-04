@@ -5,31 +5,54 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:wcl="clr-namespace:WpfControlsLibrary;assembly=WpfControlsLibrary"
         mc:Ignorable="d"
-        Title="Artikli"
-          WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
+        Title="Post Events test"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
         Height="407"
         Width="639">
     <Grid>
-        <wcl:ASDateEditer
-            ButtonWidth="19"
-            DisplaySize="8"
-            Name="de1"
-            Height="35" Width="100"
-            DataContext="dateVar" Margin="345,84,194,272"
-            />
-        <wcl:ASNumericBox
-            Height="50"
-            Width="100"
-            ButtonSize="30"
-            Margin="30,69,0,0"
-            VerticalAlignment="Top"
-            HorizontalAlignment="Left"/>
-        <wcl:ASEnterBox
-            Height="50"
-            Width="100"
-            ButtonSize="30"
-            Margin="190,74,0,0"
-            VerticalAlignment="Top"
-            HorizontalAlignment="Left"/>
+        <wcl:ASNumericBox Height="50"
+                          Width="100"
+                          ButtonSize="30"
+                          Margin="30,69,0,0"
+                          VerticalAlignment="Top"
+                          HorizontalAlignment="Left"
+                          Name="nb1"
+                          TabIndex="1" />
+        <wcl:ASEnterBox Height="50"
+                        Width="100"
+                        ButtonSize="30"
+                        Margin="160,69,0,0"
+                        VerticalAlignment="Top"
+                        HorizontalAlignment="Left"
+                        Name="eb1"
+                        TabIndex="2" />
+        <wcl:ASEnterBox Height="50"
+                        Width="100"
+                        ButtonSize="30"
+                        Margin="285,69,0,0"
+                        VerticalAlignment="Top"
+                        HorizontalAlignment="Left"
+                        x:Name="eb1_Copy"
+                        TabIndex="3" />
+        <wcl:ASDateEditer ButtonWidth="19"
+                          DisplaySize="8"
+                          Name="de1"
+                          Height="35"
+                          Width="100"
+                          VerticalAlignment="Top"
+                          HorizontalAlignment="Left"
+                          DataContext="dateVar"
+                          Margin="420,74,0,0"
+                          TabIndex="4">
+        </wcl:ASDateEditer>
+        <wcl:ASEnterBox Height="50"
+                        Width="100"
+                        ButtonSize="30"
+                        Margin="450,149,0,0"
+                        VerticalAlignment="Top"
+                        HorizontalAlignment="Left"
+                        x:Name="eb1_Copy1"
+                        TabIndex="5" />
     </Grid>
 </Window>

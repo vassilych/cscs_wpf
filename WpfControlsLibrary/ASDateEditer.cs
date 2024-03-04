@@ -82,6 +82,8 @@ namespace WpfControlsLibrary
             var button = this.Template.FindName("PART_Button", this) as Button;
             if (button != null)
             {
+                //button.SetValue(FocusManager.FocusedElementProperty, textBox as DatePickerTextBox);
+
                 button.Width = ButtonWidth;
                 button.Margin = new Thickness(-2, 0, -4, 0);
                 button.Padding = new Thickness(0);

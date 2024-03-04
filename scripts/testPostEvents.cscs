@@ -1,3 +1,14 @@
-MessageBox("asdasd");
-
 CreateWindow("../../scripts/testPostEvents.xaml");
+
+function de1@post(){
+    MessageBox("de1 POST");
+    // return false;
+}
+
+function nb1@post(){
+    MessageBox("nb1 POST");
+}
+
+function eb1@post(){
+    //MessageBox("eb1 POST");
+}

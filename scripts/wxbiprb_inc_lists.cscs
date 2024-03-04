@@ -196,15 +196,11 @@ function ceSkladiste@clicked()
     windowTitle = "F2 lista skladišta";
     headersArray = {"Skladište", "Naziv skladišta"};
     ShowF2List();
-    skladiste= &sifraFieldPointer;
-        if (sklad_str== "")
-        {
-            sklad_str = sklad_str+skladiste;
-        }
-        else
-        {
-            sklad_str = sklad_str+","+skladiste;
-        }
+    
+    if(&sifraFieldPointer != ""){
+        skladiste= &sifraFieldPointer;
+        sklad_str = (sklad_str== "") ? (sklad_str + skladiste) : (sklad_str + "," + skladiste);
+    }
     searchSifra = "";
     searchNaziv = "";
 }
@@ -222,8 +218,10 @@ function neArtikl@clicked()
     windowTitle = "F2 list ARTIKLI";
     headersArray = {"Šifra artikla", "Naziv Artikla", "težina", "jedinica mjere", "TIP"};
     ShowF2List();
-    artikl= &sifraFieldPointer;
-    ArtiklNaziv= &NazivFieldPointer;
+    if(&sifraFieldPointer != ""){
+        artikl= &sifraFieldPointer;
+        ArtiklNaziv= &NazivFieldPointer;
+    }
     searchSifra = "";
     searchNaziv = "";
 }
