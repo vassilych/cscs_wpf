@@ -148,7 +148,7 @@ function gbPripremi@clicked()
     else
     {
         GL_oznaka= "";
-    }  
+    } 
     setChartByMonth()
     setHorizontalBars();
     setWeekComparison();
@@ -758,5 +758,6 @@ function setWeekComparison(){
 }
 
 function deNadanxx@post(){
-    setWeekComparison();
+    //MessageBox("AAAA");
+    //setWeekComparison();
 }

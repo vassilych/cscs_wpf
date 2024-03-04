@@ -187,9 +187,9 @@
 function ceSkladiste@clicked()
 {
     F2ListQueryString = "SELECT [PKMK_SKL_CODE], [PKMK_SKL_NAZIV] FROM  " + trenutnaGodinaBaza + ".[dbo].[PKMKSKLA] where PKMK_SKL_NAZIV like '%{var2}%'";
-    //if(searchSklSifra != 0){
-    //    F2ListQueryString += " and PKMK_SKL_CODE = '{var1}'";
-    //}
+    if(searchSklSifra != 0){
+        F2ListQueryString += " and PKMK_SKL_CODE = '" + searchSklSifra + "'";
+    }
     F2ListQueryString += " ORDER BY pkmk_skl_code";
     sifraFieldPointer -> skladiste;
     NazivFieldPointer -> SkladisteNaziv; 
@@ -207,7 +207,72 @@ function ceSkladiste@clicked()
         }
     searchSifra = "";
     searchNaziv = "";
+
 }
+/*
+{
+    result = ModalWindow(strTrim(tpath()) +"F2ListSkladista.xaml");    
+}
+function F2ListSkladista_onDisplay(){
+    searchSklSifra = skladiste;
+    //searchSklNaziv = skladisteNaziv;
+    searchSkladiste();
+}
+
+function ebSearchSklSifra@TextChange()
+{
+    searchSkladiste();
+}
+
+function ebSearchSklNaziv@TextChange()
+{
+    if(searchSklNaziv.length > 2 || searchSklNaziv.length == 0){
+        searchSkladiste();
+    }
+}
+function searchSkladiste()
+{
+    cursor("wait");
+    queryString = "SELECT [PKMK_SKL_CODE], [PKMK_SKL_NAZIV] FROM  " + trenutnaGodinaBaza + ".[dbo].[PKMKSKLA] where PKMK_SKL_NAZIV like '%" + searchSklNaziv + "%'";
+    if(searchSklSifra != 0){
+        queryString += " and PKMK_SKL_CODE = '" + searchSklSifra + "'";
+    }
+    queryString += " ORDER BY pkmk_skl_code";
+    
+    NewBindSQL("dgSkl", queryString);
+    cursor("dflt");
+}
+
+function gbSklOk@clicked()
+{
+    selectedArray = GetSelectedGridRow("dgSkl");
+    if (Size(selectedArray) > 0)
+    {
+        //skladiste = selectedArray[0];
+        if (sklad_str== "")
+        {
+            sklad_str = sklad_str+selectedArray[0];
+        }
+        else
+        {
+            sklad_str = sklad_str+","+selectedArray[0];
+        }
+        //skladistenaziv = selectedArray[1];
+        searchSklSifra = 0;
+        searchSklNaziv = "";
+        SetWindowModalResult(true);
+    }
+}
+
+function gbSklVan@clicked()
+{
+    searchSklSifra = 0;
+    searchSklNaziv = "";
+    SetWindowModalResult(false);
+}
+*/
+    //F2ListQueryString = "SELECT ARTI_ARTIKL, ARTI_NAZIV, ARTI_TEZINA, ARTI_JED_MJERE, ARTI_TIP FROM " + trenutnaGodinaBaza + ".[dbo].[NKMKARTI] where ARTI_ARTIKL like '%{var1}%' and ARTI_NAZIV like '%{var2}%' ORDER BY arti_artikl";
+
 //==============================================
 
 // F2 ARTIKLI
@@ -231,19 +296,58 @@ function neArtikl@clicked()
 //==============================================================
 function cePartner@clicked()
 {
-    F2ListQueryString = "SELECT [NKSC_PARTCODE]  ,[NKSC_PARTNAME] FROM  " + trenutnaGodinaBaza + ".[dbo].[NKSCPART] where NKSC_PARTCODE like '%{var1}%' and NKSC_PARTNAME like '%{var2}%' ORDER BY nksc_partcode";
-    
-    sifraFieldPointer -> partner;
-    NazivFieldPointer -> PartnerNaziv;
-
-    windowTitle = "F2 lista Partnera";
-    headersArray = {"Šifra partnera", "Naziv partnera"};
-    ShowF2List();
-    partner= &sifraFieldPointer;
-    partnerNaziv= &NazivFieldPointer;
-    searchSifra = "";
-    searchNaziv = "";
+    result = ModalWindow(strTrim(tpath()) +"F2ListPartnera.xaml");
+    return;
 }
+
+function F2ListPartnera_onDisplay()
+{
+    //cursor("wait");
+    searchPartnerSifra = partner;
+    searchPartnerNaziv = partnerNaziv;
+    searchPartner();
+    //NewBindSQL("dgPart", "SELECT [NKSC_PARTCODE]  ,[NKSC_PARTNAME] FROM  " + trenutnaGodinaBaza + ".[dbo].[NKSCPART] where NKSC_PARTCODE like '%" + searchPartnerSifra + "%' and NKSC_PARTNAME like '%" + searchPartnerNaziv + "%' ORDER BY nksc_partcode");
+    //cursor("dflt");
+}
+
+function ebSearchPartnerSifra@TextChange()
+{
+    searchPartner();
+}
+
+function ebSearchPartnerNaziv@TextChange()
+{
+    if(searchPartnerNaziv.length > 2 || searchPartnerNaziv.length == 0){
+        searchPartner();
+    }
+}
+
+function searchPartner()
+{
+    cursor("wait");
+    NewBindSQL("dgPart", "SELECT [NKSC_PARTCODE]  ,[NKSC_PARTNAME] FROM  " + trenutnaGodinaBaza + ".[dbo].[NKSCPART] where NKSC_PARTCODE like '%" + searchPartnerSifra + "%' and NKSC_PARTNAME like '%" + searchPartnerNaziv + "%' ORDER BY nksc_partcode");
+    cursor("dflt");
+}
+function gbPartOk@clicked()
+{
+    selectedArray = GetSelectedGridRow("dgPart");
+    if (size(selectedArray) !== 0)
+    {
+        searchPartnerSifra = "";
+        searchPartnerNaziv = "";
+        partner = selectedArray[0];
+        partnerNaziv = selectedArray[1];
+        SetWindowModalResult(true);
+    }
+}
+
+function gbPartneriVan@clicked()
+{
+    searchPartnerSifra = "";
+    searchPartnerNaziv = "";
+    SetWindowModalResult(false);
+}
+
 //===================================================================
 function ceRegija@clicked()
 {

@@ -14,15 +14,18 @@ DEFINE windowTitle type a size 100;
 
 function ShowF2List(){
     ModalWindow(strTrim(tpath()) + "F2List.xaml");
+    sifraFieldPointer -> searchSifra;
+    NazivFieldPointer -> searchNaziv;
 }
 
 function F2List_onDisplay(){
     FormatF2ListDataGrid( windowTitle, headersArray);
 
-    MessageBox(sifraFieldPointer);
-    MessageBox(&sifraFieldPointer);
+    //MessageBox(sifraFieldPointer);
+    //MessageBox(&sifraFieldPointer);
     
     searchSifra = &sifraFieldPointer;
+    searchNaziv = &NazivFieldPointer;
     search();
 }
 
@@ -61,10 +64,14 @@ function selected(){
     selectedArray = GetSelectedGridRow("dgF2List");
     if (size(selectedArray) !== 0)
     {
-        searchSifra = "";
-        searchNaziv = "";
-        &sifraFieldPointer = selectedArray[0];
-        &nazivFieldPointer = selectedArray[1];
+        //searchSifra = "";
+        //searchNaziv = "";
+        //MessageBox(selectedArray[0]+ " "+selectedArray[1]);
+        //&sifraFieldPointer = selectedArray[0];
+        //&NazivFieldPointer = selectedArray[1];
+        searchSifra = selectedArray[0];
+        searchNaziv = selectedArray[1];
+        //MessageBox("aaaa: "+searchSifra+ " "+searchNaziv);
         SetWindowModalResult(true);
     }
 }
