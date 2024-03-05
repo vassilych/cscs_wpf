@@ -6870,11 +6870,11 @@ namespace WpfCSCS
 				m_name = Utils.GetToken(script, Constants.TOKEN_SEPARATION);
 			}
 			m_originalName = m_name;
-			m_pointerAssign = m_name.StartsWith("&");
+			m_pointerAssign = m_name.StartsWith(Constants.POINTER_REF);
 			var gui = CSCS_GUI.GetInstance(script);
 			if (m_pointerAssign)
 			{
-				m_name = m_name.Substring(1);
+				m_name = m_name.Substring(Constants.POINTER_REF.Length);
 			}
 
 			int argStart = m_name.IndexOf(Constants.START_ARRAY);
@@ -6887,9 +6887,15 @@ namespace WpfCSCS
 			{
 				return null;
 			}
-			script.InterpreterInstance.AddGlobalOrLocalVariable(m_name, new GetVarFunction(defVar));
 
-			if (argStart > 0)
+			var newValue = new GetVarFunction(defVar);
+            script.InterpreterInstance.AddGlobalOrLocalVariable(m_name, newValue);
+			if (!string.IsNullOrWhiteSpace(defVar.Pointer))
+			{
+                script.InterpreterInstance.AddGlobalOrLocalVariable(defVar.Pointer, newValue);
+            }
+
+            if (argStart > 0)
 			{
 				int argEnd = m_originalName.IndexOf(Constants.END_ARRAY, argStart + 1);
 				var index = m_originalName.Substring(argStart + 1, argEnd - argStart - 1);

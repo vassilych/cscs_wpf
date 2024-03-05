@@ -1,5 +1,5 @@
 
-MessageBox("asdasdas");
+//MessageBox("asdasdas");
 // b = 0;
 // MessageBox(b);
 // aPointer -> b // get address of variable b in Dictionary
@@ -14,6 +14,7 @@ DEFINE b type a size 10;
 DEFINE a type F; //pointer type
 a -> b; //points to b
 &a= 10; //b equals 10
-MessageBox(b);
+print("1. a="+a+", &a=" + &a + ", b="+b);
+MessageBox("1. a="+a+", &a=" + &a + ", b="+b);
 b= 20;
-MessageBox(&a);
+MessageBox("2. a="+a+", &a=" + &a + ", b="+b);
