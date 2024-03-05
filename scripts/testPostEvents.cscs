@@ -1,0 +1,3 @@
+MessageBox("asdasd");
+
+CreateWindow("../../scripts/testPostEvents.xaml");

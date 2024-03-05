@@ -1,0 +1,21 @@
+﻿<UserControl x:Class="WpfControlsLibrary.ASButton"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WpfControlsLibrary"
+             mc:Ignorable="d" Loaded="UserControl_Loaded"
+             >
+    <Button x:Name="ASButtonButton">
+        <StackPanel x:Name="ASButtonStackPanel" Orientation="Horizontal" 
+                    Width="Auto" Height="Auto">
+            
+            <Image x:Name="ASButtonImage1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+            <TextBlock x:Name="ASButtonTextBlock" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+            <Image x:Name="ASButtonImage2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            
+        </StackPanel>
+    </Button>
+</UserControl>

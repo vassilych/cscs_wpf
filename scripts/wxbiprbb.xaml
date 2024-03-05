@@ -9,7 +9,7 @@
         xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts"
         xmlns:SKCharts="clr-namespace:LiveChartsCore.SkiaSharpView.SKCharts;assembly=LiveChartsCore.SkiaSharpView"
         mc:Ignorable="d"
-        Title="NumericBox"
+        Title="Prodaja II"
         Height="700"
         Width="1000" WindowStartupLocation="CenterScreen">
     <Grid Margin="25,0,-5,-20">
@@ -21,21 +21,20 @@
             <RowDefinition Height="362"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
+        <Label Name="Top6Prodaja" VerticalAlignment="Top" HorizontalAlignment="Left" Width="195" Height="35" Margin="0,10,0,0" Content="Top 6 - Prodaja"
+       Grid.Row="0"
+       FontSize="16"
+       FontWeight="Bold"/>
         <lvc:PieChart LegendPosition="Bottom"
                       Name="PieChart1"
                       VerticalAlignment="Center"
                       HorizontalAlignment="Left"
                       Width="452"
                       Height="330" FontSize="10" HorizontalContentAlignment="Left"/>
-        <Label Name="PieChartLabel"
-               VerticalAlignment="Top"
-               HorizontalAlignment="Left"
-               Width="195"
-               Height="35"
-               Margin="32,10,0,0"
-               Content="Top 6 - prodaja"
-               FontSize="16"
-               FontWeight="Bold"/>
+        <Label Name="Top10Artikli" VerticalAlignment="Top" HorizontalAlignment="Left" Width="195" Height="35" Margin="0,10,0,0" Content="Top 10 - Artikli"
+       Grid.Row="1"
+       FontSize="16"
+       FontWeight="Bold"/>
 
         <DataGrid GridLinesVisibility="None"
                   HorizontalAlignment="Center"
@@ -131,6 +130,12 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
+        <Label Name="Top10Partner" VerticalAlignment="Top" HorizontalAlignment="Left" Width="196" Height="35" Margin="21,10,0,0" Content="Top 10 - Kupci"
+               Grid.Row="1"
+               Grid.Column="1"
+               FontSize="16"
+               FontWeight="Bold"/>
+
         <DataGrid GridLinesVisibility="None"
                   HorizontalAlignment="Left"
                   VerticalAlignment="Top"

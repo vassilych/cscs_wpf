@@ -1,0 +1,29 @@
+DEFINE dateVar type d size 8 init "01/01/34";
+
+CreateWindow("../../scripts/testNewDateEditerSize8.xaml");
+
+function testNewDateEditerSize8_onDisplay(){
+    
+    //dateVar = "01/01/01";
+    
+    //dateVar += "1y";
+    
+    //dateVar += 5;
+}
+
+function btn1@clicked(){
+    
+    //MessageBox("dateVar = " + dateVar);
+    
+    //dateVar += 1;
+    
+    //dateVar += 1;
+
+    //dateVar = "01/01/00";
+
+    MessageBox("datevar = " + dateVar);
+}
+
+function de1@textChange(){
+    //MessageBox("text change, dateVar = " + dateVar);
+}

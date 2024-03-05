@@ -1,0 +1,69 @@
+DEFINE dateTest type d size 10 init "12/12/2012";
+MessageBox(dateTest); // -> 12/12/2012
+dateTest += "1y";
+dateTest += 10;
+MessageBox(dateTest); // -> 22/12/2013
+dateTest = Now("dd/MM/yyyy");
+MessageBox(dateTest); // -> 14/02/2024
+dateTest += 1;
+MessageBox(dateTest); // -> 15/02/2024
+
+quit;
+
+DEFINE dateVar5 type d size 8 init "12/12/12";
+//dateVar5 = DateTime(); // -> Error: Couldn't parse [14/02/24 9:34:25] with format [dd/MM/yy]
+//dateVar5 += 5; //Error: Couldn't parse [17/12/2012] with format [dd/MM/yy]
+MessageBox(dateVar5); // -> 12/12/12
+//dateVar5 += "1y"; // 'Error: Couldn't parse [12/12/2013] with format [dd/MM/yy]
+MessageBox(dateVar5); // -> 12/12/12
+dateVar5 = "12/12/12";
+//dateVar5 += "1y"; // -> Error: Couldn't parse [12/12/2013] with format [dd/MM/yy]
+MessageBox(dateVar5); // -> 12/12/12
+
+
+DEFINE dateVar6 type d size 10 init "12/12/2012";
+//dateVar6 = DateTime(); // -> Error: Couldn't parse [14/02/24 9:38:05] with format [dd/MM/yyyy]
+dateVar6 += 5;
+MessageBox(dateVar6); // -> 17/12/2012
+dateVar6 += "1y";
+MessageBox(dateVar6); // -> 17/12/2013
+dateVar6 = "12/12/2012";
+dateVar6 += "1y";
+MessageBox(dateVar6); // -> 12/12/2013
+
+
+quit;
+
+// DEFINE var1, var2, var3 type a size 5;
+// var2 = "haha";
+// MessageBox("var1 = " + var1 + ", var2 = " + var2 + ", var3 = " + var3); // -> var1 = , var2 = haha, var3 = 
+
+
+MessageBox(Now()); // -> 08:16:18.314 <- trenutno vrijeme (string)
+MessageBox(Now("ddMMyyyy")); // -> 14022024 <- trenutni datum i/ili vrijeme u zadanom formatu (string)
+MessageBox(Now("dd.MM.yy")); // -> 14.02.24 <- trenutni datum i/ili vrijeme u zadanom formatu (string)
+MessageBox(Now("HH:mm:ss")); // -> 08:16:50 <- trenutni datum i/ili vrijeme u zadanom formatu (string)
+
+MessageBox(DateTime()); // -> 14/02/24 8:20:49 <- trenutni datum i vrijeme (DateTime objekt)
+MessageBox(DateTime("1994/12/31 05:05:05")); // -> 31/12/94 5:05:05 <- zadani datum i vrijeme (DateTime objekt)
+
+
+//------ DTOSQL ---------------
+
+DEFINE dateVar1 type d size 10 init "13/02/2024";
+dateVar1 = CTOD("13/02/2025");
+MessageBox(DTOSQL(dateVar1));
+
+DEFINE dateVar2 type d size 8 init "13/02/24";
+MessageBox(DTOSQL(dateVar2));
+
+//------ DTOS ---------------
+
+DEFINE dateVar3 type d size 8 init "13/02/24";
+MessageBox(DTOS(dateVar3));
+
+//------ DTOS ---------------
+
+DEFINE dateVar4 type d size 8 init "13/02/24";
+MessageBox(DTOC(dateVar4, 10));
+

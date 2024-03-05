@@ -1,0 +1,21 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:wcl="clr-namespace:WpfControlsLibrary;assembly=WpfControlsLibrary"
+        xmlns:local="clr-namespace:WpfCSCS"
+        mc:Ignorable="d"
+        Title="Window1"
+        Height="350"
+        Width="500">
+    <Grid>
+        <wcl:ASButton Height="150"
+                      Width="350"
+                      Text="button Text"
+                      FontSize="25"
+                      Image="C:\Users\User\Desktop\1.jpg" 
+                      ImagePosition="Left"
+                      ImageSize="60"
+                      ImageMargin="10"/>
+    </Grid>
+</Window>

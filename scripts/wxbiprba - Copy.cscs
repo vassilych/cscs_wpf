@@ -1,7 +1,7 @@
 ﻿        //MessageBox("AAAA");
 
 
-    CreateWindow(strTrim(tpath()) +"wsbiprba.xaml");
+    CreateWindow(strTrim(tpath()) +"wxbiprba.xaml");
     define mjesec_h type a size 2;
 
     define do_mjesecatype l;
@@ -29,7 +29,7 @@
     //Import("C:\wpfcscs\Modules\CSCS.Math\bin\Debug\CSCS.Math");
 
 
-function wsbiprba_onDisplay()
+function wxbiprba_onDisplay()
     {
     //  MessageBox("Tu sam on start xaml");
      /*

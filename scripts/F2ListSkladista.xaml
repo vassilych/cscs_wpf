@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         xmlns:local="clr-namespace:LST_SKL"
         Title="Skladišta/Trgovine"
+        WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
         Height="407"
         Width="639">
     <Window.Resources />
@@ -124,30 +125,15 @@
                          Height="32"
                          Width="152"
                          Margin="142,326,0,0" /> -->
-        <Button HorizontalAlignment="Left"
+        <Button Content="Izlaz" HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Height="32"
                 Margin="513,327,0,0"
                 FontFamily="Arial"
+                FontSize="15"
                 Width="87"
                 Visibility="Visible"
                 Name="gbSklVan">
-            <Grid Width="64">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <Image Source="Images\check.png"
-                       Stretch="UniformToFill"
-                       Margin="5"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Center" />
-                <TextBlock
-                           FontSize="13"
-                           Foreground="Black"
-                           Text="Odustani"
-                           HorizontalAlignment="Left" Width="54" Margin="5,0,0,0" Grid.ColumnSpan="2" />
-            </Grid>
         </Button>
         <Button HorizontalAlignment="Left"
                 VerticalAlignment="Top"
@@ -166,7 +152,7 @@
                            HorizontalAlignment="Center" />
             </Grid>
         </Button>
-        <wcl:ASEnterBox HorizontalAlignment="Left"
+        <wcl:ASNumericBox HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         FontWeight="Bold"
                         ButtonSize="0"
@@ -194,31 +180,25 @@
                         FontFamily="Arial"
                         FontSize="15"
                         TabIndex="1" />
+        <!-- <wcl:ASButton HorizontalAlignment="Left"
+                      VerticalAlignment="Top"
+                      Height="32"
+                      Margin="401,327,0,0"
+                      FontFamily="Arial"
+                      Width="87"
+                      Text="Prihvati"
+                      Name="gbSklOk"
+                      /> -->
         <Button HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Height="32"
                 Margin="401,327,0,0"
                 FontFamily="Arial"
+                FontSize="15"
                 Width="87"
                 Visibility="Visible"
-                Name="gbSklOk">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <Image Source="Images\check.png"
-                       Stretch="UniformToFill"
-                       Margin="5"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Center" />
-                <TextBlock Grid.Column="1"
-                           FontSize="13"
-                           Foreground="Black"
-                           VerticalAlignment="Center"
-                           Text="Prihvati"
-                           HorizontalAlignment="Center" />
-            </Grid>
+                Name="gbSklOk"
+                Content="Prihvati">
         </Button>
     </Grid>
 </Window>

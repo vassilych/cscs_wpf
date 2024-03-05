@@ -1,5 +1,8 @@
-function wsbiprba_onStart()
-    {
+function wxbiprba_onStart()
+{
+        cursor("wait");
+        setChartByDaysOfMonth();
+
     Chart("ChartPoMjesecima", "init");
     Chart("ChartPoMjesecima", "seriesType", "Lineseries");
     //Chart("ChartPoMjesecima", "title", "Naslov grafa", 20);
@@ -40,7 +43,8 @@ function wsbiprba_onStart()
 	DEFINE cntr3,cntr2 type i;
     cntr3= 0;
 	DisplayArraySetup("dgRacuniMjesec", counterFld: cntr3, activeElements: Size(sqlResult) - 1, maxElements: 10);
-    }
+    cursor("dflt");
+}
 
 function buty@clicked()
 {
@@ -188,6 +192,22 @@ function setChartByDaysOfMonth()
         {
              sql_str = " SELECT [wk_day] as dan2, SalesDay=ISNULL(SUM(e.nkpr_ln_tezinan), 0) ";
         }
+        elif ( mx3_dn == true )
+        {
+             sql_str = " SELECT [wk_day] as dan2, SalesDay=ISNULL(SUM(e.nkpr_ln_metx3), 0) ";
+        }
+        elif ( mx2_dn == true )
+        {
+             sql_str = " SELECT [wk_day] as dan2, SalesDay=ISNULL(SUM(e.nkpr_ln_metx2), 0) ";
+        }
+        elif ( met_dn == true )
+        {
+             sql_str = " SELECT [wk_day] as dan2, SalesDay=ISNULL(SUM(e.nkpr_ln_met), 0) ";
+        }
+        elif ( kom_dn == true )
+        {
+             sql_str = " SELECT [wk_day] as dan2, SalesDay=ISNULL(SUM(e.nkpr_ln_kom), 0) ";
+        }
         else
         {
              sql_str = "SELECT [wk_day] as dan2 , SalesDay = ISNULL(SUM(CASE WHEN c.nkpr_gl_dviza = 'D' THEN c.nkpr_gl_tecaj * e.nkpr_ln_pext ELSE e.nkpr_ln_pext END) , 0)";
@@ -209,6 +229,8 @@ function setChartByDaysOfMonth()
         {
              sql_str = sql_str + " AND [wk_Month] = '" + mjesec_h + "' AND wk_Year = '" + ovagod_h + "'";
         }
+        filterPart();
+        /*
         if ( partner != "" )
         {
              sql_str = sql_str + " AND c.nkpr_gl_cuscod = '" + partner + "'";
@@ -230,6 +252,7 @@ function setChartByDaysOfMonth()
         {
              sql_str = sql_str + " AND e.nkpr_ln_loc = " + skladiste;
         }
+        */
         sql_str = sql_str + " GROUP BY Wk_day";
         sql_str = sql_str + " ORDER BY [Wk_day]";
         try
@@ -270,7 +293,23 @@ function setChartByMonth()
             }
             elif ( tezina_dn == true )
             {
-                sql_str = sql_str + "SELECT [wk_YYYYMM] as yyyymm , Sales = cast(ISNULL(SUM(d.nkpr_ln_tezinan) , 0)as decimal (10)) + cast(ISNULL(SUM(e.nkpr_ln_tezinan) , 0) as decimal (10))";
+                sql_str = sql_str + "SELECT [wk_YYYYMM] as yyyymm , Sales = cast(ISNULL(SUM(d.nkpr_ln_tezinan) , 0) as decimal (10)) + cast(ISNULL(SUM(e.nkpr_ln_tezinan) , 0) as decimal (10))";
+            }
+            elif ( mx3_dn == true )
+            {
+                sql_str = sql_str + "SELECT [wk_YYYYMM] as yyyymm , Sales = cast(ISNULL(SUM(d.nkpr_ln_metx3) , 0) as decimal (10)) + cast(ISNULL(SUM(e.nkpr_ln_metx3) , 0) as decimal (10))";
+            }
+            elif ( mx2_dn_dn == true )
+            {
+                sql_str = sql_str + "SELECT [wk_YYYYMM] as yyyymm , Sales = cast(ISNULL(SUM(d.nkpr_ln_metx2) , 0) as decimal (10)) + cast(ISNULL(SUM(e.nkpr_ln_metx2) , 0) as decimal (10))";
+            }
+            elif ( met_dn == true )
+            {
+                sql_str = sql_str + "SELECT [wk_YYYYMM] as yyyymm , Sales = cast(ISNULL(SUM(d.nkpr_ln_met) , 0) as decimal (10)) + cast(ISNULL(SUM(e.nkpr_ln_met) , 0) as decimal (10))";
+            }
+            elif ( kom_dn_dn == true )
+            {
+                sql_str = sql_str + "SELECT [wk_YYYYMM] as yyyymm , Sales = cast(ISNULL(SUM(CASE WHEN d.nkpr_ln_jmj='KOM' THEN d.nkpr_ln_pqty ELSE d.nkpr_ln_kom END) as decimal (10)) + cast(ISNULL(SUM(CASE WHEN e.nkpr_ln_jmj='KOM' THEN e.nkpr_ln_pqty ELSE e.nkpr_ln_kom END) , 0) as decimal (10))";
             }
             else
             {
@@ -381,7 +420,7 @@ function setChartByMonth()
         sql_str = sql_str + " ORDER BY wk_yyyymm;";
         try
         {
-             //SaveFile(sql_str);
+           //  SaveFile(sql_str);
              queryResult = sqlquery(SQL_str);
         }
         catch(exc)

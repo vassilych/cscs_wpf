@@ -6,7 +6,7 @@
         xmlns:wcl="clr-namespace:WpfControlsLibrary;assembly=WpfControlsLibrary"
         mc:Ignorable="d"
         xmlns:local="clr-namespace:LST_SKL"
-        Title="Partneri"
+        Title="Klase"
           WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
         Height="407"
         Width="639">
@@ -32,7 +32,7 @@
                   Margin="0,0,0,0"
                   IsReadOnly="true"
                   Foreground="Black"
-                  Name="dgPart"
+                  Name="dgKlasa"
                   HorizontalScrollBarVisibility="Auto"
                   VerticalScrollBarVisibility="Auto"
                   Background="White"
@@ -50,81 +50,20 @@
                                         Width="36">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox Tag="NKSC_PARTCODE" />
+                            <TextBox Tag="MKGR_GRUPA" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Naziv partnera"
+                <DataGridTemplateColumn Header="Naziv klase"
                                         Width="209">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox Tag="NKSC_PARTNAME" />
+                            <TextBox Tag="MKGR_REZERVA" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <!-- <DataGridTemplateColumn Header="Tip"
-                                        Width="30">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <wcl:ASGridCell FieldName="PKMK_SKL_TIP"
-                                            Editor="edDefault"
-                                            EditLength="0"
-                                            HorizontalContentAlignment="Left" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Br.računa"
-                                        Width="74">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <wcl:ASGridCell FieldName="PKMK_SKL_REZ5"
-                                            Editor="edDefault"
-                                            EditLength="0"
-                                            HorizontalContentAlignment="Right" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Adresa skladišta/trgovine"
-                                        Width="250">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <wcl:ASGridCell FieldName="PKMK_SKL_ADRESA"
-                                            Editor="edDefault"
-                                            EditLength="0"
-                                            HorizontalContentAlignment="Left" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Naziv mjesta"
-                                        Width="150">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <wcl:ASGridCell FieldName="PKMK_SKL_MJESTO"
-                                            Editor="edDefault"
-                                            EditLength="0"
-                                            HorizontalContentAlignment="Left" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Pošt. Broj"
-                                        Width="70">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <wcl:ASGridCell FieldName="PKMK_SKL_POSTBR"
-                                            Editor="edDefault"
-                                            EditLength="0"
-                                            HorizontalContentAlignment="Left" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn> -->
             </DataGrid.Columns>
         </DataGrid>
-        <!-- <wcl:ASNavigator Name="NavigatorSkl"
-                         HorizontalAlignment="Left"
-                         VerticalAlignment="Top"
-                         Height="32"
-                         Width="152"
-                         Margin="142,326,0,0" /> -->
         <Button Content="Izlaz" HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Height="32"
@@ -133,7 +72,7 @@
                 FontSize="15"
                 Width="87"
                 Visibility="Visible"
-                Name="gbPartneriVan">
+                Name="gbKlasaVan">
         </Button>
         <Button HorizontalAlignment="Left"
                 VerticalAlignment="Top"
@@ -152,21 +91,6 @@
                            HorizontalAlignment="Center" />
             </Grid>
         </Button>
-        <!-- <wcl:ASNumericBox HorizontalAlignment="Left"
-                          VerticalAlignment="Top"
-                          FontWeight="Bold"
-                          ButtonSize="0"
-                          Dec="0"
-                          Height="21"
-                          Width="86"
-                          Margin="4,336,0,0"
-                          Name="neSearchSkl"
-                          Thousands="True"
-                          Background="White"
-                          Foreground="Black"
-                          FontFamily="Arial"
-                          FontSize="15"
-                          TabIndex="1" /> -->
         <wcl:ASEnterBox HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         FontWeight="Bold"
@@ -174,8 +98,8 @@
                         Height="21"
                         Width="86"
                         Margin="4,336,0,0"
-                        Name="ebSearchPartnerSifra"
-                        FieldName="searchPartnerSifra"
+                        Name="ebSearchKlasaSifra"
+                        FieldName="searchKlasaSifra"
                         Background="White"
                         Foreground="Black"
                         FontFamily="Arial"
@@ -188,8 +112,8 @@
                         Height="21"
                         Width="150"
                         Margin="95,336,0,0"
-                        Name="ebSearchPartnerNaziv"
-                        FieldName="searchPartnerNaziv"
+                        Name="ebSearchKlasaNaziv"
+                        FieldName="searchKlasaNaziv"
                         Background="White"
                         Foreground="Black"
                         FontFamily="Arial"
@@ -203,7 +127,7 @@
                 FontSize="15"
                 Width="87"
                 Visibility="Visible"
-                Name="gbPartOk">
+                Name="gbKlasaOk">
         </Button>
     </Grid>
 </Window>

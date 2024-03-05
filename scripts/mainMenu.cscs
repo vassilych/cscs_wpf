@@ -41,7 +41,7 @@ AddMenuItem("mainMenuDC", "ScriptsDC", "Scripts");
 AddMenuItem("ScriptsDC", "defaultWindow.cscs", "Default window", "runScript"); // COMPILE ERROR
 AddMenuItem("ScriptsDC", "start.cscs", "Sample", "runScript"); // COMPILE ERROR
 AddMenuItem("ScriptsDC", "testTabWin.cscs", "testTabWin", "runScript");
-AddMenuItem("ScriptsDC", "wsbiprb.cscs", "wsbiprb", "runScript");
+AddMenuItem("ScriptsDC", "wxbiprb.cscs", "wxbiprb", "runScript");
 AddMenuItem("ScriptsDC", "DashSLA.cscs", "DashSLA", "runScript"); // ?
 AddMenuItem("ScriptsDC", "windowtest.cscs", "windowtest", "runScript"); // ?
 
@@ -391,6 +391,42 @@ AddMenuItem("OtherDC", "Chain1.cscs", "Chain1", "runScript");
 AddMenuSeparator("OtherDC");
 
 AddMenuItem("OtherDC", "Chain2.cscs", "Chain2", "runScript");
+
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "testASButton.cscs", "testASButton", "runScript");
+
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "testAsync.cscs", "testAsync", "runScript");
+
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "testDateAndTime.cscs", "testDateAndTime", "runScript");
+
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "testConvertDates.cscs", "testConvertDates", "runScript");
+
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "testDateBug.cscs", "testDateBug", "runScript");
+
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "testPostEvents.cscs", "testPostEvents", "runScript");
+
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "testNewDateEditerSize10.cscs", "testNewDateEditerSize10", "runScript");
+
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "testNewDateEditerSize8.cscs", "testNewDateEditerSize8", "runScript");
+
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "testDefineDate.cscs", "testDefineDate", "runScript");
 
 
 //----- IVAN -------------------------------

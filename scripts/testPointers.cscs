@@ -18,3 +18,4 @@ print("1. a="+a+", &a=" + &a + ", b="+b);
 MessageBox("1. a="+a+", &a=" + &a + ", b="+b);
 b= 20;
 MessageBox("2. a="+a+", &a=" + &a + ", b="+b);
+quit;

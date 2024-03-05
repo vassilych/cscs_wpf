@@ -49,9 +49,14 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="asdasdasdasd.xaml.cs">
-      <DependentUpon>asdasdasdasd.xaml</DependentUpon>
+    <Compile Include="ASButton.xaml.cs">
+      <DependentUpon>ASButton.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ASDateEditer2.xaml.cs">
+      <DependentUpon>ASDateEditer2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ASDateEditerConverter3.cs" />
+    <Compile Include="ASDateEditerConverter2.cs" />
     <Compile Include="ASDualListDialog.xaml.cs">
       <DependentUpon>ASDualListDialog.xaml</DependentUpon>
     </Compile>
@@ -102,7 +107,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="asdasdasdasd.xaml">
+    <Page Include="ASButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ASDateEditer2.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
