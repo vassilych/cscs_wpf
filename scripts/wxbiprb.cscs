@@ -354,7 +354,8 @@ function setCustomerAndInvoiceCounts()
                  }
             }
         }
-        bojeArray = {250, 100, 250};
+        // bojeArray = {250, 100, 250};
+        bojeArray = {196, 224, 138};
         Format("br_kupaca_og", "nofd", recv: "br_kupaca_og_string");
         HorizontalBar("HorizontalBarBrKupacaOG", "Text", br_kupaca_og_string);
         HorizontalBar("HorizontalBarBrKupacaOG", "Color", bojeArray);
@@ -404,7 +405,8 @@ function setCustomerAndInvoiceCounts()
                 }
             }
         }
-        bojeArray = {220, 150, 250};
+        // bojeArray = {220, 150, 250};
+        bojeArray = {196, 224, 138};
         Format("broj_rac_og", "nofd", recv: "broj_rac_og_string");
         HorizontalBar("HorizontalBarBrRacunaOG", "Text", broj_rac_og_string);
         HorizontalBar("HorizontalBarBrRacunaOG", "Color", bojeArray);
@@ -480,7 +482,8 @@ function setCustomerAndInvoiceCounts()
                 }
             }
         }
-        bojeArray = {150, 190, 250};
+        // bojeArray = {150, 190, 250};
+        bojeArray = {196, 224, 138};
         Format("prodaja_kup_og", "nofd", recv: "prodaja_kup_og_string");
         HorizontalBar("HorizontalBarProdajaKupOG", "Text", prodaja_kup_og_string);
         HorizontalBar("HorizontalBarProdajaKupOG", "Color", bojeArray);
@@ -506,8 +509,10 @@ function refresh()
 
 function setHorizontalBars()
     {
+        //  bojeArray = {196, 224, 138};
+        //  bojeArray2 = {200, 170, 80};
          bojeArray = {196, 224, 138};
-         bojeArray2 = {200, 170, 80};
+         bojeArray2 = {196, 224, 138};
          if (tot_ovagod>tot_lani)
          {
               if(tot_lani != 0)
@@ -557,8 +562,10 @@ function setHorizontalBars()
          Format("tot_lani", "nofd", recv: "tot_lani_string");
          HorizontalBar("HorizontalBarLG", "Text", tot_lani_string);
          HorizontalBar("HorizontalBarLG", "Color", bojeArray);
-         bojeArrayMJ = {76, 168, 168};
-         bojeArrayMJ2 = {230, 60, 80};
+        //  bojeArrayMJ = {76, 168, 168};
+        //  bojeArrayMJ2 = {230, 60, 80};
+         bojeArrayMJ = {196, 224, 138};
+         bojeArrayMJ2 = {196, 224, 138};
          if (tot_ovajmj > tot_proslimj)
          {
              if(tot_proslimj != 0)
@@ -734,8 +741,10 @@ function setWeekComparison(){
 		week_p= sqlResult[2][0];
 		postotakTj= Math.Round(((tot_ovajTj-tot_prosliTj)/tot_prosliTj)*100, 2);
 	}
-	bojeArrayTJ = {252, 192, 131};
-	bojeArrayTJ2 = {55, 153, 176};
+	// bojeArrayTJ = {252, 192, 131};
+	// bojeArrayTJ2 = {55, 153, 176};
+	bojeArrayTJ = {196, 224, 138};
+	bojeArrayTJ2 = {196, 224, 138};
 	if (tot_ovajTj>tot_ProsliTj)
 	{
 		HorizontalBar("HorizontalBarOT", "BarWidth", 90);
@@ -757,7 +766,10 @@ function setWeekComparison(){
 	return;
 }
 
-function deNadanxx@post(){
+function deNadan@post(){
+    
+    setWeekComparison();
+
     //MessageBox("AAAA");
     //setWeekComparison();
 }
