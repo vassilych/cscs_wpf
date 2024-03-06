@@ -1,15 +1,15 @@
-    args = CommandLineArgs(); 
-    if(Size(args) > 2){
-        companyCode = args[2];
-    }else{
-        companyCode = Substring(CoGet(), 1, 2);
-    }
+args = CommandLineArgs(); 
+if(Size(args) > 2){
+    companyCode = args[2];
+}else{
+    companyCode = Substring(CoGet(), 1, 2);
+}
 
-    CreateWindow(strTrim(tpath()) +"wxbiprb.xaml");
-    Import(strTrim(mpath()) + "CSCS.Math.dll");
-    include(strTrim(tpath()) +"wxbiprb_inc_lists.cscs"); //look-up lists
-    include(strTrim(tpath()) +"wxbiprb_inc_a.cscs"); //look-up lists
-    include(strTrim(tpath()) +"wxbiprb_inc_b.cscs"); //look-up lists
+CreateWindow(strTrim(tpath()) +"wxbiprb.xaml");
+Import(strTrim(mpath()) + "CSCS.Math.dll");
+include(strTrim(tpath()) +"wxbiprb_inc_lists.cscs"); //look-up lists
+include(strTrim(tpath()) +"wxbiprb_inc_a.cscs"); //look-up lists
+include(strTrim(tpath()) +"wxbiprb_inc_b.cscs"); //look-up lists
 
 function Wxbiprb_onDisplay()
     {
@@ -106,7 +106,6 @@ function Wxbiprb_onDisplay()
     comboItems = {"SVI TIPOVI","STANDARDNI", "PREDUJAM", "VL.POTROŠNJA", "REKLAMIRANI", "ODOBRENJE", "TEREĆENJE", "NEZARAČUNANI OBR.", "STORNO"};
     AddWidgetData(cbTipRacuna, comboItems);
     pripremljeno = false;
-
     }
 
 function gbPripremi@clicked()
@@ -643,6 +642,7 @@ function setWeekComparison(){
 	
 	//danas = "20" + substring(danas_h, 6, 2) + "-" + substring(danas_h, 3,2) + "-" + substring(danas_h, 0, 2);//("yyyy-MM-dd");
 	danas = substring(danas_h, 6, 4) + "-" + substring(danas_h, 3,2) + "-" + substring(danas_h, 0, 2);//("yyyy-MM-dd");
+    //MessageBox(danas_h);
 //MessageBox("aaaa: "+danas+"  "+danas_h);    
 	sql_str = "SELECT TOP 2 CONVERT(char(10), wk_firstofWeek,103) as prviutjednu,";
 	if ( bezPdvaField == true )
@@ -718,9 +718,14 @@ function setWeekComparison(){
 	}
 	sql_str = sql_str + " GROUP BY [wk_FirstOfWeek]";
 	sql_str = sql_str + " ORDER BY [wk_FirstOfWeek] DESC";
-	//SaveFile(sql_str);
-	try	{
+	
+    
+    //SaveFile(sql_str);
+	
+
+    try	{
 		sqlResult = sqlQuery(sql_str);
+        //MessageBox(sqlResult);
 	}catch(exc){
 		MessageBox(exc);
 	}
@@ -766,10 +771,10 @@ function setWeekComparison(){
 	return;
 }
 
-function deNadan@post(){
-    
+function deNadan@LostFocus(){
     setWeekComparison();
 
+    
     //MessageBox("AAAA");
     //setWeekComparison();
 }

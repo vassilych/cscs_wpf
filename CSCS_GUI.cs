@@ -1097,6 +1097,8 @@ namespace WpfCSCS
 					return false;
 				}
 
+				return false;
+
 				m_textChangedHandlers[name] = action;
 				// x2
 				dateEditer.SelectedDateChanged -= new EventHandler<SelectionChangedEventArgs>(Widget_DateChanged);
@@ -1149,8 +1151,18 @@ namespace WpfCSCS
 		
 		public bool AddLostFocusHandler(string name, string action, FrameworkElement widget)
 		{
-			var textable = widget as TextBoxBase;
-			if (textable == null)
+			if(widget is ASDateEditer asde)
+			{
+                m_lostFocusHandlers[name] = action;
+
+                asde.LostFocus -= widget_LostFocus;
+                asde.LostFocus += widget_LostFocus;
+
+                return true;
+            }
+
+            var textable = widget as TextBoxBase;
+            if (textable == null)
 			{
 				return false;
 			}
@@ -1168,10 +1180,26 @@ namespace WpfCSCS
                 }
 			}
 
+
+
 			return false;
 		}
 
-        private void dateEditer2_LostFocus(object sender, RoutedEventArgs e)
+        private void widget_LostFocus(object sender, RoutedEventArgs e)
+        {
+            FrameworkElement widget = sender as FrameworkElement;
+            
+            string funcName;
+            if (m_lostFocusHandlers.TryGetValue(widget.Name, out funcName))
+            {
+                Control2Window.TryGetValue(widget, out Window win);
+                Interpreter.Run(funcName, new Variable(""), new Variable(""),
+                    Variable.EmptyInstance, GetScript(win));
+            }
+            
+        }
+		
+		private void dateEditer2_LostFocus(object sender, RoutedEventArgs e)
         {
             TextBoxBase widget = sender as TextBoxBase;
             var widgetName = GetWidgetName(widget);
@@ -1321,7 +1349,12 @@ namespace WpfCSCS
 			}
 
 			if (widget is ASDateEditer)
-				return false;
+			{
+                m_dateSelectedHandlers[name] = action;
+                datePicker.SelectedDateChanged -= new EventHandler<SelectionChangedEventArgs>(Widget_DateChanged);
+                datePicker.SelectedDateChanged += new EventHandler<SelectionChangedEventArgs>(Widget_DateChanged);
+                return true;
+			}
 
 			m_dateSelectedHandlers[name] = action;
 			datePicker.SelectedDateChanged += DatePicker_SelectedDateChanged;
@@ -2016,18 +2049,19 @@ namespace WpfCSCS
 				}
 			}
 
-			m_updatingWidget.Remove(widgetName);
+            
 
-			//var widget = sender as Selector;
-			//var widgetName = GetWidgetBindingName(widget);
-			//if (m_selChangedHandlers.TryGetValue(widgetName, out string funcName))
-			//{
-			//    var item = e.AddedItems.Count > 0 ? e.AddedItems[0].ToString() : e.RemovedItems.Count > 0 ? e.RemovedItems[0].ToString() : "";
-			//    Control2Window.TryGetValue(widget, out Window win);
-			//    Interpreter.Run(funcName, new Variable(widgetName), new Variable(item),
-			//        Variable.EmptyInstance, GetScript(win));
-			//}
-		}
+            string funcName;
+            if (m_dateSelectedHandlers.TryGetValue(widget.Name, out funcName))
+            {
+                var item = e.AddedItems.Count > 0 ? e.AddedItems[0].ToString() : e.RemovedItems.Count > 0 ? e.RemovedItems[0].ToString() : "";
+                Control2Window.TryGetValue(widget, out Window win);
+                Interpreter.Run(funcName, new Variable(widgetName), new Variable(item),
+                    Variable.EmptyInstance, GetScript(win));
+            }
+
+            m_updatingWidget.Remove(widgetName);
+        }
 
 		public Dictionary<string, List<object>> gridsSelectedRow = new Dictionary<string, List<object>>();
 
@@ -3367,6 +3401,8 @@ namespace WpfCSCS
 						string mouseHoverAction = widgetName + "@MouseHover";
 						string selectionChangedAction = widgetName + "@SelectionChanged";
 						string dateChangedAction = widgetName + "@DateChanged";
+						
+						string lostFocusAction = widgetName + "@LostFocus";
 
 						//textBox
 						string widgetPreAction = widgetName + "@Pre";
@@ -3380,10 +3416,6 @@ namespace WpfCSCS
 						string widgetMoveAction = widgetName + "@Move";
 						string widgetSelectAction = widgetName + "@Select";
 
-						RadioButton asd = new RadioButton();
-						//asd.Checked
-						//asd.Unchecked
-
 						AddActionHandler(widgetName, clickAction, widget);
 						AddPreActionHandler(widgetName, preClickAction, widget);
 						AddPostActionHandler(widgetName, postClickAction, widget);
@@ -3396,6 +3428,8 @@ namespace WpfCSCS
 						AddSelectionChangedHandler(widgetName, selectionChangedAction, widget);
 						AddMouseHoverHandler(widgetName, mouseHoverAction, widget);
 						AddDateChangedHandler(widgetName, dateChangedAction, widget);
+						
+						AddLostFocusHandler(widgetName, lostFocusAction, widget);
 
 						//Pre, Post
 						AddWidgetPreHandler(widgetName, widgetPreAction, widget);
