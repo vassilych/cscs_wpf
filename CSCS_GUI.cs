@@ -2411,6 +2411,42 @@ namespace WpfCSCS
 					}
 				}
 			}
+			
+			if ((Control)sender is DatePicker)
+			{
+				var asdeDatePicker = sender as DatePicker;
+
+				if ((Control)e.NewFocus is System.Windows.Controls.Calendar)
+				{
+					var parent1 = ((Control)e.NewFocus)?.Parent;
+					if (parent1 != null)
+					{
+						if (parent1 is Popup popup)
+						{
+							if(popup.Name.Replace("_Popup", "") == asdeDatePicker.Name)
+							{
+								return;
+							}
+						}
+
+					}
+				}
+				else if ((Control)e.NewFocus is CalendarDayButton)
+				{
+					return;
+				}
+				else if ((Control)e.NewFocus is DatePickerTextBox)
+				{
+					if (((Control)e.NewFocus).Name.Replace("_TextBox", "") == asdeDatePicker.Name)
+					{
+						return;
+					}
+                }
+				else if((Control)e.NewFocus is CalendarButton)
+				{
+					return;
+				}
+			}
 
 
 			string funcName;

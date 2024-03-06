@@ -1,3 +1,6 @@
+DEFINE dateVar type d size 8; //init "12/12/12";
+DEFINE dateVar2 type d size 8; //init "12/12/12";
+
 CreateWindow("../../scripts/testPostEvents.xaml");
 
 function de1@post(){
@@ -11,4 +14,8 @@ function nb1@post(){
 
 function eb1@post(){
     //MessageBox("eb1 POST");
+}
+
+function btn1@clicked(){
+    MessageBox(dateVar);
 }

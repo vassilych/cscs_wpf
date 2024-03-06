@@ -33,7 +33,7 @@
                         Margin="285,69,0,0"
                         VerticalAlignment="Top"
                         HorizontalAlignment="Left"
-                        x:Name="eb1_Copy"
+                        x:Name="eb2"
                         TabIndex="3" />
         <wcl:ASDateEditer ButtonWidth="19"
                           DisplaySize="8"
@@ -52,7 +52,18 @@
                         Margin="450,149,0,0"
                         VerticalAlignment="Top"
                         HorizontalAlignment="Left"
-                        x:Name="eb1_Copy1"
+                        x:Name="eb3"
                         TabIndex="5" />
+        <wcl:ASDateEditer ButtonWidth="19"
+            DisplaySize="8"
+            x:Name="de2"
+            Height="35"
+            Width="100"
+            VerticalAlignment="Top"
+            HorizontalAlignment="Left"
+            DataContext="dateVar2"
+            Margin="210,219,0,0"
+            TabIndex="6"/>
+        <Button Content="Button" Name="btn1" HorizontalAlignment="Left" Margin="130,294,0,0" VerticalAlignment="Top"/>
     </Grid>
 </Window>
