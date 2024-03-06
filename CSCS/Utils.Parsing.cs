@@ -1349,6 +1349,11 @@ namespace SplitAndMerge
                     {
                         token += script.CurrentAndForward();
                     }
+                    else if (string.IsNullOrWhiteSpace(token) && script.Current == Constants.POINTER_REF[0])
+                    {
+                        token += script.CurrentAndForward();
+                        token += GetNextToken(script).ToLower();
+                    }
                     else
                     {
                         script.Forward();
