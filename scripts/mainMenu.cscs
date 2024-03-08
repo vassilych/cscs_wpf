@@ -167,6 +167,10 @@ AddMenuSeparator("ChartsDC");
 
 AddMenuItem("ChartsDC", "testPieChart.cscs", "testPieChart", "runScript");
 
+AddMenuSeparator("ChartsDC");
+
+AddMenuItem("ChartsDC", "testGaugeChart.cscs", "testGaugeChart", "runScript");
+
 //------- OTHER -----------------------------
 
 AddMenuItem("OtherDC", "editDatabases.cscs", "editDatabases - using FillOutGrid", "runScript"); // ?

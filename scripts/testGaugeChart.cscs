@@ -1,0 +1,4 @@
+CreateWindow("../../scripts/testGaugeChart.xaml");
+
+GaugeChart("GaugeChart1", "value", 30);
+GaugeChart("GaugeChart1", "color", "green");

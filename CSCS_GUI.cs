@@ -315,6 +315,7 @@ namespace SplitAndMerge
 
 	public const string CHART = "Chart";
 	public const string PIE_CHART = "PieChart";
+	public const string GAUGE_CHART = "GaugeChart";
 
 	public const string DEFINE = "DEFINE";
 	public const string DISPLAY_ARRAY = "DISPLAYARR";
