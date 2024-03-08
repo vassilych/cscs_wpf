@@ -1,21 +1,19 @@
 function wxbiprbb_onDisplay()
-    {
-    cursor("wait");
-    setRegionPieChart();
-    //
-	PieChart("PieChart1", "init");
-    PieChart("PieChart1", "seriesType", "pie");
-    PieChart("PieChart1", "title", "Pie Chart Title", 20);    
-	for(i = 1; i < queryResult.length; i++)
-	{
-		PieChart("PieChart1", "values", int(queryResult[i][1]) , string(queryResult[i][0].trim()), 50);
-	}
-	//PieChart("PieChart1", "Margins", {0,0,0,0});
-    setCustomerDataGrid();
-    setTop10Products();
-    cursor("dflt");
-    }
-	
+{
+	cursor("wait");
+	AsyncCall("setRegionPieChart", "regionPieChartDone");
+}
+function regionPieChartDone(s, l){
+	AsyncCall("setTop10Products", "top10ProductsDone");
+}
+function top10ProductsDone(s, l){
+	AsyncCall("setCustomerDataGrid", "customerDataGridDone");
+}
+function customerDataGridDone(s, l){
+	cursor("dflt");
+}
+
+
 function setRegionPieChart()
 {
 	if (gradoviRB == true)
@@ -56,16 +54,21 @@ function setRegionPieChart()
 	}catch(exc){
 		MessageBox(exc);
 	}
-    //
+    
+	RunOnMain("setPieChart");
+}
+
+function setPieChart(){
 	PieChart("PieChart1", "init");
     PieChart("PieChart1", "seriesType", "pie");
     PieChart("PieChart1", "title", "Pie Chart Title", 20);    
 	for(i = 1; i < queryResult.length; i++)
 	{
-		PieChart("PieChart1", "values", int(queryResult[i][1]) , string(queryResult[i][0].trim()));
+		PieChart("PieChart1", "values", int(queryResult[i][1]) , string(queryResult[i][0].trim()), 50);
 	}
-	//PieChart("PieChart1", "Margins", {0,0,0,0});
 }
+
+//-------------------------------------------------------
 
 function setTop10Products()
 {
@@ -155,34 +158,11 @@ function setTop10Products()
 		MessageBox(exc);
 	}
 
-	//File(sql_str);Save
-	if(Size(sqlResult) > 1)
-	{
-		for ( i = 1; i < Size(sqlResult); i++ )
-		{        
-			nameart_ar[i - 1] =  sqlResult[i][1]; //namepart;
-			codeart_ar[i - 1] =  sqlResult[i][0]; //codepart;
-			salesart1_ar[i - 1] =  sqlResult[i][2]; //sales1;
-			salesart2_ar[i - 1] =  0; //sqlResult[i][2]; sales2;
-			top10art_ar[i - 1] =  i;
-		} 
-	}
-    in_string= "";
-	for (cntr = 0; cntr < Size(codeart_ar); cntr++ )
-	{
-        in_string= in_string+"'"+codeart_ar[cntr];
-		if(cntr==Size(codeart_ar)-1)
-		{
-			in_string= in_string+"'";
-		}
-		else
-		{
-			in_string= in_string+"',";
-		}
-    }
+	RunOnMain("fillProductsArrays");
+
     if (proslaGodinaBaza != "")
 	{
-    cntr2= 0;
+    // cntr2= 0;
     //sql_str= "";
     sql_str= " SELECT arti_artikl,";
     if (neto_dn== true)
@@ -248,6 +228,42 @@ function setTop10Products()
 	}catch(exc){
 		MessageBox(exc);
 	}
+	
+	RunOnMain("fillProductsArrays2");
+
+	RunOnMain("top10Products");
+}
+
+function fillProductsArrays(){
+	if(Size(sqlResult) > 1)
+	{
+		for ( i = 1; i < Size(sqlResult); i++ )
+		{        
+			nameart_ar[i - 1] =  sqlResult[i][1]; //namepart;
+			codeart_ar[i - 1] =  sqlResult[i][0]; //codepart;
+			salesart1_ar[i - 1] =  sqlResult[i][2]; //sales1;
+			salesart2_ar[i - 1] =  0; //sqlResult[i][2]; sales2;
+			top10art_ar[i - 1] =  i;
+		} 
+	}
+
+
+	in_string= "";
+	for (cntr = 0; cntr < Size(codeart_ar); cntr++ )
+	{
+        in_string= in_string+"'"+codeart_ar[cntr];
+		if(cntr==Size(codeart_ar)-1)
+		{
+			in_string= in_string+"'";
+		}
+		else
+		{
+			in_string= in_string+"',";
+		}
+    }
+}
+
+function fillProductsArrays2(){
 	if(Size(sqlResult) > 1)
 	{
 
@@ -268,13 +284,17 @@ function setTop10Products()
 			} 
 		}
 	}
-	DisplayArray("dgArtikli", "close");
-		Format("SALESART2_AR", "nofd");
-		Format("SALESART1_AR", "nofd");
-		
-		DisplayArraySetup("dgArtikli", counterFld: "cntr4", activeElements: Size(codeart_ar), maxElements: 10);
 }
-return;
+
+function top10Products(){
+	DisplayArray("dgArtikli", "close");
+	Format("SALESART2_AR", "nofd");
+	Format("SALESART1_AR", "nofd");
+	
+	DisplayArraySetup("dgArtikli", counterFld: "cntr4", activeElements: Size(codeart_ar), maxElements: 10);
+}
+
+//---------------------------------------------------------------------------
 
 function setCustomerDataGrid()
 {
@@ -365,35 +385,17 @@ function setCustomerDataGrid()
 	}
 
 	//File(sql_str);Save
-	if(Size(sqlResult) > 1)
-	{
-		for ( i = 1; i < Size(sqlResult); i++ )
-		{        
-			namePart_ar[i - 1] =  sqlResult[i][1]; //namepart;
-			codePart_ar[i - 1] =  sqlResult[i][0]; //codepart;
-			salesPart1_ar[i - 1] =  sqlResult[i][2]; //sales1;
-			salesPart2_ar[i - 1] =  0; //sqlResult[i][2]; sales2;
-			top10Part_ar[i - 1] =  i;
-		} 
-	}
-    in_string= "";
-	for (cntr = 0; cntr < Size(codePart_ar); cntr++ )
-	{
-        in_string= in_string+"'"+codePart_ar[cntr];
-		if(cntr==Size(codePart_ar)-1)
-		{
-			in_string= in_string+"'";
-		}
-		else
-		{
-			in_string= in_string+"',";
-		}
-    }
+	RunOnMain("fillCustomerArrays");
+
     if (proslaGodinaBaza != "")
 	{
-    cntr2= 0;
+
+    RunOnMain("setCntr2");
+
     //sql_str= "";
+	
     sql_str= " SELECT nkpr_gl_cuscod,";
+	
     if (neto_dn== true)
 	{
 		sql_str= sql_str+ " ISNULL(ROUND(SUM(CASE WHEN nkpr_gl_dviza= 'D' THEN nkpr_gl_tecaj*nkpr_ln_amt ELSE nkpr_ln_amt END),0), 0) as sales2";
@@ -449,6 +451,7 @@ function setCustomerDataGrid()
             sql_str= sql_str+ " AND YEAR(nkpr_gl_datem)= "+lani_h;
         }
     }
+
     filterPart();
     sql_str= sql_str+ " GROUP BY NKPR_GL_CUSCOD";
     sql_str= sql_str+ " ORDER BY NKPR_GL_CUSCOD";
@@ -457,9 +460,50 @@ function setCustomerDataGrid()
 	}catch(exc){
 		MessageBox(exc);
 	}
+	
+	RunOnMain("fillCustomerArrays2");
+
+	RunOnMain("customerDataGrid");
+}
+
+function fillCustomerArrays(){
 	if(Size(sqlResult) > 1)
 	{
+		for ( i = 1; i < Size(sqlResult); i++ )
+		{        
+			namePart_ar[i - 1] =  sqlResult[i][1]; //namepart;
+			codePart_ar[i - 1] =  sqlResult[i][0]; //codepart;
+			salesPart1_ar[i - 1] =  sqlResult[i][2]; //sales1;
+			salesPart2_ar[i - 1] =  0; //sqlResult[i][2]; sales2;
+			top10Part_ar[i - 1] =  i;
+		} 
+	}
 
+
+
+
+	in_string= "";
+	for (cntr = 0; cntr < Size(codePart_ar); cntr++ )
+	{
+        in_string= in_string+"'"+codePart_ar[cntr];
+		if(cntr==Size(codePart_ar)-1)
+		{
+			in_string= in_string+"'";
+		}
+		else
+		{
+			in_string= in_string+"',";
+		}
+    }
+}
+
+function setCntr2(){
+	cntr2= 0;
+}
+
+function fillCustomerArrays2(){
+	if(Size(sqlResult) > 1)
+	{
 		for ( i = 1; i < Size(sqlResult); i++ )
 		{    
 			cntr2= find_index(codepart_ar,sqlResult[i][0]);    
@@ -477,12 +521,16 @@ function setCustomerDataGrid()
 			} 
 		}
 	}
-	DisplayArray("dgStavke", "close");
-		Format("SALESPART2_AR", "nofd");
-		Format("SALESPART1_AR", "nofd");
-		DisplayArraySetup("dgStavke", counterFld: "cntr1", activeElements: Size(codePart_ar), maxElements: 10);
-
 }
+
+function customerDataGrid(){
+	DisplayArray("dgStavke", "close");
+	Format("SALESPART2_AR", "nofd");
+	Format("SALESPART1_AR", "nofd");
+	DisplayArraySetup("dgStavke", counterFld: "cntr1", activeElements: Size(codePart_ar), maxElements: 10);
+}
+
+//-----------------------------------------------------------
 
 function filterPart()
 {
@@ -573,4 +621,3 @@ function filterPart()
 	}
 
 }
-    return;
