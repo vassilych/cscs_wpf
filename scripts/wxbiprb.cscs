@@ -173,7 +173,12 @@ function gbProdaja2@clicked()
     {
         if (pripremljeno == true)
         {
-            result = modalWindow(strTrim(tpath()) +"wxbiprbb.xaml");
+       //     thread
+       //     (
+       //         lock{
+                result = modalWindow(strTrim(tpath()) +"wxbiprbb.xaml");
+        //        }
+        //    )
         }
         else
         {
@@ -750,16 +755,41 @@ function setWeekComparison(){
 	// bojeArrayTJ2 = {55, 153, 176};
 	bojeArrayTJ = {196, 224, 138};
 	bojeArrayTJ2 = {196, 224, 138};
+    define a type n size 14 dec 2;
 	if (tot_ovajTj>tot_ProsliTj)
 	{
-		HorizontalBar("HorizontalBarOT", "BarWidth", 90);
-		HorizontalBar("HorizontalBarLT", "BarWidth", 90/A);
+        if (tot_prosliTj== 0){
+    		HorizontalBar("HorizontalBarOT", "BarWidth", 100);
+	    	HorizontalBar("HorizontalBarLT", "BarWidth", 0);
+        }
+        else{
+            A = tot_ovajTj/tot_ProsliTj;
+	    	HorizontalBar("HorizontalBarOT", "BarWidth", 90);
+    		HorizontalBar("HorizontalBarLT", "BarWidth", 90/A);
+        }
 	}
+    elif (tot_prosliTj== tot_ovajTj)
+    {
+        if (tot_prosliTj== 0){
+    		HorizontalBar("HorizontalBarOT", "BarWidth", 0);
+	    	HorizontalBar("HorizontalBarLT", "BarWidth", 0);
+        }
+        else{
+	    	HorizontalBar("HorizontalBarOT", "BarWidth", 100);
+    		HorizontalBar("HorizontalBarLT", "BarWidth", 100);
+        }
+    }
 	else
 	{
-		INT A = tot_ProsliTj/tot_ovajTj;
-		HorizontalBar("HorizontalBarLT", "BarWidth", 90);
-		HorizontalBar("HorizontalBarOT", "BarWidth", 90/A);
+        if (tot_ovajTj== 0){
+    		HorizontalBar("HorizontalBarOT", "BarWidth", 0);
+	    	HorizontalBar("HorizontalBarLT", "BarWidth", 100);
+        }
+        else{
+            A = tot_ProsliTj/tot_ovajTj;
+	    	HorizontalBar("HorizontalBarLT", "BarWidth", 90);
+		    HorizontalBar("HorizontalBarOT", "BarWidth", 90/A);
+        }
 	}
 	Format("tot_ovajTj", "nofd", recv: "tot_ovajTj_string");
 	HorizontalBar("HorizontalBarOT", "Text", tot_ovajTj_string);
