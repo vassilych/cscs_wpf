@@ -2864,6 +2864,10 @@ namespace WpfCSCS
 				}
 				else
 				{
+					if(child is DataGrid dg)
+					{
+						gridsSelectedRow.Remove(dg.Name.ToLower());
+                    }
 					CacheControl(child as FrameworkElement, win, controls);
 					if (child is ItemsControl)
 					{
@@ -3085,7 +3089,8 @@ namespace WpfCSCS
 				}
 
 				Control2Window.TryGetValue(toRunWidget, out Window win);
-				RunScript(toRunFuncName, win, new Variable(toRunWidgetName), new Variable(toRunWidgetName));
+                ActiveWindow = win;
+                RunScript(toRunFuncName, win, new Variable(toRunWidgetName), new Variable(toRunWidgetName));
 			}
 			else if (sender is ASEnterTextBox)
 			{
@@ -3101,6 +3106,7 @@ namespace WpfCSCS
 				var toRunWidgetName = (string)parameters[2];
 
 				Control2Window.TryGetValue(toRunWidget, out Window win);
+				ActiveWindow = win;
 				RunScript(toRunFuncName, win, new Variable(toRunWidgetName), new Variable(toRunWidgetName));
 			}
 
