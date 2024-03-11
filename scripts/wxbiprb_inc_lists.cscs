@@ -115,7 +115,7 @@
     define mjesec_h type a size 2 ;
 
     define partner type a size 10 ;
-    define partnerNaziv type a size 30 ;
+    define partnerNaziv type a size 50 ;
 
     define regija type a size 6 ;
     define regijaNaziv type a size 30 ;
@@ -218,9 +218,15 @@ function neArtikl@clicked()
     windowTitle = "F2 list ARTIKLI";
     headersArray = {"Šifra artikla", "Naziv Artikla", "težina", "jedinica mjere", "TIP"};
     ShowF2List();
+    
     if(&sifraFieldPointer != ""){
         artikl= &sifraFieldPointer;
         ArtiklNaziv= &NazivFieldPointer;
+    }
+    else
+    {
+        artikl= "";
+        artiklNaziv= "";
     }
     searchSifra = "";
     searchNaziv = "";
@@ -237,9 +243,15 @@ function cePartner@clicked()
     windowTitle = "F2 lista Partnera";
     headersArray = {"Šifra partnera", "Naziv partnera"};
     ShowF2List();
+    
     if(&sifraFieldPointer != ""){
-        partner= &sifraFieldPointer;
-        partnerNaziv= &NazivFieldPointer;
+        partner= (&sifraFieldPointer);
+        partnerNaziv= (&NazivFieldPointer);
+    }
+    else
+    {
+        partner= "";
+        partnerNaziv= "";
     }
     searchSifra = "";
     searchNaziv = "";
@@ -259,8 +271,14 @@ function ceRegija@clicked()
         regija= &sifraFieldPointer;
         regijaNaziv= &NazivFieldPointer;
     }
+    /*
+    else{
+        regija= "";
+        regijaNaziv= "";
+    }
     searchSifra = "";
     searchNaziv = "";
+    */
 }
 
 //===================================================================

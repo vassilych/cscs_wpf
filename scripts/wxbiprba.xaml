@@ -213,6 +213,6 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <TextBox HorizontalAlignment="Left" TextWrapping="Wrap" Text="Prodaja po mjesecima" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="23,10,0,0" BorderBrush="{x:Null}"/>
+        <TextBox HorizontalAlignment="Left" TextWrapping="Wrap" Text="Prodaja po mjesecima (x 1.000)" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="23,10,0,0" BorderBrush="{x:Null}"/>
     </Grid>
 </Window>

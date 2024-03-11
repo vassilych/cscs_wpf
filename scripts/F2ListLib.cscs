@@ -10,22 +10,34 @@ DEFINE sifraFieldPointer type f;
 DEFINE nazivFieldPointer type f;
 
 DEFINE windowTitle type a size 100;
+define f2_result type l;
 //DEFINE headersArray type a size 50 array 10; // max 10 kolona u datagridu
 
 function ShowF2List(){
+    //f2_Result = ModalWindow(strTrim(tpath()) + "F2List.xaml");
+     //MessageBox("1111: "+searchSifra+" 2222: "+ (&sifraFieldPointer));  
     ModalWindow(strTrim(tpath()) + "F2List.xaml");
-    sifraFieldPointer -> searchSifra;
-    NazivFieldPointer -> searchNaziv;
+//MessageBox("0000: "+f2_result);    
+ //MessageBox("AAA1111: "+searchSifra+" 2222: "+ (&sifraFieldPointer));       
+//    if (f2_result == true)
+//    {
+//    sifraFieldPointer -> searchSifra;
+//    NazivFieldPointer -> searchNaziv;
+
+//    }
+//    else{
+//    &sifraFieldPointer = "";
+//    &NazivFieldPointer = "";
+//    }
 }
 
 function F2List_onDisplay(){
     FormatF2ListDataGrid( windowTitle, headersArray);
 
-    //MessageBox(sifraFieldPointer);
+    MessageBox("aaaa");
     //MessageBox(&sifraFieldPointer);
-    
-    // searchSifra = &sifraFieldPointer;
-    // searchNaziv = &NazivFieldPointer;
+    searchSifra = &sifraFieldPointer;
+    //searchNaziv = &NazivFieldPointer;
     search();
 }
 
@@ -61,19 +73,34 @@ function gbOk@clicked()
 }
 
 function selected(){
+    define searchSifra2 type asize 50;
+    define searchNaziv2 type asize 50;
+    
     selectedArray = GetSelectedGridRow("dgF2List");
+// MessageBox("tttt: "+ (selectedArray));   
     if (size(selectedArray) !== 0)
     {
+  //      MessageBox("iiii");
         //searchSifra = "";
         //searchNaziv = "";
-        //MessageBox(selectedArray[0]+ " "+selectedArray[1]);
-        //&sifraFieldPointer = selectedArray[0];
-        //&NazivFieldPointer = selectedArray[1];
-        searchSifra = selectedArray[0];
-        searchNaziv = selectedArray[1];
-        //MessageBox("aaaa: "+searchSifra+ " "+searchNaziv);
+    //    &sifraFieldPointer = selectedArray[0][0];
+    //    &NazivFieldPointer = selectedArray[0][1];
+        searchSifra2 = selectedArray[0];
+        searchNaziv2 = selectedArray[1];
+    MessageBox("hhhh: "+ searchSifra2+" gghh: "+ searchNaziv2);    
+        sifraFieldPointer -> searchSifra2;
+        NazivFieldPointer -> searchNaziv2;
+    MessageBox("GGGGG: "+ &sifraFieldPointer+" gghh: "+ &NazivFieldPointer);    
         SetWindowModalResult(true);
     }
+    
+    else
+    {
+        searchSifra = "";
+        searchNaziv = "";
+        SetWindowModalResult(false);
+    }
+    
 }
 
 function gbCancel@clicked()

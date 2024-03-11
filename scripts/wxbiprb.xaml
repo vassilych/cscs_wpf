@@ -24,7 +24,7 @@
             </Setter>
         </Style>
     </Window.Resources>
-    <Grid Margin="0,0,0,-6">
+    <Grid Margin="0,0,0,0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="160"/>
             <ColumnDefinition Width="*"/>
@@ -36,9 +36,9 @@
         </Grid.RowDefinitions>
         <Grid Margin="156,5,4,9" Grid.Row="1" Grid.ColumnSpan="2">
             <Grid.RowDefinitions>
-                <RowDefinition Height="177"/>
-                <RowDefinition Height="177"/>
-                <RowDefinition Height="177"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -110,7 +110,7 @@
                        VerticalAlignment="Top"
                        Height="14"
                        Width="44"
-                       Margin="124,138,0,0"
+                       Margin="124,135,0,0"
                        FontFamily="lato"
                        x:Name="Label20_Copy"
                        FontSize="11"
@@ -123,7 +123,7 @@
                               Dec="2"
                               Height="26"
                               Width="126"
-                              Margin="192,126,0,0"
+                              Margin="192,123,0,0"
                               x:Name="TASNumEnter7_Copy"
                               Thousands="True"
                               Foreground="Black"
@@ -188,7 +188,7 @@
                               HorizontalContentAlignment="Right"
                               IsReadOnly="True"
                               TabIndex="7" Grid.Column="0" Grid.Row="0" Height="26" VerticalAlignment="Top" />
-            <Label x:Name="label" Content="Prodaja u godini" Margin="35,15,99,120" FontFamily="Lato" FontSize="22" FontWeight="Bold"/>
+            <Label x:Name="label" Content="Prodaja u godini" Margin="35,10,0,0" FontFamily="Lato" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left" Width="213" Height="36" VerticalAlignment="Top"/>
             <wcl:ASHorizontalBar x:Name="HorizontalBarOG"
                                  Margin="131,50,0,0"
                                  FontSize="24" Grid.Column="0" Grid.Row="0" FontFamily="lato" FontWeight="Bold" Background="#FFB9B6B6" BarColor="#FFC4E08A" Height="32" VerticalAlignment="Top" HorizontalAlignment="Left" Width="180" />
@@ -228,10 +228,10 @@
             IsReadOnly="True"
             FontSize="17"
             TabIndex="9" /> -->
-            <Label x:Name="labelmjesec" Content="Prodaja u mjesecu" Grid.Column="1"  Grid.Row="0"  Margin="35,15,99,120" FontFamily="Lato" FontSize="22" FontWeight="Bold"/>
+            <Label x:Name="labelmjesec" Content="Prodaja u mjesecu" Grid.Column="1"  Grid.Row="0"  Margin="35,10,0,0" FontFamily="Lato" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left" Width="212" Height="36" VerticalAlignment="Top"/>
             <wcl:ASHorizontalBar x:Name="HorizontalBarOM"
                                  VerticalAlignment="Top"
-                                 Margin="131,50,0,0"
+                                 Margin="130,50,0,0"
                                  FontSize="24" Height="32" Grid.Column="1" FontFamily="Lato" FontWeight="Bold" BarColor="#FFC4E08A" Background="#FFB9B6B6" HorizontalAlignment="Left" Width="180" />
             <wcl:ASHorizontalBar x:Name="HorizontalBarLM"
                                  Margin="130,87,0,0"
@@ -282,21 +282,21 @@
                        FontSize="11"
                        Foreground="Black"
                        Text="Prošli mjesec:" Grid.Column="1" />
-            <Label x:Name="labeltjedan" Content="Prodaja u tjednu" Grid.Column="2"  Grid.Row="0"  Margin="35,15,99,120" FontFamily="Lato" FontSize="22" FontWeight="Bold"/>
+            <Label x:Name="labeltjedan" Content="Prodaja u tjednu" Grid.Column="2"  Grid.Row="0"  Margin="35,10,0,0" FontFamily="Lato" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left" Width="213" Height="36" VerticalAlignment="Top"/>
             <wcl:ASDateEditer Grid.Column="2" HorizontalAlignment="Left"
-                          VerticalAlignment="Top"
-                          Height="22"
-                          ButtonWidth="19"
-                          FontSize="14"
-                          DisplaySize="8"
-                          Background="White"
-                          Foreground="black"
-                          Width="101"
-                          Margin="215,23,0,0"
-                          FontWeight="Bold"
-                          DisplayDate="01/01/23"    
-                          x:Name="deNaDan"
-                          DataContext="danas_h" />
+                              VerticalAlignment="Top"
+                              Height="22"
+                              ButtonWidth="19"
+                              FontSize="14"
+                              DisplaySize="8"
+                              Background="White"
+                              Foreground="black"
+                              Width="101"
+                              Margin="215,20,0,0"
+                              FontWeight="Bold"
+                              DisplayDate="01/01/23"
+                              x:Name="deNaDan"
+                              DataContext="danas_h" />
             <wcl:ASHorizontalBar x:Name="HorizontalBarOT"
                                  HorizontalAlignment="Left"
                                  VerticalAlignment="Top"
@@ -336,11 +336,11 @@
                             FieldName="week_c"
                             x:Name="TASENTER3"
                             FontSize="11"
-                            Foreground="#FF934900"
+                            Foreground="Black"
                             Background="White"
                             Height="18"
                             Width="72"
-                            TabIndex="16" Grid.Column="2" Grid.Row="0" />
+                            TabIndex="16" Grid.Column="2" Grid.Row="0" IsReadOnly="True" />
             <wcl:ASEnterBox HorizontalAlignment="Left"
                             FontWeight="Bold"
                             VerticalAlignment="Top"
@@ -348,11 +348,11 @@
                             FieldName="week_p"
                             x:Name="TASENTER4"
                             FontSize="11"
-                            Foreground="#FF934900"
-                            Background="#FFEFDDDD"
+                            Foreground="Black"
+                            Background="White"
                             Height="18"
                             Width="72"
-                            TabIndex="17" Grid.Column="2" Grid.Row="0" />
+                            TabIndex="17" Grid.Column="2" Grid.Row="0" IsReadOnly="True" />
             <TextBlock HorizontalAlignment="Left"
                        Width="44"
                        FontFamily="lato"
@@ -369,7 +369,7 @@
                        FontFamily="lato"
                        x:Name="Label18"
                        FontSize="11"
-                       Foreground="#FF934900"
+                       Foreground="Black"
                        Text="Ovaj tjedan:" Grid.Column="2" Grid.Row="0" />
             <TextBlock HorizontalAlignment="Left"
                        VerticalAlignment="Top"
@@ -379,7 +379,7 @@
                        FontFamily="lato"
                        x:Name="Label19"
                        FontSize="11"
-                       Foreground="#FF934900"
+                       Foreground="Black"
                        Text="Prošli tjedan:" Grid.Column="2" Grid.Row="0" />
             <TextBlock HorizontalAlignment="Left"
                        VerticalAlignment="Top"
@@ -472,7 +472,7 @@
         <Button x:Name="gbProdaja1" Content="Sales I" Style="{StaticResource FlatButtonStyle}" Grid.Row="1" Margin="0,15,0,0"  HorizontalAlignment="Center" VerticalAlignment="Top" Width="140" Height="63" Background="Red" FontFamily="Lato" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}"/>
         <Button x:Name="gbProdaja2" Content="Sales II" Style="{StaticResource FlatButtonStyle}" Margin="0,89,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Width="140" Height="63" Background="#FF2F62E0" FontFamily="Lato" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}" Grid.Row="1"/>
         <Button x:Name="gbExit" Content="Exit" Style="{StaticResource FlatButtonStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Width="140" Height="62" Background="#FFE0582F" FontFamily="Lato" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}" Grid.Row="1"/>
-        <Rectangle Grid.Row="0" Fill="#FFE6E6E6" Grid.Column="1" Margin="6,-2,-6,2" />
+        <Rectangle Fill="#FFE6E6E6" Grid.Column="1" Height="221" VerticalAlignment="Top" HorizontalAlignment="Center" Width="1040" />
         <TextBlock Grid.Column="1" HorizontalAlignment="Left"
                    VerticalAlignment="Top"
 
@@ -595,7 +595,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Background="White"
-                        TabIndex="0" />
+                        TabIndex="19" />
 
         <GroupBox Grid.Column="1" Padding="0"
                   HorizontalAlignment="Left"
@@ -607,6 +607,7 @@
                   BorderBrush="Black"
                   Header="Koje podatke?"
                   Foreground="Black"
+                  TabIndex="18"
                   x:Name="gb1">
             <Grid>
                 <RadioButton HorizontalAlignment="Left"
@@ -693,6 +694,7 @@
                   BorderBrush="Black"
                   Header="Domaća/strana prodaja?"
                   Foreground="Black"
+                  TabIndex="22"
                   x:Name="gb2">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -747,6 +749,7 @@
                   BorderBrush="Black"
                   Header="Prodaja roba ili usluga?"
                   Foreground="Black"
+                  TabIndex="23"
                   x:Name="gb3">
             <Grid>
                 <Grid.RowDefinitions>
@@ -823,7 +826,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Background="White"
-                        TabIndex="3"
+                        TabIndex="4"
                         ButtonBackground="Aqua"/>
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="21"
                         FontWeight="Bold"
@@ -841,7 +844,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Background="White"
-                        TabIndex="4"
+                        TabIndex="6"
                         ButtonBackground="Red"/>
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="21"
                         FontWeight="Bold"
@@ -859,7 +862,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Background="White"
-                        TabIndex="4"
+                        TabIndex="8"
                         ButtonBackground="Orange"/>
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="21"
                         FontWeight="Bold"
@@ -877,7 +880,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Background="White"
-                        TabIndex="4"
+                        TabIndex="10"
                         ButtonBackground="Green"/>
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="21"
                         FontWeight="Bold"
@@ -895,7 +898,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Background="White"
-                        TabIndex="4"
+                        TabIndex="12"
                         ButtonBackground="CadetBlue"/>
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="21"
                         FontWeight="Bold"
@@ -913,24 +916,24 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Background="White"
-                        TabIndex="4"
+                        TabIndex="14"
                         ButtonBackground="IndianRed"/>
         <wcl:ASNumericBox Grid.Column="1" ButtonSize="21"
-                        FontWeight="Bold"
-                        FieldName="Rnalog"
-                        Foreground="black"
-                        x:Name="neRnalog"
-                        FontSize="14"
-                        KeyTraps="F2|neRnalog@clicked"
-                        Height="22"
-                        Width="76"
-                        Margin="107,192,0,0"
-                        FontFamily="lato"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        Background="White"
-                        TabIndex="4"
-                        ButtonBackground="GreenYellow"/>
+                          FontWeight="Bold"
+                          FieldName="Rnalog"
+                          Foreground="black"
+                          x:Name="neRnalog"
+                          FontSize="14"
+                          KeyTraps="F2|neRnalog@clicked"
+                          Height="22"
+                          Width="76"
+                          Margin="107,192,0,0"
+                          FontFamily="lato"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Top"
+                          Background="White"
+                          TabIndex="16"
+                          ButtonBackground="GreenYellow"/>
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
                         FontWeight="Bold"
                         FieldName="regijaNaziv"
@@ -945,7 +948,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Background="White"
-                        TabIndex="5" />
+                        TabIndex="7" />
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
                         FontWeight="Bold"
                         FieldName="isporukaNaziv"
@@ -960,7 +963,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Background="White"
-                        TabIndex="5" />
+                        TabIndex="9" />
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
                         FontWeight="Bold"
                         FieldName="kategNaziv"
@@ -975,7 +978,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Background="White"
-                        TabIndex="5" />
+                        TabIndex="11" />
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
                         FontWeight="Bold"
                         FieldName="klasaNaziv"
@@ -990,7 +993,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Background="White"
-                        TabIndex="5" />
+                        TabIndex="13" />
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
                         FontWeight="Bold"
                         FieldName="komercNaziv"
@@ -1005,7 +1008,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Background="White"
-                        TabIndex="5" />
+                        TabIndex="15" />
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
                         FontWeight="Bold"
                         FieldName="rnalogNaziv"
@@ -1020,7 +1023,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Background="White"
-                        TabIndex="5" />
+                        TabIndex="17" />
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
                         BorderThickness="0"
                         BorderBrush="Transparent"
@@ -1037,9 +1040,9 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Background="White"
-                        TabIndex="6" />
+                        TabIndex="5" />
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="21"
-                        ButtonBackground="Yellow" 
+                        ButtonBackground="Yellow"
                         FontWeight="Bold"
                         Size="0"
                         FieldName="artikl"
@@ -1055,23 +1058,23 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Background="White"
-                        TabIndex="9" />
+                        TabIndex="2" />
         <wcl:ASEnterBox Grid.Column="1" HorizontalAlignment="Left"
-                          VerticalAlignment="Top"
-                          FontWeight="Bold"
-                          ButtonSize="21"
-                          Height="22"
-                          Width="332"
-                          Margin="69,2,0,0"
-                          x:Name="ceSkladiste"
-                          Background="White"
-                          Foreground="black"
-                          KeyTraps="F2|ceSkladiste@clicked"
-                          FieldName="SKLAD_str"
-                          FontFamily="lato"
-                          FontSize="14"
-                          TabIndex="7"
-                          ButtonBackground="Blue" BorderBrush="#FFFFFDFF"/>
+                        VerticalAlignment="Top"
+                        FontWeight="Bold"
+                        ButtonSize="21"
+                        Height="22"
+                        Width="332"
+                        Margin="69,2,0,0"
+                        x:Name="ceSkladiste"
+                        Background="White"
+                        Foreground="black"
+                        KeyTraps="F2|ceSkladiste@clicked"
+                        FieldName="SKLAD_str"
+                        FontFamily="lato"
+                        FontSize="14"
+                        TabIndex="1"
+                        ButtonBackground="Blue" BorderBrush="#FFFFFDFF"/>
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
                         FontWeight="Bold"
                         Size="0"
@@ -1087,7 +1090,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Bottom"
                         Background="White"
-                        TabIndex="10" />
+                        TabIndex="3" />
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
                         FontWeight="Bold"
                         Size="2"
@@ -1103,7 +1106,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Background="White"
-                        TabIndex="11" />
+                        TabIndex="20" />
         <GroupBox Grid.Column="1" HorizontalAlignment="Left"
                   VerticalAlignment="Top"
                   Height="29"
@@ -1116,19 +1119,19 @@
                           x:Name="cbMjesec"
                           DataContext="do_mjeseca"
                           Foreground="Black"
-                          Content="Do mjeseca" Margin="10,6,0,10" />
+                          Content="Do mjeseca" Margin="10,6,0,10" TabIndex="21" />
             </Grid>
         </GroupBox>
         <Button Grid.Column="1"
                 VerticalAlignment="Top"
                 Height="68"
-                Margin="914,12,16,0"
+                Margin="0,12,16,0"
                 FontFamily="lato"
                 Visibility="Visible"
                 BorderBrush="Transparent"
                 BorderThickness="0"
                 Padding="-8"
-                x:Name="gbPripremi" Background="#FF5CA21A" TabIndex="0">
+                x:Name="gbPripremi" Background="#FF5CA21A" TabIndex="0" HorizontalAlignment="Right" Width="110" Focusable="False">
             <Button.Resources>
                 <Style TargetType="{x:Type Border}">
                     <Setter Property="CornerRadius" Value="6"/>
@@ -1144,21 +1147,21 @@
             </Grid>
         </Button>
         <TextBox HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Height="49"
-                       Width="160"
-                       Margin="0,162,0,0"
-                       x:Name="CompName"
-                       IsReadOnly="True"
-                       FontFamily="Lato"
-                       FontSize="12"
-                       FontWeight="Bold"
-                       Foreground="black"
-                       Text="Naziv firme"
-                       DataContext="NazivFirme"
-                       Grid.Column="0" Grid.Row="0" TextWrapping="Wrap" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" UseLayoutRounding="True" BorderBrush="{x:Null}" SelectionBrush="{x:Null}" BorderThickness="0,0,0,2"/>
+                 VerticalAlignment="Center"
+                 Height="49"
+                 Width="160"
+                 Margin="0,162,0,0"
+                 x:Name="CompName"
+                 IsReadOnly="True"
+                 FontFamily="Lato"
+                 FontSize="12"
+                 FontWeight="Bold"
+                 Foreground="black"
+                 Text="Naziv firme"
+                 DataContext="NazivFirme"
+                 Grid.Column="0" Grid.Row="0" TextWrapping="Wrap" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" UseLayoutRounding="True" BorderBrush="{x:Null}" SelectionBrush="{x:Null}" BorderThickness="0,0,0,2" IsTabStop="False" Focusable="False" AllowDrop="False" IsEnabled="False"/>
         <Image x:Name="Logo" Margin="5,7,5,68" />
-        <ComboBox x:Name="cbTipRacuna" DataContext="tip_racuna" Grid.Column="1" HorizontalAlignment="Right" Margin="0,176,16,0" VerticalAlignment="Top" Width="149" Height="22"/>
+        <ComboBox x:Name="cbTipRacuna" DataContext="tip_racuna" Grid.Column="1" HorizontalAlignment="Right" Margin="0,176,16,0" VerticalAlignment="Top" Width="149" Height="22" TabIndex="24"/>
         <!-- <wcl:ASNumericBox HorizontalAlignment="Left"
         VerticalAlignment="Top"
         FontWeight="Bold"

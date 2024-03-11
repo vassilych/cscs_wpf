@@ -3,13 +3,13 @@ function wxbiprbb_onDisplay()
 	cursor("wait");
 	AsyncCall("setRegionPieChart", "regionPieChartDone");
 }
-function regionPieChartDone(s, l){
+function regionPieChartDone(){
 	AsyncCall("setTop10Products", "top10ProductsDone");
 }
-function top10ProductsDone(s, l){
+function top10ProductsDone(){
 	AsyncCall("setCustomerDataGrid", "customerDataGridDone");
 }
-function customerDataGridDone(s, l){
+function customerDataGridDone(){
 	cursor("dflt");
 }
 
@@ -478,9 +478,6 @@ function fillCustomerArrays(){
 			top10Part_ar[i - 1] =  i;
 		} 
 	}
-
-
-
 
 	in_string= "";
 	for (cntr = 0; cntr < Size(codePart_ar); cntr++ )
