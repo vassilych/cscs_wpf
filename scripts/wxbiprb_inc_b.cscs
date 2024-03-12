@@ -604,9 +604,10 @@ function filterPart()
 	{
         sql_str += " AND nkpr_gl_drzava<> '"+kpsy_po_freight+"' AND NOT nkpr_gl_drzava IN ("+eucountries+")";
 	}
+//MessageBox("aaaa: "+gl_oznaka);	
     if (gl_oznaka != "")
 	{
-        sql_str= += " AND nkpr_gl_oznaka= '"+gl_oznaka+"'";
+        sql_str += " AND nkpr_gl_oznaka= '"+gl_oznaka+"'";
 	    if (GL_oznaka == "X" || GL_oznaka == "O" || GL_oznaka == "R" )  //ako je to storno, odobrenje ili reklamacija neka okrene
 		{
             sql_str += " AND nkpr_ln_pext< 0";
@@ -615,6 +616,7 @@ function filterPart()
 		{
             sql_str += " AND nkpr_ln_pext>= 0";
 		}
+//MessageBox("aaaa: "+sql_str);		
 	}
 
 }
