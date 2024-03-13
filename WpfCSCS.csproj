@@ -394,6 +394,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="scripts\tabControl2.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="scripts\test2bind.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

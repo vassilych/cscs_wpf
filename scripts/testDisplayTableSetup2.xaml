@@ -1,109 +1,194 @@
-<Window
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:wcl="clr-namespace:WpfControlsLibrary;assembly=WpfControlsLibrary"
         mc:Ignorable="d"
-        Title="Datagrid1" Height="500" Width="1400">
-
+        Title="Datagrid1"
+        Height="500"
+        Width="1400">
     <Grid>
-        <DataGrid 
-        Name="grid1" 
-        HorizontalAlignment="Left" Height="412" Margin="21,13,0,0" VerticalAlignment="Top" Width="1350" AutoGenerateColumns="False">
+        <DataGrid Name="grid1"
+                  HorizontalAlignment="Left"
+                  Height="412"
+                  Margin="21,13,0,0"
+                  VerticalAlignment="Top"
+                  Width="1350"
+                  AutoGenerateColumns="False">
             <DataGrid.Columns>
-
                 <DataGridTemplateColumn Header="Invoice Number">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <wcl:ASGridCell FieldName="invoiceNumber"/>
+                            <wcl:ASGridCell FieldName="invoiceNumber" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-
                 <DataGridTemplateColumn Header="Invoice Line Number">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <wcl:ASGridCell FieldName="invoiceLineNumber"/>
+                            <wcl:ASGridCell FieldName="invoiceLineNumber" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-
                 <DataGridTemplateColumn Header="Product Number">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <wcl:ASGridCell FieldName="productNumber"/>
+                            <wcl:ASGridCell FieldName="productNumber" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-
                 <DataGridTemplateColumn Header="Amount">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <wcl:ASGridCell FieldName="amount"/>
+                            <wcl:ASGridCell FieldName="amount" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-
                 <DataGridTemplateColumn Header="Price">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <wcl:ASGridCell FieldName="price" Name="priceName" HorizontalContentAlignment="Center"/>
+                            <wcl:ASGridCell FieldName="price"
+                                            Name="priceName"
+                                            HorizontalContentAlignment="Center" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-
                 <DataGridTemplateColumn Header="Bit Column">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <wcl:ASGridCell FieldName="bitcolumn"/>
+                            <wcl:ASGridCell FieldName="bitcolumn" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-
                 <DataGridTemplateColumn Header="String Column">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <wcl:ASGridCell FieldName="stringColumn"/>
+                            <wcl:ASGridCell FieldName="stringColumn" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-
                 <DataGridTemplateColumn Header="Date Column">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <wcl:ASGridCell FieldName="dateColumn" EditLength="10"/>
+                            <wcl:ASGridCell FieldName="dateColumn"
+                                            EditLength="10" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-
                 <DataGridTemplateColumn Header="Time Column">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <wcl:ASGridCell FieldName="timeColumn" EditLength="8"/>
+                            <wcl:ASGridCell FieldName="timeColumn"
+                                            EditLength="8" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-
             </DataGrid.Columns>
         </DataGrid>
-
-        <TextBox Name="tb1" DataContext="invoiceNumber" HorizontalAlignment="Left" Height="23" Margin="30,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="60"/>
-        <TextBox Name="tb2" DataContext="invoiceLineNumber" HorizontalAlignment="Left" Height="23" Margin="100,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="60"/>
-        <TextBox Name="tb3" DataContext="productNumber" HorizontalAlignment="Left" Height="23" Margin="170,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="60"/>
-        <TextBox Name="tb4" DataContext="amount" HorizontalAlignment="Left" Height="23" Margin="240,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="60"/>
-        <TextBox Name="tb5" DataContext="price" HorizontalAlignment="Left" Height="23" Margin="310,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="60"/>
-        <CheckBox Name="tb6" DataContext="bitcolumn" HorizontalAlignment="Left" Height="23" Margin="380,435,0,0"  Content="bitcolumn" VerticalAlignment="Top" Width="60"/>
-        <TextBox Name="tb7" DataContext="stringColumn" HorizontalAlignment="Left" Height="23" Margin="450,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="60"/>
-        <wcl:ASDateEditer Name="tb8" DisplaySize="10" DataContext="dateColumn" HorizontalAlignment="Left" Height="23" Margin="520,435,0,0"  Text="TextBox" VerticalAlignment="Top" Width="120"/>
-        <wcl:ASTimeEditer Name="tb9" DisplaySize="8" DataContext="timeColumn" HorizontalAlignment="Left" Height="23" Margin="650,435,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
-        
-
-
-        <Button Content="E/S" Name="btnES" HorizontalAlignment="Left" Margin="1290,440,0,0" VerticalAlignment="Top" Width="75"/>
-        <Button Content="Add Row" Name="btnAdd" HorizontalAlignment="Left" Margin="925,440,0,0" VerticalAlignment="Top" Width="75"/>
-        <Button Content="Delete Row" Name="btnDel" HorizontalAlignment="Left" Margin="1020,440,0,0" VerticalAlignment="Top" Width="75"/>
-        <Button Content="Save Row" Name="btnSave" HorizontalAlignment="Left" Margin="1115,440,0,0" VerticalAlignment="Top" Width="75"/>
-
+        <TextBox Name="tb1"
+                 DataContext="invoiceNumber"
+                 HorizontalAlignment="Left"
+                 Height="23"
+                 Margin="30,435,0,0"
+                 TextWrapping="Wrap"
+                 Text="TextBox"
+                 VerticalAlignment="Top"
+                 Width="60" />
+        <TextBox Name="tb2"
+                 DataContext="invoiceLineNumber"
+                 HorizontalAlignment="Left"
+                 Height="23"
+                 Margin="100,435,0,0"
+                 TextWrapping="Wrap"
+                 Text="TextBox"
+                 VerticalAlignment="Top"
+                 Width="60" />
+        <TextBox Name="tb3"
+                 DataContext="productNumber"
+                 HorizontalAlignment="Left"
+                 Height="23"
+                 Margin="170,435,0,0"
+                 TextWrapping="Wrap"
+                 Text="TextBox"
+                 VerticalAlignment="Top"
+                 Width="60" />
+        <TextBox Name="tb4"
+                 DataContext="amount"
+                 HorizontalAlignment="Left"
+                 Height="23"
+                 Margin="240,435,0,0"
+                 TextWrapping="Wrap"
+                 Text="TextBox"
+                 VerticalAlignment="Top"
+                 Width="60" />
+        <TextBox Name="tb5"
+                 DataContext="price"
+                 HorizontalAlignment="Left"
+                 Height="23"
+                 Margin="310,435,0,0"
+                 TextWrapping="Wrap"
+                 Text="TextBox"
+                 VerticalAlignment="Top"
+                 Width="60" />
+        <CheckBox Name="tb6"
+                  DataContext="bitcolumn"
+                  HorizontalAlignment="Left"
+                  Height="23"
+                  Margin="380,435,0,0"
+                  Content="bitcolumn"
+                  VerticalAlignment="Top"
+                  Width="60" />
+        <TextBox Name="tb7"
+                 DataContext="stringColumn"
+                 HorizontalAlignment="Left"
+                 Height="23"
+                 Margin="450,435,0,0"
+                 TextWrapping="Wrap"
+                 Text="TextBox"
+                 VerticalAlignment="Top"
+                 Width="60" />
+        <wcl:ASDateEditer Name="tb8"
+                          DisplaySize="10"
+                          DataContext="dateColumn"
+                          HorizontalAlignment="Left"
+                          Height="23"
+                          Margin="520,435,0,0"
+                          Text="TextBox"
+                          VerticalAlignment="Top"
+                          Width="120" />
+        <wcl:ASTimeEditer Name="tb9"
+                          DisplaySize="8"
+                          DataContext="timeColumn"
+                          HorizontalAlignment="Left"
+                          Height="23"
+                          Margin="650,435,0,0"
+                          TextWrapping="Wrap"
+                          Text="TextBox"
+                          VerticalAlignment="Top"
+                          Width="120" />
+        <Button Content="E/S"
+                Name="btnES"
+                HorizontalAlignment="Left"
+                Margin="1290,440,0,0"
+                VerticalAlignment="Top"
+                Width="75" />
+        <Button Content="Add Row"
+                Name="btnAdd"
+                HorizontalAlignment="Left"
+                Margin="925,440,0,0"
+                VerticalAlignment="Top"
+                Width="75" />
+        <Button Content="Delete Row"
+                Name="btnDel"
+                HorizontalAlignment="Left"
+                Margin="1020,440,0,0"
+                VerticalAlignment="Top"
+                Width="75" />
+        <Button Content="Save Row"
+                Name="btnSave"
+                HorizontalAlignment="Left"
+                Margin="1115,440,0,0"
+                VerticalAlignment="Top"
+                Width="75" />
     </Grid>
 </Window>

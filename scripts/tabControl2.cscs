@@ -1,0 +1,84 @@
+CreateWindow("../../scripts/tabControl2.xaml");
+
+DEFINE var1 type a size 10;
+var1 = "hello";
+
+function btn1@clicked(){
+   MessageBox(var1);   
+}
+
+
+///----------------tab2
+DEFINE rb1, rb2, rb3 type l;
+
+// //programski mijenjat
+rb1 = true;
+rb2 = false;
+rb3 = false;
+
+//citanje
+//MessageBox(rb2);
+function btn2@clicked(){
+    MessageBox("var1 = " + rb1);
+    MessageBox("var2 = " + rb2);
+    MessageBox("var3 = " + rb3);
+}
+
+//kad se klikne na prostor groupbox-a
+function gb1@clicked(){
+    rb1 = true;
+    MessageBox("groupBox clicked");
+}
+
+// // kad se klikne na radiobutton, svaki klik
+function rb1@clicked(){
+    MessageBox("rb1@clicked");
+}
+
+function rb2@clicked(){
+    MessageBox("rb2@clicked");
+}
+
+
+//changed - oba smjera -> odselektiran ili selektiran
+function rb1@changed(){
+    MessageBox("rb1 CHANGED");
+}
+function rb2@changed(){
+    MessageBox("rb2 CHANGED");
+}
+
+///-----------------------------tab3
+function btn3@clicked(){
+    MessageBox("btn3");
+}
+
+//--------------tab4
+
+PieChart("PieChart1", "init");
+PieChart("PieChart1", "seriesType", "pie");
+PieChart("PieChart1", "title", "Pie Chart Title", 20);
+
+PieChart("PieChart1", "values", 20.5, "prvi dio");
+PieChart("PieChart1", "values", 10.5, "drugi dio");
+
+
+//-------------------tab5
+
+DEFINE table_hndl type i;
+
+table_hndl = openv("invoiceLines", "DB1");
+if(flerr() != 0){
+    MessageBox("flerr = " + Flerr());
+    quit;
+}
+
+Format("price");
+
+
+function func1(){
+    return 1;
+}
+
+
+DisplayTableSetup("grid1", fnum: table_hndl, key: "InvoiceLine_invoiceLineNumber", start: {1, func1()}, whileString: "invoiceNumber<13", forString: "");

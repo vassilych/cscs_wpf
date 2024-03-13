@@ -2862,7 +2862,16 @@ namespace WpfCSCS
 											var content2 = tabItem.Content as Grid;
 											foreach (var child2 in content2.Children)
 											{
-												if (child2 is ASEnterBox)
+
+                                                if (child2 is ASButton)
+                                                {
+                                                    var asButton = child2 as ASButton;
+                                                    var insideButton = asButton.Content as Button;
+
+                                                    //CacheControl(insideButton as FrameworkElement, win, controls);
+                                                    CacheASButton(asButton as FrameworkElement, win, controls, insideButton);
+                                                }
+                                                else if (child2 is ASEnterBox)
 												{
 													var enterBox = child2 as ASEnterBox;
 													var enterBoxGrid = enterBox.Content as Grid;
@@ -2881,8 +2890,65 @@ namespace WpfCSCS
 														CacheNumericBoxChild(item5 as FrameworkElement, win, controls, numBox);
 													}
 												}
-												CacheControl(child2 as FrameworkElement, win, controls);
-											}
+                                                else if (child2 is GroupBox)//for RadioButtons
+                                                {
+                                                    CacheControl(child2 as FrameworkElement, win, controls);
+
+                                                    var groupBox = child2 as GroupBox;
+                                                    var groupBoxGrid = groupBox.Content as Grid;
+                                                    foreach (var item6 in groupBoxGrid.Children)
+                                                    {
+                                                        if (item6 is RadioButton)
+                                                        {
+                                                            CacheControl(item6 as FrameworkElement, win, controls);
+                                                            if (!GroupBoxesAndRadioButtons.Any(p => p.Key.ToLower() == groupBox.Name.ToLower()))
+                                                                GroupBoxesAndRadioButtons.Add(groupBox.Name, new List<string>());
+                                                            if (!GroupBoxesAndRadioButtons[groupBox.Name].Any(p => p == (item6 as RadioButton).Name.ToLower()))
+                                                                GroupBoxesAndRadioButtons[groupBox.Name].Add((item6 as RadioButton).Name.ToLower());
+                                                        }
+
+                                                        else if (item6 is CheckBox)
+                                                            CacheControl(item6 as FrameworkElement, win, controls);
+                                                    }
+                                                }
+                                                else if (child2 is ASDateEditer2)
+                                                {
+                                                    //CacheControl(child as ASDateEditer2, win, controls);
+
+                                                    var asde2 = child2 as ASDateEditer2;
+                                                    var asde2Grid = asde2.Content as Grid;
+                                                    foreach (var item6 in asde2Grid.Children)
+                                                    {
+                                                        var fe = (item6 as FrameworkElement);
+                                                        fe.DataContext = asde2.FieldName;
+                                                        CacheControl(fe, win, controls);
+                                                    }
+                                                }
+												else
+												{
+                                                    if (child2 is DataGrid dg)
+                                                    {
+                                                        gridsSelectedRow.Remove(dg.Name.ToLower());
+                                                    }
+                                                    CacheControl(child2 as FrameworkElement, win, controls);
+                                                    if (child2 is ItemsControl)
+                                                    {
+                                                        var parent = child2 as ItemsControl;
+                                                        var items = parent.Items;
+                                                        if (items != null && items.Count > 0)
+                                                        {
+                                                            try
+                                                            {
+                                                                CacheChildren(items.Cast<UIElement>().ToList(), controls, win);
+                                                            }
+                                                            catch (Exception ex)
+                                                            {
+                                                                //MessageBox.Show("Vassili help needed");
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
 										}
 									}
 								}
