@@ -1131,7 +1131,7 @@
                 BorderBrush="Transparent"
                 BorderThickness="0"
                 Padding="-8"
-                x:Name="gbPripremi" Background="#FF5CA21A" TabIndex="0" HorizontalAlignment="Right" Width="110" Focusable="False">
+                x:Name="gbPripremi" Background="#FF5CA21A" TabIndex="0" HorizontalAlignment="Right" Width="110">
             <Button.Resources>
                 <Style TargetType="{x:Type Border}">
                     <Setter Property="CornerRadius" Value="6"/>

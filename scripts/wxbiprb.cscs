@@ -106,12 +106,14 @@ function Wxbiprb_onDisplay()
     comboItems = {"SVI TIPOVI","STANDARDNI", "PREDUJAM", "VL.POTROŠNJA", "REKLAMIRANI", "ODOBRENJE", "TEREĆENJE", "NEZARAČUNANI OBR.", "STORNO"};
     AddWidgetData(cbTipRacuna, comboItems);
     pripremljeno = false;
+    setFocus("gbPripremi");
+    tip_racuna= "SVI TIPOVI";
     }
 
 function gbPripremi@clicked()
     {
     cursor("wait");
-//MessageBox("TipRačuna: "+tip_racuna);    
+MessageBox("TipRačuna: "+tip_racuna);    
     gl_oznaka= "";
     if (tip_racuna== "STANDARDNI")
     {
@@ -812,7 +814,8 @@ function deNadan@LostFocus(){
     //setWeekComparison();
 }
 
-function cbTipRacuna@SelectionChanged()
-{
-    gbPripremi@clicked();
-}
+// function cbTipRacuna@SelectionChanged()
+// {
+//     MessageBox("AAAA");
+//     gbPripremi@clicked();
+// }
