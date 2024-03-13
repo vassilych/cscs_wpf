@@ -1161,7 +1161,7 @@
                  DataContext="NazivFirme"
                  Grid.Column="0" Grid.Row="0" TextWrapping="Wrap" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" UseLayoutRounding="True" BorderBrush="{x:Null}" SelectionBrush="{x:Null}" BorderThickness="0,0,0,2" IsTabStop="False" Focusable="False" AllowDrop="False" IsEnabled="False"/>
         <Image x:Name="Logo" Margin="5,7,5,68" />
-        <ComboBox x:Name="cbTipRacuna" Grid.Column="1" HorizontalAlignment="Right" Margin="0,176,16,0" VerticalAlignment="Top" Width="149" Height="22" TabIndex="24"/>
+        <ComboBox x:Name="cbTipRacuna" DataContext="Tip_racuna" Grid.Column="1" HorizontalAlignment="Right" Margin="0,176,16,0" VerticalAlignment="Top" Width="149" Height="22" TabIndex="24"/>
         <!-- <wcl:ASNumericBox HorizontalAlignment="Left"
         VerticalAlignment="Top"
         FontWeight="Bold"

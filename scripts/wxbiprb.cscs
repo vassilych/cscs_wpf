@@ -111,7 +111,6 @@ function Wxbiprb_onDisplay()
 function gbPripremi@clicked()
     {
     cursor("wait");
-    tip_racuna= GetText("cbTipRacuna");
 //MessageBox("TipRačuna: "+tip_racuna);    
     gl_oznaka= "";
     if (tip_racuna== "STANDARDNI")
@@ -811,4 +810,9 @@ function deNadan@LostFocus(){
     
     //MessageBox("AAAA");
     //setWeekComparison();
+}
+
+function cbTipRacuna@SelectionChanged()
+{
+    gbPripremi@clicked();
 }
