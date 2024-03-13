@@ -294,7 +294,7 @@ function setChartByMonth()
             }
             elif ( kom_dn == true )
             {
-                sql_str += " Sales = cast(ISNULL(SUM(CASE WHEN nkpr_ln_jmj='KOM' THEN nkpr_ln_pqty ELSE nkpr_ln_kom END) as decimal (10))"; //" + cast(ISNULL(SUM(CASE WHEN e.nkpr_ln_jmj='KOM' THEN e.nkpr_ln_pqty ELSE e.nkpr_ln_kom END) , 0) as decimal (10))";
+                sql_str += " Sales = cast(ISNULL(SUM(CASE WHEN nkpr_ln_jedmj='KOM' THEN nkpr_ln_pqty ELSE nkpr_ln_kom END),0) as decimal (10))"; //" + cast(ISNULL(SUM(CASE WHEN e.nkpr_ln_jmj='KOM' THEN e.nkpr_ln_pqty ELSE e.nkpr_ln_kom END) , 0) as decimal (10))";
             }
             else
             {
@@ -313,7 +313,7 @@ function setChartByMonth()
             sql_str = sql_str + " ORDER BY CONVERT(varchar(6),nkpr_gl_datem,112);";
             try
             {
-                 //SaveFile(sql_str);
+                // SaveFile(sql_str);
                 queryResult = sqlquery(SQL_str);
             }
             catch(exc)
@@ -396,7 +396,7 @@ function setChartByMonth()
             }
             elif ( kom_dn == true )
             {
-                sql_str += " Sales = cast(ISNULL(SUM(CASE WHEN nkpr_ln_jmj='KOM' THEN nkpr_ln_pqty ELSE nkpr_ln_kom END) as decimal (10))"; //" + cast(ISNULL(SUM(CASE WHEN e.nkpr_ln_jmj='KOM' THEN e.nkpr_ln_pqty ELSE e.nkpr_ln_kom END) , 0) as decimal (10))";
+                sql_str += " Sales = cast(ISNULL(SUM(CASE WHEN nkpr_ln_jedmj='KOM' THEN nkpr_ln_pqty ELSE nkpr_ln_kom END), 0) as decimal (10))"; //" + cast(ISNULL(SUM(CASE WHEN e.nkpr_ln_jmj='KOM' THEN e.nkpr_ln_pqty ELSE e.nkpr_ln_kom END) , 0) as decimal (10))";
             }
             else
             {
