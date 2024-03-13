@@ -1161,6 +1161,18 @@ namespace WpfCSCS
 
                 return true;
             }
+			//else if(widget is ComboBox cb)
+			//{
+   //             //m_lostFocusHandlers[name] = action;
+
+			//	//cb.LostFocus -= comboBox_LostFocus;
+			//	//cb.LostFocus += comboBox_LostFocus;
+
+			//	//cb.SelectionChanged -= comboBox_SelectionChanged;
+			//	//cb.SelectionChanged += comboBox_SelectionChanged;
+
+   //             return true;
+   //         }
 
             var textable = widget as TextBoxBase;
             if (textable == null)
@@ -1181,12 +1193,79 @@ namespace WpfCSCS
                 }
 			}
 
-
-
 			return false;
 		}
 
-        private void widget_LostFocus(object sender, RoutedEventArgs e)
+        private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {            
+            FrameworkElement widget = sender as FrameworkElement;
+
+            var widgetName = GetWidgetName(widget);
+            if (string.IsNullOrWhiteSpace(widgetName) ||
+                m_updatingWidget.Contains(widgetName))
+            {
+                return;
+            }
+
+            //var text = GetTextWidgetFunction.GetText(widget);
+			var text2 = new Variable(((ComboBox)widget).SelectedValue.ToString());
+
+            FrameworkElement widget2 = sender as FrameworkElement;
+            var widgetName2 = GetWidgetBindingName(widget2);
+            if (string.IsNullOrWhiteSpace(widgetName2) ||
+                m_updatingWidget.Contains(widgetName2))
+            {
+                return;
+            }
+
+            m_updatingWidget.Add(widgetName2);
+			UpdateVariable(widget2, text2);
+            
+            string funcName;
+            if (m_selChangedHandlers.TryGetValue(widgetName, out funcName))
+            {
+                Control2Window.TryGetValue(widget, out Window win);
+                Interpreter.Run(funcName, new Variable(widgetName), text2,
+                    Variable.EmptyInstance, GetScript(win));
+            }
+            m_updatingWidget.Remove(widgetName2);
+        }
+
+        private void comboBox_LostFocus(object sender, RoutedEventArgs e)
+        {            
+            FrameworkElement widget = sender as FrameworkElement;
+
+            var widgetName = GetWidgetName(widget);
+            if (string.IsNullOrWhiteSpace(widgetName) ||
+                m_updatingWidget.Contains(widgetName))
+            {
+                return;
+            }
+
+            var text = GetTextWidgetFunction.GetText(widget);
+
+            FrameworkElement widget2 = sender as FrameworkElement;
+            var widgetName2 = GetWidgetBindingName(widget2);
+            if (string.IsNullOrWhiteSpace(widgetName2) ||
+                m_updatingWidget.Contains(widgetName2))
+            {
+                return;
+            }
+
+            m_updatingWidget.Add(widgetName2);
+			UpdateVariable(widget2, text);
+            
+            string funcName;
+            if (m_lostFocusHandlers.TryGetValue(widgetName, out funcName))
+            {
+                Control2Window.TryGetValue(widget, out Window win);
+                Interpreter.Run(funcName, new Variable(widgetName), text,
+                    Variable.EmptyInstance, GetScript(win));
+            }
+            m_updatingWidget.Remove(widgetName2);
+        }
+		
+		private void widget_LostFocus(object sender, RoutedEventArgs e)
         {
             FrameworkElement widget = sender as FrameworkElement;
             
@@ -1320,7 +1399,17 @@ namespace WpfCSCS
 
         public bool AddSelectionChangedHandler(string name, string action, FrameworkElement widget)
 		{
-			var sel = widget as Selector;
+			if (widget is ComboBox cb)
+            {
+                m_selChangedHandlers[name] = action;
+
+                cb.SelectionChanged -= comboBox_SelectionChanged;
+                cb.SelectionChanged += comboBox_SelectionChanged;
+
+                return true;
+            }
+
+            var sel = widget as Selector;
 			if (sel == null)
 			{
 				return false;
