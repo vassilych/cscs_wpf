@@ -85,6 +85,33 @@ namespace WpfControlsLibrary
             }
         }
 
+        public static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Register("CornerRadius", typeof(float), typeof(ASHorizontalBar));
+        public float CornerRadius
+        {
+            get
+            {
+                return (float)base.GetValue(CornerRadiusProperty);
+            }
+            set
+            {
+                base.SetValue(CornerRadiusProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty BackgroundProperty = DependencyProperty.Register("Background", typeof(Brush), typeof(ASHorizontalBar));
+        public Brush Background
+        {
+            get
+            {
+                return (Brush)base.GetValue(BackgroundProperty);
+            }
+            set
+            {
+                base.SetValue(BackgroundProperty, value);
+                BarFill.Background = value;
+            }
+        }
+
         public ASHorizontalBar()
         {
             InitializeComponent();
@@ -105,7 +132,14 @@ namespace WpfControlsLibrary
                 if(FontSize != 0)
                     InsideText.FontSize = FontSize;
 
+                BarFill.CornerRadius = new CornerRadius(CornerRadius, 0, 0, CornerRadius);
 
+                widgetBackground.CornerRadius = new CornerRadius(CornerRadius);
+
+                var tbBorder = InsideText.Template.FindName("border", InsideText);
+                ((Border)tbBorder).CornerRadius = new CornerRadius(CornerRadius);
+
+                widgetBackground.Background = Background;
 
                 loaded = true;
             }

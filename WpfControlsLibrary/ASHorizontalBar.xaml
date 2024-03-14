@@ -8,13 +8,18 @@
              Height="40" Width="180"
              Loaded="UserControl_Loaded">
     <Grid>
-        <Grid 
+
+        <Border
+            x:Name="widgetBackground"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            />
+        <Border
+            Background="Salmon"
             x:Name="BarFill"
             HorizontalAlignment="Left"
             VerticalAlignment="Stretch"
-            Width="125"
-            Background="Salmon"
-            />
+            Width="125"/>
         <TextBox
             x:Name="InsideText"
             Text="default"
