@@ -33,7 +33,7 @@
             <Setter Property="BorderThickness" Value="0"/>
         </Style>
         <Style TargetType="wcl:ASHorizontalBar">
-            <Setter Property="CornerRadius" Value="5"/>             
+            <Setter Property="CornerRadius" Value="5"/>
         </Style>
     </Window.Resources>
     <Grid Margin="0,0,0,0">
@@ -163,7 +163,7 @@
                             Height="18"
                             Width="45"
                             IsTabStop="False"
-                            Focusable="False" 
+                            Focusable="False"
                             Grid.Column="0" Grid.Row="0" />
             <wcl:ASEnterBox HorizontalAlignment="Left"
                             FontWeight="Bold"
@@ -269,7 +269,7 @@
                               HorizontalContentAlignment="Right"
                               IsReadOnly="True"
                               FontSize="20"
-                              Grid.Column="1" Height="26" VerticalAlignment="Top" 
+                              Grid.Column="1" Height="26" VerticalAlignment="Top"
                               IsTabStop="False"/>
             <TextBlock HorizontalAlignment="Left"
                        VerticalAlignment="Top"
@@ -679,7 +679,7 @@
                              x:Name="CheckBoxButton5"
                              DataContext="mx3_dn"
                              Content="Metara x 3"
-                             Foreground="Black" 
+                             Foreground="Black"
                              TabIndex="14"/>
                 <RadioButton HorizontalAlignment="Left"
                              VerticalAlignment="Top"
@@ -709,7 +709,7 @@
                              x:Name="CheckBoxButton8"
                              DataContext="Kom_dn"
                              Content="Komada"
-                             Foreground="Black" 
+                             Foreground="Black"
                              TabIndex="17"/>
             </Grid>
         </GroupBox>
@@ -757,7 +757,7 @@
                              x:Name="Cbut3"
                              DataContext="izvoz_dn"
                              Content="Izvoz"
-                             Foreground="Black" Grid.ColumnSpan="2" 
+                             Foreground="Black" Grid.ColumnSpan="2"
                              TabIndex="23"/>
                 <RadioButton HorizontalAlignment="Left"
                              VerticalAlignment="Top"
@@ -803,7 +803,7 @@
                              x:Name="Cbutton1"
                              DataContext="robaUsl_dn"
                              Content="Sva prodaja"
-                             Foreground="Black" Grid.ColumnSpan="2" Grid.Column="2" Grid.RowSpan="3" 
+                             Foreground="Black" Grid.ColumnSpan="2" Grid.Column="2" Grid.RowSpan="3"
                              TabIndex="25"/>
                 <RadioButton HorizontalAlignment="Left"
                              VerticalAlignment="Top"
@@ -831,7 +831,7 @@
                              x:Name="Cbutton3"
                              DataContext="avans_dn"
                              Content="Samo predujmovi"
-                             Foreground="Black" Grid.ColumnSpan="3" Grid.Column="1" Grid.Row="2" 
+                             Foreground="Black" Grid.ColumnSpan="3" Grid.Column="1" Grid.Row="2"
                              TabIndex="28"/>
                 <RadioButton HorizontalAlignment="Left"
                              VerticalAlignment="Top"
@@ -841,7 +841,7 @@
                              x:Name="Cbutton4"
                              DataContext="povnak_dn"
                              Content="Samo prolazne stavke"
-                             Foreground="Black" Grid.ColumnSpan="4" Grid.Column="1" Grid.Row="2" 
+                             Foreground="Black" Grid.ColumnSpan="4" Grid.Column="1" Grid.Row="2"
                              TabIndex="29"/>
             </Grid>
         </GroupBox>
@@ -1038,7 +1038,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Background="White"
-                        IsTabStop="False" 
+                        IsTabStop="False"
                         Focusable="False"/>
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
                         FontWeight="Bold"
@@ -1073,7 +1073,7 @@
                         IsTabStop="False"
                         Focusable="False"/>
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
-                        
+
                         BorderBrush="Transparent"
                         FontWeight="Bold"
                         FieldName="partnerNaziv"
@@ -1096,7 +1096,7 @@
                         Size="0"
                         FieldName="artikl"
                         Foreground="black"
-                        x:Name="neArtikl"
+                        x:Name="ceArtikl"
                         FontSize="14"
                         KeyTraps="F2|neArtikl@clicked"
                         Case="Normal"
@@ -1107,10 +1107,10 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Background="White"
-                        TabIndex="2" 
+                        TabIndex="2"
                         IsTabStop="True"/>
         <wcl:ASEnterBox Grid.Column="1" HorizontalAlignment="Left"
-                        VerticalAlignment="Top"                        
+                        VerticalAlignment="Top"
                         FontWeight="Bold"
                         ButtonSize="21"
                         Height="22"
@@ -1141,7 +1141,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Bottom"
                         Background="White"
-                        IsTabStop="False" 
+                        IsTabStop="False"
                         Focusable="False"/>
         <wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
                         FontWeight="Bold"
@@ -1158,7 +1158,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Background="White"
-                        TabIndex="19" 
+                        TabIndex="19"
                         IsTabStop="True"/>
         <GroupBox Grid.Column="1" HorizontalAlignment="Left"
                   VerticalAlignment="Top"

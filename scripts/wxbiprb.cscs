@@ -113,7 +113,6 @@ function Wxbiprb_onDisplay()
 function gbPripremi@clicked()
     {
     cursor("wait");
-MessageBox("TipRačuna: "+tip_racuna);    
     gl_oznaka= "";
     if (tip_racuna== "STANDARDNI")
     {

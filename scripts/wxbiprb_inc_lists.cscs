@@ -208,7 +208,7 @@ function ceSkladiste@clicked()
 
 // F2 ARTIKLI
 
-function neArtikl@clicked()
+function ceArtikl@clicked()
 {
     F2ListQueryString = "SELECT ARTI_ARTIKL, ARTI_NAZIV, ARTI_TEZINA, ARTI_JED_MJERE, ARTI_TIP FROM " + trenutnaGodinaBaza + ".[dbo].[NKMKARTI] where ARTI_ARTIKL like '%{var1}%' and ARTI_NAZIV like '%{var2}%' ORDER BY arti_artikl";
     
@@ -220,7 +220,7 @@ function neArtikl@clicked()
     ShowF2List();
     
     if(&sifraFieldPointer != ""){
-        artikl= &sifraFieldPointer;
+        artikl= strtrim(&sifraFieldPointer);
         ArtiklNaziv= &NazivFieldPointer;
     }
     else
@@ -230,6 +230,14 @@ function neArtikl@clicked()
     }
     searchSifra = "";
     searchNaziv = "";
+}
+
+function ceArtikl@post()
+{
+    if (artikl== "")
+    {
+        artiklNaziv= "";
+    }
 }
 
 //==============================================================
@@ -245,7 +253,7 @@ function cePartner@clicked()
     ShowF2List();
     
     if(&sifraFieldPointer != ""){
-        partner= (&sifraFieldPointer);
+        partner= strtrim(&sifraFieldPointer);
         partnerNaziv= (&NazivFieldPointer);
     }
     else
@@ -256,6 +264,15 @@ function cePartner@clicked()
     searchSifra = "";
     searchNaziv = "";
 }
+
+function cePartner@post()
+{
+    if (partner== "")
+    {
+        partnerNaziv= "";
+    }
+}
+
 //==============================================================
 function ceIsporuka@clicked()
 {
@@ -268,7 +285,7 @@ function ceIsporuka@clicked()
     ShowF2List();
     
     if(&sifraFieldPointer != ""){
-        isporuka= (&sifraFieldPointer);
+        isporuka= strtrim(&sifraFieldPointer);
         isporukaNaziv= (&NazivFieldPointer);
     }
     else
@@ -279,6 +296,15 @@ function ceIsporuka@clicked()
     searchSifra = "";
     searchNaziv = "";
 }
+
+function ceIsporuka@post()
+{
+    if (isporuka== "")
+    {
+        isporukaNaziv= "";
+    }
+}
+
 //===================================================================
 function ceRegija@clicked()
 {
@@ -291,7 +317,7 @@ function ceRegija@clicked()
     headersArray = {"Šifra Regije", "Naziv Regije"};
     ShowF2List();
     if(&sifraFieldPointer != ""){
-        regija= &sifraFieldPointer;
+        regija= strtrim(&sifraFieldPointer);
         regijaNaziv= &NazivFieldPointer;
     }
     else{
@@ -300,6 +326,14 @@ function ceRegija@clicked()
     }
     searchSifra = "";
     searchNaziv = "";
+}
+
+function ceRegija@post()
+{
+    if (regija== "")
+    {
+        regijaNaziv= "";
+    }
 }
 
 //===================================================================
@@ -314,12 +348,21 @@ function ceKategorija@clicked()
     headersArray = {"Kategorija", "Naziv kategorije"};
     ShowF2List();
     if(&sifraFieldPointer != ""){
-        kategorija= &sifraFieldPointer;
+        kategorija= strtrim(&sifraFieldPointer);
         kategNaziv= &NazivFieldPointer;
     }
     searchSifra = "";
     searchNaziv = "";
 }
+
+function ceKategorija@post()
+{
+    if (kategorija== "")
+    {
+        kateglNaziv= "";
+    }
+}
+
 //====================================================================
 function ceKlasa@clicked()
 {
@@ -332,12 +375,21 @@ function ceKlasa@clicked()
     headersArray = {"Klasa", "Naziv klase"};
     ShowF2List();
     if(&sifraFieldPointer != ""){
-        klasa= &sifraFieldPointer;
+        klasa= strtrim(&sifraFieldPointer);
         klasaNaziv= &NazivFieldPointer;
     }
     searchSifra = "";
     searchNaziv = "";
 }
+
+function ceKlasa@post()
+{
+    if (klasa== "")
+    {
+        klasalNaziv= "";
+    }
+}
+
 //====================================================================
 function neKomercijalist@clicked()
 {
@@ -350,12 +402,21 @@ function neKomercijalist@clicked()
     headersArray = {"Šifra", "Naziv komercijalista"};
     ShowF2List();
     if(&sifraFieldPointer != ""){
-        komercijalist= &sifraFieldPointer;
+        komercijalist= strtrim(&sifraFieldPointer);
         komercNaziv= &NazivFieldPointer;
     }
     searchSifra = "";
     searchNaziv = "";
 }
+
+function neKomercijalist@post()
+{
+    if (komercijalist== "")
+    {
+        komercNaziv= "";
+    }
+}
+
 //====================================================================
 function neRnalog@clicked()
 {
@@ -368,10 +429,18 @@ function neRnalog@clicked()
     headersArray = {"Broj", "Naziv kupca"};
     ShowF2List();
     if(&sifraFieldPointer != ""){
-        rnalog= &sifraFieldPointer;
+        rnalog= strtrim(&sifraFieldPointer);
         rnalogNaziv= &NazivFieldPointer;
     }
     searchSifra = "";
     searchNaziv = "";
+}
+
+function neRnalog@post()
+{
+    if (rnalog== "")
+    {
+        rnalogNaziv= "";
+    }
 }
 

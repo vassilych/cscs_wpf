@@ -307,6 +307,7 @@ function setChartByMonth()
                 
             }
             sql_str += " LEFT JOIN " + proslaGodinaBaza + ".dbo.nkprinvl ON nkpr_gl_num = nkpr_ln_invnm";
+            sql_str= sql_str+ " LEFT JOIN "+proslaGodinaBaza+".dbo.nkmkarti ON nkpr_ln_pcode= arti_artikl";
             sql_str += " WHERE 1=1 AND year(nkpr_gl_datem) = " + lani_h; //BETWEEN '"+sqlDate(od_danaLG)+"' AND '"+sqlDate(do_danaLG)+"'"  ";
             filterPart();
             sql_str = sql_str + " GROUP BY CONVERT(varchar(6),nkpr_gl_datem,112)";
@@ -409,6 +410,7 @@ function setChartByMonth()
                 
             }
             sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkprinvl ON nkpr_gl_num = nkpr_ln_invnm";
+            sql_str= sql_str+ " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkmkarti ON nkpr_ln_pcode= arti_artikl";
             sql_str += " WHERE 1=1 AND year(nkpr_gl_datem) = " + ovagod_h; //BETWEEN '"+sqlDate(od_danaLG)+"' AND '"+sqlDate(do_danaLG)+"'"  ";
             filterPart();
             sql_str = sql_str + " GROUP BY CONVERT(varchar(6),nkpr_gl_datem,112)";

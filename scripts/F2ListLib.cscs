@@ -19,8 +19,6 @@ function ShowF2List(){
 
 function F2List_onDisplay(){
     FormatF2ListDataGrid( windowTitle, headersArray);
-
-    MessageBox("aaaa");
     searchSifra = &sifraFieldPointer;
     search();
 }
