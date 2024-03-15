@@ -202,6 +202,7 @@ function setChartByDaysOfMonth()
         //sql_str =  sql_str +  " LEFT JOIN " + ovagod_h * ".dbo.nkprinv b ON a.[Wk_Date]  =  DATEADD(month ,  DATEDIFF(month ,  0 ,  b.nkpr_gl_invdte) ,  0)"
         sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkprinv c ON a.[Wk_Date] = c.nkpr_gl_datem ";
         sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkprinvl e ON c.nkpr_gl_num = e.nkpr_ln_invnm";
+        sql_str= sql_str+ " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkmkarti ON nkpr_ln_pcode= arti_artikl";
         if ( regija != "" )
         {
             sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart g ON c.nkpr_gl_cuscod = g.nksc_partcode";
@@ -326,7 +327,7 @@ function setChartByMonth()
             tot_ovagod = 0;
             tot_lani = 0;
             //cntry= 0;
-            sales_month_ar = {};
+            //sales_month_ar = {};
             define ar_cntr type i size 2;
             for(i = 1; i <= Size(queryResult)-1; i++)
             {
