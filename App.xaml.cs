@@ -39,6 +39,9 @@ namespace WpfCSCS
             CSCS_GUI.Dispatcher = this.Dispatcher;
             CSCS_GUI gui = new CSCS_GUI();
 
+            CSCS_SQL.ConnectionString = App.GetConfiguration("ConnectionString", "");
+            gui.CacheAdictionary();
+
             //cscsScript = "../../scripts/start.cscs";
             Console.WriteLine("Running CSCS script: " + pathName);
 
