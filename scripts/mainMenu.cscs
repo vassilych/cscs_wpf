@@ -148,8 +148,10 @@ AddMenuItem("DataGridDC", "testDisplayTableSetupWhere.cscs", "testDisplayTableSe
 
 //------ REPORTING ------------------------------
 
+AddMenuItem("ReportingDC", "DevExpressEndUserReportDesigner.cscs", "DevExpressEndUserReportDesigner", "runScript");
 AddMenuItem("ReportingDC", "TestReporting4_NKPRINV(L).cscs", "TestReporting4_NKPRINV(L)", "runScript");
 AddMenuItem("ReportingDC", "TestReporting4_NKPRINV(L) - sa SCANom.cscs", "TestReporting4_NKPRINV(L) - sa SCANom", "runScript");
+AddMenuItem("ReportingDC", "NKPRINVTableReport.cscs", "NKPRINVTableReport", "runScript");
 
 //------ EXCEL ------------------------------
 

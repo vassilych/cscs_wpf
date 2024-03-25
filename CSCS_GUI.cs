@@ -581,14 +581,11 @@ namespace WpfCSCS
 				MaxCacheSize = cacheSize;
 			}
 
-			CSCS_SQL.ConnectionString = App.GetConfiguration("ConnectionString", "");
-
 			SQLInstance.SqlServerConnection = new SqlConnection(CSCS_SQL.ConnectionString);
 			SQLInstance.Init(Interpreter);
 
 			Locking.Init(SQLInstance.SqlServerConnection);
 
-			CacheAdictionary();
 			FillDatabasesDictionary();
 
 			BtrieveInstance.Init(this);
@@ -672,7 +669,7 @@ namespace WpfCSCS
 			return value;
 		}
 
-		private bool CacheAdictionary()
+		public bool CacheAdictionary()
 		{
 			try
 			{
@@ -3634,8 +3631,8 @@ namespace WpfCSCS
 		public Variable RunScript(string fileName, bool encode = false)
 		{
 			Init();
-
-			if (encode)
+            
+            if (encode)
 			{
 				EncodeFileFunction.EncodeDecode(fileName, false);
 			}

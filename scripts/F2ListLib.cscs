@@ -20,7 +20,9 @@ function ShowF2List(){
 function F2List_onDisplay(){
     FormatF2ListDataGrid( windowTitle, headersArray);
     searchSifra = &sifraFieldPointer;
+    MessageBox("eeeeeeeee");
     search();
+    MessageBox("ffffffffff");
 }
 
 function search()
