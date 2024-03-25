@@ -63,7 +63,9 @@ namespace SplitAndMerge
 	     interpreter.RegisterFunction(Constants.WITH, new ConstantsFunction());
 	     interpreter.RegisterFunction(Constants.NEWRUNTIME, new ConstantsFunction());
 
-	     interpreter.RegisterFunction("OpenFile", new OpenFileFunction(false));
+	     interpreter.RegisterFunction(Constants.FREE, new FreeMemoryFunction());
+	     
+		 interpreter.RegisterFunction("OpenFile", new OpenFileFunction(false));
 	     interpreter.RegisterFunction("OpenFileContents", new OpenFileFunction(true));
 	     interpreter.RegisterFunction("SaveFile", new SaveFileFunction());
 
@@ -3850,7 +3852,24 @@ namespace WpfCSCS
 		}
 	}
 
-	public class RunExecFunction : ParserFunction
+    public class FreeMemoryFunction : ParserFunction
+    {
+        protected override Variable Evaluate(ParsingScript script)
+        {
+            var gui = CSCS_GUI.GetInstance(script);
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            var name = args[0].ParamName;
+
+			var removed = gui.DEFINES.Remove(name);
+            removed = (InterpreterInstance != null && InterpreterInstance.RemoveVariable(name)) || removed;
+            removed = gui.Interpreter.RemoveVariable(name) || removed;
+            return new Variable(removed);
+        }
+    }
+
+    public class RunExecFunction : ParserFunction
 	{
 		protected override Variable Evaluate(ParsingScript script)
 		{
