@@ -222,6 +222,8 @@ function setCustomerAndInvoiceCounts()
                 sql_str = sql_str + " AND YEAR(nkpr_gl_datem)= " + lani_h;
             }
         }
+        filterPart();
+        /*
         if (regija != "")
         {
             sql_str= sql_str + " AND g.nksc_regija= '" + regija + "'";
@@ -254,6 +256,7 @@ function setCustomerAndInvoiceCounts()
 	    {
             sql_str= sql_str+ " AND nkpr_gl_drzava<> '"+kpsy_po_freight+"' AND NOT nkpr_gl_drzava IN ("+eucountries+")";
 	    }
+        */
         sqlResult = SqlQuery(sql_str);
         if (size(sqlResult) !== 0)
         {
@@ -282,6 +285,8 @@ function setCustomerAndInvoiceCounts()
             }
         }
         //sql_str= sql_str* " AND DATEDIFF(day,nkpr_gl_invdte, CURRENT_TIMESTAMP) BETWEEN 0 AND 31"
+        filterPart();
+        /*
         if(regija != "")
         {
             sql_str = sql_str + " AND g.nksc_regija= '" + regija + "'";
@@ -314,6 +319,7 @@ function setCustomerAndInvoiceCounts()
 	    {
             sql_str= sql_str+ " AND nkpr_gl_drzava<> '"+kpsy_po_freight+"' AND NOT nkpr_gl_drzava IN ("+eucountries+")";
 	    }
+        */
         sqlResult = SqlQuery(sql_str);
         if (size(sqlResult) !== 0)
         {
@@ -696,8 +702,11 @@ function setWeekComparison(){
     }
 	//WHERE a.[Wk_Week]  =  datepart(week , b.nkpr_gl_invdte) AND nkpr_gl_invdte>= '" +  sqlDate(kpsy_fiscal_yr) + "')"
 	//sql_str =  sql_str +  " WHERE [wk_Week]>=  datepart(week , '" + sqlDate(danas) * "') - 1 AND wk_Week<=  datepart(week , '" + sqlDate(danas) * "') AND wk_ISOyear = " +  year(kpsy_fiscal_yr)
+    
 	sql_str = sql_str + " WHERE wk_year = " + ovagod_h;
 	sql_str = sql_str + " AND nkpr_gl_datem >= '" + fiscal_yr + "'";
+    filterPart();
+    /*
     if (kategorija!= ''){ sql_str= sql_str+ " AND arti_kategorija='"+kategorija+"'";}
     if (klasa!= ''){ sql_str= sql_str+ " AND arti_klasa='"+klasa+"'";}
     if (partner!= ''){ sql_str= sql_str+ " AND nkpr_gl_cuscod= '"+partner+"'";}
@@ -718,13 +727,13 @@ function setWeekComparison(){
     elif (usluge_dn== true){ sql_str= sql_str+ " AND nkpr_ln_ma_us= 'N'";}
     elif (povnak_dn== true){ sql_str= sql_str+ " AND nkpr_ln_ma_us= 'P'";}
     elif (avans_dn== true){ sql_str= sql_str+ " AND nkpr_ln_ma_us= 'A'";}
-
-	sql_str = sql_str + " AND ((wk_ISOWeek = datepart(ISO_week , '" + danas +"')) OR (wk_ISOWeek = datepart(ISO_week , '" + danas+"')-1)) AND year('"+danas+"') = wk_year";
 	
 	if ( partner != "" )
 	{
 		sql_str = sql_str + " AND b.nkpr_gl_cuscod = '" + partner + "'";
 	}
+    */
+	sql_str = sql_str + " AND ((wk_ISOWeek = datepart(ISO_week , '" + danas +"')) OR (wk_ISOWeek = datepart(ISO_week , '" + danas+"')-1)) AND year('"+danas+"') = wk_year";
 	sql_str = sql_str + " GROUP BY [wk_FirstOfWeek]";
 	sql_str = sql_str + " ORDER BY [wk_FirstOfWeek] DESC";
 	
