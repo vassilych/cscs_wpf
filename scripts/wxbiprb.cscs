@@ -201,9 +201,10 @@ function setCustomerAndInvoiceCounts()
         br_kupaca_lg = 0;
         broj_rac_og = 0;
         broj_rac_lg = 0;
-        sql_str = "SELECT count(distinct nkpr_gl_cuscod) as br_kupaca_lg,count(nkpr_gl_cuscod) as broj_rac_lg";
+        sql_str = "SELECT count(distinct nkpr_gl_cuscod) as br_kupaca_lg,count(nkpr_gl_num) as broj_rac_lg";
         sql_str = sql_str + " FROM " + proslaGodinaBaza + ".dbo.nkprinv";
         sql_str= sql_str+ " LEFT JOIN "+proslaGodinaBaza+".dbo.nkprinvl ON nkpr_gl_num= nkpr_ln_invnm";
+        sql_str += " LEFT JOIN "+proslaGodinaBaza+".dbo.nkmkarti ON nkpr_ln_pcode= arti_artikl";
         if (regija != "")
         {
             sql_str = sql_str + " LEFT JOIN " + proslaGodinaBaza + ".dbo.nkscpart g ON nkpr_gl_cuscod= g.nksc_partcode";
@@ -263,9 +264,10 @@ function setCustomerAndInvoiceCounts()
             br_kupaca_lg = sqlResult[1][0];
             broj_rac_lg = sqlResult[1][1];
         }    
-        sql_str = "SELECT count(distinct nkpr_gl_cuscod) as br_kupaca_og, count(nkpr_gl_cuscod) as broj_rac_og";
+        sql_str = "SELECT count(distinct nkpr_gl_cuscod) as br_kupaca_og, count(nkpr_gl_num) as broj_rac_og";
         sql_str = sql_str + " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv";
         sql_str= sql_str+ " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkprinvl ON nkpr_gl_num= nkpr_ln_invnm";
+        sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkmkarti ON nkpr_ln_pcode= arti_artikl";
         if(regija != "")
         {
             sql_str = sql_str + " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart g ON nkpr_gl_cuscod= g.nksc_partcode";

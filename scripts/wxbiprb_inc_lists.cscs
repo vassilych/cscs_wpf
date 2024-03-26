@@ -114,6 +114,7 @@
 
     define mjesec_h type a size 2 ;
 
+
     define partner type a size 10 ;
     define partnerNaziv type a size 50 ;
 

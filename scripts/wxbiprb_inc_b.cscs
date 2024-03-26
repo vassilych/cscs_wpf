@@ -339,7 +339,7 @@ function setCustomerDataGrid()
         sql_str= sql_str+ " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkscpart g ON nkpr_gl_cuscod= g.nksc_partcode";
     }
     sql_str= sql_str+ " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkprinvl ON nkpr_gl_num= nkpr_ln_invnm";
-    sql_str= sql_str+ " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkmkarti ON nkpr_ln_pcode= arti_artikl";
+    sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkmkarti ON nkpr_ln_pcode= arti_artikl";
     sql_str= sql_str+ " WHERE 1=1";
     if (mjesec_h!= "")
 	{
@@ -436,7 +436,7 @@ function setCustomerDataGrid()
 	{
         sql_str= sql_str+ " LEFT JOIN "+proslaGodinaBaza+".dbo.nkscpart g ON nkpr_gl_cuscod= g.nksc_partcode";
     }
-    sql_str= sql_str+ " LEFT JOIN "+proslaGodinaBaza+".dbo.nkmkarti ON nkpr_ln_pcode= arti_artikl";
+    sql_str += " LEFT JOIN "+proslaGodinaBaza+".dbo.nkmkarti ON nkpr_ln_pcode= arti_artikl";
     sql_str= sql_str+ " WHERE nkpr_gl_cuscod IN ("+in_string+") ";
     if (mjesec_h != "")
 	{
