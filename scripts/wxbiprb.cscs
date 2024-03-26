@@ -1,21 +1,22 @@
+Import(strTrim(mpath()) + "CSCS.Math.dll");
+include(strTrim(tpath()) +"wxbiprb_inc_lists.cscs"); //look-up lists
+include(strTrim(tpath()) +"wxbiprb_inc_a.cscs"); //look-up lists
+include(strTrim(tpath()) +"wxbiprb_inc_b.cscs"); //look-up lists
+
 args = CommandLineArgs(); 
 if(Size(args) > 2){
     companyCode = args[2];
 }else{
     companyCode = Substring(CoGet(), 1, 2);
 }
-
 CreateWindow(strTrim(tpath()) +"wxbiprb.xaml");
-Import(strTrim(mpath()) + "CSCS.Math.dll");
-include(strTrim(tpath()) +"wxbiprb_inc_lists.cscs"); //look-up lists
-include(strTrim(tpath()) +"wxbiprb_inc_a.cscs"); //look-up lists
-include(strTrim(tpath()) +"wxbiprb_inc_b.cscs"); //look-up lists
 
 function Wxbiprb_onDisplay()
     {
-    sqlQueryString = "select SY_CC_USER, SY_CC_YEAR, SY_CC_DBASE from " + CommonDBGet() + ".dbo.NKSYCCYR WHERE SY_CC_CODE = '" + companyCode + "'";
+    sqlQueryString = "select SY_CC_USER, SY_CC_YEAR, SY_CC_DBASE from " + strtrim(CommonDBGet()) + ".dbo.NKSYCCYR WHERE SY_CC_CODE = '" + companyCode + "'";
     try
         {
+    //SaveFile(sqlQueryString);        
         sqlResult = sqlQuery(sqlQueryString);
         }
     catch(exc)
@@ -37,9 +38,12 @@ function Wxbiprb_onDisplay()
             MessageBox("Molim da postavite logo znak firme kao: "+strTrim(tpath())+"CompanyLogo.jpg")
         }
     }
-    tableHndl = OPENV("KPSYMSTR"); //, coGet());
-    InvHeadHndl = OPENV("NKPRINV"); //, coGet());
-    InvHeadHndl = OPENV("NKPRINVL"); //, coGet());
+    tableHndl = OPENV("KPSYMSTR","B"+companycode); //, coGet());
+ MessageBox(tablehndl);   
+    InvHeadHndl = OPENV("NKPRINV","B"+companycode); //, coGet());
+ MessageBox(invHeadhndl);   
+    InvlineHndl = OPENV("NKPRINVL","B"+companycode); //, coGet());
+ MessageBox(invlinehndl);   
     sveDrzave_dn= true;
     robaUsl_dn= true;
     postotakMj = 0;
@@ -108,6 +112,7 @@ function Wxbiprb_onDisplay()
     pripremljeno = false;
     setFocus("gbPripremi");
     tip_racuna= "SVI TIPOVI";
+    gradoviRB= true;
     }
 
 function gbPripremi@clicked()

@@ -181,6 +181,7 @@
     DEFINE broj_rac_og_string, broj_rac_lg_string type a size 50;
     DEFINE prodaja_kup_og_string, prodaja_kup_lg_string type a size 50;
     define dan2 type i;
+    define tableHndl type i;
 
 //=============================================
 

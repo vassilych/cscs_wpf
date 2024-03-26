@@ -12,18 +12,94 @@ function top10ProductsDone(){
 function customerDataGridDone(){
 	cursor("dflt");
 }
+/*
+drzaveRB@clicked()
+{
+	//AsyncCall("setRegionPieChart", "regionPieChartDone");
+	setRegionPieChart();
+}
 
+regijeRB@clicked()
+{
+	//AsyncCall("setRegionPieChart", "regionPieChartDone");
+	setRegionPieChart();
+}
 
+gradoviRB@clicked()
+{
+	//AsyncCall("setRegionPieChart", "regionPieChartDone");
+	setRegionPieChart();
+}
+*/
 function setRegionPieChart()
 {
+	sql_str= "";	
 	if (gradoviRB == true)
     {
-        sql_str = "With TopItems2 As";
-        sql_str = sql_str + " (SELECT nkpr_gl_cuscty AS CountryID , sum(nkpr_gl_total) AS Origin , ROW_NUMBER() OVER( ORDER BY sum(nkpr_gl_total) DESC ) As Num";
-        sql_str = sql_str + " FROM " + trenutnaGodinaBaza + " .dbo.nkprinv AS U GROUP BY nkpr_gl_cuscty)" ;
-        sql_str = sql_str + " Select countryID, round(Origin,0) as Iznos ";
-        sql_str = sql_str + " From TopItems2 Where Num <= 6 Union ALL Select 'ostali', round(sum(Origin),0) as Iznos ";
-        sql_str = sql_str + " From TopItems2 Where Num > 6 ";
+        if (neto_dn == true)
+		{
+            sql_str += " SELECT CASE WHEN num<= 5 THEN nkpr_gl_cuscty ELSE 'Ostali' END AS CountryID , round(sum(suma),0) as Origin ";
+            sql_str += " FROM (SELECT nkpr_gl_cuscty, sum(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_ln_amt ELSE nkpr_ln_amt END) AS Suma,";
+            sql_str += " ROW_NUMBER() OVER( ORDER BY sum(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_ln_amt ELSE nkpr_ln_amt END) DESC ) As Num";
+		}	
+        elif (ruc_dn == true)
+		{
+            sql_str += " SELECT CASE WHEN num<= 5 THEN nkpr_gl_cuscty ELSE 'Ostali' END AS CountryID , round(sum(suma),0) as Origin ";
+            sql_str += " FROM (SELECT nkpr_gl_cuscty, sum(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_ln_amt - nkpr_ln_cenan * nkpr_ln_qtyz ELSE nkpr_ln_amt - nkpr_ln_cenan * nkpr_ln_qtyz END) AS Suma,";
+            sql_str += " ROW_NUMBER() OVER( ORDER BY sum(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_ln_amt - nkpr_ln_cenan * nkpr_ln_qtyz ELSE nkpr_ln_amt - nkpr_ln_cenan * nkpr_ln_qtyz END) DESC ) As Num";
+		}	
+        elif (tezina_dn == true)
+		{
+            sql_str += " SELECT CASE WHEN num<= 5 THEN nkpr_gl_cuscty ELSE 'Ostali' END AS CountryID , round(sum(suma),0) as Origin ";
+            sql_str += " FROM (SELECT nkpr_gl_cuscty, sum(nkpr_ln_tezinan) AS Suma,";
+            sql_str += " ROW_NUMBER() OVER( ORDER BY sum(nkpr_ln_tezinan) DESC ) As Num";
+		}	
+        elif (mx3_dn == true)
+		{
+            sql_str += " SELECT CASE WHEN num<= 5 THEN nkpr_gl_cuscty ELSE 'Ostali' END AS CountryID , round(sum(suma),0) as Origin ";
+            sql_str += " FROM (SELECT nkpr_gl_cuscty, sum(nkpr_ln_metx3) AS Suma,";
+            sql_str += " ROW_NUMBER() OVER( ORDER BY sum(nkpr_ln_metx3) DESC ) As Num";
+		}	
+        elif (mx2_dn == true)
+		{
+            sql_str += " SELECT CASE WHEN num<= 5 THEN nkpr_gl_cuscty ELSE 'Ostali' END AS CountryID , round(sum(suma),0) as Origin ";
+            sql_str += " FROM (SELECT nkpr_gl_cuscty, sum(nkpr_ln_metx2) AS Suma,";
+            sql_str += " ROW_NUMBER() OVER( ORDER BY sum(nkpr_ln_metx2) DESC ) As Num";
+		}	
+        elif (met_dn == true)
+		{
+            sql_str += " SELECT CASE WHEN num<= 5 THEN nkpr_gl_cuscty ELSE 'Ostali' END AS CountryID , round(sum(suma),0) as Origin ";
+            sql_str += " FROM (SELECT nkpr_gl_cuscty, sum(nkpr_ln_met) AS Suma,";
+            sql_str += " ROW_NUMBER() OVER( ORDER BY sum(nkpr_ln_met) DESC ) As Num";
+		}	
+        elif (kom_dn == true)
+		{
+            sql_str += " SELECT CASE WHEN num<= 5 THEN nkpr_gl_cuscty ELSE 'Ostali' END AS CountryID , round(sum(suma),0) as Origin ";
+            sql_str += " FROM (SELECT nkpr_gl_cuscty, sum(nkpr_ln_kom) AS Suma,";
+            sql_str += " ROW_NUMBER() OVER( ORDER BY sum(nkpr_ln_kom) DESC ) As Num";
+		}	
+        else
+		{
+            sql_str += " SELECT CASE WHEN num<= 5 THEN nkpr_gl_cuscty ELSE 'Ostali' END AS CountryID , round(sum(suma),0) as Origin ";
+            sql_str += " FROM (SELECT nkpr_gl_cuscty, sum(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_ln_pext ELSE nkpr_ln_pext END) AS Suma,";
+            sql_str += " ROW_NUMBER() OVER( ORDER BY sum(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_ln_pext ELSE nkpr_ln_pext END) DESC ) As Num";
+		}
+        sql_str += " FROM " + trenutnaGodinaBaza + " .dbo.nkprinv AS U LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart ON nkpr_gl_cuscod= nksc_partcode";
+        sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkprinvl ON nkpr_gl_num = nkpr_ln_invnm";
+        sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkmkarti ON arti_artikl = nkpr_ln_pcode";
+        sql_str += " WHERE YEAR(nkpr_gl_datem)= " + ovagod_h;
+        if (do_mjeseca == true)
+		{
+            sql_str += " AND Month(nkpr_gl_datem)<=" + mjesec_h;
+		}	
+        else
+		{
+            sql_str += " AND Month(nkpr_gl_datem)=" + mjesec_h;
+		}	
+        filterPart();
+        sql_str += " GROUP BY nkpr_gl_cuscty) t";
+        sql_str += " GROUP BY CASE WHEN num <= 5 THEN nkpr_gl_cuscty ELSE 'Ostali' END" ;
+        sql_str += " ORDER BY origin desc";
     }
     elif (regijeRB== true)
     {
@@ -48,7 +124,7 @@ function setRegionPieChart()
         sql_str = sql_str + " From TopItems2 Where Num <= 6 Union ALL Select 'ostali', coalesce(round(sum(Origin),0), 0) as Iznos ";
         sql_str = sql_str + " From TopItems2 Where Num > 6 ";
     }
-
+MessageBox(sql_str);
 	try	{
 		queryResult = sqlquery(sql_str);
 	}catch(exc){
@@ -384,7 +460,7 @@ function setCustomerDataGrid()
 		MessageBox(exc);
 	}
 
-	//File(sql_str);Save
+	//SaveFile(sql_str);
 	RunOnMain("fillCustomerArrays");
 
     if (proslaGodinaBaza != "")
