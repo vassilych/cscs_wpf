@@ -55,6 +55,23 @@ chartArray_Args[4] = "e";
 chartArray_Args[5] = "f";
 
 
+DEFINE pieChart_Val_1 type a size 10 array 10;
+pieChart_Val_1[0] = 10;
+pieChart_Val_1[1] = 20;
+pieChart_Val_1[2] = 30;
+pieChart_Val_1[3] = 40;
+pieChart_Val_1[4] = 50;
+pieChart_Val_1[5] = 60;
+
+DEFINE pieChart_Args type a size 10 array 10;
+pieChart_Args[0] = "a";
+pieChart_Args[1] = "b";
+pieChart_Args[2] = "c";
+pieChart_Args[3] = "d";
+pieChart_Args[4] = "e";
+pieChart_Args[5] = "f";
+
+
 DEFINE NKPRINV_hndl, NKPRINVL_hndl type i;
 
 NKPRINV_hndl= openv("NKPRINV");

@@ -586,8 +586,6 @@ namespace WpfCSCS
 
 			Locking.Init(SQLInstance.SqlServerConnection);
 
-			FillDatabasesDictionary();
-
 			BtrieveInstance.Init(this);
 			TasFunctionsInstance.Init(this);
 			ChartsInstance.Init(this);
@@ -692,7 +690,7 @@ namespace WpfCSCS
 			}
 		}
 
-		private void FillDatabasesDictionary()
+		public void FillDatabasesDictionary()
 		{
 			foreach (var db in Adictionary.SY_DATABASESList)
 			{

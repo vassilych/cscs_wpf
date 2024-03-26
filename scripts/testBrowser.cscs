@@ -1,0 +1,1 @@
+CreateWindow(strTrim(tpath()) + "testBrowser.xaml");

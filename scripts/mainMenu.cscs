@@ -438,6 +438,10 @@ AddMenuSeparator("OtherDC");
 
 AddMenuItem("OtherDC", "testGetCompYearAndGetDbase.cscs", "testGetCompYearAndGetDbase", "runScript");
 
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "testBrowser.cscs", "testBrowser", "runScript");
+
 
 //----- IVAN -------------------------------
 
