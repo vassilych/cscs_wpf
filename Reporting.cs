@@ -112,8 +112,7 @@ namespace WpfCSCS
                 Reports[1].DataMember = DataSets[1].Tables[0].TableName;
 
                 fieldsOfReports[1] = new List<string>();
-                //fieldsOfBarCodes[1] = new List<string>();
-
+                
                 var allLabels = Reports[1].AllControls<XRLabel>();
                 foreach (var label in allLabels)
                 {
@@ -203,21 +202,8 @@ namespace WpfCSCS
                         chart.Series[0].ArgumentScaleType = DevExpress.XtraCharts.ScaleType.Auto;
                         chart.Series[0].ValueScaleType = DevExpress.XtraCharts.ScaleType.Numerical;
 
-                        //DataTables[thisSubreportNum].Columns.Add(fieldName, typeof(DataSet));
                         DataTables[1].Columns.Add(fieldName, typeof(DataTable));
 
-
-                        //DataTable dt;
-
-                        //dt = new DataTable(fieldName);
-                        //dt.Columns.Add(new DataColumn("Argument", typeof(string)));
-                        //dt.Columns.Add(new DataColumn("Value", typeof(int)));
-
-                        //chart.DataSource = dt;
-                        
-                        
-                        //chart.ExpressionBindings.Add(new ExpressionBinding("DataSource", $"2+2"));
-                        //chart.ExpressionBindings.Add(new ExpressionBinding("DataMember", $"{fieldName}.{fieldName}"));
                         chart.BeforePrint += Chart_BeforePrint;
                     }
                 }
@@ -352,21 +338,8 @@ namespace WpfCSCS
                         chart.Series[0].ArgumentScaleType = DevExpress.XtraCharts.ScaleType.Auto;
                         chart.Series[0].ValueScaleType = DevExpress.XtraCharts.ScaleType.Numerical;
 
-                        //DataTables[thisSubreportNum].Columns.Add(fieldName, typeof(DataSet));
                         DataTables[thisSubreportNum].Columns.Add(fieldName, typeof(DataTable));
 
-
-                        //DataTable dt;
-
-                        //dt = new DataTable(fieldName);
-                        //dt.Columns.Add(new DataColumn("Argument", typeof(string)));
-                        //dt.Columns.Add(new DataColumn("Value", typeof(int)));
-
-                        //chart.DataSource = dt;
-
-
-                        //chart.ExpressionBindings.Add(new ExpressionBinding("DataSource", $"2+2"));
-                        //chart.ExpressionBindings.Add(new ExpressionBinding("DataMember", $"{fieldName}.{fieldName}"));
                         chart.BeforePrint += Chart_BeforePrint;
                     }
                 }
@@ -518,31 +491,11 @@ namespace WpfCSCS
                         }
                     }
 
-                    //DataRow row = dt.NewRow();
-                    //row["Argument"] = "jedan";
-                    //row["Value"] = rnd.Next(100);
-                    //dt.Rows.Add(row);
-
-                    //DataRow row2 = dt.NewRow();
-                    //row2["Argument"] = "dva";
-                    //row2["Value"] = rnd.Next(100);
-                    //dt.Rows.Add(row2);
-                    
-                    //DataRow row3 = dt.NewRow();
-                    //row3["Argument"] = "tri";
-                    //row3["Value"] = rnd.Next(100);
-                    //dt.Rows.Add(row3);
-
-                    //ds.Tables.Add(dt);
-
-                    //newObjectArray[i] = ds;
                     newObjectArray[i] = dt;
 
                     var rowCount = DataSets[reportHndlNum].Tables[0].Rows.Count;
                     chartsReportsList.Add(new KeyValuePair<int, int>(reportHndlNum, rowCount));
                     //chartsSeriesCountList.Add(numberOfSeries);
-
-                    //chart.DataSource = DataSets[reportHndlNum].Tables[0].Rows[DataSets[reportHndlNum].Tables[0].Rows.Count - 1][chart.Tag.ToString().ToLower()];
                 }
                 else if (Gui.DEFINES.TryGetValue(dataTableFieldName, out DefineVariable defVar))
                 {

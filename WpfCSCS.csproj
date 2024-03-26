@@ -281,6 +281,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="scripts\testBrowser.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="scripts\testPostEvents.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -300,6 +303,10 @@
     <Page Include="scripts\testProgressBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="scripts\WebBrowsr.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="scripts\Window2.xaml">
       <SubType>Designer</SubType>
