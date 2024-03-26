@@ -352,6 +352,10 @@ function ceKategorija@clicked()
         kategorija= strtrim(&sifraFieldPointer);
         kategNaziv= &NazivFieldPointer;
     }
+    else{
+        kategorija= "";
+        kategNaziv= "";
+    }
     searchSifra = "";
     searchNaziv = "";
 }
@@ -378,6 +382,10 @@ function ceKlasa@clicked()
     if(&sifraFieldPointer != ""){
         klasa= strtrim(&sifraFieldPointer);
         klasaNaziv= &NazivFieldPointer;
+    }
+    else{
+        klasa= "";
+        klasaNaziv= "";
     }
     searchSifra = "";
     searchNaziv = "";
@@ -406,6 +414,10 @@ function neKomercijalist@clicked()
         komercijalist= strtrim(&sifraFieldPointer);
         komercNaziv= &NazivFieldPointer;
     }
+    else{
+        komercijalist= "";
+        komercNaziv= "";
+    }
     searchSifra = "";
     searchNaziv = "";
 }
@@ -432,6 +444,10 @@ function neRnalog@clicked()
     if(&sifraFieldPointer != ""){
         rnalog= strtrim(&sifraFieldPointer);
         rnalogNaziv= &NazivFieldPointer;
+    }
+    else{
+        rnalog= "";
+        rnalogNaziv= "";
     }
     searchSifra = "";
     searchNaziv = "";
