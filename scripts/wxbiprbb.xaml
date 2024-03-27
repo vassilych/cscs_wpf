@@ -22,9 +22,9 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Label Name="Top6Prodaja" VerticalAlignment="Top" HorizontalAlignment="Left" Width="195" Height="35" Margin="0,10,0,0" Content="Top 6 - Prodaja"
-       Grid.Row="0"
-       FontSize="16"
-       FontWeight="Bold"/>
+               Grid.Row="0"
+               FontSize="16"
+               FontWeight="Bold"/>
         <lvc:PieChart LegendPosition="Bottom"
                       Name="PieChart1"
                       VerticalAlignment="Center"
@@ -32,9 +32,9 @@
                       Width="452"
                       Height="330" FontSize="10" HorizontalContentAlignment="Left"/>
         <Label Name="Top10Artikli" VerticalAlignment="Top" HorizontalAlignment="Left" Width="195" Height="35" Margin="0,10,0,0" Content="Top 10 - Artikli"
-       Grid.Row="1"
-       FontSize="16"
-       FontWeight="Bold"/>
+               Grid.Row="1"
+               FontSize="16"
+               FontWeight="Bold"/>
 
         <DataGrid GridLinesVisibility="None"
                   HorizontalAlignment="Center"
@@ -217,45 +217,45 @@
             </DataGrid.Columns>
         </DataGrid>
         <GroupBox Padding="0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Height="84"
-            Width="80"
-            Margin="21,18,0,0"
-            BorderThickness="0.5"
-            BorderBrush="Black"
-            Header="Odabir"
-            Foreground="Black"
-            x:Name="gb2_Copy" RenderTransformOrigin="0.786,-6.631" Grid.Column="1">
+                  HorizontalAlignment="Left"
+                  VerticalAlignment="Top"
+                  Height="84"
+                  Width="80"
+                  Margin="21,18,0,0"
+                  BorderThickness="0.5"
+                  BorderBrush="Black"
+                  Header="Odabir"
+                  Foreground="Black"
+                  x:Name="gb2_Copy" RenderTransformOrigin="0.786,-6.631" Grid.Column="1">
             <Grid Margin="0,0,0,12">
                 <RadioButton HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Height="16"
-                    Width="113"
-                    Margin="8,2,0,0"
-                    x:Name="regijeRB"
-                    DataContext="regijeRB"
-                    Content="regije"
-                    Foreground="Black" />
+                             VerticalAlignment="Top"
+                             Height="16"
+                             Width="113"
+                             Margin="8,2,0,0"
+                             x:Name="regijeRB"
+                             DataContext="regijeRB"
+                             Content="regije"
+                             Foreground="Black" />
                 <RadioButton HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Height="17"
-                    Width="113"
-                    Margin="8,17,0,0"
-                    x:Name="drzaveRB"
-                    DataContext="drzaveRB"
-                    Content="države"
-                    Foreground="Black"
-                    IsChecked="True" />
+                             VerticalAlignment="Top"
+                             Height="17"
+                             Width="113"
+                             Margin="8,17,0,0"
+                             x:Name="drzaveRB"
+                             DataContext="drzaveRB"
+                             Content="drzave"
+                             Foreground="Black"
+                             IsChecked="True" />
                 <RadioButton HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Height="17"
-                    Width="113"
-                    Margin="8,32,0,0"
-                    x:Name="gradoviRB"
-                    DataContext="gradoviRB"
-                    Content="gradovi"
-                    Foreground="Black" />
+                             VerticalAlignment="Top"
+                             Height="17"
+                             Width="113"
+                             Margin="8,32,0,0"
+                             x:Name="gradoviRB"
+                             DataContext="gradoviRB"
+                             Content="gradovi"
+                             Foreground="Black" />
             </Grid>
         </GroupBox>
 

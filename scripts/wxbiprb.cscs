@@ -3,16 +3,16 @@ include(strTrim(tpath()) +"wxbiprb_inc_lists.cscs"); //look-up lists
 include(strTrim(tpath()) +"wxbiprb_inc_a.cscs"); //look-up lists
 include(strTrim(tpath()) +"wxbiprb_inc_b.cscs"); //look-up lists
 
-args = CommandLineArgs(); 
-if(Size(args) > 2){
-    companyCode = args[2];
-}else{
-    companyCode = Substring(CoGet(), 1, 2);
-}
 CreateWindow(strTrim(tpath()) +"wxbiprb.xaml");
 
 function Wxbiprb_onDisplay()
     {
+    args = CommandLineArgs(); 
+    if(Size(args) > 2){
+        companyCode = args[2];
+    }else{
+        companyCode = Substring(CoGet(), 1, 2);
+    }
     sqlQueryString = "select SY_CC_USER, SY_CC_YEAR, SY_CC_DBASE from " + strtrim(CommonDBGet()) + ".dbo.NKSYCCYR WHERE SY_CC_CODE = '" + companyCode + "'";
     try
         {
@@ -38,12 +38,9 @@ function Wxbiprb_onDisplay()
             MessageBox("Molim da postavite logo znak firme kao: "+strTrim(tpath())+"CompanyLogo.jpg")
         }
     }
-    tableHndl = OPENV("KPSYMSTR","B"+companycode); //, coGet());
- MessageBox(tablehndl);   
-    InvHeadHndl = OPENV("NKPRINV","B"+companycode); //, coGet());
- MessageBox(invHeadhndl);   
-    InvlineHndl = OPENV("NKPRINVL","B"+companycode); //, coGet());
- MessageBox(invlinehndl);   
+    //tableHndl = OPENV("KPSYMSTR","B"+companycode); //, coGet());
+    //InvHeadHndl = OPENV("NKPRINV","B"+companycode); //, coGet());
+    //InvlineHndl = OPENV("NKPRINVL","B"+companycode); //, coGet());
     sveDrzave_dn= true;
     robaUsl_dn= true;
     postotakMj = 0;
