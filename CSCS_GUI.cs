@@ -1836,92 +1836,14 @@ namespace WpfCSCS
 				return;
 			}
 
-			shouldButtonClick = true;
-			if (sender is Button)
-			{
-				var btn = sender as Button;
-				if (btn.Parent is FrameworkElement)
-				{
-					var parent1 = btn.Parent;
-					if ((parent1 as FrameworkElement).Parent is ASEnterBox)
-					{
-						var entBox = (parent1 as FrameworkElement).Parent as ASEnterBox;
-
-						var entBoxGrid = entBox.Content as Grid;
-						foreach (var item in entBoxGrid.Children)
-						{
-							if (item is ASEnterTextBox)
-							{
-								var entTB = item as ASEnterTextBox;
-								entTB.Focus();
-
-								//if (((Control)e.NewFocus).Name == entTB.Name)
-								//{
-								//    return;
-								//}
-								if (!shouldButtonClick)
-									return;
-								break;
-							}
-						}
-					}
-					else if ((parent1 as FrameworkElement).Parent is ASNumericBox)
-					{
-						var numBox = (parent1 as FrameworkElement).Parent as ASNumericBox;
-
-						var numBoxGrid = numBox.Content as Grid;
-						foreach (var item in numBoxGrid.Children)
-						{
-							if (item is ASNumericTextBox)
-							{
-								var numTB = item as ASNumericTextBox;
-								numTB.Focus();
-
-								//if (((Control)e.NewFocus).Name == numTB.Name)
-								//{
-								//    return;
-								//}
-								if (!shouldButtonClick)
-									return;
-								break;
-							}
-						}
-					}
-				}
-			}
-
-
 			string funcName;
-			if (!m_actionHandlers.TryGetValue(widgetName, out funcName))
+			if (m_actionHandlers.TryGetValue(widgetName, out funcName))
 			{
-				return;
-			}
+                Control2Window.TryGetValue(widget, out Window win);
+                Interpreter.Run(funcName, new Variable(widgetName), Variable.EmptyInstance, Variable.EmptyInstance,
+                    GetScript(win));
+            }
 
-			Variable result = null;
-			if (widget is CheckBox)
-			{
-				var checkBox = widget as CheckBox;
-				var val = checkBox.IsChecked == true ? true : false;
-				result = new Variable(val);
-			}
-			else
-			{
-				result = new Variable(widgetName);
-			}
-
-			if (widget is Button)
-			{
-				if (widget.Parent is Grid)
-				{
-					if ((widget.Parent as Grid).Parent is ASNumericBox)
-					{
-						var nb = (widget.Parent as Grid).Parent as ASNumericBox;
-						nb.FormatNumericTextBox();
-					}
-				}
-			}
-
-			//ValueUpdated(funcName, widgetName, widget, result);
 		}
 
 		private void Widget_PreClick(object sender, MouseButtonEventArgs e)

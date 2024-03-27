@@ -7,30 +7,33 @@ function regionPieChartDone(){
 	AsyncCall("setTop10Products", "top10ProductsDone");
 }
 function top10ProductsDone(){
-	AsyncCall("setCustomerDataGrid", "customerDataGridDone");
+	AsyncCall("setCustomerDataGrid", "setDefaultCursor");
 }
-function customerDataGridDone(){
+function setDefaultCursor(){
 	cursor("dflt");
 }
-/*
-drzaveRB@clicked()
+
+function drzaveRB@clicked()
 {
-	//AsyncCall("setRegionPieChart", "regionPieChartDone");
-	setRegionPieChart();
+	cursor("wait");
+	AsyncCall("setRegionPieChart", "setDefaultCursor");
+	//setRegionPieChart();
 }
 
-regijeRB@clicked()
+function regijeRB@clicked()
 {
-	//AsyncCall("setRegionPieChart", "regionPieChartDone");
-	setRegionPieChart();
+	cursor("wait");
+	AsyncCall("setRegionPieChart", "setDefaultCursor");
+	//setRegionPieChart();
 }
 
-gradoviRB@clicked()
+function gradoviRB@clicked()
 {
-	//AsyncCall("setRegionPieChart", "regionPieChartDone");
-	setRegionPieChart();
+	cursor("wait");
+	AsyncCall("setRegionPieChart", "setDefaultCursor");
+	//setRegionPieChart();
 }
-*/
+
 function setRegionPieChart()
 {
 	sql_str= "";	
@@ -124,7 +127,7 @@ function setRegionPieChart()
         sql_str = sql_str + " From TopItems2 Where Num <= 6 Union ALL Select 'ostali', coalesce(round(sum(Origin),0), 0) as Iznos ";
         sql_str = sql_str + " From TopItems2 Where Num > 6 ";
     }
-MessageBox(sql_str);
+	//MessageBox(sql_str);
 	try	{
 		queryResult = sqlquery(sql_str);
 	}catch(exc){
