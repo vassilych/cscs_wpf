@@ -1,4 +1,4 @@
-<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -244,7 +244,7 @@
                              Margin="8,17,0,0"
                              x:Name="drzaveRB"
                              DataContext="drzaveRB"
-                             Content="drzave"
+                             Content="države"
                              Foreground="Black"
                              IsChecked="True" />
                 <RadioButton HorizontalAlignment="Left"
