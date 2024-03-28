@@ -16,7 +16,6 @@ function Wxbiprb_onDisplay()
     sqlQueryString = "select SY_CC_USER, SY_CC_YEAR, SY_CC_DBASE from " + strtrim(CommonDBGet()) + ".dbo.NKSYCCYR WHERE SY_CC_CODE = '" + companyCode + "'";
     try
         {
-    //SaveFile(sqlQueryString);        
         sqlResult = sqlQuery(sqlQueryString);
         }
     catch(exc)
@@ -110,6 +109,7 @@ function Wxbiprb_onDisplay()
     setFocus("gbPripremi");
     tip_racuna= "SVI TIPOVI";
     gradoviRB= true;
+    pieChartStr= "Gradovi";
     }
 
 function gbPripremi@clicked()

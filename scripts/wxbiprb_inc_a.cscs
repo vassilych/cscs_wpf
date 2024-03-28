@@ -72,8 +72,8 @@ function setLast10InvoicesDataGrid()
 		sql_str =  "SELECT TOP 10 nkpr_gl_num , nkpr_gl_cusnme , CONVERT(char(8) ,  nkpr_gl_datecr , 3) AS datecr , convert(char(8) , nkpr_gl_timecr , 20) as nkpr_gl_timecr ,  ";
 		sql_str =  sql_str +  " CAST( CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_gl_total ELSE nkpr_gl_total END as decimal (10,2))  AS nkpr_gl_total " ;
 	}
-	sql_str =  sql_str +  " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv" ;
-	sql_str =  sql_str +  " WHERE YEAR(nkpr_gl_datem) =  " + ovagod_h  ;
+	sql_str +=  " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv" ;
+	sql_str +=  " WHERE YEAR(nkpr_gl_datem) =  " + ovagod_h  ;
 	if ( do_mjeseca == true )
 	{
 		sql_str =  sql_str +  " AND month(nkpr_gl_datem)< =  " + mjesec_h  ;
@@ -411,11 +411,11 @@ function setChartByMonth()
                 
             }
             sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkprinvl ON nkpr_gl_num = nkpr_ln_invnm";
-            sql_str= sql_str+ " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkmkarti ON nkpr_ln_pcode= arti_artikl";
+            sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkmkarti ON nkpr_ln_pcode= arti_artikl";
             sql_str += " WHERE 1=1 AND year(nkpr_gl_datem) = " + ovagod_h; //BETWEEN '"+sqlDate(od_danaLG)+"' AND '"+sqlDate(do_danaLG)+"'"  ";
             filterPart();
-            sql_str = sql_str + " GROUP BY CONVERT(varchar(6),nkpr_gl_datem,112)";
-            sql_str = sql_str + " ORDER BY CONVERT(varchar(6),nkpr_gl_datem,112);";
+            sql_str += " GROUP BY CONVERT(varchar(6),nkpr_gl_datem,112)";
+            sql_str += " ORDER BY CONVERT(varchar(6),nkpr_gl_datem,112);";
             try
             {
                  //SaveFile(sql_str);
