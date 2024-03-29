@@ -217,7 +217,6 @@
             </DataGrid.Columns>
         </DataGrid>
         <ComboBox x:Name="cbPieChart" DataContext="PieChartStr" Grid.Column="1" HorizontalAlignment="Right" Margin="0,23,322,0" VerticalAlignment="Top" Width="149" Height="22" TabIndex="30"/>
-        <Button x:Name="gbRefresh2" Grid.Column="1" Content="Refresh" HorizontalAlignment="Left" Margin="180,23,0,0" VerticalAlignment="Top" Height="22" Width="66"/>
 
     </Grid>
 </Window>

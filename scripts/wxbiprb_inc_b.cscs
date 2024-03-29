@@ -1,17 +1,33 @@
+define refreshPie type l;
+
 function wxbiprbb_onDisplay()
 {
+	cursor("wait");
+
+	refreshPie = false;
     comboItems = {"Gradovi","Regije", "Države"};
     AddWidgetData(cbPieChart, comboItems);
     pieChartStr= "Gradovi";
 
+	AsyncCall("setRegionPieChart", "regionPieChartDone");
+		
+	refreshPie = true;
+}
+
+function cbPieChart@SelectionChanged(){
+	if(refreshPie == false){
+		return;
+	}
+
 	cursor("wait");
-	//AsyncCall("setRegionPieChart", "regionPieChartDone");
-	setRegionPieChart();
-	setTop10Products();
-	setCustomerDataGrid();
+	AsyncCall("setRegionPieChart", "setRegionPieChartDone");
+	
+}
+
+function setRegionPieChartDone(){
 	cursor("dflt");
 }
-/*
+
 function regionPieChartDone(){
 	AsyncCall("setTop10Products", "top10ProductsDone");
 }
@@ -21,7 +37,7 @@ function top10ProductsDone(){
 function setDefaultCursor(){
 	cursor("dflt");
 }
-*/
+
 /*
 function drzaveRB@clicked()
 {
@@ -867,9 +883,4 @@ function filterPart()
 //MessageBox("aaaa: "+sql_str);		
 	}
 
-}
-
-function gbRefresh2@clicked()
-{
-    setRegionPieChart();
 }

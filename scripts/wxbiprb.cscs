@@ -109,7 +109,6 @@ function Wxbiprb_onDisplay()
     setFocus("gbPripremi");
     tip_racuna= "SVI TIPOVI";
     gradoviRB= true;
-    pieChartStr= "Gradovi";
     }
 
 function gbPripremi@clicked()
