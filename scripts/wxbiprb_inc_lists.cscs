@@ -183,6 +183,10 @@
     define dan2 type i;
     define tableHndl type i;
     define pieChartStr type a size 20;
+    define refreshpie type l;    
+    
+    
+
 
 //=============================================
 

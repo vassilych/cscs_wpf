@@ -216,7 +216,7 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <ComboBox x:Name="cbPieChart" DataContext="PieChartStr" Grid.Column="1" HorizontalAlignment="Right" Margin="0,23,322,0" VerticalAlignment="Top" Width="149" Height="22" TabIndex="30"/>
+        <ComboBox x:Name="cbPieChart" DataContext="PieChartStr" HorizontalAlignment="Right" Margin="0,29,18,0" VerticalAlignment="Top" Width="149" Height="22" TabIndex="30"/>
 
     </Grid>
 </Window>

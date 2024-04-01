@@ -2,7 +2,6 @@ Import(strTrim(mpath()) + "CSCS.Math.dll");
 include(strTrim(tpath()) +"wxbiprb_inc_lists.cscs"); //look-up lists
 include(strTrim(tpath()) +"wxbiprb_inc_a.cscs"); //look-up lists
 include(strTrim(tpath()) +"wxbiprb_inc_b.cscs"); //look-up lists
-
 CreateWindow(strTrim(tpath()) +"wxbiprb.xaml");
 
 function Wxbiprb_onDisplay()
@@ -72,6 +71,7 @@ function Wxbiprb_onDisplay()
         fiscal_yr = sqlResult[1][2];
     } 
     bezPdvaField = true;
+
     //kasnije zamijenit sa funkcijom, kada se bude koristi adictionary
     sqlQueryString = "select SY_CC_DBASE from " + CommonDBGet() + ".dbo.NKSYCCYR WHERE SY_CC_USER = '" + imeFirme + "' AND SY_CC_YEAR = '" + (int(ovagod_h) - 1) + "'";
     try
@@ -203,62 +203,28 @@ function setCustomerAndInvoiceCounts()
         broj_rac_og = 0;
         broj_rac_lg = 0;
         sql_str = "SELECT count(distinct nkpr_gl_cuscod) as br_kupaca_lg,count(nkpr_gl_num) as broj_rac_lg";
-        sql_str = sql_str + " FROM " + proslaGodinaBaza + ".dbo.nkprinv";
-        sql_str= sql_str+ " LEFT JOIN "+proslaGodinaBaza+".dbo.nkprinvl ON nkpr_gl_num= nkpr_ln_invnm";
+        sql_str += " FROM " + proslaGodinaBaza + ".dbo.nkprinv";
+        sql_str += " LEFT JOIN "+proslaGodinaBaza+".dbo.nkprinvl ON nkpr_gl_num= nkpr_ln_invnm";
         sql_str += " LEFT JOIN "+proslaGodinaBaza+".dbo.nkmkarti ON nkpr_ln_pcode= arti_artikl";
         if (regija != "")
         {
-            sql_str = sql_str + " LEFT JOIN " + proslaGodinaBaza + ".dbo.nkscpart g ON nkpr_gl_cuscod= g.nksc_partcode";
+            sql_str += " LEFT JOIN " + proslaGodinaBaza + ".dbo.nkscpart g ON nkpr_gl_cuscod= g.nksc_partcode";
         }
-        sql_str = sql_str + " WHERE 1=1"; //nkpr_gl_subtot > 0 AND nkpr_gl_oznaka= 'S'";
+        sql_str += " WHERE 1=1"; //nkpr_gl_subtot > 0 AND nkpr_gl_oznaka= 'S'";
         if ( mjesec_h != "")
         {
-            if(do_mjeseca == true)
+            if(do_mjeseca)
             {
-                sql_str = sql_str + " AND month(nkpr_gl_datem)<= " + mjesec_h;
-                sql_str = sql_str + " AND YEAR(nkpr_gl_datem)= " + lani_h;
+                sql_str += " AND month(nkpr_gl_datem)<= " + mjesec_h;
+                sql_str += " AND YEAR(nkpr_gl_datem)= " + lani_h;
             }
             else
             {
-                sql_str = sql_str + " AND month(nkpr_gl_datem)= " + mjesec_h;
-                sql_str = sql_str + " AND YEAR(nkpr_gl_datem)= " + lani_h;
+                sql_str += " AND month(nkpr_gl_datem)= " + mjesec_h;
+                sql_str += " AND YEAR(nkpr_gl_datem)= " + lani_h;
             }
         }
         filterPart();
-        /*
-        if (regija != "")
-        {
-            sql_str= sql_str + " AND g.nksc_regija= '" + regija + "'";
-        }
-        if (gl_oznaka != "")
-	    {
-            sql_str= sql_str+ " AND nkpr_gl_oznaka= '"+gl_oznaka+"'";
-    	    if (GL_oznaka == "X" || GL_oznaka == "O" || GL_oznaka == "R" )  //ako je to storno, odobrenje ili reklamacija neka okrene
-	    	{
-                sql_str= sql_str+ " AND nkpr_ln_pext< 0";
-		    }
-            else
-		    {
-                sql_str= sql_str+ " AND nkpr_ln_pext>= 0";
-		    }
-	    }
-        if (komercijalist != "")
-    	{
-            sql_str= sql_str+ " AND nkpr_gl_slsp= "+komercijalist;
-    	}
-        if (domaca_dn== true)
-    	{
-            sql_str= sql_str+ " AND nkpr_gl_drzava= '"+kpsy_po_freight+"'";
-	    }
-        elif (eu_dn== true)
-	    {
-            sql_str= sql_str+ " AND nkpr_gl_drzava IN ("+eucountries+")";
-	    }
-        elif (izvoz_dn== true)
-	    {
-            sql_str= sql_str+ " AND nkpr_gl_drzava<> '"+kpsy_po_freight+"' AND NOT nkpr_gl_drzava IN ("+eucountries+")";
-	    }
-        */
         sqlResult = SqlQuery(sql_str);
         if (size(sqlResult) !== 0)
         {
@@ -266,63 +232,29 @@ function setCustomerAndInvoiceCounts()
             broj_rac_lg = sqlResult[1][1];
         }    
         sql_str = "SELECT count(distinct nkpr_gl_cuscod) as br_kupaca_og, count(nkpr_gl_num) as broj_rac_og";
-        sql_str = sql_str + " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv";
-        sql_str= sql_str+ " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkprinvl ON nkpr_gl_num= nkpr_ln_invnm";
+        sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv";
+        sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkprinvl ON nkpr_gl_num= nkpr_ln_invnm";
         sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkmkarti ON nkpr_ln_pcode= arti_artikl";
         if(regija != "")
         {
-            sql_str = sql_str + " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart g ON nkpr_gl_cuscod= g.nksc_partcode";
+            sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart g ON nkpr_gl_cuscod= g.nksc_partcode";
         }
-        sql_str = sql_str + " WHERE 1=1"; //nkpr_gl_subtot> 0 AND nkpr_gl_oznaka= 'S'";
+        sql_str += " WHERE 1=1"; //nkpr_gl_subtot> 0 AND nkpr_gl_oznaka= 'S'";
         if(mjesec_h != "")
         {
-            if(do_mjeseca == true)
+            if(do_mjeseca)
             {
-                sql_str= sql_str + " AND month(nkpr_gl_datem)<= " + mjesec_h;
-                sql_str= sql_str + " AND YEAR(nkpr_gl_datem)= " + ovagod_h;
+                sql_str += " AND month(nkpr_gl_datem)<= " + mjesec_h;
+                sql_str += " AND YEAR(nkpr_gl_datem)= " + ovagod_h;
             }
             else
             {
-                sql_str = sql_str + " AND month(nkpr_gl_datem)= " + mjesec_h;
-                sql_str = sql_str + " AND YEAR(nkpr_gl_datem)= " + ovagod_h;
+                sql_str += " AND month(nkpr_gl_datem)= " + mjesec_h;
+                sql_str += " AND YEAR(nkpr_gl_datem)= " + ovagod_h;
             }
         }
         //sql_str= sql_str* " AND DATEDIFF(day,nkpr_gl_invdte, CURRENT_TIMESTAMP) BETWEEN 0 AND 31"
         filterPart();
-        /*
-        if(regija != "")
-        {
-            sql_str = sql_str + " AND g.nksc_regija= '" + regija + "'";
-        }
-        if (gl_oznaka != "")
-	    {
-            sql_str= sql_str+ " AND nkpr_gl_oznaka= '"+gl_oznaka+"'";
-	        if (GL_oznaka == "X" || GL_oznaka == "O" || GL_oznaka == "R" )  //ako je to storno, odobrenje ili reklamacija neka okrene
-    		{
-                sql_str= sql_str+ " AND nkpr_ln_pext< 0";
-		    }
-            else
-    		{
-                sql_str= sql_str+ " AND nkpr_ln_pext>= 0";
-	    	}
-    	}
-        if (komercijalist != "")
-    	{
-            sql_str= sql_str+ " AND nkpr_gl_slsp= "+komercijalist;
-    	}
-        if (domaca_dn== true)
-    	{
-            sql_str= sql_str+ " AND nkpr_gl_drzava= '"+kpsy_po_freight+"'";
-	    }
-        elif (eu_dn== true)
-	    {
-            sql_str= sql_str+ " AND nkpr_gl_drzava IN ("+eucountries+")";
-	    }
-        elif (izvoz_dn== true)
-	    {
-            sql_str= sql_str+ " AND nkpr_gl_drzava<> '"+kpsy_po_freight+"' AND NOT nkpr_gl_drzava IN ("+eucountries+")";
-	    }
-        */
         sqlResult = SqlQuery(sql_str);
         if (size(sqlResult) !== 0)
         {
