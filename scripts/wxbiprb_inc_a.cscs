@@ -172,35 +172,42 @@ function setChartByDaysOfMonth()
         if (bezPdvaField)
         {
              sql_str = "SELECT [wk_day] as dan2 , SalesDay = ISNULL(ROUND(SUM(CASE WHEN c.nkpr_gl_dviza = 'D' THEN c.nkpr_gl_tecaj * e.nkpr_ln_amt ELSE e.nkpr_ln_amt END),0) , 0)";
-             sql_str += ", ROUND(AVG(SUM(CASE WHEN c.nkpr_gl_dviza = 'D' THEN c.nkpr_gl_tecaj * e.nkpr_ln_amt ELSE e.nkpr_ln_amt END)) OVER(ORDER BY wk_day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0) AS moving_average_3_days";
+             sql_str += ", ISNULL(ROUND(AVG(SUM(CASE WHEN c.nkpr_gl_dviza = 'D' THEN c.nkpr_gl_tecaj * e.nkpr_ln_amt ELSE e.nkpr_ln_amt END)) OVER(ORDER BY wk_day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0),0) AS moving_average_3_days";
         }
         elif (razlikaUCijeniField)
         {
              sql_str = "SELECT [wk_day] as dan2 , SalesDay = ISNULL(SUM(CASE WHEN c.nkpr_gl_dviza = 'D' THEN c.nkpr_gl_tecaj * (e.nkpr_ln_amt - e.nkpr_ln_cenan * e.nkpr_ln_qtyz) ELSE e.nkpr_ln_amt - e.nkpr_ln_cenan * e.nkpr_ln_qtyz END) , 0)";
+             sql_str += ", ISNULL(ROUND(AVG(SUM(CASE WHEN c.nkpr_gl_dviza = 'D' THEN c.nkpr_gl_tecaj * (e.nkpr_ln_amt - e.nkpr_ln_cenan * e.nkpr_ln_qtyz) ELSE e.nkpr_ln_amt - e.nkpr_ln_cenan * e.nkpr_ln_qtyz END)) OVER(ORDER BY wk_day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0),0) AS moving_average_3_days";
         }
         elif (tezina_dn)
         {
              sql_str = " SELECT [wk_day] as dan2, SalesDay=ISNULL(SUM(e.nkpr_ln_tezinan), 0) ";
+             sql_str += ", ISNULL(ROUND(AVG(SUM(e.nkpr_ln_tezinan)) OVER(ORDER BY wk_day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), 0) AS moving_average_3_days";
         }
         elif (mx3_dn)
         {
              sql_str = " SELECT [wk_day] as dan2, SalesDay=ISNULL(SUM(e.nkpr_ln_metx3), 0) ";
+             sql_str += ", ISNULL(ROUND(AVG(SUM(e.nkpr_ln_metx3)) OVER(ORDER BY wk_day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), 0) AS moving_average_3_days";
         }
         elif (mx2_dn)
         {
              sql_str = " SELECT [wk_day] as dan2, SalesDay=ISNULL(SUM(e.nkpr_ln_metx2), 0) ";
+             sql_str += ", ISNULL(ROUND(AVG(SUM(e.nkpr_ln_metx2)) OVER(ORDER BY wk_day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), 0) AS moving_average_3_days";
         }
         elif (met_dn)
         {
              sql_str = " SELECT [wk_day] as dan2, SalesDay=ISNULL(SUM(e.nkpr_ln_met), 0) ";
+             sql_str += ", ISNULL(ROUND(AVG(SUM(e.nkpr_ln_met)) OVER(ORDER BY wk_day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), 0) AS moving_average_3_days";
         }
         elif (kom_dn)
         {
              sql_str = " SELECT [wk_day] as dan2, SalesDay=ISNULL(SUM(e.nkpr_ln_kom), 0) ";
+             sql_str += ", ISNULL(ROUND(AVG(SUM(e.nkpr_ln_kom)) OVER(ORDER BY wk_day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), 0) AS moving_average_3_days";
         }
         else
         {
              sql_str = "SELECT [wk_day] as dan2 , SalesDay = ISNULL(SUM(CASE WHEN c.nkpr_gl_dviza = 'D' THEN c.nkpr_gl_tecaj * e.nkpr_ln_pext ELSE e.nkpr_ln_pext END) , 0)";
+             sql_str += ", ISNULL(ROUND(AVG(SUM(CASE WHEN c.nkpr_gl_dviza = 'D' THEN c.nkpr_gl_tecaj * e.nkpr_ln_pext ELSE e.nkpr_ln_pext END)) OVER(ORDER BY wk_day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), 0) AS moving_average_3_days";
         }
         sql_str += " FROM " + CommonDBGet()+ ".dbo.Kalendar a";
         //sql_str =  sql_str +  " LEFT JOIN " + ovagod_h * ".dbo.nkprinv b ON a.[Wk_Date]  =  DATEADD(month ,  DATEDIFF(month ,  0 ,  b.nkpr_gl_invdte) ,  0)"
@@ -232,9 +239,11 @@ function setChartByDaysOfMonth()
         {
               MessageBox(exc);
         }
+      
         arrayDani = {};
         arrayVrijednosti = {};
         arrayAvr = {};
+
        for(i = 1; i < queryResult.length; i++)
         {
             arrayDani.add(string(queryResult[i][0]));

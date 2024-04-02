@@ -1,6 +1,8 @@
 function wxbiprbb_onDisplay()
 {
 	cursor("wait");
+	setKategPieChart();
+	DisplayKategPieChart();
 
 	refreshPie = false;
     comboItems = {"Gradovi","Regije", "Države"};
@@ -890,3 +892,117 @@ function filterPart()
 	}
 
 }
+
+function setKategPieChart()
+{
+//	MessageBox( pieChartStr);
+	sql_str= "";	
+		sql_str = "";
+		sql_str += " SELECT CASE WHEN num<= 5 THEN Naziv ELSE 'Ostali' END AS Kategorija , round(sum(suma),0) as Origin";
+		sql_str += " FROM (SELECT ISNULL(CASE WHEN SUBSTRING(mkgr_rezerva,1,50)> '' THEN SUBSTRING(mkgr_rezerva,1,50) ELSE mkgr_naziv END,'NEDEFINIRANO') as naziv,";
+        if (bezPdvaField  )
+		{
+			sql_str += " sum(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_ln_amt ELSE nkpr_ln_amt END) AS Suma,";
+			sql_str += " ROW_NUMBER() OVER( ORDER BY sum(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_ln_amt ELSE nkpr_ln_amt END) DESC ) As Num";
+		}	
+        elif (razlikaUCijeniField  )
+		{
+			sql_str += " sum(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_ln_amt - nkpr_ln_cenan * nkpr_ln_qtyz ELSE nkpr_ln_amt - nkpr_ln_cenan * nkpr_ln_qtyz END) AS Suma,";
+            sql_str += " ROW_NUMBER() OVER( ORDER BY sum(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_ln_amt - nkpr_ln_cenan * nkpr_ln_qtyz ELSE nkpr_ln_amt - nkpr_ln_cenan * nkpr_ln_qtyz END) DESC ) As Num";
+		}	
+        elif (tezina_dn  )
+		{
+            sql_str += " FROM (SELECT nkpr_gl_cuscty, sum(nkpr_ln_tezinan) AS Suma,";
+            sql_str += " ROW_NUMBER() OVER( ORDER BY sum(nkpr_ln_tezinan) DESC ) As Num";
+		}	
+        elif (mx3_dn  )
+		{
+            sql_str += " FROM (SELECT nkpr_gl_cuscty, sum(nkpr_ln_metx3) AS Suma,";
+            sql_str += " ROW_NUMBER() OVER( ORDER BY sum(nkpr_ln_metx3) DESC ) As Num";
+		}	
+        elif (mx2_dn  )
+		{
+            sql_str += " FROM (SELECT nkpr_gl_cuscty, sum(nkpr_ln_metx2) AS Suma,";
+            sql_str += " ROW_NUMBER() OVER( ORDER BY sum(nkpr_ln_metx2) DESC ) As Num";
+		}	
+        elif (met_dn  )
+		{
+            sql_str += " FROM (SELECT nkpr_gl_cuscty, sum(nkpr_ln_met) AS Suma,";
+            sql_str += " ROW_NUMBER() OVER( ORDER BY sum(nkpr_ln_met) DESC ) As Num";
+		}	
+        elif (kom_dn  )
+		{
+            sql_str += " FROM (SELECT nkpr_gl_cuscty, sum(nkpr_ln_kom) AS Suma,";
+            sql_str += " ROW_NUMBER() OVER( ORDER BY sum(nkpr_ln_kom) DESC ) As Num";
+		}	
+        else
+		{
+            sql_str += " FROM (SELECT nkpr_gl_cuscty, sum(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_ln_pext ELSE nkpr_ln_pext END) AS Suma,";
+            sql_str += " ROW_NUMBER() OVER( ORDER BY sum(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_ln_pext ELSE nkpr_ln_pext END) DESC ) As Num";
+		}
+			sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv AS U";
+        	sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkprinvl ON nkpr_gl_num = nkpr_ln_invnm";
+        	sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkmkarti ON arti_artikl = nkpr_ln_pcode";
+        	sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.pkmkgrup ON arti_kategorija= mkgr_grupa AND mkgr_vrsta= 'K'";
+    		sql_str += " WHERE YEAR(nkpr_gl_datem)=" + ovagod_h ;
+	        if (do_mjeseca  )
+			{
+    	        sql_str += " AND Month(nkpr_gl_datem)<=" + mjesec_h;
+			}	
+    	    else
+			{
+            	sql_str += " AND Month(nkpr_gl_datem)=" + mjesec_h;
+			}	
+            if (kategorija != '' & klasa != '')
+			{
+                sql_str += " (grKateg.mkgr_grupa= arti_kategorija AND grKateg.mkgr_vrsta='K') OR (grKateg.mkgr_grupa= arti_klasa AND grKateg.mkgr_vrsta='L')";
+			}	
+            elif ( kategorija != '')
+			{
+                sql_str += " grKateg.mkgr_grupa= arti_kategorija AND grKateg.mkgr_vrsta='K'";
+			}	
+            elif ( klasa != '')
+			{
+                sql_str += " grKateg.mkgr_grupa= arti_klasa AND grKateg.mkgr_vrsta='L'";
+			}
+        	filterPart();
+	   		sql_str += " GROUP BY SUBSTRING(mkgr_rezerva,1,50),mkgr_naziv) t";
+			sql_str += " GROUP BY CASE WHEN num <= 5 THEN Naziv ELSE 'Ostali' END";
+			sql_str += " ORDER BY origin desc";
+			SaveFile(sql_str);
+			try	{
+				queryResult = sqlquery(sql_str);
+			}
+			catch(exc){
+				MessageBox(exc);
+			}
+}
+function DisplayKategPieChart(){
+	PieChart("PieChartKat", "init");
+    PieChart("PieChartKat", "seriesType", "pie");
+    PieChart("PieChartKAt", "title", "Pie Chart Title", 20);    
+	for(i = 1; i < queryResult.length; i++)
+	{
+		PieChart("PieChartKat", "values", int(queryResult[i][1]) , string(queryResult[i][0].trim()), 50);
+	}
+}
+    
+
+/*
+        sql_str += " FROM " + trenutnaGodinaBaza + " .dbo.nkprinv AS U LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart ON nkpr_gl_cuscod= nksc_partcode";
+        sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkprinvl ON nkpr_gl_num = nkpr_ln_invnm";
+        sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkmkarti ON arti_artikl = nkpr_ln_pcode";
+        sql_str += " WHERE YEAR(nkpr_gl_datem)= " + ovagod_h;
+        if (do_mjeseca  )
+		{
+            sql_str += " AND Month(nkpr_gl_datem)<=" + mjesec_h;
+		}	
+        else
+		{
+            sql_str += " AND Month(nkpr_gl_datem)=" + mjesec_h;
+		}	
+        filterPart();
+        sql_str += " GROUP BY nkpr_gl_cuscty) t";
+        sql_str += " GROUP BY CASE WHEN num <= 5 THEN nkpr_gl_cuscty ELSE 'Ostali' END" ;
+        sql_str += " ORDER BY origin desc";
+*/

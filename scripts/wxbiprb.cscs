@@ -642,25 +642,25 @@ function setWeekComparison(){
 	sql_str = sql_str + " AND nkpr_gl_datem >= '" + fiscal_yr + "'";
     filterPart();
     /*
-    if (kategorija!= ''){ sql_str= sql_str+ " AND arti_kategorija='"+kategorija+"'";}
-    if (klasa!= ''){ sql_str= sql_str+ " AND arti_klasa='"+klasa+"'";}
-    if (partner!= ''){ sql_str= sql_str+ " AND nkpr_gl_cuscod= '"+partner+"'";}
-    if (isporuka!= ''){ sql_str= sql_str+ " AND nkpr_gl_shpcod= '"+isporuka+"'";}
-    if (regija!= ''){ sql_str= sql_str+ " AND nksc_regija= '"+regija+"'";}
+    if (kategorija!= ''){ sql_str += " AND arti_kategorija='"+kategorija+"'";}
+    if (klasa!= ''){ sql_str += " AND arti_klasa='"+klasa+"'";}
+    if (partner!= ''){ sql_str += " AND nkpr_gl_cuscod= '"+partner+"'";}
+    if (isporuka!= ''){ sql_str += " AND nkpr_gl_shpcod= '"+isporuka+"'";}
+    if (regija!= ''){ sql_str += " AND nksc_regija= '"+regija+"'";}
 
-    if (artikl!= ''){ sql_str= sql_str+ " AND nkpr_ln_pcode= '"+artikl+"'";}
-    if (gl_oznaka!= ''){ sql_str= sql_str+ " AND nkpr_gl_oznaka= '"+gl_oznaka+"'";}
-    if (komercijalist!= ""){ sql_str= sql_str+ " AND nkpr_gl_slsp= "+komercijalist;}
-    if (rnalog!= ""){ sql_str= sql_str+ " AND nkpr_ln_rnalg= "+rnalog;}
-    if (ruc_dn== true){ sql_str= sql_str+ " AND nkpr_gl_invcd IN ('B','D')";}
+    if (artikl!= ''){ sql_str += " AND nkpr_ln_pcode= '"+artikl+"'";}
+    if (gl_oznaka!= ''){ sql_str += " AND nkpr_gl_oznaka= '"+gl_oznaka+"'";}
+    if (komercijalist!= ""){ sql_str += " AND nkpr_gl_slsp= "+komercijalist;}
+    if (rnalog!= ""){ sql_str += " AND nkpr_ln_rnalg= "+rnalog;}
+    if (ruc_dn== true){ sql_str += " AND nkpr_gl_invcd IN ('B','D')";}
 
-    if (domaca_dn== true){ sql_str= sql_str+ " AND nkpr_gl_drzava= '"+kpsy_po_freight+"'";}
-    elif (eu_dn== true){ sql_str= sql_str+ " AND nkpr_gl_drzava IN ("+eucountries+")";}
-    elif (izvoz_dn== true){ sql_str= sql_str+ " AND nkpr_gl_drzava!= '"+kpsy_po_freight+"' AND NOT nkpr_gl_drzava IN ("+eucountries+")";}
+    if (domaca_dn== true){ sql_str += " AND nkpr_gl_drzava= '"+kpsy_po_freight+"'";}
+    elif (eu_dn== true){ sql_str += " AND nkpr_gl_drzava IN ("+eucountries+")";}
+    elif (izvoz_dn== true){ sql_str += " AND nkpr_gl_drzava!= '"+kpsy_po_freight+"' AND NOT nkpr_gl_drzava IN ("+eucountries+")";}
 
-    if (roba_dn== true){ sql_str= sql_str+ " AND nkpr_ln_ma_us IN ( 'R','G','S')";}
-    elif (usluge_dn== true){ sql_str= sql_str+ " AND nkpr_ln_ma_us= 'N'";}
-    elif (povnak_dn== true){ sql_str= sql_str+ " AND nkpr_ln_ma_us= 'P'";}
+    if (roba_dn== true){ sql_str += " AND nkpr_ln_ma_us IN ( 'R','G','S')";}
+    elif (usluge_dn== true){ sql_str += " AND nkpr_ln_ma_us= 'N'";}
+    elif (povnak_dn== true){ sql_str += " AND nkpr_ln_ma_us= 'P'";}
     elif (avans_dn== true){ sql_str= sql_str+ " AND nkpr_ln_ma_us= 'A'";}
 	
 	if ( partner != "" )

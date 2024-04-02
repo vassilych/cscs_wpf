@@ -31,6 +31,16 @@
                       HorizontalAlignment="Left"
                       Width="452"
                       Height="330" FontSize="10" HorizontalContentAlignment="Left"/>
+        <Label Name="Top6Kategorija" VerticalAlignment="Top" HorizontalAlignment="Left" Width="195" Height="35" Margin="10,10,0,0" Content="Top 6 - Kategorija" Grid.Column="1"
+               FontSize="16"
+               FontWeight="Bold"/>
+        <lvc:PieChart LegendPosition="Bottom"
+                      Name="PieChartKat"
+                      VerticalAlignment="Center"
+                      HorizontalAlignment="Left"
+                      Grid.Row="0" Grid.Column="1"
+                      Width="452"
+                      Height="330" FontSize="10" HorizontalContentAlignment="Left"/>
         <Label Name="Top10Artikli" VerticalAlignment="Top" HorizontalAlignment="Left" Width="195" Height="35" Margin="0,10,0,0" Content="Top 10 - Artikli"
                Grid.Row="1"
                FontSize="16"
