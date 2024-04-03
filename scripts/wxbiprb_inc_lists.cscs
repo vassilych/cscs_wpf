@@ -467,3 +467,94 @@ function neRnalog@post()
     }
 }
 
+//-------------------------------------------------------------
+
+function filterPart()
+{
+
+    if (sklad_str != "")
+	{
+        sql_str += " AND nkpr_ln_loc IN ("+sklad_str+")";
+	}
+    if ( razlikaUCijeniField   )
+    {
+        sql_str += " AND nkpr_gl_invcd != ''" ;
+        //da bi dobili ruc ,  treba ra?un biti a?uriran
+    }
+    if (artikl != "")
+	{
+        sql_str += " AND nkpr_ln_pcode= '"+artikl+"'";
+	}
+
+    if (roba_dn )
+	{
+        sql_str += " AND nkpr_ln_ma_us IN ( 'R','G','S')";
+	}
+    elif (usluge_dn )
+	{
+        sql_str += " AND nkpr_ln_ma_us= 'N'";
+	}
+    elif (povnak_dn )
+	{
+        sql_str += " AND nkpr_ln_ma_us= 'P'";
+	}
+    elif (avans_dn )
+	{
+        sql_str += " AND nkpr_ln_ma_us= 'A'";
+	}
+
+    if (kategorija != "")
+	{
+        sql_str += " AND arti_kategorija='"+kategorija+"'";
+	}
+    if (klasa != "")
+	{
+        sql_str += " AND arti_klasa='"+klasa+"'";
+	}
+    if (regija != "")
+	{
+        sql_str += " AND g.nksc_regija= '"+regija+"'";
+	}
+    if (partner != "")
+	{
+        sql_str += " AND nkpr_gl_cuscod= '"+partner+"'";
+	}
+    if (isporuka != "")
+	{
+        sql_str += " AND nkpr_gl_shpcod= '"+isporuka+"'";
+	}
+    if (komercijalist != "")
+	{
+        sql_str += " AND nkpr_gl_slsp= "+komercijalist;
+	}
+    if (rnalog != "")
+	{
+        sql_str += " AND nkpr_ln_rnalg= "+rnalog;
+	}
+
+    if (domaca_dn )
+	{
+        sql_str += " AND nkpr_gl_drzava= '"+kpsy_po_freight+"'";
+	}
+    elif (eu_dn )
+	{
+        sql_str +=  " AND nkpr_gl_drzava IN ("+eucountries+")";
+	}
+    elif (izvoz_dn )
+	{
+        sql_str += " AND nkpr_gl_drzava != '"+kpsy_po_freight+"' AND NOT nkpr_gl_drzava IN ("+eucountries+")";
+	}
+    if (gl_oznaka != "")
+	{
+        sql_str += " AND nkpr_gl_oznaka= '"+gl_oznaka+"'";
+	    if (GL_oznaka == "X" || GL_oznaka == "O" || GL_oznaka == "R" )  //ako je to storno, odobrenje ili reklamacija neka okrene
+		{
+            sql_str += " AND nkpr_ln_pext< 0";
+		}
+        else
+		{
+            sql_str += " AND nkpr_ln_pext>= 0";
+		}
+	}
+
+}

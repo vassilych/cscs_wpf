@@ -218,6 +218,7 @@
     <Compile Include="CSCS\Variable.cs" />
     <Compile Include="CSCS_GUI.cs" />
     <Compile Include="TasFunctions.cs" />
+    <Compile Include="TestClass1.cs" />
     <Page Include="scripts\ChainChlid.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

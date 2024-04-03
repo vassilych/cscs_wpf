@@ -42,93 +42,96 @@ namespace SplitAndMerge
 	}
      }
 
-     public class CscsGuiModuleInstance : ICscsModuleInstance
-     {
-	public CscsGuiModuleInstance(Interpreter interpreter)
+	public class CscsGuiModuleInstance : ICscsModuleInstance
 	{
-	     interpreter.RegisterFunction(Constants.MSG, new VariableArgsFunction(true));
-	     interpreter.RegisterFunction(Constants.DEFINE, new VariableArgsFunction(true));
-	     interpreter.RegisterFunction(Constants.SET_OBJECT, new VariableArgsFunction(true));
-	     interpreter.RegisterFunction(Constants.DISPLAY_ARRAY, new VariableArgsFunction(true));
-	     interpreter.RegisterFunction(Constants.DISPLAY_ARR_SETUP, new VariableArgsFunction(false));
-	     interpreter.RegisterFunction(Constants.DISPLAY_ARR_REFRESH, new VariableArgsFunction(false));
-	     interpreter.RegisterFunction(Constants.DATA_GRID, new VariableArgsFunction(true));
-	     interpreter.RegisterFunction(Constants.ADD_COLUMN, new VariableArgsFunction(true));
-	     interpreter.RegisterFunction(Constants.DELETE_COLUMN, new VariableArgsFunction(true));
-	     interpreter.RegisterFunction(Constants.SHIFT_COLUMN, new VariableArgsFunction(true));
+		public CscsGuiModuleInstance(Interpreter interpreter)
+		{
+			interpreter.RegisterFunction("TestClass1", new TestClass1Function());
+			interpreter.RegisterFunction("TestButton", new TestButtonFunction());
+						
+			interpreter.RegisterFunction(Constants.MSG, new VariableArgsFunction(true));
+			interpreter.RegisterFunction(Constants.DEFINE, new VariableArgsFunction(true));
+			interpreter.RegisterFunction(Constants.SET_OBJECT, new VariableArgsFunction(true));
+			interpreter.RegisterFunction(Constants.DISPLAY_ARRAY, new VariableArgsFunction(true));
+			interpreter.RegisterFunction(Constants.DISPLAY_ARR_SETUP, new VariableArgsFunction(false));
+			interpreter.RegisterFunction(Constants.DISPLAY_ARR_REFRESH, new VariableArgsFunction(false));
+			interpreter.RegisterFunction(Constants.DATA_GRID, new VariableArgsFunction(true));
+			interpreter.RegisterFunction(Constants.ADD_COLUMN, new VariableArgsFunction(true));
+			interpreter.RegisterFunction(Constants.DELETE_COLUMN, new VariableArgsFunction(true));
+			interpreter.RegisterFunction(Constants.SHIFT_COLUMN, new VariableArgsFunction(true));
 
-	     interpreter.RegisterFunction(Constants.CHAIN, new ChainFunction(false));
-	     interpreter.RegisterFunction(Constants.PARAM, new ChainFunction(true));
+			interpreter.RegisterFunction(Constants.CHAIN, new ChainFunction(false));
+			interpreter.RegisterFunction(Constants.PARAM, new ChainFunction(true));
 
-	     interpreter.RegisterFunction(Constants.WITH, new ConstantsFunction());
-	     interpreter.RegisterFunction(Constants.NEWRUNTIME, new ConstantsFunction());
+			interpreter.RegisterFunction(Constants.WITH, new ConstantsFunction());
+			interpreter.RegisterFunction(Constants.NEWRUNTIME, new ConstantsFunction());
 
-	     interpreter.RegisterFunction(Constants.FREE, new FreeMemoryFunction());
-	     
-		 interpreter.RegisterFunction("OpenFile", new OpenFileFunction(false));
-	     interpreter.RegisterFunction("OpenFileContents", new OpenFileFunction(true));
-	     interpreter.RegisterFunction("SaveFile", new SaveFileFunction());
+			interpreter.RegisterFunction(Constants.FREE, new FreeMemoryFunction());
 
-	     interpreter.RegisterFunction("ShowWidget", new ShowHideWidgetFunction(true));
-	     interpreter.RegisterFunction("HideWidget", new ShowHideWidgetFunction(false));
+			interpreter.RegisterFunction("OpenFile", new OpenFileFunction(false));
+			interpreter.RegisterFunction("OpenFileContents", new OpenFileFunction(true));
+			interpreter.RegisterFunction("SaveFile", new SaveFileFunction());
 
-	     interpreter.RegisterFunction("GetText", new GetTextWidgetFunction());
-	     interpreter.RegisterFunction("SetText", new SetTextWidgetFunction());
-	     interpreter.RegisterFunction("AddWidgetData", new AddWidgetDataFunction());
-	     interpreter.RegisterFunction("SetWidgetOptions", new SetWidgetOptionsFunction());
-	     interpreter.RegisterFunction("Get_comp_year", new Get_comp_yearFunction());
-	     interpreter.RegisterFunction("Get_dbase", new Get_dbaseFunction());
-	     interpreter.RegisterFunction("GetSelected", new GetSelectedFunction());
-	     interpreter.RegisterFunction("SetBackgroundColor", new SetColorFunction(true));
-	     interpreter.RegisterFunction("SetForegroundColor", new SetColorFunction(false));
-	     interpreter.RegisterFunction("SetImage", new SetImageFunction());
+			interpreter.RegisterFunction("ShowWidget", new ShowHideWidgetFunction(true));
+			interpreter.RegisterFunction("HideWidget", new ShowHideWidgetFunction(false));
 
-	     interpreter.RegisterFunction("DisplayArrFunc", new DisplayArrFuncFunction());
+			interpreter.RegisterFunction("GetText", new GetTextWidgetFunction());
+			interpreter.RegisterFunction("SetText", new SetTextWidgetFunction());
+			interpreter.RegisterFunction("AddWidgetData", new AddWidgetDataFunction());
+			interpreter.RegisterFunction("SetWidgetOptions", new SetWidgetOptionsFunction());
+			interpreter.RegisterFunction("Get_comp_year", new Get_comp_yearFunction());
+			interpreter.RegisterFunction("Get_dbase", new Get_dbaseFunction());
+			interpreter.RegisterFunction("GetSelected", new GetSelectedFunction());
+			interpreter.RegisterFunction("SetBackgroundColor", new SetColorFunction(true));
+			interpreter.RegisterFunction("SetForegroundColor", new SetColorFunction(false));
+			interpreter.RegisterFunction("SetImage", new SetImageFunction());
 
-	     interpreter.RegisterFunction("MessageBox", new MessageBoxFunction());
-	     interpreter.RegisterFunction("SendToPrinter", new PrintFunction());
+			interpreter.RegisterFunction("DisplayArrFunc", new DisplayArrFuncFunction());
 
-	     interpreter.RegisterFunction("AddMenuItem", new AddMenuEntryFunction(false));
-	     interpreter.RegisterFunction("AddMenuSeparator", new AddMenuEntryFunction(true));
-	     interpreter.RegisterFunction("RemoveMenu", new RemoveMenuFunction());
+			interpreter.RegisterFunction("MessageBox", new MessageBoxFunction());
+			interpreter.RegisterFunction("SendToPrinter", new PrintFunction());
 
-	     interpreter.RegisterFunction("RunOnMain", new RunOnMainFunction());
-	     interpreter.RegisterFunction("RunExec", new RunExecFunction());
-	     interpreter.RegisterFunction("RunScript", new RunScriptFunction());
+			interpreter.RegisterFunction("AddMenuItem", new AddMenuEntryFunction(false));
+			interpreter.RegisterFunction("AddMenuSeparator", new AddMenuEntryFunction(true));
+			interpreter.RegisterFunction("RemoveMenu", new RemoveMenuFunction());
 
-	     interpreter.RegisterFunction("CheckVATNumber", new CheckVATFunction());
-	     interpreter.RegisterFunction("GetVATName", new CheckVATFunction(CheckVATFunction.MODE.NAME));
-	     interpreter.RegisterFunction("GetVATAddress", new CheckVATFunction(CheckVATFunction.MODE.ADDRESS));
+			interpreter.RegisterFunction("RunOnMain", new RunOnMainFunction());
+			interpreter.RegisterFunction("RunExec", new RunExecFunction());
+			interpreter.RegisterFunction("RunScript", new RunScriptFunction());
 
-	     interpreter.RegisterFunction("GetGridRowCount", new GetGridRowCountFunction());
-	     interpreter.RegisterFunction("FillBufferFromGridRow", new FillBufferFromGridRowFunction());
+			interpreter.RegisterFunction("CheckVATNumber", new CheckVATFunction());
+			interpreter.RegisterFunction("GetVATName", new CheckVATFunction(CheckVATFunction.MODE.NAME));
+			interpreter.RegisterFunction("GetVATAddress", new CheckVATFunction(CheckVATFunction.MODE.ADDRESS));
 
-	     interpreter.RegisterFunction("CreateWindow", new NewWindowFunction(NewWindowFunction.MODE.NEW));
-	     interpreter.RegisterFunction("CloseWindow", new NewWindowFunction(NewWindowFunction.MODE.DELETE));
-	     interpreter.RegisterFunction("ShowWindow", new NewWindowFunction(NewWindowFunction.MODE.SHOW));
-	     interpreter.RegisterFunction("HideWindow", new NewWindowFunction(NewWindowFunction.MODE.HIDE));
-	     interpreter.RegisterFunction("NextWindow", new NewWindowFunction(NewWindowFunction.MODE.NEXT));
-	     interpreter.RegisterFunction("ModalWindow", new NewWindowFunction(NewWindowFunction.MODE.MODAL));
-	     interpreter.RegisterFunction("SetMainWindow", new NewWindowFunction(NewWindowFunction.MODE.SET_MAIN));
-	     interpreter.RegisterFunction("UnsetMainWindow", new NewWindowFunction(NewWindowFunction.MODE.UNSET_MAIN));
-	     interpreter.RegisterFunction("FillWidget", new FillWidgetFunction());
+			interpreter.RegisterFunction("GetGridRowCount", new GetGridRowCountFunction());
+			interpreter.RegisterFunction("FillBufferFromGridRow", new FillBufferFromGridRowFunction());
 
-	     interpreter.RegisterFunction("AsyncCall", new AsyncCallFunction());
-	     interpreter.RegisterFunction(Constants.EXIT, new TerminateFunction());
-	     interpreter.RegisterFunction(Constants.QUIT, new WpfQuitCommand());
+			interpreter.RegisterFunction("CreateWindow", new NewWindowFunction(NewWindowFunction.MODE.NEW));
+			interpreter.RegisterFunction("CloseWindow", new NewWindowFunction(NewWindowFunction.MODE.DELETE));
+			interpreter.RegisterFunction("ShowWindow", new NewWindowFunction(NewWindowFunction.MODE.SHOW));
+			interpreter.RegisterFunction("HideWindow", new NewWindowFunction(NewWindowFunction.MODE.HIDE));
+			interpreter.RegisterFunction("NextWindow", new NewWindowFunction(NewWindowFunction.MODE.NEXT));
+			interpreter.RegisterFunction("ModalWindow", new NewWindowFunction(NewWindowFunction.MODE.MODAL));
+			interpreter.RegisterFunction("SetMainWindow", new NewWindowFunction(NewWindowFunction.MODE.SET_MAIN));
+			interpreter.RegisterFunction("UnsetMainWindow", new NewWindowFunction(NewWindowFunction.MODE.UNSET_MAIN));
+			interpreter.RegisterFunction("FillWidget", new FillWidgetFunction());
 
-	     interpreter.RegisterFunction("SetWindowModalResult", new SetWindowModalResultFunction());
+			interpreter.RegisterFunction("AsyncCall", new AsyncCallFunction());
+			interpreter.RegisterFunction(Constants.EXIT, new TerminateFunction());
+			interpreter.RegisterFunction(Constants.QUIT, new WpfQuitCommand());
 
-	     interpreter.AddAction(Constants.ASSIGNMENT, new MyAssignFunction());
-	     interpreter.AddAction(Constants.INCREMENT, new MyAssignFunction(MyAssignFunction.MODE.INCREMENT));
-	     interpreter.AddAction(Constants.DECREMENT, new MyAssignFunction(MyAssignFunction.MODE.DECREMENT));
-	     interpreter.AddAction(Constants.POINTER, new MyPointerFunction());
-	     for (int i = 0; i < Constants.OPER_ACTIONS.Length; i++)
-	     {
-		interpreter.AddAction(Constants.OPER_ACTIONS[i], new MyAssignFunction());
-	     }
+			interpreter.RegisterFunction("SetWindowModalResult", new SetWindowModalResultFunction());
+
+			interpreter.AddAction(Constants.ASSIGNMENT, new MyAssignFunction());
+			interpreter.AddAction(Constants.INCREMENT, new MyAssignFunction(MyAssignFunction.MODE.INCREMENT));
+			interpreter.AddAction(Constants.DECREMENT, new MyAssignFunction(MyAssignFunction.MODE.DECREMENT));
+			interpreter.AddAction(Constants.POINTER, new MyPointerFunction());
+			for (int i = 0; i < Constants.OPER_ACTIONS.Length; i++)
+			{
+				interpreter.AddAction(Constants.OPER_ACTIONS[i], new MyAssignFunction());
+			}
+		}
 	}
-     }
 
      public partial class Constants
      {
@@ -6098,6 +6101,29 @@ namespace WpfCSCS
 
 			return result;
 		}
+	}
+	
+	class TestClass1Function : ParserFunction
+	{
+		protected override Variable Evaluate(ParsingScript script)
+		{
+            return new Variable(new TestClass1());
+        }
+	}
+	
+	class TestButtonFunction : ParserFunction
+	{
+		protected override Variable Evaluate(ParsingScript script)
+		{
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 1, m_name);
+
+            var widgetName = Utils.GetSafeString(args, 0);
+            CSCS_GUI gui = script.Context as CSCS_GUI;
+			var button = gui.GetWidget(widgetName) as Button;
+			
+            return new Variable(button);
+        }
 	}
 
 	class RunScriptFunction : ParserFunction

@@ -1,0 +1,14 @@
+MessageBox("hello");
+
+DEFINE lala type a size 10;
+lala = "xxxxxxxx";
+
+MessageBox("chain with new runtime...");
+CHAIN "../../scripts/script6.cscs" NEWRUNTIME WITH "myGrid" "bla1"+"bla2" "bla3" "bla4";
+
+
+MessageBox("normal chain...");
+CHAIN strTrim(tpath())+"script6.cscs" WITH "myGrid" "bla1"+"bla2" "bla3" "bla4";
+
+MessageBox("end");
+quit;

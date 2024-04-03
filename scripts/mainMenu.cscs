@@ -442,6 +442,14 @@ AddMenuSeparator("OtherDC");
 
 AddMenuItem("OtherDC", "testBrowser.cscs", "testBrowser", "runScript");
 
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "testReflection.cscs", "testReflection", "runScript");
+
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "testCHAIN4.cscs", "testCHAIN4", "runScript");
+
 
 //----- IVAN -------------------------------
 

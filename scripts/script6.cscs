@@ -1,0 +1,12 @@
+MessageBox("script6");
+
+DEFINE arg4, arg5, arg6, arg7 type a size 20;
+PARAM (arg4,arg5,arg6,arg7);
+
+MessageBox(arg4 + arg5 + arg6 + arg7);
+
+resetfield("testCHAIN4", "lala");
+messageBox(lala);
+
+
+quit;

@@ -348,6 +348,20 @@ namespace WpfCSCS
                         //    Paint = new SolidColorPaint(SKColors.DarkSlateGray)
                         //};
                     }
+                    else if (optionString == "colors")
+                    {
+                        var seriesList = pieWidget.Series.ToList();
+                        
+                        for (int i = 0; i < valueVariable.Tuple.Count; i++)
+                        {
+                            if (seriesList.Count <= i)
+                                break;
+
+                            (seriesList[i] as PieSeries<double>).Fill = new SolidColorPaint(SKColor.Parse(ToHex((Color)ColorConverter.ConvertFromString(valueVariable.Tuple[i].String))));
+                        }      
+                        
+                        //pieWidget.Series = series;
+                    }
                     //else if(optionString == "separatorstep")
                     //{
                     //    var firstXAxis = pieWidget.XAxes.FirstOrDefault();
@@ -383,6 +397,8 @@ namespace WpfCSCS
 
                 return Variable.EmptyInstance;
             }
+
+            public string ToHex(Color c) => $"#{c.R:X2}{c.G:X2}{c.B:X2}";
 
             private string tooltipFormater(ChartPoint<double, DoughnutGeometry, LabelGeometry> arg)
             {
