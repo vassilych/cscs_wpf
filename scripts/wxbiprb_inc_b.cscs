@@ -357,32 +357,32 @@ function setKategPieChart()
 	}	
 	elif (tezina_dn  )
 	{
-		sql_str += " FROM (SELECT nkpr_gl_cuscty, sum(nkpr_ln_tezinan) AS Suma,";
+		sql_str += " sum(nkpr_ln_tezinan) AS Suma,";
 		sql_str += " ROW_NUMBER() OVER( ORDER BY sum(nkpr_ln_tezinan) DESC ) As Num";
 	}	
 	elif (mx3_dn  )
 	{
-		sql_str += " FROM (SELECT nkpr_gl_cuscty, sum(nkpr_ln_metx3) AS Suma,";
+		sql_str += " sum(nkpr_ln_metx3) AS Suma,";
 		sql_str += " ROW_NUMBER() OVER( ORDER BY sum(nkpr_ln_metx3) DESC ) As Num";
 	}	
 	elif (mx2_dn  )
 	{
-		sql_str += " FROM (SELECT nkpr_gl_cuscty, sum(nkpr_ln_metx2) AS Suma,";
+		sql_str += " sum(nkpr_ln_metx2) AS Suma,";
 		sql_str += " ROW_NUMBER() OVER( ORDER BY sum(nkpr_ln_metx2) DESC ) As Num";
 	}	
 	elif (met_dn  )
 	{
-		sql_str += " FROM (SELECT nkpr_gl_cuscty, sum(nkpr_ln_met) AS Suma,";
+		sql_str += " sum(nkpr_ln_met) AS Suma,";
 		sql_str += " ROW_NUMBER() OVER( ORDER BY sum(nkpr_ln_met) DESC ) As Num";
 	}	
 	elif (kom_dn  )
 	{
-		sql_str += " FROM (SELECT nkpr_gl_cuscty, sum(nkpr_ln_kom) AS Suma,";
+		sql_str += " sum(nkpr_ln_kom) AS Suma,";
 		sql_str += " ROW_NUMBER() OVER( ORDER BY sum(nkpr_ln_kom) DESC ) As Num";
 	}	
 	else
 	{
-		sql_str += " FROM (SELECT nkpr_gl_cuscty, sum(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_ln_pext ELSE nkpr_ln_pext END) AS Suma,";
+		sql_str += " sum(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_ln_pext ELSE nkpr_ln_pext END) AS Suma,";
 		sql_str += " ROW_NUMBER() OVER( ORDER BY sum(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_ln_pext ELSE nkpr_ln_pext END) DESC ) As Num";
 	}
 	sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv AS U";

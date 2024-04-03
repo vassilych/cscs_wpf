@@ -466,6 +466,8 @@ function setLast10InvoicesDataGrid(){
 		sql_str += " CAST( CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_gl_total ELSE nkpr_gl_total END as decimal (10,2))  AS nkpr_gl_total " ;
 	}
 	sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv" ;
+    sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkprinvl ON nkpr_gl_num = nkpr_ln_invnm";
+    sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkmkarti ON nkpr_ln_pcode= arti_artikl";
 	sql_str += " WHERE YEAR(nkpr_gl_datem) =  " + ovagod_h  ;
 	if (do_mjeseca)
 	{
@@ -484,7 +486,7 @@ function setLast10InvoicesDataGrid(){
 	{
 		sql_str += " ORDER BY nkpr_gl_datecr DESC , nkpr_gl_timecr DESC" ;
 	}
- 
+ //SaveFile(sql_str);
 	try	{
 		sqlResult2 = sqlQuery(sql_str);
 	}catch(exc){
