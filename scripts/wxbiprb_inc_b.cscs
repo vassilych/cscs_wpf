@@ -341,7 +341,6 @@ function setPieChart(){
 function setKategPieChart()
 {
 	//	MessageBox( pieChartStr);
-	sql_str= "";	
 	sql_str = "";
 	sql_str += " SELECT CASE WHEN num<= 5 THEN Naziv ELSE 'Ostali' END AS Kategorija , round(sum(suma),0) as Origin";
 	sql_str += " FROM (SELECT ISNULL(CASE WHEN SUBSTRING(mkgr_rezerva,1,50)> '' THEN SUBSTRING(mkgr_rezerva,1,50) ELSE mkgr_naziv END,'NEDEFINIRANO') as naziv,";

@@ -184,9 +184,10 @@
     define tableHndl type i;
     define pieChartStr type a size 20;
     define refreshpie type l;    
-    
-    
-
+    define br_wait type r;
+    define br_neazur type r;
+    define br_wait_string type a size 30;
+    define br_neazur_string type a size 30;
 
 //=============================================
 

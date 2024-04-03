@@ -12,6 +12,7 @@ function Wxbiprb_onDisplay()
     }else{
         companyCode = Substring(CoGet(), 1, 2);
     }
+
     sqlQueryString = "select SY_CC_USER, SY_CC_YEAR, SY_CC_DBASE from " + strtrim(CommonDBGet()) + ".dbo.NKSYCCYR WHERE SY_CC_CODE = '" + companyCode + "'";
     try
         {
@@ -231,6 +232,7 @@ function setCustomerAndInvoiceCounts()
             br_kupaca_lg = sqlResult[1][0];
             broj_rac_lg = sqlResult[1][1];
         }    
+        //
         sql_str = "SELECT count(distinct nkpr_gl_cuscod) as br_kupaca_og, count(nkpr_gl_num) as broj_rac_og";
         sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv";
         sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkprinvl ON nkpr_gl_num= nkpr_ln_invnm";
@@ -439,6 +441,75 @@ function setCustomerAndInvoiceCounts()
         Format("prodaja_kup_lg", "nofd", recv: "prodaja_kup_lg_string");
         HorizontalBar("HorizontalBarProdajaKupLG", "Text", prodaja_kup_lg_string);
         HorizontalBar("HorizontalBarProdajaKupLG", "Color", bojeArray);
+        //sada broj neažuriranih računa i broj računa na čekanju
+            //
+        br_neazur= 0;    
+        sql_str = "SELECT count(distinct nkpr_gl_num) as br_neazur";
+        sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv";
+        sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkprinvl ON nkpr_gl_num= nkpr_ln_invnm";
+        sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkmkarti ON nkpr_ln_pcode= arti_artikl";
+        if(regija != "")
+        {
+            sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart g ON nkpr_gl_cuscod= g.nksc_partcode";
+        }
+        sql_str += " WHERE nkpr_gl_invcd=''";
+        if(mjesec_h != "")
+        {
+            if(do_mjeseca)
+            {
+                sql_str += " AND month(nkpr_gl_datem)<= " + mjesec_h;
+                sql_str += " AND YEAR(nkpr_gl_datem)= " + ovagod_h;
+            }
+            else
+            {
+                sql_str += " AND month(nkpr_gl_datem)= " + mjesec_h;
+                sql_str += " AND YEAR(nkpr_gl_datem)= " + ovagod_h;
+            }
+        }
+        //sql_str= sql_str* " AND DATEDIFF(day,nkpr_gl_invdte, CURRENT_TIMESTAMP) BETWEEN 0 AND 31"
+        filterPart();
+        sqlResult = SqlQuery(sql_str);
+        if (size(sqlResult) !== 0)
+        {
+            br_neazur = sqlResult[1][0];
+        } 
+        //na čekanju   
+        br_wait= 0;
+        sql_str = "SELECT count(distinct nkpr_gl_num) as br_wait";
+        sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv";
+        sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkprinvl ON nkpr_gl_num= nkpr_ln_invnm";
+        sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkmkarti ON nkpr_ln_pcode= arti_artikl";
+        if(regija != "")
+        {
+            sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart g ON nkpr_gl_cuscod= g.nksc_partcode";
+        }
+        sql_str += " WHERE nkpr_gl_RTS='N'";
+        if(mjesec_h != "")
+        {
+            if(do_mjeseca)
+            {
+                sql_str += " AND month(nkpr_gl_datem)<= " + mjesec_h;
+                sql_str += " AND YEAR(nkpr_gl_datem)= " + ovagod_h;
+            }
+            else
+            {
+                sql_str += " AND month(nkpr_gl_datem)= " + mjesec_h;
+                sql_str += " AND YEAR(nkpr_gl_datem)= " + ovagod_h;
+            }
+        }
+        //sql_str= sql_str* " AND DATEDIFF(day,nkpr_gl_invdte, CURRENT_TIMESTAMP) BETWEEN 0 AND 31"
+        filterPart();
+        sqlResult = SqlQuery(sql_str);
+        if (size(sqlResult) !== 0)
+        {
+            br_wait = sqlResult[1][0];
+        } 
+        Format("br_neazur", "nofd", recv: "br_neazur_string");   
+        Format("br_wait", "nofd", recv: "br_wait_string");   
+        HorizontalBar("HorizontalBarBrNeazur", "Text", br_neazur_string);
+        HorizontalBar("HorizontalBarBrNeazur", "Color", bojeArray);
+        HorizontalBar("HorizontalBarBrWait", "Text", br_wait_string);
+        HorizontalBar("HorizontalBarBrWait", "Color", bojeArray);
     }
     //
 function refresh()
