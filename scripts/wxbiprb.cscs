@@ -71,7 +71,7 @@ function Wxbiprb_onDisplay()
         kpsy_po_freight= sqlResult[1][1].trim();
         fiscal_yr = sqlResult[1][2];
     } 
-    bezPdvaField = true;
+    neto_dn = true;
 
     //kasnije zamijenit sa funkcijom, kada se bude koristi adictionary
     sqlQueryString = "select SY_CC_DBASE from " + CommonDBGet() + ".dbo.NKSYCCYR WHERE SY_CC_USER = '" + imeFirme + "' AND SY_CC_YEAR = '" + (int(ovagod_h) - 1) + "'";
@@ -666,7 +666,7 @@ function setWeekComparison(){
     //MessageBox(danas_h);
 //MessageBox("aaaa: "+danas+"  "+danas_h);    
 	sql_str = "SELECT TOP 2 CONVERT(char(10), wk_firstofWeek,103) as prviutjednu,";
-	if ( bezPdvaField == true )
+	if ( neto_dn == true )
 	{
 		sql_str = sql_str + " Sales = round(ISNULL(SUM(CASE WHEN b.nkpr_gl_dviza = 'D' THEN b.nkpr_gl_tecaj * c.nkpr_ln_amt ELSE c.nkpr_ln_amt END) , 0),0)";
 	}
