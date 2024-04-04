@@ -187,7 +187,7 @@ function setTop10InvoicesDataGrid()
 
 function setChartByDaysOfMonth()
     {
-        if (bezPdvaField)
+        if (neto_dn)
         {
              sql_str = "SELECT [wk_day] as dan2 , SalesDay = ISNULL(ROUND(SUM(CASE WHEN c.nkpr_gl_dviza = 'D' THEN c.nkpr_gl_tecaj * e.nkpr_ln_amt ELSE e.nkpr_ln_amt END),0) , 0)";
              sql_str += ", ISNULL(ROUND(AVG(SUM(CASE WHEN c.nkpr_gl_dviza = 'D' THEN c.nkpr_gl_tecaj * e.nkpr_ln_amt ELSE e.nkpr_ln_amt END)) OVER(ORDER BY wk_day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0),0) AS moving_average_3_days";
@@ -279,7 +279,7 @@ function setChartByMonth()
         if ( proslaGodinaBaza != "" )
         {
             sql_str += "SELECT '0' as tip,CONVERT(varchar(6),nkpr_gl_datem,112) as yyyymm, ";
-            if (bezPdvaField)
+            if (neto_dn)
             {
                 sql_str += "Sales = cast(ISNULL(SUM(CASE WHEN nkpr_gl_dviza = 'D' THEN nkpr_gl_tecaj * nkpr_ln_amt ELSE nkpr_ln_amt END) , 0) as decimal(10,0)) ";
             }
@@ -381,7 +381,7 @@ function setChartByMonth()
         }
         //sada tekuća godina
             sql_str = "SELECT '1' as tip,CONVERT(varchar(6),nkpr_gl_datem,112) as yyyymm, ";
-            if (bezPdvaField)
+            if (neto_dn)
             {
                 sql_str += "Sales = cast(ISNULL(SUM(CASE WHEN nkpr_gl_dviza = 'D' THEN nkpr_gl_tecaj * nkpr_ln_amt ELSE nkpr_ln_amt END) , 0) as decimal(10,0)) ";
             }
@@ -485,7 +485,7 @@ function setLast10InvoicesDataGrid()
 		sql_str =  "SELECT TOP 10 nkpr_gl_num , nkpr_gl_cusnme , CONVERT(char(8) ,  nkpr_gl_datecr , 3) AS datecr , convert(char(8) , nkpr_gl_timecr , 20) as nkpr_gl_timecr ,  ";
 		//sql_str += " CAST( CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_gl_total ELSE nkpr_gl_total END as decimal (10,2))  AS nkpr_gl_total " ;
 	}
-    if (bezPdvaField)
+    if (neto_dn)
 	{
         sql_str += " ISNULL(ROUND(SUM(CASE WHEN nkpr_gl_dviza= 'D' THEN nkpr_gl_tecaj*nkpr_ln_amt ELSE nkpr_ln_amt END),0), 0)";
 	}
@@ -596,7 +596,7 @@ function setTop10InvoicesDataGrid()
 	}
     */
 	sql_str =  "SELECT TOP 10 nkpr_gl_num , nkpr_gl_cusnme , CONVERT(char(8) ,  nkpr_gl_invdte , 3) AS datecr , ";
-    if (bezPdvaField)
+    if (neto_dn)
 	{
         sql_str += " ISNULL(ROUND(SUM(CASE WHEN nkpr_gl_dviza= 'D' THEN nkpr_gl_tecaj*nkpr_ln_amt ELSE nkpr_ln_amt END),0), 0)";
 	}

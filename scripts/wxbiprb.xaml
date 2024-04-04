@@ -700,7 +700,7 @@
                              Width="113"
                              Margin="8,2,0,0"
                              x:Name="CheckBoxButton1"
-                             DataContext="saPdvomField"
+                             DataContext="bruto_dn"
                              Content="Sa PDV-om"
                              Foreground="Black"
                              TabIndex="10"/>
@@ -710,7 +710,7 @@
                              Width="113"
                              Margin="8,17,0,0"
                              x:Name="CheckBoxButton2"
-                             DataContext="bezPdvaField"
+                             DataContext="neto_dn"
                              Content="Bez PDV-a"
                              Foreground="Black"
                              TabIndex="11"/>

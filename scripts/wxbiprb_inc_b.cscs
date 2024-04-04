@@ -69,7 +69,7 @@ function setRegionPieChart()
 	sql_str= "";	
 	if (pieChartStr== "Gradovi"); //(gradoviRB)
     {
-        if (bezPdvaField  )
+        if (neto_dn  )
 		{
 			sql_str = "";
             sql_str += " SELECT CASE WHEN num<= 5 THEN nkpr_gl_cuscty ELSE 'Ostali' END AS CountryID , round(sum(suma),0) as Origin ";
@@ -140,7 +140,7 @@ function setRegionPieChart()
     {
 		sql_str= "";
 		//MessageBox("1111: "+sql_str);			
-        if (bezPdvaField  )
+        if (neto_dn)
 		{
             sql_str += " SELECT CASE WHEN num<= 5 THEN Country ELSE 'Ostali' END AS CountryID , round(sum(suma),0) as Origin ";
             sql_str +=" FROM (SELECT ISNULL(ksdu_sf_opis1,'Nema oznake') as Country, sum(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_ln_amt ELSE nkpr_ln_amt END) AS Suma,";
@@ -227,7 +227,7 @@ function setRegionPieChart()
     {
 		//drzave
 		//MessageBox("2222: "+sql_str);			
-        if (bezPdvaField)
+        if (neto_dn)
 		{
 			sql_str= "";
             sql_str += " SELECT CASE WHEN num<= 5 THEN country ELSE 'Ostali' END AS CountryID , round(sum(suma),0) as Origin ";
@@ -344,7 +344,7 @@ function setKategPieChart()
 	sql_str = "";
 	sql_str += " SELECT CASE WHEN num<= 5 THEN Naziv ELSE 'Ostali' END AS Kategorija , round(sum(suma),0) as Origin";
 	sql_str += " FROM (SELECT ISNULL(CASE WHEN SUBSTRING(mkgr_rezerva,1,50)> '' THEN SUBSTRING(mkgr_rezerva,1,50) ELSE mkgr_naziv END,'NEDEFINIRANO') as naziv,";
-	if (bezPdvaField  )
+	if (neto_dn)
 	{
 		sql_str += " sum(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_ln_amt ELSE nkpr_ln_amt END) AS Suma,";
 		sql_str += " ROW_NUMBER() OVER( ORDER BY sum(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_ln_amt ELSE nkpr_ln_amt END) DESC ) As Num";
@@ -443,7 +443,7 @@ function setTop10Products()
 	SQL_str ="SET query_governor_cost_limit 0;";
     sql_str += "WITH sales AS (";
     sql_str += " SELECT TOP 10 arti_artikl as codeart, arti_naziv as Nameart, Sales1=";
-    if (bezPdvaField)
+    if (neto_dn)
 	{
         sql_str += " ISNULL(ROUND(SUM(CASE WHEN nkpr_gl_dviza= 'D' THEN nkpr_gl_tecaj*nkpr_ln_amt ELSE nkpr_ln_amt END),0), 0)";
 	}
@@ -533,7 +533,7 @@ function setTop10Products()
     // cntr2= 0;
     //sql_str= "";
     sql_str= " SELECT arti_artikl,";
-    if (bezPdvaField)
+    if (neto_dn)
 	{
 		sql_str += " ISNULL(ROUND(SUM(CASE WHEN nkpr_gl_dviza= 'D' THEN nkpr_gl_tecaj*nkpr_ln_amt ELSE nkpr_ln_amt END),0), 0) as sales2";
 	}
