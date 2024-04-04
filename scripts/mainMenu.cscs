@@ -42,6 +42,7 @@ AddMenuItem("ScriptsDC", "defaultWindow.cscs", "Default window", "runScript"); /
 AddMenuItem("ScriptsDC", "start.cscs", "Sample", "runScript"); // COMPILE ERROR
 AddMenuItem("ScriptsDC", "testTabWin.cscs", "testTabWin", "runScript");
 AddMenuItem("ScriptsDC", "wxbiprb.cscs", "wxbiprb", "runScript");
+AddMenuItem("ScriptsDC", "wxbiposa.cscs", "wxbiposa", "runScript");
 AddMenuItem("ScriptsDC", "DashSLA.cscs", "DashSLA", "runScript"); // ?
 AddMenuItem("ScriptsDC", "windowtest.cscs", "windowtest", "runScript"); // ?
 
