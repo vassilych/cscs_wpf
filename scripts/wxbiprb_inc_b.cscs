@@ -226,13 +226,14 @@ function setRegionPieChart()
     else 
     {
 		//drzave
-		//MessageBox("2222: "+sql_str);			
+		MessageBox("2222: "+sql_str);			
         if (neto_dn)
 		{
 			sql_str= "";
             sql_str += " SELECT CASE WHEN num<= 5 THEN country ELSE 'Ostali' END AS CountryID , round(sum(suma),0) as Origin ";
             sql_str += " FROM (SELECT ISNULL(ksdu_sf_opis1,'Nema oznake') as Country, sum(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_ln_amt ELSE nkpr_ln_amt END) AS Suma,";
             sql_str += " ROW_NUMBER() OVER( ORDER BY sum(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_ln_amt ELSE nkpr_ln_amt END) DESC ) As Num";
+		MessageBox("3333: "+sql_str);			
 		}	
         elif (razlikaUCijeniField)
 		{
@@ -277,7 +278,14 @@ function setRegionPieChart()
             sql_str += " ROW_NUMBER() OVER( ORDER BY sum(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_ln_pext ELSE nkpr_ln_pext END) DESC ) As Num";
 		}
         sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv"; // LEFT JOIN " * dbase_new * ".dbo.nkscpart ON nkpr_gl_cuscod= nksc_partcode"
-        sql_str += " LEFT JOIN " + CommonDBGet() + ".dbo.KPSYSIFA ON nkpr_gl_cusst = ksdu_sf_code AND ksdu_sf_tip = 'H'";
+		MessageBox("4444: "+sql_str);			
+        //sql_str += " LEFT JOIN " + CommonDBGet() + ".dbo.KPSYSIFA ON CASE WHEN nkpr_gl_drzava<> '' THEN nkpr_gl_drzava ELSE nkpr_gl_cusst END = ksdu_sf_code AND ksdu_sf_tip = 'H'";
+		if nkpr_gl_drzava<> ''
+            sql_str += " LEFT JOIN " + CommonDBGet() + ".dbo.KPSYSIFA ON nkpr_gl_drzava = ksdu_sf_code AND ksdu_sf_tip = 'H'";
+		else
+            sql_str += " LEFT JOIN " + CommonDBGet() + ".dbo.KPSYSIFA ON nkpr_gl_cusst = ksdu_sf_code AND ksdu_sf_tip = 'H'";
+		endif
+		MessageBox("5555: "+sql_str);			
         sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkprinvl ON nkpr_gl_num = nkpr_ln_invnm";
         sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkmkarti ON arti_artikl = nkpr_ln_pcode";
         //sql_str= sql_str* " LEFT JOIN "+dbase_new*".dbo.pkmkgrup as grKateg on grKateg.mkgr_grupa= arti_kategorija AND grKateg.mkgr_vrsta='K'"
@@ -310,13 +318,15 @@ function setRegionPieChart()
 		{
             sql_str += " AND Month(nkpr_gl_datem)="+mjesec_h;
 		}
+		MessageBox("6666: "+sql_str);			
+
         filterPart();
         sql_str += " GROUP BY ksdu_sf_opis1) t";
         sql_str += " GROUP BY CASE WHEN num <= 5 THEN country ELSE 'Ostali' END";
         sql_str += " ORDER BY origin DESC";
 
 	}
-	//SaveFile(sql_str);
+	SaveFile(sql_str);
 	try	{
 		queryResult = sqlquery(sql_str);
 	}catch(exc){
