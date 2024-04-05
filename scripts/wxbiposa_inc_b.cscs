@@ -1,0 +1,504 @@
+function wxbiposab_onDisplay()
+{
+	cursor("wait");
+
+	// refreshPie = false;
+    // comboItems = {"Gradovi","Regije", "Države"};
+    // AddWidgetData(cbPieChart, comboItems);
+    // pieChartStr= "Gradovi";
+
+	// AsyncCall("setRegionPieChart", "regionPieChartDone");
+	AsyncCall("setKategPieChart", "kategPieChartDone");
+	
+	// refreshPie = true;
+}
+
+function cbPieChart@SelectionChanged(){
+	if (refreshPie == false)
+	{
+		return;
+	}
+
+	cursor("wait");
+	AsyncCall("setRegionPieChart", "setDefaultCursor");
+}
+
+function regionPieChartDone(){
+	AsyncCall("setKategPieChart", "kategPieChartDone");
+}
+function kategPieChartDone(){
+	AsyncCall("setTop10Products", "top10ProductsDone");
+}
+function top10ProductsDone(){
+	AsyncCall("setCustomerDataGrid", "setDefaultCursor");
+}
+function setDefaultCursor(){
+	cursor("dflt");
+}
+
+
+function setRegionPieChart()
+{
+	
+	//RunOnMain("setPieChart");
+}
+
+function setPieChart(){
+	PieChart("PieChart1", "init");
+    PieChart("PieChart1", "seriesType", "pie");
+    PieChart("PieChart1", "title", "Pie Chart Title", 20);    
+	for(i = 1; i < queryResult.length; i++)
+	{
+		PieChart("PieChart1", "values", int(queryResult[i][1]) , substring(string(queryResult[i][0].trim()), 0, 30), 50);
+	}
+}
+
+//-------------------------------------------------------
+
+function setKategPieChart()
+{
+	sql_str = "";
+	sql_str += " SELECT CASE WHEN num <= 5 THEN Naziv ELSE 'Ostali' END AS Kategorija , round(sum(suma),0) as Origin";
+	sql_str += " FROM (SELECT ISNULL(CASE WHEN SUBSTRING(mkgr_rezerva,1,50)> '' THEN SUBSTRING(mkgr_rezerva,1,50) ELSE mkgr_naziv END,'NEDEFINIRANO') as naziv,";
+	if (neto_dn)
+	{
+		sql_str += " sum(KS_IL_TOTAL - KS_IL_POREZ) AS Suma,";
+		sql_str += " ROW_NUMBER() OVER( ORDER BY sum(KS_IL_TOTAL - KS_IL_POREZ) DESC ) As Num";
+	}	
+	elif (razlikaUCijeniField  )
+	{
+		sql_str += " sum(KS_IL_TOTAL - KS_IL_POREZ - KS_IL_CENAN * CONVERT(float, REPLACE(KS_IL_KOL, ',', '.'))) AS Suma,";
+		sql_str += " ROW_NUMBER() OVER( ORDER BY sum(KS_IL_TOTAL - KS_IL_POREZ - KS_IL_CENAN * CONVERT(float, REPLACE(KS_IL_KOL, ',', '.'))) DESC ) As Num";
+	}
+	else
+	{
+		sql_str += " sum(KS_IL_TOTAL) AS Suma,";
+		sql_str += " ROW_NUMBER() OVER( ORDER BY sum(KS_IL_TOTAL) DESC ) As Num";
+	}
+	sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.NKKSINVG AS U";
+	sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.NKKSINVL ON KS_IG_RACUN = KS_IL_RACUN";
+	sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkmkarti ON arti_artikl = KS_IL_PCODE";
+	sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.pkmkgrup ON arti_kategorija= mkgr_grupa AND mkgr_vrsta= 'K'";
+	sql_str += " WHERE YEAR(KS_IG_DATUM)=" + ovagod_h ;
+	if (do_mjeseca  )
+	{
+		sql_str += " AND Month(KS_IG_DATUM)<=" + mjesec_h;
+	}	
+	else
+	{
+		sql_str += " AND Month(KS_IG_DATUM)=" + mjesec_h;
+	}	
+	if (kategorija != '' & klasa != '')
+	{
+		sql_str += " (grKateg.mkgr_grupa= arti_kategorija AND grKateg.mkgr_vrsta='K') OR (grKateg.mkgr_grupa= arti_klasa AND grKateg.mkgr_vrsta='L')";
+	}	
+	elif ( kategorija != '')
+	{
+		sql_str += " grKateg.mkgr_grupa= arti_kategorija AND grKateg.mkgr_vrsta='K'";
+	}	
+	elif ( klasa != '')
+	{
+		sql_str += " grKateg.mkgr_grupa= arti_klasa AND grKateg.mkgr_vrsta='L'";
+	}
+	filterPart();
+	sql_str += " GROUP BY SUBSTRING(mkgr_rezerva,1,50),mkgr_naziv) t";
+	sql_str += " GROUP BY CASE WHEN num <= 5 THEN Naziv ELSE 'Ostali' END";
+	sql_str += " ORDER BY origin desc";
+	//SaveFile(sql_str);
+	try	{
+		queryResult = sqlquery(sql_str);
+	}
+	catch(exc){
+		MessageBox(exc);
+	}
+
+	RunOnMain("DisplayKategPieChart");
+}
+
+function DisplayKategPieChart(){
+	PieChart("PieChartKat", "init");
+    PieChart("PieChartKat", "seriesType", "pie");
+	for(i = 1; i < queryResult.length; i++)
+	{
+		PieChart("PieChartKat", "values", int(queryResult[i][1]) , substring(string(queryResult[i][0].trim()), 0, 30), 50);
+	}
+
+	PieChart("PieChartKAt", "colors", { "#1C4E80", "#EA6A47", "#5acc6b", "#34d2fa", "#ff45d4", "#fae62f" });
+}
+
+//-------------------------------------------------------
+
+function setTop10Products()
+{
+	SQL_str ="SET query_governor_cost_limit 0;";
+    sql_str += "WITH sales AS (";
+    sql_str += " SELECT TOP 10 arti_artikl as codeart, arti_naziv as Nameart, Sales1=";
+    if (neto_dn)
+	{
+        sql_str += " ISNULL(ROUND(SUM(KS_IL_TOTAL - KS_IL_POREZ),0), 0)";
+	}
+    elif (razlikaUCijeniField)
+	{
+        sql_str += " ISNULL(ROUND(SUM(KS_IL_TOTAL - KS_IL_POREZ - KS_IL_CENAN * CONVERT(float, REPLACE(KS_IL_KOL, ',', '.'))), 0), 0)";
+	}
+    else
+	{
+        sql_str += " ISNULL(ROUND(SUM(KS_IL_TOTAL), 0), 0)";
+	}
+    sql_str += " FROM "+trenutnaGodinaBaza+".dbo.NKKSINVG";
+    //sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkscpart g ON nkpr_gl_cuscod= g.nksc_partcode";
+    
+    sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.NKKSINVL ON KS_IG_RACUN = KS_IL_RACUN";
+    sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkmkarti ON KS_IL_PCODE = arti_artikl";
+    sql_str += " WHERE 1 = 1";
+    if (mjesec_h!= "")
+	{
+        if (do_mjeseca )
+		{
+            sql_str += " AND month(KS_IG_DATUM)<= " + mjesec_h;
+            sql_str += " AND YEAR(KS_IG_DATUM)= " + ovagod_h;
+		}	
+        else
+		{
+            sql_str += " AND month(KS_IG_DATUM)= " + mjesec_h;
+            sql_str += " AND YEAR(KS_IG_DATUM)= " + ovagod_h;
+        }
+    }
+
+    filterPart();
+
+    sql_str += " GROUP BY arti_artikl , arti_naziv";
+    if (GL_oznaka == "X") 
+	{
+        sql_str += " ORDER BY sales1 asc)";
+	}	
+    else
+	{
+        sql_str += " ORDER BY sales1 desc)";
+    }
+    sql_str += " SELECT codeart,Nameart,sales1,0";
+    sql_str += " FROM sales";
+    //sql_str += " ORDER BY salesNew desc"
+    if (GL_oznaka == "X")
+	{
+		 //ako je to storno, odobrenje ili reklamacija neka okrene
+        sql_str += " ORDER BY sales1 asc";
+	}	
+    else
+	{
+        sql_str += " ORDER BY sales1 desc";
+	}
+	try	{
+		sqlResult = sqlQuery(sql_str);
+	}catch(exc){
+		MessageBox(exc);
+	}
+
+	RunOnMain("fillProductsArrays");
+
+    if (proslaGodinaBaza != "")
+	{
+    // cntr2= 0;
+    //sql_str= "";
+    sql_str= " SELECT arti_artikl,";
+    if (neto_dn)
+	{
+		sql_str += " ISNULL(ROUND(SUM(KS_IL_TOTAL),0), 0) as sales2";
+	}
+    elif (razlikaUCijeniField)
+	{
+		sql_str += " ISNULL(ROUND(SUM(KS_IL_TOTAL - KS_IL_POREZ - KS_IL_CENAN * CONVERT(float, REPLACE(KS_IL_KOL, ',', '.'))),0), 0) as sales2";
+	}
+    else
+	{
+		sql_str += " ISNULL(ROUND(SUM(KS_IL_TOTAL),0), 0) as sales2";
+	}
+    }
+
+    sql_str += " FROM " + proslaGodinaBaza + ".dbo.NKKSINVG";
+    sql_str += " LEFT JOIN "  +proslaGodinaBaza + ".dbo.NKKSINVL ON KS_IG_RACUN = KS_IL_RACUN";
+    if (regija != "")
+	{
+        sql_str += " LEFT JOIN " + proslaGodinaBaza + ".dbo.nkscpart g ON KS_IG_KUPAC = g.nksc_partcode";
+    }
+    sql_str += " LEFT JOIN " + proslaGodinaBaza + ".dbo.nkmkarti ON KS_IL_PCODE = arti_artikl";
+    sql_str += " WHERE KS_IL_PCODE IN ("+in_string+") ";
+    if (mjesec_h != "")
+	{
+        if (do_mjeseca )
+		{
+            sql_str += " AND month(KS_IG_DATUM)<= "+mjesec_h;
+            sql_str += " AND YEAR(KS_IG_DATUM)= "+lani_h;
+		}
+        else
+		{
+            sql_str += " AND month(KS_IG_DATUM)= "+mjesec_h;
+            sql_str += " AND YEAR(KS_IG_DATUM)= "+lani_h;
+        }
+    }
+    filterPart();
+    sql_str += " GROUP BY arti_artikl";
+    sql_str += " ORDER BY arti_artikl";
+	try	{
+		sqlResult = sqlQuery(sql_str);
+	}catch(exc){
+		MessageBox(exc);
+	}
+	
+	RunOnMain("fillProductsArrays2");
+
+	RunOnMain("top10Products");
+}
+
+function fillProductsArrays(){
+	if(Size(sqlResult) > 1)
+	{
+		for ( i = 1; i < Size(sqlResult); i++ )
+		{        
+			nameart_ar[i - 1] =  sqlResult[i][1]; //namepart;
+			codeart_ar[i - 1] =  sqlResult[i][0]; //codepart;
+			salesart1_ar[i - 1] =  sqlResult[i][2]; //sales1;
+			salesart2_ar[i - 1] =  0; //sqlResult[i][2]; sales2;
+			top10art_ar[i - 1] =  i;
+		} 
+	}
+
+
+	in_string= "";
+	for (cntr = 0; cntr < Size(codeart_ar); cntr++ )
+	{
+        in_string= in_string+"'"+codeart_ar[cntr];
+		if(cntr==Size(codeart_ar)-1)
+		{
+			in_string= in_string+"'";
+		}
+		else
+		{
+			in_string= in_string+"',";
+		}
+    }
+}
+
+function fillProductsArrays2(){
+	if(Size(sqlResult) > 1)
+	{
+
+		for ( i = 1; i < Size(sqlResult); i++ )
+		{    
+			cntr2= find_index(codeart_ar,sqlResult[i][0]);    
+			if (cntr2 >= 0)  //if not -1
+			{
+			salesart2_ar[cntr2] =  sqlResult[i][1]; 
+			if(salesart2_ar[cntr2] != 0)
+			{
+				Indexart_ar[cntr2] =  Math.Round(((salesart1_ar[cntr2] - salesart2_ar[cntr2])/salesart2_ar[cntr2]) * 100, 0);
+			}
+			else
+			{
+				//IndexPart_ar[cntr2] =  0;
+			}
+			} 
+		}
+	}
+}
+
+function top10Products(){
+	DisplayArray("dgArtikli", "close");
+	Format("SALESART2_AR", "nofd");
+	Format("SALESART1_AR", "nofd");
+	
+	DisplayArraySetup("dgArtikli", counterFld: "cntr4", activeElements: Size(codeart_ar), maxElements: 10);
+}
+
+//---------------------------------------------------------------------------
+
+function setCustomerDataGrid()
+{
+    SQL_str ="SET query_governor_cost_limit 0;";
+    sql_str += "WITH sales AS (";
+    sql_str += " SELECT TOP 10 NKSC_PARTNAME as NamePart, KS_IG_KUPAC as CodePart, SalesNew=";
+    if (neto_dn )
+	{
+        sql_str += " ISNULL(ROUND(SUM(KS_IL_TOTAL - KS_IL_POREZ),0), 0)";
+	}
+    elif (razlikaUCijeniField)
+	{
+        sql_str += " ISNULL(ROUND(SUM(KS_IL_TOTAL - KS_IL_POREZ - KS_IL_CENAN * CONVERT(float, REPLACE(KS_IL_KOL, ',', '.'))), 0), 0)";
+	}
+    else
+	{
+        sql_str += " ISNULL(ROUND(SUM(KS_IL_TOTAL), 0), 0)";
+	}
+    sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.NKKSINVG";
+    sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart g ON KS_IG_KUPAC = g.nksc_partcode";
+    
+    sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.NKKSINVL ON KS_IG_RACUN = KS_IL_RACUN";
+    sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkmkarti ON KS_IL_PCODE = arti_artikl";
+    sql_str += " WHERE 1 = 1";
+    if (mjesec_h!= "")
+	{
+        if (do_mjeseca )
+		{
+            sql_str += " AND month(KS_IG_DATUM)<= " + mjesec_h;
+            sql_str += " AND YEAR(KS_IG_DATUM)= " + ovagod_h;
+		}	
+        else
+		{
+            sql_str += " AND month(KS_IG_DATUM)= " + mjesec_h;
+            sql_str += " AND YEAR(KS_IG_DATUM)= " + ovagod_h;
+        }
+    }
+
+    filterPart();
+
+    sql_str += " GROUP BY NKSC_PARTNAME, KS_IG_KUPAC";
+    if (GL_oznaka == "X")
+	{
+        sql_str += " ORDER BY salesNew asc)";
+	}	
+    else
+	{
+        sql_str += " ORDER BY salesNew desc)";
+    }
+    sql_str += " SELECT codePart, NamePart, salesNew, 0";
+    sql_str += " FROM sales";
+    //sql_str += " ORDER BY salesNew desc"
+    if (GL_oznaka == "X")
+	{
+		 //ako je to storno
+        sql_str += " ORDER BY salesNew asc";
+	}	
+    else
+	{
+        sql_str += " ORDER BY salesNew desc";
+	}
+	try	{
+		sqlResult = sqlQuery(sql_str);
+	}catch(exc){
+		MessageBox(exc);
+	}
+
+	//SaveFile(sql_str);
+	RunOnMain("fillCustomerArrays");
+
+    if (proslaGodinaBaza != "")
+	{
+
+    RunOnMain("setCntr2");
+
+    //sql_str= "";
+	
+    sql_str= " SELECT KS_IG_KUPAC,";
+	
+    if (neto_dn )
+	{
+		sql_str += " ISNULL(ROUND(SUM(KS_IL_TOTAL - KS_IL_POREZ),0), 0) as sales2";
+	}
+    elif (razlikaUCijeniField)
+	{
+		sql_str += " ISNULL(ROUND(SUM(KS_IL_TOTAL - KS_IL_POREZ - KS_IL_CENAN * CONVERT(float, REPLACE(KS_IL_KOL, ',', '.'))),0), 0) as sales2";
+	}
+    else
+	{
+		sql_str += " ISNULL(ROUND(SUM(KS_IL_TOTAL),0), 0) as sales2";
+	}
+    }
+
+    sql_str += " FROM " + proslaGodinaBaza + ".dbo.NKKSINVG";
+    sql_str += " LEFT JOIN " + proslaGodinaBaza + ".dbo.NKKSINVL ON KS_IG_RACUN = KS_IL_RACUN";
+    if (regija != "")
+	{
+        sql_str += " LEFT JOIN "+proslaGodinaBaza+".dbo.nkscpart g ON KS_IG_KUPAC = g.nksc_partcode";
+    }
+    sql_str += " LEFT JOIN "+proslaGodinaBaza+".dbo.nkmkarti ON KS_IL_PCODE = arti_artikl";
+    sql_str += " WHERE KS_IG_KUPAC IN ("+in_string+") ";
+    if (mjesec_h != "")
+	{
+        if (do_mjeseca )
+		{
+            sql_str += " AND month(KS_IG_DATUM)<= "+mjesec_h;
+            sql_str += " AND YEAR(KS_IG_DATUM)= "+lani_h;
+		}
+        else
+		{
+            sql_str += " AND month(KS_IG_DATUM)= "+mjesec_h;
+            sql_str += " AND YEAR(KS_IG_DATUM)= "+lani_h;
+        }
+    }
+
+    filterPart();
+    sql_str += " GROUP BY KS_IG_KUPAC";
+    sql_str += " ORDER BY KS_IG_KUPAC";
+	try	{
+		sqlResult = sqlQuery(sql_str);
+	}catch(exc){
+		MessageBox(exc);
+	}
+	
+	RunOnMain("fillCustomerArrays2");
+
+	RunOnMain("customerDataGrid");
+}
+
+function fillCustomerArrays(){
+	if(Size(sqlResult) > 1)
+	{
+		for ( i = 1; i < Size(sqlResult); i++ )
+		{        
+			namePart_ar[i - 1] =  sqlResult[i][1]; //namepart;
+			codePart_ar[i - 1] =  sqlResult[i][0]; //codepart;
+			salesPart1_ar[i - 1] =  sqlResult[i][2]; //sales1;
+			salesPart2_ar[i - 1] =  0; //sqlResult[i][2]; sales2;
+			top10Part_ar[i - 1] =  i;
+		} 
+	}
+
+	in_string= "";
+	for (cntr = 0; cntr < Size(codePart_ar); cntr++ )
+	{
+        in_string= in_string+"'"+codePart_ar[cntr];
+		if(cntr==Size(codePart_ar)-1)
+		{
+			in_string= in_string+"'";
+		}
+		else
+		{
+			in_string= in_string+"',";
+		}
+    }
+}
+
+function setCntr2(){
+	cntr2= 0;
+}
+
+function fillCustomerArrays2(){
+	if(Size(sqlResult) > 1)
+	{
+		for ( i = 1; i < Size(sqlResult); i++ )
+		{    
+			cntr2= find_index(codepart_ar,sqlResult[i][0]);    
+			if (cntr2 >= 0)  //if not -1
+			{
+			salesPart2_ar[cntr2] =  sqlResult[i][1]; 
+			if(salesPart2_ar[cntr2] != 0)
+			{
+				IndexPart_ar[cntr2] =  Math.Round(((salesPart1_ar[cntr2] - salesPart2_ar[cntr2])/salesPart2_ar[cntr2]) * 100, 0);
+			}
+			else
+			{
+				//IndexPart_ar[cntr2] =  0;
+			}
+			} 
+		}
+	}
+}
+
+function customerDataGrid(){
+	DisplayArray("dgStavke", "close");
+	Format("SALESPART2_AR", "nofd");
+	Format("SALESPART1_AR", "nofd");
+	DisplayArraySetup("dgStavke", counterFld: "cntr1", activeElements: Size(codePart_ar), maxElements: 10);
+}
+
+//-----------------------------------------------------------
