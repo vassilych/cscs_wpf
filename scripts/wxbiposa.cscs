@@ -187,10 +187,8 @@ function setCustomerAndInvoiceCounts()
         sql_str += " FROM " + proslaGodinaBaza + ".dbo.NKKSINVG";
         sql_str += " LEFT JOIN "+proslaGodinaBaza+".dbo.NKKSINVL ON KS_IG_RACUN = KS_IL_RACUN";
         sql_str += " LEFT JOIN "+proslaGodinaBaza+".dbo.nkmkarti ON KS_IL_PCODE = arti_artikl";
-        if (regija != "")
-        {
-            sql_str += " LEFT JOIN " + proslaGodinaBaza + ".dbo.nkscpart g ON KS_IG_KUPAC = g.nksc_partcode";
-        }
+        //sql_str += " LEFT JOIN " + proslaGodinaBaza + ".dbo.nkscpart g ON KS_IG_KUPAC = g.nksc_partcode";
+        
         sql_str += " WHERE 1 = 1"; //nkpr_gl_subtot > 0 AND nkpr_gl_oznaka= 'S'";
         if ( mjesec_h != "")
         {
@@ -217,10 +215,8 @@ function setCustomerAndInvoiceCounts()
         sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.NKKSINVG";
         sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.NKKSINVL ON KS_IG_RACUN= KS_IL_RACUN";
         sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkmkarti ON KS_IL_PCODE= arti_artikl";
-        if(regija != "")
-        {
-            sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart g ON KS_IG_KUPAC = g.nksc_partcode";
-        }
+        //sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart g ON KS_IG_KUPAC = g.nksc_partcode";
+        
         sql_str += " WHERE 1 = 1"; //nkpr_gl_subtot> 0 AND nkpr_gl_oznaka= 'S'";
         if(mjesec_h != "")
         {
@@ -428,10 +424,8 @@ function setCustomerAndInvoiceCounts()
         sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.NKKSINVG";
         sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.NKKSINVL ON KS_IG_RACUN= KS_IL_RACUN";
         sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkmkarti ON KS_IL_PCODE= arti_artikl";
-        if(regija != "")
-        {
-            sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart g ON KS_IG_KUPAC= g.nksc_partcode";
-        }
+        //sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart g ON KS_IG_KUPAC= g.nksc_partcode";
+        
         sql_str += " WHERE KS_IG_AZUR=''";
         if(mjesec_h != "")
         {
@@ -491,21 +485,22 @@ function setCustomerAndInvoiceCounts()
         // HorizontalBar("HorizontalBarBrWait", "Text", br_wait_string);
         // HorizontalBar("HorizontalBarBrWait", "Color", bojeArray);
     }
-    //
-function refresh()
-{
-    Chart("ChartPoMjesecima", "seriesType", "Columnseries");
-    Chart("ChartPoMjesecima", "init");
-    Chart("ChartPoMjesecima", "title", "Naslov grafa", 20);
-    //  Chart("ChartPoMjesecima", "labels", "y", 11);
-    Chart("ChartPoMjesecima", "labels", "x", 11, {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
-    //  Chart("ChartPoMjesecima", "xlabelsRotation", 0);
-    Chart("ChartPoMjesecima", "values", arrayProsla, STRING(proslaGodina)); // !
-    Chart("ChartPoMjesecima", "values", arrayTrenutna, STRING(ovagod_h)); //!
-    Chart("ChartPoMjesecima", "SeparatorStep", 1);
-    //Chart("ChartPoMjesecima", "Margins", {50, 10, 10, 10});
-    Chart("ChartPoMjesecima", "TooltipDecimalPlaces", 0);
-}
+
+
+// function refresh()
+// {
+//     Chart("ChartPoMjesecima", "seriesType", "Columnseries");
+//     Chart("ChartPoMjesecima", "init");
+//     Chart("ChartPoMjesecima", "title", "Naslov grafa", 20);
+//     //  Chart("ChartPoMjesecima", "labels", "y", 11);
+//     Chart("ChartPoMjesecima", "labels", "x", 11, {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
+//     //  Chart("ChartPoMjesecima", "xlabelsRotation", 0);
+//     Chart("ChartPoMjesecima", "values", arrayProsla, STRING(proslaGodina)); // !
+//     Chart("ChartPoMjesecima", "values", arrayTrenutna, STRING(ovagod_h)); //!
+//     Chart("ChartPoMjesecima", "SeparatorStep", 1);
+//     //Chart("ChartPoMjesecima", "Margins", {50, 10, 10, 10});
+//     Chart("ChartPoMjesecima", "TooltipDecimalPlaces", 0);
+// }
 
 function setHorizontalBars()
 {
@@ -655,7 +650,6 @@ function setWeekComparison()
 	{
 		sql_str = sql_str + " Sales = round(ISNULL(SUM(KS_IL_TOTAL - KS_IL_POREZ - KS_IL_CENAN * CONVERT(float, REPLACE(KS_IL_KOL, ',', '.'))) , 0),0)";
 	}
-	
 	else 
 	{
 		sql_str = sql_str + " Sales = round(ISNULL(SUM(KS_IL_TOTAL) , 0) ,0)";
@@ -664,10 +658,8 @@ function setWeekComparison()
 	sql_str = sql_str + " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.NKKSINVG b ON a.[Wk_date] = b.KS_IG_DATUM "; //ON a.[Wk_Week] = datepart(week , b.nkpr_gl_datem) ";
 	sql_str = sql_str + " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.NKKSINVL c ON b.KS_IG_RACUN = c.KS_IL_RACUN";
     sql_str = sql_str + " LEFT JOIN "+ trenutnaGodinaBaza + ".dbo.nkmkarti ON arti_artikl= c.KS_IL_PCODE";
-    if (regija != '')
-    {
-        sql_str= sql_str + " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkscpart ON KS_IG_KUPAC = nksc_partcode"; // AND g.nksc_regija= '"+regija*"'"
-    }
+    //sql_str= sql_str + " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkscpart ON KS_IG_KUPAC = nksc_partcode"; // AND g.nksc_regija= '"+regija*"'"
+    
 	//WHERE a.[Wk_Week]  =  datepart(week , b.nkpr_gl_invdte) AND nkpr_gl_invdte>= '" +  sqlDate(kpsy_fiscal_yr) + "')"
 	//sql_str =  sql_str +  " WHERE [wk_Week]>=  datepart(week , '" + sqlDate(danas) * "') - 1 AND wk_Week<=  datepart(week , '" + sqlDate(danas) * "') AND wk_ISOyear = " +  year(kpsy_fiscal_yr)
     
