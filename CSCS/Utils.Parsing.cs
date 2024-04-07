@@ -1385,6 +1385,36 @@ namespace SplitAndMerge
                 }
                 string extracted = token;
 
+                var lower = token.ToLower();
+                if (lower == "function" || lower == "csfunction" || lower == "dllfunction" || lower == "dllsub")
+                {
+                    string funcName = Utils.GetToken(script, Constants.TOKEN_SEPARATION);
+                    funcName = Constants.ConvertName(funcName);
+
+                    string[] args = Utils.GetFunctionSignature(script);
+                    if (args.Length == 1 && string.IsNullOrWhiteSpace(args[0]))
+                    {
+                        args = new string[0];
+                    }
+
+                    script.MoveForwardIf(Constants.START_GROUP, Constants.SPACE);
+                    script.MoveForwardIf(Constants.START_GROUP, Constants.SPACE);
+                    var rest = script.Rest;
+                    string body = Utils.GetBodyBetween(script, Constants.START_GROUP, Constants.END_GROUP);
+                    script.MoveForwardIf(Constants.END_GROUP);
+                    extracted += " " + funcName + Constants.START_ARG + string.Join(",", args) + Constants.END_ARG +
+                          Constants.START_GROUP + body + Constants.END_GROUP;
+                    if (needed)
+                    {
+                        step1sb.Append(extracted);
+                    }
+                    else
+                    {
+                        step2sb.Append(extracted);
+                    }
+                    continue;
+                }
+
                 if (!needed)
                 {
                     if (script.TryCurrent() == ' ')
@@ -1392,6 +1422,7 @@ namespace SplitAndMerge
                         {
                             extracted += script.CurrentAndForward();
                         }
+                    var rest = script.Rest;
                     extracted += GetBodyBetween(script, Constants.START_ARG, Constants.END_ARG, Constants.END_STATEMENT);
                 }
                 else
