@@ -5094,11 +5094,12 @@ namespace WpfCSCS
 			}
 
 			int currentScriptPos = script.Pointer;
-			string argsExpr = Utils.ReplaceSpaces(script);
+			string argsExpr = ReplaceSpaces(script);
 			var tempScript = script.GetTempScript(argsExpr);
 			tempScript.ScriptOffset = script.ScriptOffset + currentScriptPos;
-			List<Variable> args = tempScript.GetFunctionArgs();
-			Utils.CheckArgs(args.Count, 1, m_name);
+			//List<Variable> args = tempScript.GetFunctionArgs();
+			List<Variable> args = GetChainArgs(tempScript);
+            Utils.CheckArgs(args.Count, 1, m_name);
 
 			string chainName = args[0].AsString();
 			string chainFullName = script.GetFilePath(chainName);
@@ -5173,7 +5174,58 @@ namespace WpfCSCS
 			return result;
 		}
 
-		static Variable RunTask(CSCS_GUI gui, string scriptStr, ParsingScript parent, string chainName)
+        public static string ReplaceSpaces(ParsingScript script, char replaceChar = ',', char end = Constants.END_STATEMENT)
+        {
+            StringBuilder sb = new StringBuilder();
+            while (script.StillValid() && script.TryCurrent() != end)
+            {
+                var token = Utils.GetBodyBetween(script, '\0', ' ', end);
+				if (token.Equals(Constants.WITH, StringComparison.OrdinalIgnoreCase) && sb.ToString().Last() == replaceChar)
+				{
+					sb.Remove(sb.Length - 1, 1);
+					sb.Append(" " + token + " ");
+				}
+				else
+				{
+                    sb.Append(token + replaceChar);
+                }
+            }
+            if (sb.Length > 0 && sb[sb.Length - 1] == replaceChar)
+            {
+                sb.Remove(sb.Length - 1, 1);
+            }
+            return sb.ToString();
+        }
+
+        public static List<Variable> GetChainArgs(ParsingScript script)
+        {
+            List<Variable> args = new List<Variable>();
+            var pos = script.Pointer;
+            Variable scrptName = Utils.GetItem(script);
+            args.Add(scrptName);
+
+			script.Pointer = pos;
+			var token = Utils.GetToken(script, Constants.END_SPACE_ARRAY);
+			script.MoveForwardIf(Constants.SPACE);
+			if (script.Rest.StartsWith(Constants.WITH + " ", StringComparison.OrdinalIgnoreCase))
+			{
+                args.Add(new Variable(Constants.WITH));
+				script.Pointer += Constants.WITH.Length + 1;
+            }
+            if (!script.StillValid() || script.Current == Constants.END_STATEMENT)
+            {
+                return args;
+            }
+
+            var moreArgs = script.GetFunctionArgs();
+			foreach (var arg in moreArgs)
+			{
+				args.Add(arg);
+			}
+            return args;
+        }
+
+        static Variable RunTask(CSCS_GUI gui, string scriptStr, ParsingScript parent, string chainName)
 		{
 			if (string.IsNullOrWhiteSpace(scriptStr))
 			{

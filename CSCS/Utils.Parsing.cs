@@ -943,6 +943,8 @@ namespace SplitAndMerge
             int levelCurly = 0;
             int levelBrackets = 0;
             int levelParentheses = 0;
+            int levelParenthesesSpace = 0;
+
             int lineNumber = 0;
             int lineNumberCurly = 0;
             int lineNumberBrack = 0;
@@ -1057,6 +1059,7 @@ namespace SplitAndMerge
                             if (spaceOK || KeepSpaceOnce(interpreter, sb, next))
                             {
                                 sb.Append(ch);
+                                levelParenthesesSpace = levelParentheses;
                             }
                             spaceOK = spaceOK || (usedSpace && prev == Constants.NEXT_ARG);
                         }
@@ -1079,7 +1082,11 @@ namespace SplitAndMerge
                         if (!inQuotes && !inComments)
                         {
                             levelParentheses--;
-                            spaceOK = false;
+                            if (spaceOK && levelParentheses < levelParenthesesSpace)
+                            {
+                                spaceOK = false;
+                            }
+                            //spaceOK = false;
                             if (levelParentheses < 0)
                             {
                                 ThrowErrorMsg(parenthErrorMsg, source, levelParentheses, lineNumberPar, lineNumber, filename);
@@ -1102,6 +1109,7 @@ namespace SplitAndMerge
                         {
                             levelCurly--;
                             spaceOK = false;
+                            levelParenthesesSpace = 0;
                             if (levelCurly < 0)
                             {
                                 ThrowErrorMsg(curlyErrorMsg, source, levelCurly, lineNumberCurly, lineNumber, filename);
@@ -1137,6 +1145,7 @@ namespace SplitAndMerge
                         if (!inQuotes)
                         {
                             spaceOK = false;
+                            levelParenthesesSpace = 0;
                         }
                         break;
                     default:
