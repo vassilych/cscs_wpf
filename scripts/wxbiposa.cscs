@@ -12,7 +12,6 @@ function Wxbiposa_onDisplay()
     }else{
         companyCode = Substring(CoGet(), 1, 2);
     }
-
     sqlQueryString = "select SY_CC_USER, SY_CC_YEAR, SY_CC_DBASE from " + strtrim(CommonDBGet()) + ".dbo.NKSYCCYR WHERE SY_CC_CODE = '" + companyCode + "'";
     try
         {
@@ -40,6 +39,7 @@ function Wxbiposa_onDisplay()
     //tableHndl = OPENV("KPSYMSTR","B"+companycode); //, coGet());
     //InvHeadHndl = OPENV("NKPRINV","B"+companycode); //, coGet());
     //InvlineHndl = OPENV("NKPRINVL","B"+companycode); //, coGet());
+    proslaGodinaBaza= "";
     sveDrzave_dn= true;
     robaUsl_dn= true;
     postotakMj = 0;
@@ -64,7 +64,7 @@ function Wxbiposa_onDisplay()
         {
         MessageBox(exc);
         }
-    if (size(sqlResult) !== 0)
+    if (size(sqlResult) > 1)
     {
         proslaGodina = (int(ovagod_h) - 1);
         nazivFirme = sqlResult[1][0].trim();
@@ -76,17 +76,17 @@ function Wxbiposa_onDisplay()
     //kasnije zamijenit sa funkcijom, kada se bude koristi adictionary
     sqlQueryString = "select SY_CC_DBASE from " + CommonDBGet() + ".dbo.NKSYCCYR WHERE SY_CC_USER = '" + imeFirme + "' AND SY_CC_YEAR = '" + (int(ovagod_h) - 1) + "'";
     try
-        {
-        sqlResult = sqlQuery(sqlQueryString);
-        }
-    catch(exc)
-        {
-        MessageBox(exc);
-        }
-    if (size(sqlResult) !== 0)
     {
-        proslaGodinaBaza = sqlResult[1][0].trim();
-    }  
+        sqlResult = sqlQuery(sqlQueryString);
+        if (size(sqlResult) > 1)
+        {
+            proslaGodinaBaza = sqlResult[1][0].trim();
+        }  
+    }
+    catch(exc)
+    {
+        MessageBox(exc);
+    }
     EUCountries= "'AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GB', 'GR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK', 'QP', 'QR', 'QV'";
     sqlNaDan = ovagod_h + "-12-31";
     sqlOdDana = string(int(ovagod_h) - 1) + "-01-01";
@@ -183,33 +183,36 @@ function setCustomerAndInvoiceCounts()
         br_kupaca_lg = 0;
         broj_rac_og = 0;
         broj_rac_lg = 0;
-        sql_str = "SELECT count(distinct KS_IG_KUPAC) as br_kupaca_lg,count(KS_IG_RACUN) as broj_rac_lg";
-        sql_str += " FROM " + proslaGodinaBaza + ".dbo.NKKSINVG";
-        sql_str += " LEFT JOIN "+proslaGodinaBaza+".dbo.NKKSINVL ON KS_IG_RACUN = KS_IL_RACUN";
-        sql_str += " LEFT JOIN "+proslaGodinaBaza+".dbo.nkmkarti ON KS_IL_PCODE = arti_artikl";
-        //sql_str += " LEFT JOIN " + proslaGodinaBaza + ".dbo.nkscpart g ON KS_IG_KUPAC = g.nksc_partcode";
+        if (proslaGodinaBaza != "")
+        {
+            sql_str = "SELECT count(distinct KS_IG_KUPAC) as br_kupaca_lg,count(KS_IG_RACUN) as broj_rac_lg";
+            sql_str += " FROM " + proslaGodinaBaza + ".dbo.NKKSINVG";
+            sql_str += " LEFT JOIN "+proslaGodinaBaza+".dbo.NKKSINVL ON KS_IG_RACUN = KS_IL_RACUN";
+            sql_str += " LEFT JOIN "+proslaGodinaBaza+".dbo.nkmkarti ON KS_IL_PCODE = arti_artikl";
+            //sql_str += " LEFT JOIN " + proslaGodinaBaza + ".dbo.nkscpart g ON KS_IG_KUPAC = g.nksc_partcode";
         
-        sql_str += " WHERE 1 = 1"; //nkpr_gl_subtot > 0 AND nkpr_gl_oznaka= 'S'";
-        if ( mjesec_h != "")
-        {
-            if(do_mjeseca)
+            sql_str += " WHERE 1 = 1"; //nkpr_gl_subtot > 0 AND nkpr_gl_oznaka= 'S'";
+            if ( mjesec_h != "")
             {
-                sql_str += " AND month(KS_IG_DATUM)<= " + mjesec_h;
-                sql_str += " AND YEAR(KS_IG_DATUM)= " + lani_h;
-            }
-            else
-            {
+                if(do_mjeseca)
+                {
+                    sql_str += " AND month(KS_IG_DATUM)<= " + mjesec_h;
+                    sql_str += " AND YEAR(KS_IG_DATUM)= " + lani_h;
+                }
+                else
+                {
                 sql_str += " AND month(KS_IG_DATUM)= " + mjesec_h;
-                sql_str += " AND YEAR(KS_IG_DATUM)= " + lani_h;
+                    sql_str += " AND YEAR(KS_IG_DATUM)= " + lani_h;
+                }
             }
-        }
-        filterPart();
-        sqlResult = SqlQuery(sql_str);
-        if (size(sqlResult) != 0)
-        {
-            br_kupaca_lg = sqlResult[1][0];
-            broj_rac_lg = sqlResult[1][1];
-        }    
+            filterPart();
+            sqlResult = SqlQuery(sql_str);
+            if (size(sqlResult) != 0)
+            {
+                br_kupaca_lg = sqlResult[1][0];
+                broj_rac_lg = sqlResult[1][1];
+            }   
+        } 
         //
         sql_str = "SELECT count(distinct KS_IG_KUPAC) as br_kupaca_og, count(KS_IG_RACUN) as broj_rac_og";
         sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.NKKSINVG";
@@ -443,7 +446,7 @@ function setCustomerAndInvoiceCounts()
         //sql_str= sql_str* " AND DATEDIFF(day,nkpr_gl_invdte, CURRENT_TIMESTAMP) BETWEEN 0 AND 31"
         filterPart();
         sqlResult = SqlQuery(sql_str);
-        if (size(sqlResult) !== 0)
+        if (size(sqlResult) > 1)
         {
             br_neazur = sqlResult[1][0];
         } 

@@ -104,7 +104,7 @@
                        FontFamily="lato"
                        x:Name="Label20_Copy"
                        FontSize="16"
-                       Foreground="#FF934900"
+                       Foreground="black"
                        Text="Index %:" RenderTransformOrigin="0.795,0.667" Grid.Column="2" Grid.Row="1" />
             <wcl:ASNumericBox HorizontalAlignment="Left"
                               VerticalAlignment="Top"
@@ -165,7 +165,7 @@
                        FontFamily="lato"
                        x:Name="Label20"
                        FontSize="16"
-                       Foreground="#FF934900"
+                       Foreground="black"
                        Text="Index %:" Grid.Column="0" Grid.Row="0" />
             <wcl:ASNumericBox HorizontalAlignment="Left"
                               FontWeight="Normal"

@@ -170,7 +170,8 @@
 
     DEFINE pripremljeno type l;
     define in_string type a size 300;
-    DEFINE companyCode type a size 3 up;    
+    DEFINE companyCode type a size 3 up;   
+    define proslaGodinaBaza type a size 200; 
 
     DEFINE sqlNaDan type a size 10;  
     DEFINE sqlOdDana type a size 10;  

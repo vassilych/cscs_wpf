@@ -17,6 +17,7 @@
     define gl_oznaka type a size 1 up;
     DEFINE skladiste type i size 3;
     DEFINE skladisteNaziv type a size 50;
+    define proslaGodinaBaza type a size 200;
 
     DEFINE ARTI_ARTIKL_ARR type a size 30 array 50000;
     DEFINE ARTI_NAZIV_ARR type a size 50 array 50000;

@@ -326,7 +326,7 @@ function setRegionPieChart()
         sql_str += " ORDER BY origin DESC";
 
 	}
-	SaveFile(sql_str);
+	//SaveFile(sql_str);
 	try	{
 		queryResult = sqlquery(sql_str);
 	}catch(exc){
