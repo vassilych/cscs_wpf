@@ -95,133 +95,67 @@ function setTop10InvoicesDataGrid()
 }
 
 function setChartByDaysOfMonth()
+{
+    if (neto_dn)
     {
-        if (neto_dn)
-        {
-             sql_str = "SELECT [wk_day] as dan2 , SalesDay = ISNULL(ROUND(SUM(KS_IL_TOTAL - KS_IL_POREZ),0) , 0)";
-             sql_str += ", ISNULL(ROUND(AVG(SUM(KS_IL_TOTAL - KS_IL_POREZ)) OVER(ORDER BY wk_day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0),0) AS moving_average_3_days";
-        }
-        elif (razlikaUCijeniField)
-        {
-             sql_str = "SELECT [wk_day] as dan2 , SalesDay = ISNULL(SUM(KS_IL_TOTAL - KS_IL_POREZ - KS_IL_CENAN * CONVERT(float, REPLACE(KS_IL_KOL, ',', '.'))) , 0)";
-             sql_str += ", ISNULL(ROUND(AVG(SUM(KS_IL_TOTAL - KS_IL_POREZ - KS_IL_CENAN * CONVERT(float, REPLACE(KS_IL_KOL, ',', '.')))) OVER(ORDER BY wk_day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0),0) AS moving_average_3_days";
-        }
-        else
-        {
-             sql_str = "SELECT [wk_day] as dan2 , SalesDay = ISNULL(SUM(KS_IL_TOTAL) , 0)";
-             sql_str += ", ISNULL(ROUND(AVG(SUM(KS_IL_TOTAL)) OVER(ORDER BY wk_day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), 0) AS moving_average_3_days";
-        }
-        sql_str += " FROM " + CommonDBGet()+ ".dbo.Kalendar a";
-        //sql_str =  sql_str +  " LEFT JOIN " + ovagod_h * ".dbo.nkprinv b ON a.[Wk_Date]  =  DATEADD(month ,  DATEDIFF(month ,  0 ,  b.nkpr_gl_invdte) ,  0)"
-        sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.NKKSINVG c ON a.[Wk_Date] = KS_IG_DATUM ";
-        sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.NKKSINVL e ON KS_IG_RACUN = KS_IL_RACUN";
-        sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkmkarti ON KS_IL_PCODE = arti_artikl";
-        sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart g ON c.KS_IG_KUPAC = g.nksc_partcode";
-        
-        sql_str += " WHERE 1 = 1";
-        if (do_mjeseca)
-        {
-             sql_str += " AND [wk_Month]< = '" + mjesec_h + "' AND wk_Year = '" + ovagod_h + "'";
-        }
-        else
-        {
-             sql_str += " AND [wk_Month] = '" + mjesec_h + "' AND wk_Year = '" + ovagod_h + "'";
-        }
-        filterPart();
-        sql_str += " GROUP BY Wk_day";
-        sql_str += " ORDER BY [Wk_day]";
-        try
-        {
-            //SaveFile(sql_str);
-
-             queryResult = sqlquery(sql_str);
-        }catch(exc)
-        {
-              MessageBox(exc);
-        }
-      
-        arrayDani = {};
-        arrayVrijednosti = {};
-        arrayAvr = {};
-
-        for(i = 1; i < queryResult.length; i++)
-        {
-            arrayDani.add(string(queryResult[i][0]));
-        //}
-        //for(i = 1; i < queryResult.length; i++)
-        //{
-            arrayVrijednosti.add(queryResult[i][1]);
-            arrayAvr.add(queryResult[i][2]);
-        }
+            sql_str = "SELECT [wk_day] as dan2 , SalesDay = ISNULL(ROUND(SUM(KS_IL_TOTAL - KS_IL_POREZ),0) , 0)";
+            sql_str += ", ISNULL(ROUND(AVG(SUM(KS_IL_TOTAL - KS_IL_POREZ)) OVER(ORDER BY wk_day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0),0) AS moving_average_3_days";
     }
-
-function setChartByHours()
+    elif (razlikaUCijeniField)
     {
-        if (neto_dn)
-        {
-             sql_str = "SELECT datepart(hour,ks_ig_sat) as Hour , SalesDay = ISNULL(ROUND(SUM(KS_IL_TOTAL - KS_IL_POREZ),0) , 0)";
-             sql_str += ", ISNULL(ROUND(AVG(SUM(KS_IL_TOTAL - KS_IL_POREZ)) OVER(ORDER BY wk_day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0),0) AS moving_average_3_days";
-        }
-        elif (razlikaUCijeniField)
-        {
-             sql_str = "SELECT datepart(hour,ks_ig_sat) as Hour  , SalesDay = ISNULL(SUM(KS_IL_TOTAL - KS_IL_POREZ - KS_IL_CENAN * CONVERT(float, REPLACE(KS_IL_KOL, ',', '.'))) , 0)";
-             sql_str += ", ISNULL(ROUND(AVG(SUM(KS_IL_TOTAL - KS_IL_POREZ - KS_IL_CENAN * CONVERT(float, REPLACE(KS_IL_KOL, ',', '.')))) OVER(ORDER BY wk_day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0),0) AS moving_average_3_days";
-        }
-        else
-        {
-             sql_str = "SELECT datepart(hour,ks_ig_sat) as Hour  , SalesDay = ISNULL(SUM(KS_IL_TOTAL) , 0)";
-             sql_str += ", ISNULL(ROUND(AVG(SUM(KS_IL_TOTAL)) OVER(ORDER BY wk_day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), 0) AS moving_average_3_days";
-        }
-        sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.NKKSINVG ";
-        sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.NKKSINVL e ON KS_IG_RACUN = KS_IL_RACUN";
-        sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkmkarti ON KS_IL_PCODE = arti_artikl";
-        sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart g ON c.KS_IG_KUPAC = g.nksc_partcode";
-        
-        sql_str += " WHERE 1 = 1";
-        if (do_mjeseca)
-        {
-             sql_str += " AND Month(ks_ig_datum)< = '" + mjesec_h + "' AND year(ks_ig_datum) = '" + ovagod_h + "'";
-        }
-        else
-        {
-             sql_str += " AND Month(ks_ig_datum) = '" + mjesec_h + "' AND year(ks_ig_datum) = '" + ovagod_h + "'";
-        }
-        filterPart();
-        sql_str += " GROUP BY datepart(hour,ks_ig_sat)";
-        sql_str += " ORDER BY datepart(hour,ks_ig_sat)";
-        try
-        {
-            //SaveFile(sql_str);
-
-             queryResult = sqlquery(sql_str);
-        }catch(exc)
-        {
-              MessageBox(exc);
-        }
-      
-        arrayHours = {};
-        arrayHoursAmt = {};
-        arrayHoursAvr = {};
-
-        for(i = 1; i <=24; i++)
-        {
-            for(i2 = 1; i2 < queryResult.length; i2++)
-            {
-                if (i= queryResult[i2][0])
-                {
-                    arrayHours.add(string(queryResult[i2][0]));
-                    arrayHoursAmt.add(queryResult[i2][1]);
-                    arrayHoursAvr.add(queryResult[i2][2]);
-                }
-                else
-                {
-                    arrayHours.add(string(i));
-                    arrayHoursAmt.add(0);
-                    arrayHoursAvr.add(0);
-                }
-            }
-        }
+            sql_str = "SELECT [wk_day] as dan2 , SalesDay = ISNULL(SUM(KS_IL_TOTAL - KS_IL_POREZ - KS_IL_CENAN * CONVERT(float, REPLACE(KS_IL_KOL, ',', '.'))) , 0)";
+            sql_str += ", ISNULL(ROUND(AVG(SUM(KS_IL_TOTAL - KS_IL_POREZ - KS_IL_CENAN * CONVERT(float, REPLACE(KS_IL_KOL, ',', '.')))) OVER(ORDER BY wk_day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0),0) AS moving_average_3_days";
     }
+    else
+    {
+            sql_str = "SELECT [wk_day] as dan2 , SalesDay = ISNULL(SUM(KS_IL_TOTAL) , 0)";
+            sql_str += ", ISNULL(ROUND(AVG(SUM(KS_IL_TOTAL)) OVER(ORDER BY wk_day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), 0) AS moving_average_3_days";
+    }
+    sql_str += " FROM " + CommonDBGet()+ ".dbo.Kalendar a";
+    //sql_str =  sql_str +  " LEFT JOIN " + ovagod_h * ".dbo.nkprinv b ON a.[Wk_Date]  =  DATEADD(month ,  DATEDIFF(month ,  0 ,  b.nkpr_gl_invdte) ,  0)"
+    sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.NKKSINVG c ON a.[Wk_Date] = KS_IG_DATUM ";
+    sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.NKKSINVL e ON KS_IG_RACUN = KS_IL_RACUN";
+    sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkmkarti ON KS_IL_PCODE = arti_artikl";
+    sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart g ON c.KS_IG_KUPAC = g.nksc_partcode";
+    
+    sql_str += " WHERE 1 = 1";
+    if (do_mjeseca)
+    {
+            sql_str += " AND [wk_Month]< = '" + mjesec_h + "' AND wk_Year = '" + ovagod_h + "'";
+    }
+    else
+    {
+            sql_str += " AND [wk_Month] = '" + mjesec_h + "' AND wk_Year = '" + ovagod_h + "'";
+    }
+    filterPart();
+    sql_str += " GROUP BY Wk_day";
+    sql_str += " ORDER BY [Wk_day]";
+    try
+    {
+        //SaveFile(sql_str);
+
+            queryResult = sqlquery(sql_str);
+    }catch(exc)
+    {
+            MessageBox(exc);
+    }
+    
+    arrayDani = {};
+    arrayVrijednosti = {};
+    arrayAvr = {};
+
+    for(i = 1; i < queryResult.length; i++)
+    {
+        arrayDani.add(string(queryResult[i][0]));
+    //}
+    //for(i = 1; i < queryResult.length; i++)
+    //{
+        arrayVrijednosti.add(queryResult[i][1]);
+        arrayAvr.add(queryResult[i][2]);
+    }
+}
+
+
 
 function setChartByMonth()
 {

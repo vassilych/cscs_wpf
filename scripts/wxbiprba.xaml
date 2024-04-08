@@ -30,8 +30,8 @@
                             Grid.Column="1"
                             Grid.Row="0"
                             Margin="5,5,5,10" LegendPosition="Top" />
-        <TextBox HorizontalAlignment="Left" TextWrapping="Wrap" Text="Prodaja po danima" Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="24,5,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
-        <TextBox HorizontalAlignment="Left" TextWrapping="Wrap" Text="Najnoviji računi" Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="23,5,0,0" BorderBrush="{x:Null}"/>
+        <Label HorizontalAlignment="Left" Content="Prodaja po danima" Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="24,5,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
+        <Label HorizontalAlignment="Left" Content="Najnoviji računi" Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="23,5,0,0" BorderBrush="{x:Null}"/>
 
         <DataGrid GridLinesVisibility="Vertical"
                   VerticalGridLinesBrush="LightGray"
@@ -128,8 +128,8 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <TextBox HorizontalAlignment="Left" TextWrapping="Wrap" Text="Najveći računi" Grid.Row="1" Grid.Column="1" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="24,5,0,0" BorderBrush="{x:Null}"/>
-        <TextBox HorizontalAlignment="Left" TextWrapping="Wrap" Text="Prodaja po mjesecima (x 1.000)" VerticalAlignment="Top" Width="272" FontSize="16" FontWeight="Bold" Margin="23,10,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
+        <Label HorizontalAlignment="Left" Content="Najveći računi" Grid.Row="1" Grid.Column="1" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="24,5,0,0" BorderBrush="{x:Null}"/>
+        <Label HorizontalAlignment="Left" Content="Prodaja po mjesecima (x 1.000)" VerticalAlignment="Top" Width="272" FontSize="16" FontWeight="Bold" Margin="23,10,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
         <DataGrid GridLinesVisibility="None"
                   HorizontalAlignment="Left"
                   VerticalAlignment="Top"
