@@ -96,6 +96,7 @@ namespace SplitAndMerge
         public const string DECODE = "decode";
         public const string DEEP_COPY = "DeepCopy";
         public const string DEFINE_LOCAL = "DefineLocal";
+        public const string DOWNLOAD = "Download";
         public const string ENV = "env";
         public const string ENCODE = "encode";
         public const string EXIT = "exit";
@@ -266,6 +267,7 @@ namespace SplitAndMerge
 
         public static char[] COMPARE_ARRAY = "<>=)".ToCharArray();
         public static char[] IF_ARG_ARRAY = "&|)".ToCharArray();
+        public static char[] END_SPACE_ARRAY = { SPACE, END_STATEMENT };
         public static char[] END_PARSE_ARRAY = { SPACE, END_STATEMENT, END_ARG, END_GROUP, '\n' };
         public static char[] NEXT_OR_END_ARRAY = { NEXT_ARG, END_ARG, END_GROUP, END_STATEMENT, SPACE };
         public static char[] NEXT_OR_END_ARRAY_EXT = { NEXT_ARG, END_ARG, END_GROUP, END_ARRAY, END_STATEMENT, SPACE };

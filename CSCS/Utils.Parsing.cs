@@ -943,6 +943,8 @@ namespace SplitAndMerge
             int levelCurly = 0;
             int levelBrackets = 0;
             int levelParentheses = 0;
+            int levelParenthesesSpace = 0;
+
             int lineNumber = 0;
             int lineNumberCurly = 0;
             int lineNumberBrack = 0;
@@ -1057,6 +1059,7 @@ namespace SplitAndMerge
                             if (spaceOK || KeepSpaceOnce(interpreter, sb, next))
                             {
                                 sb.Append(ch);
+                                levelParenthesesSpace = levelParentheses;
                             }
                             spaceOK = spaceOK || (usedSpace && prev == Constants.NEXT_ARG);
                         }
@@ -1079,7 +1082,11 @@ namespace SplitAndMerge
                         if (!inQuotes && !inComments)
                         {
                             levelParentheses--;
-                            spaceOK = false;
+                            if (spaceOK && levelParentheses < levelParenthesesSpace)
+                            {
+                                spaceOK = false;
+                            }
+                            //spaceOK = false;
                             if (levelParentheses < 0)
                             {
                                 ThrowErrorMsg(parenthErrorMsg, source, levelParentheses, lineNumberPar, lineNumber, filename);
@@ -1102,6 +1109,7 @@ namespace SplitAndMerge
                         {
                             levelCurly--;
                             spaceOK = false;
+                            levelParenthesesSpace = 0;
                             if (levelCurly < 0)
                             {
                                 ThrowErrorMsg(curlyErrorMsg, source, levelCurly, lineNumberCurly, lineNumber, filename);
@@ -1137,6 +1145,7 @@ namespace SplitAndMerge
                         if (!inQuotes)
                         {
                             spaceOK = false;
+                            levelParenthesesSpace = 0;
                         }
                         break;
                     default:
@@ -1376,6 +1385,36 @@ namespace SplitAndMerge
                 }
                 string extracted = token;
 
+                var lower = token.ToLower();
+                if (lower == "function" || lower == "csfunction" || lower == "dllfunction" || lower == "dllsub")
+                {
+                    string funcName = Utils.GetToken(script, Constants.TOKEN_SEPARATION);
+                    funcName = Constants.ConvertName(funcName);
+
+                    string[] args = Utils.GetFunctionSignature(script);
+                    if (args.Length == 1 && string.IsNullOrWhiteSpace(args[0]))
+                    {
+                        args = new string[0];
+                    }
+
+                    script.MoveForwardIf(Constants.START_GROUP, Constants.SPACE);
+                    script.MoveForwardIf(Constants.START_GROUP, Constants.SPACE);
+                    var rest = script.Rest;
+                    string body = Utils.GetBodyBetween(script, Constants.START_GROUP, Constants.END_GROUP);
+                    script.MoveForwardIf(Constants.END_GROUP);
+                    extracted += " " + funcName + Constants.START_ARG + string.Join(",", args) + Constants.END_ARG +
+                          Constants.START_GROUP + body + Constants.END_GROUP;
+                    if (needed)
+                    {
+                        step1sb.Append(extracted);
+                    }
+                    else
+                    {
+                        step2sb.Append(extracted);
+                    }
+                    continue;
+                }
+
                 if (!needed)
                 {
                     if (script.TryCurrent() == ' ')
@@ -1383,6 +1422,7 @@ namespace SplitAndMerge
                         {
                             extracted += script.CurrentAndForward();
                         }
+                    var rest = script.Rest;
                     extracted += GetBodyBetween(script, Constants.START_ARG, Constants.END_ARG, Constants.END_STATEMENT);
                 }
                 else
