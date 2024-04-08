@@ -750,11 +750,7 @@ function setWeekComparison(){
 	sql_str  += " AND ((wk_ISOWeek = datepart(ISO_week , '" + danas +"')) OR (wk_ISOWeek = datepart(ISO_week , '" + danas+"')-1)) AND year('"+danas+"') = wk_year";
 	sql_str  += " GROUP BY [wk_FirstOfWeek]";
 	sql_str  += " ORDER BY [wk_FirstOfWeek] DESC";
-	
-    
     //SaveFile(sql_str);
-	
-
     try	{
 		sqlResult = sqlQuery(sql_str);
         //MessageBox(sqlResult);
