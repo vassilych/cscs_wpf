@@ -8,7 +8,7 @@ function wxbiposab_onDisplay()
     // pieChartStr= "Gradovi";
 
 	// AsyncCall("setRegionPieChart", "regionPieChartDone");
-	AsyncCall("setKategPieChart", "kategPieChartDone");
+	AsyncCall("setChartByHours", "hoursChartDone");
 	
 	// refreshPie = true;
 }
@@ -23,7 +23,7 @@ function cbPieChart@SelectionChanged(){
 	AsyncCall("setRegionPieChart", "setDefaultCursor");
 }
 
-function regionPieChartDone(){
+function hoursChartDone(){
 	AsyncCall("setKategPieChart", "kategPieChartDone");
 }
 function kategPieChartDone(){
@@ -39,7 +39,6 @@ function setDefaultCursor(){
 
 function setRegionPieChart()
 {
-	
 	//RunOnMain("setPieChart");
 }
 
@@ -51,6 +50,102 @@ function setPieChart(){
 	{
 		PieChart("PieChart1", "values", int(queryResult[i][1]) , substring(string(queryResult[i][0].trim()), 0, 30), 50);
 	}
+}
+
+//-------------------------------------------------------
+
+function setChartByHours()
+{
+    if (neto_dn)
+    {
+            sql_str = "SELECT datepart(hour,ks_ig_sat) as Hour , SalesDay = ISNULL(ROUND(SUM(KS_IL_TOTAL - KS_IL_POREZ),0) , 0)";
+            sql_str += ", ISNULL(ROUND(AVG(SUM(KS_IL_TOTAL - KS_IL_POREZ)) OVER(ORDER BY datepart(hour,ks_ig_sat) ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0),0) AS moving_average_3_days";
+    }
+    elif (razlikaUCijeniField)
+    {
+            sql_str = "SELECT datepart(hour,ks_ig_sat) as Hour  , SalesDay = ISNULL(SUM(KS_IL_TOTAL - KS_IL_POREZ - KS_IL_CENAN * CONVERT(float, REPLACE(KS_IL_KOL, ',', '.'))) , 0)";
+            sql_str += ", ISNULL(ROUND(AVG(SUM(KS_IL_TOTAL - KS_IL_POREZ - KS_IL_CENAN * CONVERT(float, REPLACE(KS_IL_KOL, ',', '.')))) OVER(ORDER BY datepart(hour,ks_ig_sat) ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0),0) AS moving_average_3_days";
+    }
+    else
+    {
+            sql_str = "SELECT datepart(hour,ks_ig_sat) as Hour  , SalesDay = ISNULL(SUM(KS_IL_TOTAL) , 0)";
+            sql_str += ", ISNULL(ROUND(AVG(SUM(KS_IL_TOTAL)) OVER(ORDER BY datepart(hour,ks_ig_sat) ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), 0) AS moving_average_3_days";
+    }
+    sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.NKKSINVG ";
+    sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.NKKSINVL ON KS_IG_RACUN = KS_IL_RACUN";
+    sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkmkarti ON KS_IL_PCODE = arti_artikl";
+    sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart ON KS_IG_KUPAC = nksc_partcode";
+    
+    sql_str += " WHERE 1 = 1";
+    if (do_mjeseca)
+    {
+            sql_str += " AND Month(ks_ig_datum)< = '" + mjesec_h + "' AND year(ks_ig_datum) = '" + ovagod_h + "'";
+    }
+    else
+    {
+            sql_str += " AND Month(ks_ig_datum) = '" + mjesec_h + "' AND year(ks_ig_datum) = '" + ovagod_h + "'";
+    }
+    filterPart();
+    sql_str += " GROUP BY datepart(hour,ks_ig_sat)";
+    sql_str += " ORDER BY datepart(hour,ks_ig_sat)";
+    try
+    {
+        // SaveFile(sql_str);
+		queryResult = sqlquery(sql_str);
+    }catch(exc)
+    {
+            MessageBox(exc);
+    }
+
+    arrayHours = {};
+    arrayHoursAmt = {};
+    arrayHoursAvr = {};
+
+    for(i = 1; i <= 24; i++)
+    {
+		for(i2 = 1; i2 < queryResult.length + 1; i2++)
+        {
+			if(i2 == queryResult.length){
+				arrayHours.add(string(i));
+                arrayHoursAmt.add(0);
+                arrayHoursAvr.add(0);
+				break;
+			}
+
+            if (i == queryResult[i2][0])
+            {
+                arrayHours.add(string(queryResult[i2][0]));
+                arrayHoursAmt.add(queryResult[i2][1]);
+                arrayHoursAvr.add(queryResult[i2][2]);
+				break;
+            }
+        }
+    }
+
+	RunOnMain("DisplayHoursChart");
+}
+
+function DisplayHoursChart(){
+	Chart("ChartPoSatima", "init");
+    Chart("ChartPoSatima", "seriesType", "lineseries");
+    //Chart("ChartPoSatima", "title", "Naslov grafa", 20);
+    // Chart("ChartPoSatima", "labels", "y", 13);
+    // Chart("ChartPoSatima", "labels", "x", 13, {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
+    // Chart("ChartPoSatima", "xlabelsRotation", 0);
+    
+	Chart("ChartPoSatima", "values", arrayHoursAmt, "po satu"); // !
+    Chart("ChartPoSatima", "values", arrayHoursAvr, "prosjek 3 sata"); //!
+    
+	Chart("ChartPoSatima", "SeparatorStep", 1);
+    
+	Chart("ChartPoSatima", "Margins", {60, 30, 0, 30});
+    
+	Chart("ChartPoSatima", "TooltipDecimalPlaces", 0);
+    
+	Chart("ChartPoSatima", "Color.Series", { "#1C4E80", "#EA6A47"}); 
+
+    // Chart("ChartPoSatima", "labels", "x", 13, {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", });
+    Chart("ChartPoSatima", "labels", "x", 13, arrayHours);
 }
 
 //-------------------------------------------------------
