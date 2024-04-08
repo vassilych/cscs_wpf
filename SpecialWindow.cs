@@ -349,6 +349,8 @@ namespace WpfCSCS
             parent?.Focus();
 
             NewWindowFunction.RemoveWindow(win);
+            //CSCS_GUI.Window2File.Remove(win);
+            //CSCS_GUI.File2Window.Remove(Gui.Script.Filename);
         }
 
         private void Win_Closing(object sender, System.ComponentModel.CancelEventArgs e)

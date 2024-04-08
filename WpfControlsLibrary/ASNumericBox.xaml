@@ -13,7 +13,10 @@
             <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
             
-        <local:ASNumericTextBox x:Name="numBoxTextBox" Grid.Column="0" HorizontalAlignment="Stretch" />
+        <local:ASNumericTextBox
+            TabIndex="{Binding Path=TabIndex, RelativeSource={RelativeSource AncestorType={x:Type local:ASNumericBox}}}"
+            IsTabStop="{Binding Path=IsTabStop, RelativeSource={RelativeSource AncestorType={x:Type local:ASNumericBox}}}"
+            x:Name="numBoxTextBox" Grid.Column="0" HorizontalAlignment="Stretch" />
         <Button Focusable="False" x:Name="numBoxButton" Grid.Column="1" Height="auto" Click="numBoxButton_Click" BorderThickness="0"/>
         
     </Grid>

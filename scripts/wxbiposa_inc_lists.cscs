@@ -17,6 +17,7 @@
     define gl_oznaka type a size 1 up;
     DEFINE skladiste type i size 3;
     DEFINE skladisteNaziv type a size 50;
+    define proslaGodinaBaza type a size 200;
 
     DEFINE ARTI_ARTIKL_ARR type a size 30 array 50000;
     DEFINE ARTI_NAZIV_ARR type a size 50 array 50000;
@@ -170,8 +171,7 @@
 
     DEFINE pripremljeno type l;
     define in_string type a size 300;
-    DEFINE companyCode type a size 3 up;   
-    define proslaGodinaBaza type a size 200; 
+    DEFINE companyCode type a size 3 up;    
 
     DEFINE sqlNaDan type a size 10;  
     DEFINE sqlOdDana type a size 10;  
@@ -474,86 +474,64 @@ function filterPart()
 
     if (sklad_str != "")
 	{
-        sql_str += " AND nkpr_ln_loc IN ("+sklad_str+")";
+        sql_str += " AND KS_IG_SKLAD IN ("+sklad_str+")";
 	}
     if ( razlikaUCijeniField   )
     {
-        sql_str += " AND nkpr_gl_invcd != ''" ;
+        sql_str += " AND KS_IG_AZUR != ''" ;
         //da bi dobili ruc ,  treba ra?un biti a?uriran
     }
     if (artikl != "")
 	{
-        sql_str += " AND nkpr_ln_pcode= '"+artikl+"'";
+        sql_str += " AND KS_IL_PCODE = '"+artikl+"'";
 	}
 
     if (roba_dn )
 	{
-        sql_str += " AND nkpr_ln_ma_us IN ( 'R','G','S')";
+        sql_str += " AND ARTI_TIP IN ( 'R','G','S')";
 	}
     elif (usluge_dn )
 	{
-        sql_str += " AND nkpr_ln_ma_us= 'N'";
+        sql_str += " AND ARTI_TIP= 'N'";
 	}
     elif (povnak_dn )
 	{
-        sql_str += " AND nkpr_ln_ma_us= 'P'";
+        sql_str += " AND ARTI_TIP = 'P'";
 	}
     elif (avans_dn )
 	{
-        sql_str += " AND nkpr_ln_ma_us= 'A'";
+        sql_str += " AND ARTI_TIP = 'A'";
 	}
 
     if (kategorija != "")
 	{
-        sql_str += " AND arti_kategorija='"+kategorija+"'";
+        sql_str += " AND arti_kategorija = '"+kategorija+"'";
 	}
     if (klasa != "")
 	{
-        sql_str += " AND arti_klasa='"+klasa+"'";
+        sql_str += " AND arti_klasa = '"+klasa+"'";
 	}
-    if (regija != "")
-	{
-        sql_str += " AND g.nksc_regija= '"+regija+"'";
-	}
+    
     if (partner != "")
 	{
-        sql_str += " AND nkpr_gl_cuscod= '"+partner+"'";
+        sql_str += " AND KS_IG_KUPAC = '"+partner+"'";
 	}
-    if (isporuka != "")
-	{
-        sql_str += " AND nkpr_gl_shpcod= '"+isporuka+"'";
-	}
+    
     if (komercijalist != "")
 	{
-        sql_str += " AND nkpr_gl_slsp= "+komercijalist;
+        sql_str += " AND KS_IG_OSOBA = "+komercijalist;
 	}
-    if (rnalog != "")
-	{
-        sql_str += " AND nkpr_ln_rnalg= "+rnalog;
-	}
-
-    if (domaca_dn )
-	{
-        sql_str += " AND nkpr_gl_drzava= '"+kpsy_po_freight+"'";
-	}
-    elif (eu_dn )
-	{
-        sql_str +=  " AND nkpr_gl_drzava IN ("+eucountries+")";
-	}
-    elif (izvoz_dn )
-	{
-        sql_str += " AND nkpr_gl_drzava != '"+kpsy_po_freight+"' AND NOT nkpr_gl_drzava IN ("+eucountries+")";
-	}
+    
     if (gl_oznaka != "")
 	{
-        sql_str += " AND nkpr_gl_oznaka= '"+gl_oznaka+"'";
-	    if (GL_oznaka == "X" || GL_oznaka == "O" || GL_oznaka == "R" )  //ako je to storno, odobrenje ili reklamacija neka okrene
+        sql_str += " AND nkpr_gl_oznaka= '" + gl_oznaka + "'";
+	    if (GL_oznaka == "X" )  //ako je to storno, odobrenje ili reklamacija neka okrene
 		{
-            sql_str += " AND nkpr_ln_pext< 0";
+            sql_str += " AND KS_IL_TOTAL < 0";
 		}
         else
 		{
-            sql_str += " AND nkpr_ln_pext>= 0";
+            sql_str += " AND KS_IL_TOTAL >= 0";
 		}
 	}
 

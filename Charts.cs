@@ -6,10 +6,13 @@
 //using LiveChartsCore.SkiaSharpView.Painting;
 //using LiveChartsCore.SkiaSharpView.VisualElements;
 //using LiveChartsCore.SkiaSharpView.WPF;
+using LiveCharts.Defaults;
 using LiveChartsCore;
+using LiveChartsCore.Defaults;
 using LiveChartsCore.Kernel;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Drawing.Geometries;
+using LiveChartsCore.SkiaSharpView.Extensions;
 using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.SkiaSharpView.WPF;
 using SkiaSharp;
@@ -33,6 +36,7 @@ namespace WpfCSCS
 
             interpreter.RegisterFunction(Constants.CHART, new ChartFunction());
             interpreter.RegisterFunction(Constants.PIE_CHART, new PieChartFunction());
+            interpreter.RegisterFunction(Constants.GAUGE_CHART, new GaugeChartFunction());
             
 
         }
@@ -344,6 +348,20 @@ namespace WpfCSCS
                         //    Paint = new SolidColorPaint(SKColors.DarkSlateGray)
                         //};
                     }
+                    else if (optionString == "colors")
+                    {
+                        var seriesList = pieWidget.Series.ToList();
+                        
+                        for (int i = 0; i < valueVariable.Tuple.Count; i++)
+                        {
+                            if (seriesList.Count <= i)
+                                break;
+
+                            (seriesList[i] as PieSeries<double>).Fill = new SolidColorPaint(SKColor.Parse(ToHex((Color)ColorConverter.ConvertFromString(valueVariable.Tuple[i].String))));
+                        }      
+                        
+                        //pieWidget.Series = series;
+                    }
                     //else if(optionString == "separatorstep")
                     //{
                     //    var firstXAxis = pieWidget.XAxes.FirstOrDefault();
@@ -380,11 +398,74 @@ namespace WpfCSCS
                 return Variable.EmptyInstance;
             }
 
+            public string ToHex(Color c) => $"#{c.R:X2}{c.G:X2}{c.B:X2}";
+
             private string tooltipFormater(ChartPoint<double, DoughnutGeometry, LabelGeometry> arg)
             {
                 return arg.PrimaryValue.ToString("N0");
             }
         }
+        
+        class GaugeChartFunction : ParserFunction
+        {
+            static Dictionary<string, string> chartsTypes = new Dictionary<string, string>();
+            protected override Variable Evaluate(ParsingScript script)
+            {
+                List<Variable> args = script.GetFunctionArgs();
+                Utils.CheckArgs(args.Count, 2, m_name);
+
+                var gui = CSCS_GUI.GetInstance(script);
+
+                var widgetName = Utils.GetSafeString(args, 0).ToLower();
+                var optionString = Utils.GetSafeString(args, 1).ToLower();
+                var valueVariable = Utils.GetSafeVariable(args, 2);
+
+                var widget = gui.GetWidget(widgetName);
+                if (widget is PieChart)
+                {
+                    var pieWidget = widget as PieChart;
+
+                    if (optionString == "value")
+                    {
+                        if (valueVariable.Value > 0)
+                        {
+                            pieWidget.Series = GaugeGenerator.BuildSolidGauge(
+                                new GaugeItem(
+                                    valueVariable.Value,          // the gauge value
+                                    series =>    // the series style
+                                    {
+                                        series.MaxRadialColumnWidth = 50;
+                                        series.DataLabelsSize = 50;
+                                    })
+                                );
+                            pieWidget.Tooltip = null;
+                        }
+                    }
+                    else if (optionString == "color")
+                    {
+                        var newColor = valueVariable.String;
+
+                        var series_ienum_property = widget.GetType().GetProperty("Series");
+
+                        foreach (var item in (System.Collections.IEnumerable)series_ienum_property.GetValue(widget, null))
+                        {
+                            //item ;
+                            if (item is PieSeries<LiveChartsCore.Defaults.ObservableValue>)
+                            {
+                                if (!(item as PieSeries<LiveChartsCore.Defaults.ObservableValue>).SeriesProperties.HasFlag(SeriesProperties.GaugeFill))
+                                    item.GetType().GetProperty("Fill").SetValue(item, new LiveChartsCore.SkiaSharpView.Painting.SolidColorPaint(SkiaSharp.SKColor.Parse(ToHex((Color)ColorConverter.ConvertFromString(newColor)))), null);
+                            }
+                        }
+                    }
+                }
+
+                return Variable.EmptyInstance;
+            }
+
+            public string ToHex(Color c) => $"#{c.R:X2}{c.G:X2}{c.B:X2}";
+        }
+
+
 
 
         //class ChartFunction_livechartsWPF : ParserFunction

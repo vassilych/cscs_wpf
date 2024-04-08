@@ -10,6 +10,7 @@ DEFINE sifraFieldPointer type f;
 DEFINE nazivFieldPointer type f;
 
 DEFINE windowTitle type a size 100;
+define f2_result type l;
 //DEFINE headersArray type a size 50 array 10; // max 10 kolona u datagridu
 
 function ShowF2List(){
@@ -18,10 +19,6 @@ function ShowF2List(){
 
 function F2List_onDisplay(){
     FormatF2ListDataGrid( windowTitle, headersArray);
-
-    MessageBox(sifraFieldPointer);
-    MessageBox(&sifraFieldPointer);
-    
     searchSifra = &sifraFieldPointer;
     search();
 }
@@ -58,20 +55,26 @@ function gbOk@clicked()
 }
 
 function selected(){
+    define searchSifra2 type asize 50;
+    define searchNaziv2 type asize 50;
+    
     selectedArray = GetSelectedGridRow("dgF2List");
+
     if (size(selectedArray) !== 0)
     {
-        searchSifra = "";
-        searchNaziv = "";
-        &sifraFieldPointer = selectedArray[0];
-        &nazivFieldPointer = selectedArray[1];
+        searchSifra2 = selectedArray[0];
+        searchNaziv2 = selectedArray[1];
+      
+        sifraFieldPointer -> searchSifra2;
+        NazivFieldPointer -> searchNaziv2;
+       
         SetWindowModalResult(true);
-    }
+    }   
 }
 
 function gbCancel@clicked()
 {
-    // searchSifra = "";
-    // searchNaziv = "";
+    searchSifra = "";
+    searchNaziv = "";
     SetWindowModalResult(false);
 }

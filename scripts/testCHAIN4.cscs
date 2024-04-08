@@ -1,0 +1,64 @@
+MessageBox("hello");
+
+DEFINE lala type a size 10;
+lala = "xxxxxxxx";
+
+var1 = "../../scripts/script6.cscs";
+function func1(){
+    return "../../scripts/script6.cscs";
+}
+
+function func2(){
+    return "aaaaaaaaaa";
+}
+
+//-------------------------------------------------
+
+MessageBox("1");
+
+try{
+    CHAIN "../../scripts/script6.cscs" NEWRUNTIME WITH "myGrid" "bla1"+"bla2" "bla3" "bla4"; // dela
+}catch(ex){
+    MessageBox(ex);
+}
+
+//-------------------------------------------------
+
+MessageBox("2");
+
+try{
+    CHAIN var1 WITH "myGrid" "bla1"+"bla2" "bla3" "bla4"; // dela
+}catch(ex){
+    MessageBox(ex);
+}
+
+MessageBox("3");
+
+try{
+    CHAIN strtrim(tpath()) + "script6.cscs" WITH "myGrid" "bla1"+"bla2" "bla3" "bla4"; // ne dela
+}catch(ex){
+    MessageBox(ex);
+}
+
+MessageBox("4");
+
+try{
+    CHAIN func1() WITH "myGrid" "bla1"+"bla2" "bla3" "bla4"; // ne dela
+}catch(ex){
+    MessageBox(ex);
+}
+
+//------------------------------------
+
+MessageBox("5");
+
+try{
+    CHAIN "../../scripts/script6.cscs" WITH "myGrid" "bla1"+"bla2" "bla3" func2(); // dela
+}catch(ex){
+    MessageBox(ex);
+}
+
+
+
+MessageBox("end");
+quit;

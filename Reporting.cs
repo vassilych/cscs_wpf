@@ -1,4 +1,6 @@
 ﻿using DevExpress.Xpf.Printing;
+using DevExpress.XtraCharts;
+using DevExpress.XtraExport.Helpers;
 using DevExpress.XtraPrinting.Caching;
 using DevExpress.XtraReports.UI;
 using SplitAndMerge;
@@ -39,8 +41,10 @@ namespace WpfCSCS
         static Dictionary<int, DataSet> DataSets = new Dictionary<int, DataSet>();
         static Dictionary<int, DataTable> DataTables = new Dictionary<int, DataTable>();
 
-        static Dictionary<int, List<string>> fieldsOfReports = new Dictionary<int, List<string>>();
+        static List<string> chartTags = new List<string>();
 
+        static Dictionary<int, List<string>> fieldsOfReports = new Dictionary<int, List<string>>();
+        
         static Dictionary<int, int> lastReportsNumbers = new Dictionary<int, int>();
 
         public ReportFunction(ReportOption _option)
@@ -108,6 +112,7 @@ namespace WpfCSCS
                 Reports[1].DataMember = DataSets[1].Tables[0].TableName;
 
                 fieldsOfReports[1] = new List<string>();
+                
                 var allLabels = Reports[1].AllControls<XRLabel>();
                 foreach (var label in allLabels)
                 {
@@ -117,13 +122,32 @@ namespace WpfCSCS
                         //has Tag
                         var fieldName = label.Tag.ToString().ToLower();
 
-                        fieldsOfReports[1].Add(fieldName);
+                        if (!fieldsOfReports[1].Any(p => p == fieldName))
+                            fieldsOfReports[1].Add(fieldName);
 
                         label.ExpressionBindings.Add(new ExpressionBinding("Text", $"{fieldName}"));
                     }
                 }
 
+                var allBarCodes = Reports[1].AllControls<XRBarCode>();
+                foreach (var barcode in allBarCodes)
+                {
+
+                    if (!string.IsNullOrEmpty(barcode.Tag.ToString()))
+                    {
+                        //has Tag
+                        var fieldName = barcode.Tag.ToString().ToLower();
+
+                        if (!fieldsOfReports[1].Any(p => p == fieldName))
+                            fieldsOfReports[1].Add(fieldName);
+
+                        barcode.ExpressionBindings.Add(new ExpressionBinding("BinaryData", $"{fieldName}"));
+                        barcode.ExpressionBindings.Add(new ExpressionBinding("Text", $"{fieldName}"));
+                    }
+                }
+
                 fieldsOfReports[1].Add("thisReportsNumber");
+
 
                 foreach (var fieldName in fieldsOfReports[1])
                 {
@@ -159,6 +183,31 @@ namespace WpfCSCS
 
                     DataTables[1].Columns.Add(fieldName, fieldType);
                 }
+
+
+                var allCharts = Reports[1].AllControls<XRChart>();
+                foreach (var chart in allCharts)
+                {
+
+                    if (!string.IsNullOrEmpty(chart.Tag.ToString()))
+                    {
+                        var fieldName = chart.Tag.ToString().ToLower();
+
+                        if (!fieldsOfReports[1].Any(p => p == fieldName))
+                        {
+                            fieldsOfReports[1].Add(fieldName);
+                            chartTags.Add(fieldName);
+                        }
+
+                        chart.Series[0].ArgumentScaleType = DevExpress.XtraCharts.ScaleType.Auto;
+                        chart.Series[0].ValueScaleType = DevExpress.XtraCharts.ScaleType.Numerical;
+
+                        DataTables[1].Columns.Add(fieldName, typeof(DataTable));
+
+                        chart.BeforePrint += Chart_BeforePrint;
+                    }
+                }
+
 
                 //image in main report
                 var allPictures = Reports[1].AllControls<XRPictureBox>();
@@ -209,9 +258,27 @@ namespace WpfCSCS
                         //has tag
                         var fieldName = label.Tag.ToString().ToLower();
 
-                        fieldsOfReports[thisSubreportNum].Add(fieldName);
+                        if (!fieldsOfReports[thisSubreportNum].Any(p => p == fieldName))
+                            fieldsOfReports[thisSubreportNum].Add(fieldName);
 
                         label.ExpressionBindings.Add(new ExpressionBinding("Text", $"[{fieldName}]"));
+                    }
+                }
+
+                var allBarCodes = Reports[thisSubreportNum].AllControls<XRBarCode>();
+                foreach (var barcode in allBarCodes)
+                {
+
+                    if (!string.IsNullOrEmpty(barcode.Tag.ToString()))
+                    {
+                        //has Tag
+                        var fieldName = barcode.Tag.ToString().ToLower();
+
+                        if (!fieldsOfReports[thisSubreportNum].Any(p => p == fieldName))
+                            fieldsOfReports[thisSubreportNum].Add(fieldName);
+
+                        barcode.ExpressionBindings.Add(new ExpressionBinding("BinaryData", $"{fieldName}"));
+                        barcode.ExpressionBindings.Add(new ExpressionBinding("Text", $"{fieldName}"));
                     }
                 }
 
@@ -253,6 +320,31 @@ namespace WpfCSCS
                     DataTables[thisSubreportNum].Columns.Add(fieldName, fieldType);
                 }
 
+
+                var allCharts = Reports[thisSubreportNum].AllControls<XRChart>();
+                foreach (var chart in allCharts)
+                {
+
+                    if (!string.IsNullOrEmpty(chart.Tag.ToString()))
+                    {
+                        var fieldName = chart.Tag.ToString().ToLower();
+
+                        if (!fieldsOfReports[thisSubreportNum].Any(p => p == fieldName))
+                        {
+                            fieldsOfReports[thisSubreportNum].Add(fieldName);
+                            chartTags.Add(fieldName);
+                        }
+
+                        chart.Series[0].ArgumentScaleType = DevExpress.XtraCharts.ScaleType.Auto;
+                        chart.Series[0].ValueScaleType = DevExpress.XtraCharts.ScaleType.Numerical;
+
+                        DataTables[thisSubreportNum].Columns.Add(fieldName, typeof(DataTable));
+
+                        chart.BeforePrint += Chart_BeforePrint;
+                    }
+                }
+
+
                 //linking subreport(s)
                 var parentsSubreports = Reports[parentReportHndlNum].AllControls<XRSubreport>();
 
@@ -266,6 +358,37 @@ namespace WpfCSCS
 
                 return new Variable((double)thisSubreportNum);
             }
+        }
+
+        static List<KeyValuePair<int, int>> chartsReportsList = new List<KeyValuePair<int, int>>();
+        //static List<int> chartsSeriesCountList = new List<int>();
+        private void Chart_BeforePrint(object sender, System.Drawing.Printing.PrintEventArgs e)
+        {
+            var chart = (sender as XRChart);
+
+            var current = chartsReportsList.FirstOrDefault();
+            
+            chart.DataSource = DataTables[current.Key].Rows[current.Value][chart.Tag.ToString()];
+
+            chart.Series[0].ArgumentDataMember = "Argument";
+            chart.Series[0].ValueDataMembers.AddRange(new string[] { "Value1" });
+
+            for(int i = 1; i < chart.Series.Count; i++)
+            {
+                chart.Series[i].ArgumentDataMember = "Argument";
+                chart.Series[i].ValueDataMembers.AddRange(new string[] { "Value" + (i + 1) });
+            }
+
+            //var currentChartSeriesCount = chartsSeriesCountList.FirstOrDefault();
+            //for (int i = 1; i < currentChartSeriesCount; i++)
+            //{
+            //    chart.Series.Add(new DevExpress.XtraCharts.Series("ser",ViewType.Line));
+            //    chart.Series[i].ArgumentDataMember = "Argument";
+            //    chart.Series[i].ValueDataMembers.AddRange(new string[] { "Value" + (i + 1) });
+            //}
+            //chartsSeriesCountList.RemoveAt(0);
+
+            chartsReportsList.RemoveAt(0);
         }
 
         private void OutputReport()
@@ -303,6 +426,76 @@ namespace WpfCSCS
                 else if (dataTableFieldName == "thisSubreportsMainReport")
                 {
                     newObjectArray[i] = thisSubreportsMainReport;
+                }
+                else if (chartTags.Any(p => p == dataTableFieldName))
+                {
+                    //DataSet ds = new DataSet();
+                    DataTable dt;
+
+                    dt = new DataTable(dataTableFieldName);
+                    dt.Columns.Add(new DataColumn("Argument", typeof(string)));
+                    dt.Columns.Add(new DataColumn("Value1", typeof(double)));
+                    //dt.Columns.Add(new DataColumn("Value2", typeof(int)));
+
+                    //int numberOfSeries = 1;
+
+                    if (Gui.DEFINES.TryGetValue(dataTableFieldName + "_val_1", out DefineVariable defVarVal1))
+                    {
+                        List<string> chartArgs = new List<string>();
+                        if (Gui.DEFINES.TryGetValue(dataTableFieldName + "_args", out DefineVariable defVarArgs))
+                        {
+                            chartArgs = defVarArgs.Tuple.Select(p=>p.String).ToList();
+                        }
+
+                        if(Gui.DEFINES.TryGetValue(dataTableFieldName + "_val_2", out DefineVariable defVarVal2))
+                        {
+                            dt.Columns.Add(new DataColumn("Value2", typeof(double)));
+                            //numberOfSeries = 2;
+
+                            if (Gui.DEFINES.TryGetValue(dataTableFieldName + "_val_3", out DefineVariable defVarVal3))
+                            {
+                                dt.Columns.Add(new DataColumn("Value3", typeof(double)));
+                                //numberOfSeries = 3;
+
+                                for (int j = 0; j < defVarVal1.Tuple.Count; j++)
+                                {
+                                    DataRow row = dt.NewRow();
+                                    row["Argument"] = chartArgs.Count > j ? chartArgs[j] : "";
+                                    row["Value1"] = defVarVal1.Tuple[j].Value;
+                                    row["Value2"] = defVarVal2.Tuple[j].Value;
+                                    row["Value3"] = defVarVal3.Tuple[j].Value;
+                                    dt.Rows.Add(row);
+                                }
+                            }
+                            else
+                            {
+                                for (int j = 0; j < defVarVal1.Tuple.Count; j++)
+                                {
+                                    DataRow row = dt.NewRow();
+                                    row["Argument"] = chartArgs.Count > j ? chartArgs[j] : "";
+                                    row["Value1"] = defVarVal1.Tuple[j].Value;
+                                    row["Value2"] = defVarVal2.Tuple[j].Value;
+                                    dt.Rows.Add(row);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            for (int j = 0; j < defVarVal1.Tuple.Count; j++)
+                            {
+                                DataRow row = dt.NewRow();
+                                row["Argument"] = chartArgs.Count > j ? chartArgs[j] : "";
+                                row["Value1"] = defVarVal1.Tuple[j].Value;
+                                dt.Rows.Add(row);
+                            }
+                        }
+                    }
+
+                    newObjectArray[i] = dt;
+
+                    var rowCount = DataSets[reportHndlNum].Tables[0].Rows.Count;
+                    chartsReportsList.Add(new KeyValuePair<int, int>(reportHndlNum, rowCount));
+                    //chartsSeriesCountList.Add(numberOfSeries);
                 }
                 else if (Gui.DEFINES.TryGetValue(dataTableFieldName, out DefineVariable defVar))
                 {
@@ -411,7 +604,7 @@ namespace WpfCSCS
                 }
             }
         }
-
+        
         private void UpdateReport()
         {
             List<Variable> args = Script.GetFunctionArgs();
@@ -464,6 +657,7 @@ namespace WpfCSCS
                 {
                     subreport.ParameterBindings.Clear();
                     subreport.ParameterBindings.Add(new ParameterBinding($"thisReportsNumberParam_{report.Key + 1}", report.Value.DataSource, ((DataSet)report.Value.DataSource).Tables[0].TableName + "." + "thisReportsNumber"/*parameterName.ParameterName.Replace("param", "")*/));
+                    
                 }
             }
 

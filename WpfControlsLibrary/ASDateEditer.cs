@@ -64,6 +64,10 @@ namespace WpfControlsLibrary
 
                 dptb.Loaded += Dptb_Loaded;
 
+                dptb.Name = this.Name + "_TextBox";
+
+                //dptb.Name = "asdeTextBox";
+
                 //dptb.Focus();
 
                 //Binding bind = new Binding("Date");
@@ -82,6 +86,21 @@ namespace WpfControlsLibrary
             var button = this.Template.FindName("PART_Button", this) as Button;
             if (button != null)
             {
+                //Binding bind = new Binding();
+                //bind.ElementName = "asdeTextBox";
+                ////bind.Converter = new ASDateEditerConverter2();
+                ////bind.ConverterParameter = DisplaySize;
+                ////bind.StringFormat = "dd..MM..yyyy";
+                ////bind.RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(ASDateEditer), 2);
+                ////bind.Mode = BindingMode.TwoWay;
+                ////bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+                //button.SetBinding(FocusManager.FocusedElementProperty, bind);
+                //button.DataContext = this;
+
+                //button.SetValue(FocusManager.FocusedElementProperty, textBox as DatePickerTextBox);
+
+                button.Name = "asdeButton";
+
                 button.Width = ButtonWidth;
                 button.Margin = new Thickness(-2, 0, -4, 0);
                 button.Padding = new Thickness(0);
@@ -103,6 +122,12 @@ namespace WpfControlsLibrary
                 templateButton.VisualTree = elemFactory;
 
                 button.Template = templateButton;
+            }
+            
+            var popup = this.Template.FindName("PART_Popup", this) as Popup;
+            if (popup != null)
+            {
+                popup.Name = this.Name + "_Popup";
             }
         }
 

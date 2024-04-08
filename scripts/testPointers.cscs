@@ -10,12 +10,33 @@
 // MessageBox(b) //= 10
 
 
-DEFINE b type a size 10;
+DEFINE b type i size 10;
+DEFINE c type i size 10;
 DEFINE a type F; //pointer type
+DEFINE d type F; //pointer type
+define g type f;
+define e type a size 10 array 10;
+DEFINE pointerArray type f array 10;
 a -> b; //points to b
+d -> c; //points to c
 &a= 10; //b equals 10
-print("1. a="+a+", &a=" + &a + ", b="+b);
+&d= 22; //c equals 22
+E[8]= "abc";
+//g -> e[8];
+pointerArray[7] -> b;
+MessageBox("pointerArray[7] = " + &pointerArray[7]);
+MessageBox("g: "+e[8]);
+//print("1. a="+a+", &a=" + &a + ", b="+b);
 MessageBox("1. a="+a+", &a=" + &a + ", b="+b);
 b= 20;
 MessageBox("2. a="+a+", &a=" + &a + ", b="+b);
+
+//print("11. d="+d+", &d=" + &d + ", c="+c);
+MessageBox("11. d="+d+", &d=" + &d + ", c="+c);
+c= &a+(&d+100);
+MessageBox("12. d="+d+", &d=" + &d + ", c="+c);
+
+//MessageBox"aaaa: "+(&a+"  "+&D +" "+&a+&d);
+MessageBox(&a+"  "+&D);
+
 quit;

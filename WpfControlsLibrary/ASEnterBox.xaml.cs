@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -164,6 +165,45 @@ namespace WpfControlsLibrary
                 base.SetValue(ButtonBackgroundProperty, value);
             }
         }
+        
+        public static readonly DependencyProperty BorderBrushProperty = DependencyProperty.Register("BorderBrush", typeof(Brush), typeof(ASEnterBox));
+        public Brush BorderBrush
+        {
+            get
+            {
+                return (Brush)base.GetValue(BorderBrushProperty);
+            }
+            set
+            {
+                base.SetValue(BorderBrushProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty BorderThicknessProperty = DependencyProperty.Register("BorderThickness", typeof(Thickness), typeof(ASEnterBox));
+        public Thickness BorderThickness
+        {
+            get
+            {
+                return (Thickness)base.GetValue(BorderThicknessProperty);
+            }
+            set
+            {
+                base.SetValue(BorderThicknessProperty, value);
+            }
+        }
+        
+        public static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Register("CornerRadius", typeof(float), typeof(ASEnterBox));
+        public float CornerRadius
+        {
+            get
+            {
+                return (float)base.GetValue(CornerRadiusProperty);
+            }
+            set
+            {
+                base.SetValue(CornerRadiusProperty, value);
+            }
+        }
 
 
         public ASEnterBox()
@@ -187,6 +227,14 @@ namespace WpfControlsLibrary
 
                 enterBoxTextBox.Background = Background == null ? new SolidColorBrush() { Color = Colors.White } : Background;
                 enterBoxTextBox.Foreground = Foreground == null ? new SolidColorBrush() { Color = Colors.Black } : Foreground;
+
+                enterBoxTextBox.BorderThickness = BorderThickness;
+                enterBoxTextBox.BorderBrush = BorderBrush;
+
+                var tbBorder = enterBoxTextBox.Template.FindName("border", enterBoxTextBox);
+                ((Border)tbBorder).CornerRadius = new CornerRadius(CornerRadius);
+                var btnBorder = enterBoxButton.Template.FindName("border", enterBoxButton);
+                ((Border)btnBorder).CornerRadius = new CornerRadius(CornerRadius);
 
                 enterBoxButton.Width = ButtonSize;
 

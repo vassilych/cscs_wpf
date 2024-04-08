@@ -13,7 +13,10 @@
             <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
 
-        <local:ASEnterTextBox x:Name="enterBoxTextBox" Grid.Column="0" HorizontalAlignment="Stretch" Background="White"/>
+        <local:ASEnterTextBox
+            TabIndex="{Binding Path=TabIndex, RelativeSource={RelativeSource AncestorType={x:Type local:ASEnterBox}}}"
+            IsTabStop="{Binding Path=IsTabStop, RelativeSource={RelativeSource AncestorType={x:Type local:ASEnterBox}}}"
+            x:Name="enterBoxTextBox" Grid.Column="0" HorizontalAlignment="Stretch" Background="White"/>
         <Button Focusable="False" x:Name="enterBoxButton" Grid.Column="1" Height="auto" BorderThickness="0">
             <Viewbox>
                 <Image Source="search.png"/>

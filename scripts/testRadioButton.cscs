@@ -25,23 +25,23 @@ function gb1@clicked(){
     MessageBox("groupBox clicked");
 }
 
-// // // kad se klikne na radiobutton, svaki klik
-// function rb1@clicked(){
-//     MessageBox("rb1@clicked");
-// }
+// // kad se klikne na radiobutton, svaki klik
+function rb1@clicked(){
+    MessageBox("rb1@clicked");
+}
 
-// function rb2@clicked(){
-//     MessageBox("rb2@clicked");
-// }
+function rb2@clicked(){
+    MessageBox("rb2@clicked");
+}
 
 
-// //changed - oba smjera -> odselektiran ili selektiran
-// function rb1@changed(){
-//     MessageBox("rb1 CHANGED");
-// }
-// function rb2@changed(){
-//     MessageBox("rb2 CHANGED");
-// }
+//changed - oba smjera -> odselektiran ili selektiran
+function rb1@changed(){
+    MessageBox("rb1 CHANGED");
+}
+function rb2@changed(){
+    MessageBox("rb2 CHANGED");
+}
 
 
 

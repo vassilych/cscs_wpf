@@ -1,0 +1,9 @@
+tc1 = TestClass1();
+MessageBox(tc1.string1);
+tc1.string1 = "aaaaaaaaaaaaaa";
+tc1.PrintProperties();
+
+tb1 = TestButton("gbPripremi");
+MessageBox(tb1.IsCancel);
+tb1.IsCancel = true;
+MessageBox(tb1.IsCancel);

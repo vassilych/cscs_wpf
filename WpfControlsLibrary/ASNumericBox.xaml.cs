@@ -243,7 +243,46 @@ namespace WpfControlsLibrary
                 base.SetValue(ButtonBackgroundProperty, value);
             }
         }
-        
+
+        public static readonly DependencyProperty BorderBrushProperty = DependencyProperty.Register("BorderBrush", typeof(Brush), typeof(ASNumericBox));
+        public Brush BorderBrush
+        {
+            get
+            {
+                return (Brush)base.GetValue(BorderBrushProperty);
+            }
+            set
+            {
+                base.SetValue(BorderBrushProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty BorderThicknessProperty = DependencyProperty.Register("BorderThickness", typeof(Thickness), typeof(ASNumericBox));
+        public Thickness BorderThickness
+        {
+            get
+            {
+                return (Thickness)base.GetValue(BorderThicknessProperty);
+            }
+            set
+            {
+                base.SetValue(BorderThicknessProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Register("CornerRadius", typeof(float), typeof(ASNumericBox));
+        public float CornerRadius
+        {
+            get
+            {
+                return (float)base.GetValue(CornerRadiusProperty);
+            }
+            set
+            {
+                base.SetValue(CornerRadiusProperty, value);
+            }
+        }
+
 
 
         public ASNumericBox()
@@ -277,7 +316,7 @@ namespace WpfControlsLibrary
                 numBoxTextBox.MaxValue = MaxValue != null ? (double)MaxValue : double.MaxValue;
 
                 numBoxTextBox.IsReadOnly = this.IsReadOnly;
-                numBoxTextBox.IsTabStop = this.IsTabStop;
+                //numBoxTextBox.IsTabStop = this.IsTabStop;
 
                 ////novo
                 Binding bind = new Binding("Value");
@@ -293,7 +332,15 @@ namespace WpfControlsLibrary
                 numBoxTextBox.FontWeight = FontWeight;
                 numBoxTextBox.Background = Background == null ? new SolidColorBrush() { Color = Colors.White } : Background;
                 numBoxTextBox.Foreground = Foreground == null ? new SolidColorBrush() { Color = Colors.Black } : Foreground;
-                
+
+                numBoxTextBox.BorderThickness = BorderThickness;
+                numBoxTextBox.BorderBrush = BorderBrush;
+
+                var tbBorder = numBoxTextBox.Template.FindName("border", numBoxTextBox);
+                ((Border)tbBorder).CornerRadius = new CornerRadius(CornerRadius);
+                var btnBorder = numBoxButton.Template.FindName("border", numBoxButton);
+                ((Border)btnBorder).CornerRadius = new CornerRadius(CornerRadius);
+
                 numBoxTextBox.IsReadOnly = IsReadOnly;
 
                 numBoxButton.Background = ButtonBackground == null ? new SolidColorBrush() { Color = Colors.LightGray } : ButtonBackground;
