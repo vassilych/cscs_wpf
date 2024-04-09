@@ -2,7 +2,7 @@
     include(strTrim(tpath()) +"F2ListLib.cscs");
     
     define kategorija,klasa type a size 6 up;
-    define kategNaziv,klasaNaziv,KomercNaziv type a size 50;
+    define kategNaziv,klasaNaziv type a size 50;
     define komercijalist type r size 6;
     define sveDrzave_dn,eu_dn,izvoz_dn,domaca_dn type l;
     define eucountries type a size 200;
@@ -12,6 +12,7 @@
     define mx3_dn,mx2_dn,met_dn,kom_dn type l;
     define neto_dn,do_mjeseca,ruc_dn,bruto_dn,tezina_dn type l;
 
+    DEFINE ratio type n size 10 dec 2;
 
     define tip_racuna type a size 30;
     define gl_oznaka type a size 1 up;
@@ -72,7 +73,7 @@
 	define sklad_str type a size 100;
 
     define br_kupaca_og, br_kupaca_lg type i size 5;
-    define prodaja_kup_og, prodaja_kup_lg type n size 14;
+    define prodaja_kup_og, prodaja_kup_lg type n size 14 dec 2;
     define broj_rac_og, broj_rac_lg type r size 6;
     define prod_kup_indx type n size 10 dec 2;
     DEFINE arrayProsla type n size 14 array 12;
@@ -119,23 +120,18 @@
     define partner type a size 10 ;
     define partnerNaziv type a size 50 ;
 
-    define regija type a size 6 ;
-    define regijaNaziv type a size 30 ;
-
     define kategorija type a size 6 ;
     define kategorijaNaziv type a size 50 ;
 
     define klasa type a size 6 ;
     define klasaNaziv type a size 50 ;
 
-    define isporuka type a size 10 ;
-    define isporukaNaziv type a size 50 ;
+    define prodavac type a size 10 ;
+    define prodavacNaziv type a size 50 ;
+    
+    define posKasa type a size 10 ;
+    define posKasaNaziv type a size 50 ;
 
-    define komercijalist type a size 6 ;
-    define komercijalistNaziv type a size 50 ;
-
-    define rnalog type a size 8 ;
-    define rnalogNaziv type a size 50 ;
 
     define do_mjeseca type l;
 
@@ -144,28 +140,18 @@
     DEFINE razlikaUCijeniField type l;
     DEFINE tezina_dn type l;
 
-    DEFINE searchSklSifra type i size 5;
-    DEFINE searchSklNaziv type a size 50;
-    DEFINE searchArtiklSifra type a size 50;
-    DEFINE searchArtiklNaziv type a size 50;
-    DEFINE searchPartnerSifra type a size 50;
-    DEFINE searchPartnerNaziv type a size 50;
-    DEFINE searchRegijaSifra type a size 50;
-    DEFINE searchRegijaNaziv type a size 50;
-    DEFINE searchKategorijaSifra type a size 50;
-    DEFINE searchKategorijaNaziv type a size 50;
-    DEFINE searchKlasaSifra type a size 50;
-    DEFINE searchKlasaNaziv type a size 50;
-    DEFINE searchIsporukaSifra type a size 50;
-    DEFINE searchIsporukaNaziv type a size 50;
-    DEFINE searchRnalogSifra type a size 50;
-    DEFINE searchRnalogNaziv type a size 50;
-    DEFINE searchKomercijalistSifra type a size 50;
-    DEFINE searchKomercijalistNaziv type a size 50;
-
-    DEFINE regijeRB type l;
-    DEFINE drzaveRB type l;
-    DEFINE gradoviRB type l;
+    // DEFINE searchSklSifra type i size 5;
+    // DEFINE searchSklNaziv type a size 50;
+    // DEFINE searchArtiklSifra type a size 50;
+    // DEFINE searchArtiklNaziv type a size 50;
+    // DEFINE searchPartnerSifra type a size 50;
+    // DEFINE searchPartnerNaziv type a size 50;
+    // DEFINE searchKategorijaSifra type a size 50;
+    // DEFINE searchKategorijaNaziv type a size 50;
+    // DEFINE searchKlasaSifra type a size 50;
+    // DEFINE searchKlasaNaziv type a size 50;
+    // DEFINE searchProdavacSifra type a size 50;
+    // DEFINE searchProdavacNaziv type a size 50;
 
     DEFINE nazivFirme type a size 100;
 
@@ -184,9 +170,9 @@
     define pieChartStr type a size 20;
     define refreshpie type l;    
     define br_wait type r;
-    define br_neazur type r;
+    define br_neazur, br_nefiskalizirani, br_naknadnoFiskalizirani type r;
     define br_wait_string type a size 30;
-    define br_neazur_string type a size 30;
+    define br_neazur_string, br_nefiskalizirani_string, br_naknadnoFiskalizirani_string type a size 30;
 
 //=============================================
 
@@ -281,72 +267,10 @@ function cePartner@post()
 }
 
 //==============================================================
-function ceIsporuka@clicked()
-{
-    F2ListQueryString = "SELECT [NKSP_AD_CODEINT]  ,[NKSP_ad_naziv1] FROM  " + trenutnaGodinaBaza + ".[dbo].[NKSSPADRS] where nksp_ad_code = partner AND NKSP_AD_CODEINT like '%{var1}%' and NKSP_AD_NAZIV1 like '%{var2}%' ORDER BY nksp_ad_codeint";    
-    sifraFieldPointer -> isporuka;
-    NazivFieldPointer -> isporukaNaziv;
 
-    windowTitle = "F2 lista isporuka za partnera: "+partner;
-    headersArray = {"Šifra isporuke", "Naziv isporučnog mjesta"};
-    ShowF2List();
-    
-    if(&sifraFieldPointer != ""){
-        isporuka= strtrim(&sifraFieldPointer);
-        isporukaNaziv= (&NazivFieldPointer);
-    }
-    else
-    {
-        isporuka= "";
-        isporukaNaziv= "";
-    }
-    searchSifra = "";
-    searchNaziv = "";
-}
-
-function ceIsporuka@post()
-{
-    if (isporuka== "")
-    {
-        isporukaNaziv= "";
-    }
-}
-
-//===================================================================
-function ceRegija@clicked()
-{
-    F2ListQueryString = "SELECT [KSDU_SF_CODE], [KSDU_SF_OPIS1] FROM  " + trenutnaGodinaBaza + ".[dbo].[KPSYSIFA] WHERE [KSDU_SF_TIP] ='V' and KSDU_SF_CODE like '%" + searchRegijaSifra + "%' and KSDU_SF_OPIS1 like '%" + searchRegijaNaziv + "%' ORDER BY ksdu_sf_code";
-    
-    sifraFieldPointer -> regija;
-    NazivFieldPointer -> RegijaNaziv;
-
-    windowTitle = "F2 lista Regija";
-    headersArray = {"Šifra Regije", "Naziv Regije"};
-    ShowF2List();
-    if(&sifraFieldPointer != ""){
-        regija= strtrim(&sifraFieldPointer);
-        regijaNaziv= &NazivFieldPointer;
-    }
-    else{
-        regija= "";
-        regijaNaziv= "";
-    }
-    searchSifra = "";
-    searchNaziv = "";
-}
-
-function ceRegija@post()
-{
-    if (regija== "")
-    {
-        regijaNaziv= "";
-    }
-}
-
-//===================================================================
 function ceKategorija@clicked()
 {
-    F2ListQueryString = "SELECT mkgr_grupa, SUBSTRING(mkgr_rezerva,1,50) as mkgr_rezerva FROM  " + trenutnaGodinaBaza + ".[dbo].[pkmkgrup] WHERE [mkgr_vrsta] ='K' and mkgr_grupa like '%" + searchKategorijaSifra + "%' AND SUBSTRING(mkgr_rezerva,1,50) like '%" + searchKategorijaNaziv + "%' ORDER BY mkgr_grupa";
+    F2ListQueryString = "SELECT mkgr_grupa, SUBSTRING(mkgr_rezerva,1,50) as mkgr_rezerva FROM  " + trenutnaGodinaBaza + ".[dbo].[pkmkgrup] WHERE [mkgr_vrsta] ='K' and mkgr_grupa like '%{var1}%' AND SUBSTRING(mkgr_rezerva,1,50) like '%{var2}%' ORDER BY mkgr_grupa";
     
     sifraFieldPointer -> kategorija;
     NazivFieldPointer -> kategNaziv;
@@ -377,7 +301,7 @@ function ceKategorija@post()
 //====================================================================
 function ceKlasa@clicked()
 {
-    F2ListQueryString = "SELECT mkgr_grupa, SUBSTRING(mkgr_rezerva,1,50) FROM  " + trenutnaGodinaBaza + ".[dbo].[pkmkgrup] WHERE [mkgr_vrsta] ='L' and mkgr_grupa like '%" + searchKategorijaSifra + "%' AND SUBSTRING(mkgr_rezerva,1,50) like '%" + searchKategorijaNaziv + "%' ORDER BY mkgr_grupa";
+    F2ListQueryString = "SELECT mkgr_grupa, SUBSTRING(mkgr_rezerva,1,50) FROM  " + trenutnaGodinaBaza + ".[dbo].[pkmkgrup] WHERE [mkgr_vrsta] ='L' and mkgr_grupa like '%{var1}%' AND SUBSTRING(mkgr_rezerva,1,50) like '%{var2}%' ORDER BY mkgr_grupa";
     
     sifraFieldPointer -> klasa;
     NazivFieldPointer -> klasaNaziv;
@@ -406,64 +330,67 @@ function ceKlasa@post()
 }
 
 //====================================================================
-function neKomercijalist@clicked()
-{
-    F2ListQueryString = "SELECT kppr_rf_code, kppr_rf_prezime+ ' '+kppr_rf_ime FROM  " + trenutnaGodinaBaza + ".[dbo].[kpprrefr] WHERE kppr_rf_code like '%" + searchKategorijaSifra + "%' AND kppr_rf_prezime like '%" + searchKategorijaNaziv + "%' ORDER BY kppr_rf_code";
-    
-    sifraFieldPointer -> komercijalist;
-    NazivFieldPointer -> komercNaziv;
 
-    windowTitle = "F2 lista komercijalista";
-    headersArray = {"Šifra", "Naziv komercijalista"};
+function ceProdavac@clicked()
+{
+    F2ListQueryString = "SELECT distinct ks_ig_osoba, ks_osb_ime from  " + trenutnaGodinaBaza + ".[dbo].[NKKSINVG] left join nkksosob ON ks_ig_osoba = KS_OSB_SIFRA  WHERE  ks_ig_osoba like '%{var1}%' AND ks_osb_ime like '%{var2}%' order by ks_ig_osoba";
+    
+    sifraFieldPointer -> prodavac;
+    NazivFieldPointer -> prodavacNaziv;
+
+    windowTitle = "F2 lista prodavača";
+    headersArray = {"Šifra", "Naziv prodavača"};
     ShowF2List();
     if(&sifraFieldPointer != ""){
-        komercijalist= strtrim(&sifraFieldPointer);
-        komercNaziv= &NazivFieldPointer;
+        prodavac = strtrim(&sifraFieldPointer);
+        prodavacNaziv = &NazivFieldPointer;
     }
     else{
-        komercijalist= "";
-        komercNaziv= "";
+        prodavac= "";
+        prodavacNaziv= "";
     }
     searchSifra = "";
     searchNaziv = "";
 }
 
-function neKomercijalist@post()
+function ceProdavac@post()
 {
-    if (komercijalist== "")
+    if (prodavac== "")
     {
-        komercNaziv= "";
+        prodavacNaziv= "";
     }
 }
 
 //====================================================================
-function neRnalog@clicked()
-{
-    F2ListQueryString = "SELECT nkpr_gl_nalog, nkpr_gl_cusnme FROM  " + trenutnaGodinaBaza + ".[dbo].[nkprglnl] WHERE nkpr_gl_nalog like '" + searchKategorijaSifra + "%' AND nkpr_gl_cusnme like '%" + searchKategorijaNaziv + "%' ORDER BY nkpr_gl_nalog";
-    
-    sifraFieldPointer -> rnalog;
-    NazivFieldPointer -> rnalogNaziv;
 
-    windowTitle = "F2 lista Radnih naloga";
-    headersArray = {"Broj", "Naziv kupca"};
+function cePosKasa@clicked()
+{
+    // 
+    F2ListQueryString = "SELECT distinct ks_ig_kasa, ks_ks_naziv from  " + trenutnaGodinaBaza + ".[dbo].[NKKSINVG] left join nkkskasa ON ks_ig_kasa = KS_ks_sifra WHERE ks_ig_kasa like '%{var1}%' AND ks_ks_naziv like '%{var2}%' order by ks_ig_kasa";
+    
+    sifraFieldPointer -> posKasa;
+    NazivFieldPointer -> posKasaNaziv;
+
+    windowTitle = "F2 lista POS kasa";
+    headersArray = {"Šifra", "Naziv POS kase"};
     ShowF2List();
     if(&sifraFieldPointer != ""){
-        rnalog= strtrim(&sifraFieldPointer);
-        rnalogNaziv= &NazivFieldPointer;
+        posKasa = strtrim(&sifraFieldPointer);
+        posKasaNaziv = &NazivFieldPointer;
     }
     else{
-        rnalog= "";
-        rnalogNaziv= "";
+        posKasa = "";
+        posKasaNaziv = "";
     }
     searchSifra = "";
     searchNaziv = "";
 }
 
-function neRnalog@post()
+function cePosKasa@post()
 {
-    if (rnalog== "")
+    if (posKasa== "")
     {
-        rnalogNaziv= "";
+        posKasaNaziv= "";
     }
 }
 
@@ -517,21 +444,31 @@ function filterPart()
         sql_str += " AND KS_IG_KUPAC = '"+partner+"'";
 	}
     
-    if (komercijalist != "")
+    if (prodavac != "")
 	{
-        sql_str += " AND KS_IG_OSOBA = "+komercijalist;
+        sql_str += " AND KS_IG_OSOBA = " + prodavac;
+	}
+    
+    if (posKasa != "")
+	{
+        sql_str += " AND KS_IG_KASA = " + posKasa;
 	}
     
     if (gl_oznaka != "")
 	{
-        sql_str += " AND nkpr_gl_oznaka= '" + gl_oznaka + "'";
-	    if (GL_oznaka == "X" )  //ako je to storno, odobrenje ili reklamacija neka okrene
+        if (GL_oznaka == "X" )
 		{
-            sql_str += " AND KS_IL_TOTAL < 0";
+            //storno
+            sql_str += " AND (KS_IL_TOTAL < 0 AND KS_IG_VRSTA <> 'U')";
 		}
+        elif(gl_oznaka == "P"){
+            //predujam
+            sql_str += " AND KS_IG_VRSTA = 'U'";
+        }
         else
 		{
-            sql_str += " AND KS_IL_TOTAL >= 0";
+            //standardni
+            sql_str += " AND (KS_IL_TOTAL >= 0 AND KS_IG_VRSTA <> 'U')";
 		}
 	}
 

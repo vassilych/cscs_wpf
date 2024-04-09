@@ -241,7 +241,8 @@ function setTop10Products()
         sql_str += " ISNULL(ROUND(SUM(KS_IL_TOTAL), 0), 0)";
 	}
     sql_str += " FROM "+trenutnaGodinaBaza+".dbo.NKKSINVG";
-    //sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkscpart g ON nkpr_gl_cuscod= g.nksc_partcode";
+    
+	//sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkscpart g ON nkpr_gl_cuscod= g.nksc_partcode";
     
     sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.NKKSINVL ON KS_IG_RACUN = KS_IL_RACUN";
     sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkmkarti ON KS_IL_PCODE = arti_artikl";
@@ -308,10 +309,9 @@ function setTop10Products()
 		}
     	sql_str += " FROM " + proslaGodinaBaza + ".dbo.NKKSINVG";
     	sql_str += " LEFT JOIN "  +proslaGodinaBaza + ".dbo.NKKSINVL ON KS_IG_RACUN = KS_IL_RACUN";
-    	if (regija != "")
-		{
-    	    sql_str += " LEFT JOIN " + proslaGodinaBaza + ".dbo.nkscpart g ON KS_IG_KUPAC = g.nksc_partcode";
-    	}
+    	
+    	//sql_str += " LEFT JOIN " + proslaGodinaBaza + ".dbo.nkscpart g ON KS_IG_KUPAC = g.nksc_partcode";
+    	
     	sql_str += " LEFT JOIN " + proslaGodinaBaza + ".dbo.nkmkarti ON KS_IL_PCODE = arti_artikl";
     	sql_str += " WHERE KS_IL_PCODE IN ("+in_string+") ";
     	if (mjesec_h != "")
@@ -493,10 +493,9 @@ function setCustomerDataGrid()
 	}
     sql_str += " FROM " + proslaGodinaBaza + ".dbo.NKKSINVG";
     sql_str += " LEFT JOIN " + proslaGodinaBaza + ".dbo.NKKSINVL ON KS_IG_RACUN = KS_IL_RACUN";
-    if (regija != "")
-	{
-        sql_str += " LEFT JOIN "+proslaGodinaBaza+".dbo.nkscpart g ON KS_IG_KUPAC = g.nksc_partcode";
-    }
+    
+    //sql_str += " LEFT JOIN "+proslaGodinaBaza+".dbo.nkscpart g ON KS_IG_KUPAC = g.nksc_partcode";
+    
     sql_str += " LEFT JOIN "+proslaGodinaBaza+".dbo.nkmkarti ON KS_IL_PCODE = arti_artikl";
     sql_str += " WHERE KS_IG_KUPAC IN ("+in_string+") ";
     if (mjesec_h != "")

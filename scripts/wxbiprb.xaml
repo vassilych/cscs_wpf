@@ -1022,7 +1022,7 @@
                         TabIndex="8"
                         IsTabStop="True"
                         ButtonBackground="IndianRed"/>
-        <wcl:ASNumericBox Grid.Column="1" ButtonSize="21"
+        <wcl:ASEnterBox Grid.Column="1" ButtonSize="21"
                           FontWeight="Bold"
                           FieldName="Rnalog"
                           Foreground="black"

@@ -12,6 +12,7 @@
     define mx3_dn,mx2_dn,met_dn,kom_dn type l;
     define neto_dn,do_mjeseca,ruc_dn,bruto_dn,tezina_dn type l;
 
+    DEFINE ratio type n size 10 dec 2;
 
     define tip_racuna type a size 30;
     define gl_oznaka type a size 1 up;
@@ -283,11 +284,16 @@ function cePartner@post()
 //==============================================================
 function ceIsporuka@clicked()
 {
-    F2ListQueryString = "SELECT [NKSP_AD_CODEINT]  ,[NKSP_ad_naziv1] FROM  " + trenutnaGodinaBaza + ".[dbo].[NKSSPADRS] where nksp_ad_code = partner AND NKSP_AD_CODEINT like '%{var1}%' and NKSP_AD_NAZIV1 like '%{var2}%' ORDER BY nksp_ad_codeint";    
+    if(partner.length == 0){
+        MessageBox("Molim unesite šifru partnera za izbor isporučnog mjesta.");
+        return;
+    }
+
+    F2ListQueryString = "SELECT [NKSP_AD_CODEINT]  ,[NKSP_ad_naziv1] FROM  " + trenutnaGodinaBaza + ".[dbo].[NKSPADRS] where nksp_ad_code = " + partner + " AND NKSP_AD_CODEINT like '%{var1}%' and NKSP_AD_NAZIV1 like '%{var2}%' ORDER BY nksp_ad_codeint";    
     sifraFieldPointer -> isporuka;
     NazivFieldPointer -> isporukaNaziv;
 
-    windowTitle = "F2 lista isporuka za partnera: "+partner;
+    windowTitle = "F2 lista isporuka za partnera: " + partner;
     headersArray = {"Šifra isporuke", "Naziv isporučnog mjesta"};
     ShowF2List();
     
@@ -315,7 +321,7 @@ function ceIsporuka@post()
 //===================================================================
 function ceRegija@clicked()
 {
-    F2ListQueryString = "SELECT [KSDU_SF_CODE], [KSDU_SF_OPIS1] FROM  " + trenutnaGodinaBaza + ".[dbo].[KPSYSIFA] WHERE [KSDU_SF_TIP] ='V' and KSDU_SF_CODE like '%" + searchRegijaSifra + "%' and KSDU_SF_OPIS1 like '%" + searchRegijaNaziv + "%' ORDER BY ksdu_sf_code";
+    F2ListQueryString = "SELECT [KSDU_SF_CODE], [KSDU_SF_OPIS1] FROM  " + trenutnaGodinaBaza + ".[dbo].[KPSYSIFA] WHERE [KSDU_SF_TIP] ='V' and KSDU_SF_CODE like '%{var1}%' and KSDU_SF_OPIS1 like '%{var2}%' ORDER BY ksdu_sf_code";
     
     sifraFieldPointer -> regija;
     NazivFieldPointer -> RegijaNaziv;
@@ -346,7 +352,7 @@ function ceRegija@post()
 //===================================================================
 function ceKategorija@clicked()
 {
-    F2ListQueryString = "SELECT mkgr_grupa, SUBSTRING(mkgr_rezerva,1,50) as mkgr_rezerva FROM  " + trenutnaGodinaBaza + ".[dbo].[pkmkgrup] WHERE [mkgr_vrsta] ='K' and mkgr_grupa like '%" + searchKategorijaSifra + "%' AND SUBSTRING(mkgr_rezerva,1,50) like '%" + searchKategorijaNaziv + "%' ORDER BY mkgr_grupa";
+    F2ListQueryString = "SELECT mkgr_grupa, SUBSTRING(mkgr_rezerva,1,50) as mkgr_rezerva FROM  " + trenutnaGodinaBaza + ".[dbo].[pkmkgrup] WHERE [mkgr_vrsta] ='K' and mkgr_grupa like '%{var1}%' AND SUBSTRING(mkgr_rezerva,1,50) like '%{var2}%' ORDER BY mkgr_grupa";
     
     sifraFieldPointer -> kategorija;
     NazivFieldPointer -> kategNaziv;
@@ -377,7 +383,7 @@ function ceKategorija@post()
 //====================================================================
 function ceKlasa@clicked()
 {
-    F2ListQueryString = "SELECT mkgr_grupa, SUBSTRING(mkgr_rezerva,1,50) FROM  " + trenutnaGodinaBaza + ".[dbo].[pkmkgrup] WHERE [mkgr_vrsta] ='L' and mkgr_grupa like '%" + searchKategorijaSifra + "%' AND SUBSTRING(mkgr_rezerva,1,50) like '%" + searchKategorijaNaziv + "%' ORDER BY mkgr_grupa";
+    F2ListQueryString = "SELECT mkgr_grupa, SUBSTRING(mkgr_rezerva,1,50) FROM  " + trenutnaGodinaBaza + ".[dbo].[pkmkgrup] WHERE [mkgr_vrsta] ='L' and mkgr_grupa like '%{var1}%' AND SUBSTRING(mkgr_rezerva,1,50) like '%{var2}%' ORDER BY mkgr_grupa";
     
     sifraFieldPointer -> klasa;
     NazivFieldPointer -> klasaNaziv;
@@ -408,7 +414,7 @@ function ceKlasa@post()
 //====================================================================
 function neKomercijalist@clicked()
 {
-    F2ListQueryString = "SELECT kppr_rf_code, kppr_rf_prezime+ ' '+kppr_rf_ime FROM  " + trenutnaGodinaBaza + ".[dbo].[kpprrefr] WHERE kppr_rf_code like '%" + searchKategorijaSifra + "%' AND kppr_rf_prezime like '%" + searchKategorijaNaziv + "%' ORDER BY kppr_rf_code";
+    F2ListQueryString = "SELECT kppr_rf_code, kppr_rf_prezime+ ' '+kppr_rf_ime FROM  " + trenutnaGodinaBaza + ".[dbo].[kpprrefr] WHERE kppr_rf_code like '%{var1}%' AND kppr_rf_prezime like '%{var2}%' ORDER BY kppr_rf_code";
     
     sifraFieldPointer -> komercijalist;
     NazivFieldPointer -> komercNaziv;
@@ -439,7 +445,7 @@ function neKomercijalist@post()
 //====================================================================
 function neRnalog@clicked()
 {
-    F2ListQueryString = "SELECT nkpr_gl_nalog, nkpr_gl_cusnme FROM  " + trenutnaGodinaBaza + ".[dbo].[nkprglnl] WHERE nkpr_gl_nalog like '" + searchKategorijaSifra + "%' AND nkpr_gl_cusnme like '%" + searchKategorijaNaziv + "%' ORDER BY nkpr_gl_nalog";
+    F2ListQueryString = "SELECT nkpr_gl_nalog, nkpr_gl_cusnme FROM  " + trenutnaGodinaBaza + ".[dbo].[nkprglnl] WHERE nkpr_gl_nalog like '{var1}%' AND nkpr_gl_cusnme like '%{var2}%' ORDER BY nkpr_gl_nalog";
     
     sifraFieldPointer -> rnalog;
     NazivFieldPointer -> rnalogNaziv;

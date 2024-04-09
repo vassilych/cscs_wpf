@@ -326,13 +326,13 @@ function setCustomerAndInvoiceCounts3(){
         //br_wait = sqlResult[1][2];
         //br_neazur = sqlResult[1][3];
     }    
-    if(br_kupaca_og > br_kupaca_lg)
+    if(Math.Abs(br_kupaca_og) > Math.Abs(br_kupaca_lg))
     {
         if(br_kupaca_lg != 0)
         {
-            A = br_kupaca_og/br_kupaca_lg;
+            ratio = double(br_kupaca_og)/br_kupaca_lg;
             HorizontalBar("HorizontalBarBrKupacaOG", "BarWidth", 90);
-            HorizontalBar("HorizontalBarBrKupacaLG", "BarWidth", 90/A);
+            HorizontalBar("HorizontalBarBrKupacaLG", "BarWidth", 90/ratio);
         }
         else
         {
@@ -351,9 +351,9 @@ function setCustomerAndInvoiceCounts3(){
     {
         if(br_kupaca_og != 0)
         {
-                A = br_kupaca_lg/br_kupaca_og;
+                ratio = double(br_kupaca_lg)/br_kupaca_og;
                 HorizontalBar("HorizontalBarBrKupacaLG", "BarWidth", 90);
-                HorizontalBar("HorizontalBarBrKupacaOG", "BarWidth", 90/A);
+                HorizontalBar("HorizontalBarBrKupacaOG", "BarWidth", 90/ratio);
         }
         else
         {
@@ -377,13 +377,13 @@ function setCustomerAndInvoiceCounts3(){
     HorizontalBar("HorizontalBarBrKupacaLG", "Text", br_kupaca_lg_string);
     HorizontalBar("HorizontalBarBrKupacaLG", "Color", bojeArray);
     //---------------
-    if(broj_rac_og > broj_rac_lg)
+    if(Math.Abs(broj_rac_og) > Math.Abs(broj_rac_lg))
     {
         if(broj_rac_og != 0)
         {
-            A = broj_rac_og/broj_rac_lg;
+            ratio = double(broj_rac_og)/broj_rac_lg;
             HorizontalBar("HorizontalBarBrRacunaOG", "BarWidth", 90);
-            HorizontalBar("HorizontalBarBrRacunaLG", "BarWidth", 90/A);
+            HorizontalBar("HorizontalBarBrRacunaLG", "BarWidth", 90/ratio);
         }
         else
         {
@@ -402,9 +402,9 @@ function setCustomerAndInvoiceCounts3(){
     {
         if(broj_rac_og != 0)
         {
-            A = broj_rac_lg/broj_rac_og;
+            ratio = double(broj_rac_lg)/broj_rac_og;
             HorizontalBar("HorizontalBarBrRacunaLG", "BarWidth", 90);
-            HorizontalBar("HorizontalBarBrRacunaOG", "BarWidth", 90/A);
+            HorizontalBar("HorizontalBarBrRacunaOG", "BarWidth", 90/ratio);
         }
         else
         {
@@ -454,13 +454,13 @@ function setCustomerAndInvoiceCounts3(){
         prod_kup_indx = 0;
     }
 
-    if(prodaja_kup_og > prodaja_kup_lg)
+    if(Math.Abs(prodaja_kup_og) > Math.Abs(prodaja_kup_lg))
     {
         if(prodaja_kup_og != 0)
         {
-            A = prodaja_kup_og/prodaja_kup_lg;
+            ratio = double(prodaja_kup_og)/prodaja_kup_lg;
             HorizontalBar("HorizontalBarProdajaKupOG", "BarWidth", 90);
-            HorizontalBar("HorizontalBarProdajaKupLG", "BarWidth", 90/A);
+            HorizontalBar("HorizontalBarProdajaKupLG", "BarWidth", 90/ratio);
         }
         else
         {
@@ -479,9 +479,9 @@ function setCustomerAndInvoiceCounts3(){
     {
         if(broj_rac_og != 0)
         {
-            A = prodaja_kup_lg/prodaja_kup_og;
+            ratio = double(prodaja_kup_lg)/prodaja_kup_og;
             HorizontalBar("HorizontalBarProdajaKupLG", "BarWidth", 90);
-            HorizontalBar("HorizontalBarProdajaKupOG", "BarWidth", 90/A);
+            HorizontalBar("HorizontalBarProdajaKupOG", "BarWidth", 90/ratio);
         }
         else
         {
@@ -556,17 +556,17 @@ function setCustomerAndInvoiceCounts4(){
 
 function refresh()
 {
-        Chart("ChartPoMjesecima", "seriesType", "Columnseries");
-        Chart("ChartPoMjesecima", "init");
-        Chart("ChartPoMjesecima", "title", "Naslov grafa", 20);
+    Chart("ChartPoMjesecima", "seriesType", "Columnseries");
+    Chart("ChartPoMjesecima", "init");
+    Chart("ChartPoMjesecima", "title", "Naslov grafa", 20);
     //  Chart("ChartPoMjesecima", "labels", "y", 11);
     Chart("ChartPoMjesecima", "labels", "x", 11, {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
     //  Chart("ChartPoMjesecima", "xlabelsRotation", 0);
-        Chart("ChartPoMjesecima", "values", arrayProsla, STRING(proslaGodina)); // !
-        Chart("ChartPoMjesecima", "values", arrayTrenutna, STRING(ovagod_h)); //!
-        Chart("ChartPoMjesecima", "SeparatorStep", 1);
-        //Chart("ChartPoMjesecima", "Margins", {50, 10, 10, 10});
-        Chart("ChartPoMjesecima", "TooltipDecimalPlaces", 0);
+    Chart("ChartPoMjesecima", "values", arrayProsla, STRING(proslaGodina)); // !
+    Chart("ChartPoMjesecima", "values", arrayTrenutna, STRING(ovagod_h)); //!
+    Chart("ChartPoMjesecima", "SeparatorStep", 1);
+    //Chart("ChartPoMjesecima", "Margins", {50, 10, 10, 10});
+    Chart("ChartPoMjesecima", "TooltipDecimalPlaces", 0);
 }
 
 function setHorizontalBars()
@@ -589,13 +589,13 @@ function setHorizontalBars()
 }
 
 function setHorizontalBars1(){
-    if (tot_ovagod>tot_lani)
+    if (Math.Abs(tot_ovagod) > Math.Abs(tot_lani))
     {
         if(tot_lani != 0)
         {
-            A = tot_ovagod/tot_lani;
+            ratio = double(tot_ovagod)/tot_lani;
             HorizontalBar("HorizontalBarOG", "BarWidth", 90);
-            HorizontalBar("HorizontalBarLG", "BarWidth", 90/A);
+            HorizontalBar("HorizontalBarLG", "BarWidth", 90/ratio);
         }
         else
         {
@@ -614,10 +614,10 @@ function setHorizontalBars1(){
     {
         if(tot_ovagod != 0)
         {
-            A = tot_lani/tot_ovagod;
+            ratio = double(tot_lani)/tot_ovagod;
             HorizontalBar("HorizontalBarLG", "BarWidth", 90);
-            HorizontalBar("HorizontalBarOG", "BarWidth", 90/A);
-            HorizontalBar("HorizontalBarOG1", "BarWidth", 90/A);
+            HorizontalBar("HorizontalBarOG", "BarWidth", 90/ratio);
+            // HorizontalBar("HorizontalBarOG1", "BarWidth", 90/ratio);
         }
         else
         {
@@ -641,12 +641,13 @@ function setHorizontalBars1(){
     HorizontalBar("HorizontalBarLG", "Color", bojeArray);
 }
 
-function setHorizontalBars2(){
-    if (tot_ovajmj > tot_proslimj)
+function setHorizontalBars2()
+{
+    if (Math.Abs(tot_ovajmj) > Math.Abs(tot_proslimj))
     {
         if(tot_proslimj != 0)
         {
-            iznos_a = 1.00*tot_ovajmj/tot_proslimj;
+            iznos_a = 1.00*double(tot_ovajmj)/tot_proslimj;
             HorizontalBar("HorizontalBarOM", "BarWidth", 90);
             HorizontalBar("HorizontalBarLM", "BarWidth", 90.00/iznos_a);
         }
@@ -667,7 +668,7 @@ function setHorizontalBars2(){
     {
         if(tot_ovajmj != 0)
         {
-            iznos_a = tot_proslimj/tot_ovajmj;
+            iznos_a = double(tot_proslimj)/tot_ovajmj;
             HorizontalBar("HorizontalBarLM", "BarWidth", 90);
             HorizontalBar("HorizontalBarOM", "BarWidth", 90.00/iznos_a);
         }
@@ -840,16 +841,16 @@ function setWeekComparison2(){
 	bojeArrayTJ = {196, 224, 138};
 	bojeArrayTJ2 = {196, 224, 138};
     define a type n size 14 dec 2;
-	if (tot_ovajTj>tot_ProsliTj)
+	if (Math.Abs(tot_ovajTj) > Math.Abs(tot_ProsliTj))
 	{
         if (tot_prosliTj== 0){
     		HorizontalBar("HorizontalBarOT", "BarWidth", 100);
 	    	HorizontalBar("HorizontalBarLT", "BarWidth", 0);
         }
         else{
-            A = tot_ovajTj/tot_ProsliTj;
+            ratio = double(tot_ovajTj)/tot_ProsliTj;
 	    	HorizontalBar("HorizontalBarOT", "BarWidth", 90);
-    		HorizontalBar("HorizontalBarLT", "BarWidth", 90/A);
+    		HorizontalBar("HorizontalBarLT", "BarWidth", 90/ratio);
         }
 	}
     elif (tot_prosliTj== tot_ovajTj)
@@ -870,9 +871,9 @@ function setWeekComparison2(){
 	    	HorizontalBar("HorizontalBarLT", "BarWidth", 100);
         }
         else{
-            A = tot_ProsliTj/tot_ovajTj;
+            ratio = double(tot_ProsliTj)/tot_ovajTj;
 	    	HorizontalBar("HorizontalBarLT", "BarWidth", 90);
-		    HorizontalBar("HorizontalBarOT", "BarWidth", 90/A);
+		    HorizontalBar("HorizontalBarOT", "BarWidth", 90/ratio);
         }
 	}
 	Format("tot_ovajTj", "nofd", recv: "tot_ovajTj_string");
