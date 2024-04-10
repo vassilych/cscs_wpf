@@ -103,6 +103,17 @@
 	define t10Racunz_ar type r size 8 array 10;
  	define T10Cntrz type i;
 	define t10DatRac type l;
+  	
+    define T30IZNOS_AR type n size 14 dec 2 array 30;
+	define T30SELLER_AR type a size 30 array 30;
+	define T30RBR_AR type i size 2 array 30;
+	define T30DATUM_AR type d size 8 array 30;
+	define T30TIMEZ_AR type t size 8 array 30;
+	define T30RACUN_AR type r size 8 array 30;
+ 	define T30Cntr type i;
+	//define t10DatRac type l;
+
+    
 
     define t10IznosMj_ar type n size 14 dec 2 array 10;
 	define t10NameMj_ar type a size 30 array 10;

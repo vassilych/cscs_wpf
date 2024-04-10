@@ -2,6 +2,7 @@ Import(strTrim(mpath()) + "CSCS.Math.dll");
 include(strTrim(tpath()) +"wxbiposa_inc_lists.cscs"); //look-up lists
 include(strTrim(tpath()) +"wxbiposa_inc_a.cscs"); //look-up lists
 include(strTrim(tpath()) +"wxbiposa_inc_b.cscs"); //look-up lists
+include(strTrim(tpath()) +"wxbiposa_inc_c.cscs"); //look-up lists
 CreateWindow(strTrim(tpath()) +"wxbiposa.xaml");
 
 function Wxbiposa_onDisplay()
@@ -141,40 +142,58 @@ function gbPripremi@clicked()
 }
 
 function gbProdaja1@clicked()
+{
+    if (pripremljeno == true) 
     {
-        if (pripremljeno == true) 
-        {
-            result = modalWindow(strTrim(tpath()) +"wxbiposaa.xaml");
-        }
-        else
-        {
-           MessageBox("Molim pripremite osnovne podatke prije nastavka!"); 
-           setfocus("gbPripremi");
-        }    
+        result = modalWindow(strTrim(tpath()) +"wxbiposaa.xaml");
     }
+    else
+    {
+        MessageBox("Molim pripremite osnovne podatke prije nastavka!"); 
+        setfocus("gbPripremi");
+    }    
+}
 
 function gbProdaja2@clicked()
+{
+    if (pripremljeno == true)
     {
-        if (pripremljeno == true)
-        {
-       //     thread
-       //     (
-       //         lock{
-                result = modalWindow(strTrim(tpath()) +"wxbiposab.xaml");
-        //        }
-        //    )
-        }
-        else
-        {
-           MessageBox("Molim pripremite osnovne podatke prije nastavka!"); 
-           setfocus("gbPripremi");
-        }    
+    //     thread
+    //     (
+    //         lock{
+            result = modalWindow(strTrim(tpath()) +"wxbiposab.xaml");
+    //        }
+    //    )
     }
+    else
+    {
+        MessageBox("Molim pripremite osnovne podatke prije nastavka!"); 
+        setfocus("gbPripremi");
+    }    
+}
+
+function gbProdaja3@clicked()
+{
+    if (pripremljeno == true)
+    {
+    //     thread
+    //     (
+    //         lock{
+            result = modalWindow(strTrim(tpath()) +"wxbiposac.xaml");
+    //        }
+    //    )
+    }
+    else
+    {
+        MessageBox("Molim pripremite osnovne podatke prije nastavka!"); 
+        setfocus("gbPripremi");
+    }    
+}
 
 function gbExit@clicked()
-    {
-        quit;
-    }
+{
+    quit;
+}
 
 //next routines is work out of above
 function setCustomerAndInvoiceCounts()

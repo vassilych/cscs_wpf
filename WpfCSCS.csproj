@@ -333,6 +333,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="scripts\wxbiposac.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="scripts\wxbiprb.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

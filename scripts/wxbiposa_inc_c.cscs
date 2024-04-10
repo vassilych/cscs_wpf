@@ -1,0 +1,314 @@
+function wxbiposac_onDisplay()
+{
+	cursor("wait");
+
+	// refreshPie = false;
+    // comboItems = {"Gradovi","Regije", "Države"};
+    // AddWidgetData(cbPieChart, comboItems);
+    // pieChartStr= "Gradovi";
+
+	// AsyncCall("setRegionPieChart", "regionPieChartDone");
+	
+    AsyncCall("setSellersPieChart", "sellersPieChartDone");
+	
+	// refreshPie = true;
+}
+
+// function cbPieChart@SelectionChanged(){
+// 	if (refreshPie == false)
+// 	{
+// 		return;
+// 	}
+
+// 	cursor("wait");
+// 	AsyncCall("setRegionPieChart", "setDefaultCursor");
+// }
+
+function sellersPieChartDone(){
+	AsyncCall("setPaymentOptionsPieChart", "paymentOptionsPieChartDone");
+}
+function paymentOptionsPieChartDone(){
+	AsyncCall("setPaymentCodesPieChart", "paymentCodesPieChartDone");
+}
+function paymentCodesPieChartDone(){
+	//AsyncCall("setTop30Nofisc", "setDefaultCursor");
+
+    cntr2 = 0;
+    setTop30Nofisc();
+    Format("T30IZNOS_AR", "nofd");
+    DisplayArray("dgT30nofisc", "close");
+    DisplayArraySetup("dgT30nofisc", counterFld: cntr2, activeElements: Size(sqlResult2) - 1, maxElements: 30);
+
+    cursor("dflt");
+}
+// function setDefaultCursor(){
+// 	cursor("dflt");
+// }
+
+
+//-------------------------------------------------------
+
+function setSellersPieChart()
+{
+	//	MessageBox( pieChartStr);
+	sql_str = "";
+	sql_str += " SELECT CASE WHEN num<= 5 THEN Naziv ELSE 'Ostali' END AS Prodavac , round(sum(suma),0) as Origin";
+	sql_str += " FROM (SELECT ISNULL(ks_osb_ime,'NEDEFINIRANO') as naziv,";
+	if (neto_dn)
+	{
+		sql_str += " sum(KS_IL_TOTAL - KS_IL_POREZ) AS Suma,";
+		sql_str += " ROW_NUMBER() OVER( ORDER BY sum(KS_IL_TOTAL - KS_IL_POREZ) DESC ) As Num";
+	}	
+	elif (razlikaUCijeniField  )
+	{
+		sql_str += " sum(KS_IL_TOTAL - KS_IL_POREZ - KS_IL_CENAN * CONVERT(float, REPLACE(KS_IL_KOL, ',', '.'))) AS Suma,";
+		sql_str += " ROW_NUMBER() OVER( ORDER BY sum(KS_IL_TOTAL - KS_IL_POREZ - KS_IL_CENAN * CONVERT(float, REPLACE(KS_IL_KOL, ',', '.'))) DESC ) As Num";
+	}	
+	else
+	{
+		sql_str += " sum(KS_IL_TOTAL) AS Suma,";
+		sql_str += " ROW_NUMBER() OVER( ORDER BY sum(KS_IL_TOTAL) DESC ) As Num";
+	}
+	sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.NKKSINVG AS U";
+	sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.NKKSINVL ON KS_IG_RACUN = KS_IL_RACUN";
+	sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkmkarti ON arti_artikl = KS_IL_PCODE";
+	sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.NKKSOSOB ON ks_ig_osoba = KS_OSB_SIFRA";
+	sql_str += " WHERE YEAR(KS_IG_DATUM)=" + ovagod_h ;
+	if (do_mjeseca  )
+	{
+		sql_str += " AND Month(KS_IG_DATUM)<=" + mjesec_h;
+	}	
+	else
+	{
+		sql_str += " AND Month(KS_IG_DATUM)=" + mjesec_h;
+	}	
+	
+	filterPart();
+	sql_str += " GROUP BY ks_osb_ime) t";
+	sql_str += " GROUP BY CASE WHEN num <= 5 THEN Naziv ELSE 'Ostali' END";
+	sql_str += " ORDER BY origin desc";
+	//SaveFile(sql_str);
+	try	{
+		queryResult = sqlquery(sql_str);
+	}
+	catch(exc){
+		MessageBox(exc);
+	}
+
+	RunOnMain("DisplaySellersPieChart");
+}
+
+function DisplaySellersPieChart(){
+	PieChart("PieChartProdavaci", "init");
+    PieChart("PieChartProdavaci", "seriesType", "pie");
+
+	for(i = 1; i < queryResult.length; i++)
+	{
+		PieChart("PieChartProdavaci", "values", int(queryResult[i][1]) , substring(string(queryResult[i][0].trim()), 0, 30), 50);
+	}
+
+	PieChart("PieChartProdavaci", "colors", { "#2ee860", "#fae62f", "#5acc6b", "#34d2fa", "#ff45d4", "#EA6A47" });
+}
+
+//-------------------------------------------------------
+
+function setPaymentOptionsPieChart()
+{
+	//	MessageBox( pieChartStr);
+	sql_str = "";
+	sql_str += " SELECT CASE WHEN num <= 5 THEN Naziv ELSE 'Ostali' END AS Prodavac , round(sum(suma),0) as Origin";
+	sql_str += " FROM (SELECT ISNULL(ks_upl_vrsta, 'NEDEFINIRANO') as naziv,";
+	
+    sql_str += " sum(ks_upl_iznos) AS Suma,";
+	sql_str += " ROW_NUMBER() OVER( ORDER BY sum(ks_upl_iznos) DESC ) As Num";
+	
+	sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.NKKSINVG AS U";
+	sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkksupla ON ks_ig_racun = KS_upl_racun";
+	sql_str += " WHERE YEAR(KS_IG_DATUM)=" + ovagod_h ;
+	if (do_mjeseca  )
+	{
+		sql_str += " AND Month(KS_IG_DATUM)<=" + mjesec_h;
+	}	
+	else
+	{
+		sql_str += " AND Month(KS_IG_DATUM)=" + mjesec_h;
+	}	
+	
+	if (sklad_str != "")
+	{
+        sql_str += " AND KS_IG_SKLAD IN ("+sklad_str+")";
+	}
+
+    if (partner != "")
+	{
+        sql_str += " AND KS_IG_KUPAC = '"+partner+"'";
+	}
+    
+    if (prodavac != "")
+	{
+        sql_str += " AND KS_IG_OSOBA = " + prodavac;
+	}
+    
+    if (posKasa != "")
+	{
+        sql_str += " AND KS_IG_KASA = " + posKasa;
+	}
+
+	sql_str += " GROUP BY ks_upl_vrsta) t";
+	sql_str += " GROUP BY CASE WHEN num <= 5 THEN Naziv ELSE 'Ostali' END";
+	sql_str += " ORDER BY origin desc";
+	//SaveFile(sql_str);
+	try	{
+		queryResult = sqlquery(sql_str);
+	}
+	catch(exc){
+		MessageBox(exc);
+	}
+
+	RunOnMain("DisplayPaymentOptionsPieChart");
+}
+
+function DisplayPaymentOptionsPieChart(){
+	PieChart("PieChartNaciniPlacanja", "init");
+    PieChart("PieChartNaciniPlacanja", "seriesType", "pie");
+
+	for(i = 1; i < queryResult.length; i++)
+	{
+        nacinPlacanja = "";
+        if(queryResult[i][0].trim() == "G"){
+            nacinPlacanja = "Gotovina";
+        }
+        elif(queryResult[i][0].trim() == "A"){
+            nacinPlacanja = "Kartice";
+        }
+        elif(queryResult[i][0].trim() == "T"){
+            nacinPlacanja = "Transakcijsko";
+        }
+        elif(queryResult[i][0].trim() == "C"){
+            nacinPlacanja = "Ček/Bon";
+        }
+        else{
+            nacinPlacanja = "Ostalo";
+        }
+		PieChart("PieChartNaciniPlacanja", "values", int(queryResult[i][1]) , nacinPlacanja, 50);
+	}
+
+	PieChart("PieChartNaciniPlacanja", "colors", {"#1b9109" , "#34d2fa", "#5acc6b", "#EA6A47", "#1C4E80", "#fae62f" });
+}
+
+//-------------------------------------------------------
+
+function setPaymentCodesPieChart()
+{
+	//	MessageBox( pieChartStr);
+	sql_str = "";
+	sql_str += " SELECT CASE WHEN num <= 5 THEN Naziv ELSE 'Ostali' END AS Prodavac , round(sum(suma),0) as Origin";
+	sql_str += " FROM (SELECT ISNULL(kpks_pl_opis, 'NEDEFINIRANO') as naziv,";
+	
+    sql_str += " sum(ks_upl_iznos) AS Suma,";
+	sql_str += " ROW_NUMBER() OVER( ORDER BY sum(ks_upl_iznos) DESC ) As Num";
+	
+	sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.NKKSINVG AS U";
+	sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkksupla ON ks_ig_racun = KS_upl_racun";
+	sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.kpksvrpl ON kpks_pl_sif_pl = ks_upl_sif_pl";
+	sql_str += " WHERE YEAR(KS_IG_DATUM)=" + ovagod_h ;
+	if (do_mjeseca  )
+	{
+		sql_str += " AND Month(KS_IG_DATUM)<=" + mjesec_h;
+	}	
+	else
+	{
+		sql_str += " AND Month(KS_IG_DATUM)=" + mjesec_h;
+	}	
+	
+	if (sklad_str != "")
+	{
+        sql_str += " AND KS_IG_SKLAD IN ("+sklad_str+")";
+	}
+
+    if (partner != "")
+	{
+        sql_str += " AND KS_IG_KUPAC = '"+partner+"'";
+	}
+    
+    if (prodavac != "")
+	{
+        sql_str += " AND KS_IG_OSOBA = " + prodavac;
+	}
+    
+    if (posKasa != "")
+	{
+        sql_str += " AND KS_IG_KASA = " + posKasa;
+	}
+
+	sql_str += " GROUP BY kpks_pl_opis) t";
+	sql_str += " GROUP BY CASE WHEN num <= 5 THEN Naziv ELSE 'Ostali' END";
+	sql_str += " ORDER BY origin desc";
+	//SaveFile(sql_str);
+	try	{
+		queryResult = sqlquery(sql_str);
+	}
+	catch(exc){
+		MessageBox(exc);
+	}
+
+	RunOnMain("DisplayPaymentCodesPieChart");
+}
+
+function DisplayPaymentCodesPieChart(){
+	PieChart("PieChartSifrePlacanja", "init");
+    PieChart("PieChartSifrePlacanja", "seriesType", "pie");
+
+	for(i = 1; i < queryResult.length; i++)
+	{
+		PieChart("PieChartSifrePlacanja", "values", int(queryResult[i][1]) , substring(string(queryResult[i][0].trim()), 0, 30), 50);
+	}
+
+	PieChart("PieChartSifrePlacanja", "colors", { "#1C4E80", "#EA6A47", "#5acc6b", "#34d2fa", "#ff45d4", "#fae62f" });
+}
+
+//-------------------------------------------------------
+
+function setTop30Nofisc()
+{
+	sql_str =  "SELECT TOP 30 KS_IG_RACUN, KS_OSB_IME, CONVERT(char(8) ,  KS_IG_DATUM , 3) AS datecr , convert(char(8) , KS_IG_SAT , 20) as KS_IG_SAT, KS_IG_TOTAL ";
+	
+	sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.NKKSINVG" ;
+    sql_str += " LEFT JOIN " + trenutnaGodinaBaza+".dbo.NKKSOSOB ON KS_IG_OSOBA = KS_OSB_SIFRA";
+	
+    sql_str += " WHERE  ks_ig_jir = '' AND YEAR(KS_IG_DATUM) =  " + ovagod_h  ;
+	if (do_mjeseca)
+	{
+		sql_str +=" AND month(KS_IG_DATUM)< =  " + mjesec_h  ;
+	}
+	else 
+	{
+		sql_str += " AND month(KS_IG_DATUM) =  " + mjesec_h;
+	}
+    
+	//if (t10datrac)
+	//{
+		sql_str += " ORDER BY KS_IG_DATUM DESC , KS_IG_SAT DESC" ;
+	//}
+	//else 
+	//{
+	//	sql_str += " ORDER BY nkpr_gl_datecr DESC , nkpr_gl_timecr DESC" ;
+	//}
+ //SaveFile(sql_str);
+	try	{
+		sqlResult2 = sqlQuery(sql_str);
+	}catch(exc){
+		MessageBox(exc);
+	}
+    for ( i = 1; i < Size(sqlResult2); i++ )
+    {
+        MessageBox("aaaaaaa");
+        T30SELLER_AR[i - 1] =  sqlResult2[i][1];
+        T30IZNOS_AR[i - 1] =  sqlResult2[i][4];
+        T30RBR_AR[i - 1] =  i;
+        T30DATUM_AR[i - 1] =  sqlResult2[i][2];
+        T30RACUN_AR[i - 1] =  sqlResult2[i][0];
+        T30TIMEZ_AR[i - 1] =  sqlResult2[i][3];
+    }
+}
+

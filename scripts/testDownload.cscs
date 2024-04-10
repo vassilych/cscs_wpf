@@ -1,0 +1,14 @@
+// file = Download("http://185.32.126.169/shared/winWithButtons.xaml");
+
+// CreateWindow(file, "Window Script4");
+
+// //----------------------------
+
+// CreateWindow(Download("http://185.32.126.169/shared/winWithButtons.xaml"), "Window Script4");
+
+// //-----------------------
+
+DEFINE varInParent type i;
+varInParent = 2;
+
+CHAIN Download("http://185.32.126.169/shared/script5.cscs");
