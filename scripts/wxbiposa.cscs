@@ -337,7 +337,7 @@ function setCustomerAndInvoiceCounts()
     {
         if(broj_rac_og != 0)
         {
-            ratio = broj_rac_lg/broj_rac_og;
+            ratio = Math.Round(broj_rac_lg/broj_rac_og,2);
             HorizontalBar("HorizontalBarBrRacunaLG", "BarWidth", 90);
             HorizontalBar("HorizontalBarBrRacunaOG", "BarWidth", 90/ratio);
         }
@@ -365,7 +365,7 @@ function setCustomerAndInvoiceCounts()
     //---------------
     if(br_kupaca_og != 0)
     {
-        prodaja_kup_og = tot_ovagod/br_kupaca_og;
+        prodaja_kup_og = Math.Round(tot_ovagod/br_kupaca_og,2);
     }
     else
     {
@@ -373,7 +373,7 @@ function setCustomerAndInvoiceCounts()
     }
     if(br_kupaca_lg != 0)
     {
-        prodaja_kup_lg = tot_lani / br_kupaca_lg;
+        prodaja_kup_lg = Math.Round(tot_lani / br_kupaca_lg,2);
         if (prodaja_kup_lg != 0)
         {
                 prod_kup_indx = Math.Round((( 100 * (prodaja_kup_og - prodaja_kup_lg) / prodaja_kup_lg )), 2);
@@ -393,7 +393,7 @@ function setCustomerAndInvoiceCounts()
     {
         if(prodaja_kup_lg != 0)
         {
-            ratio = double(prodaja_kup_og)/prodaja_kup_lg;
+            ratio = math.round(prodaja_kup_og/prodaja_kup_lg,2);
             HorizontalBar("HorizontalBarProdajaKupOG", "BarWidth", 90);
             HorizontalBar("HorizontalBarProdajaKupLG", "BarWidth", 90/ratio);
         }
@@ -402,7 +402,7 @@ function setCustomerAndInvoiceCounts()
             HorizontalBar("HorizontalBarProdajaKupLG", "BarWidth", 0);
             if(prodaja_kup_og != 0)
             {
-                    HorizontalBar("HorizontalBarProdajaKupOG", "BarWidth", 90);
+                HorizontalBar("HorizontalBarProdajaKupOG", "BarWidth", 90);
             }
             else
             {
@@ -414,7 +414,7 @@ function setCustomerAndInvoiceCounts()
     {
         if(prodaja_kup_og != 0)
         {
-            ratio = double(prodaja_kup_lg)/prodaja_kup_og;
+            ratio = math.round(prodaja_kup_lg/prodaja_kup_og,2);
             HorizontalBar("HorizontalBarProdajaKupLG", "BarWidth", 90);
             HorizontalBar("HorizontalBarProdajaKupOG", "BarWidth", 90/ratio);
         }

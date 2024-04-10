@@ -10,7 +10,7 @@
     define rnalog type r size 8;
     define rnalogNaziv type a size 50;
     define mx3_dn,mx2_dn,met_dn,kom_dn type l;
-    define neto_dn,do_mjeseca,ruc_dn,bruto_dn,tezina_dn type l;
+    define neto_dn,ruc_dn,bruto_dn,tezina_dn type l;
 
     DEFINE ratio type n size 10 dec 2;
 
