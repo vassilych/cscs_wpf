@@ -439,7 +439,6 @@ function setCustomerAndInvoiceCounts3(){
     if(br_kupaca_lg != 0)
     {
         prodaja_kup_lg = math.round(tot_lani / br_kupaca_lg,2);
- MessageBox("aaaa: "+prodaja_kup_lg + "..."+ tot_lani + "... "+ tot_ovagod+ "... "+br_kupaca_lg);       
         if (prodaja_kup_lg != 0)
         {
                 prod_kup_indx = Math.Round((( 100.00 * (prodaja_kup_og - prodaja_kup_lg) / prodaja_kup_lg )), 2);
@@ -460,7 +459,6 @@ function setCustomerAndInvoiceCounts3(){
         if(prodaja_kup_og != 0)
         {
             ratio = math.round(prodaja_kup_og/prodaja_kup_lg,2);
- MessageBox("bbbb: "+prodaja_kup_og + "..."+ prodaja_kup_lg + "... "+ ratio);       
             HorizontalBar("HorizontalBarProdajaKupOG", "BarWidth", 90);
             HorizontalBar("HorizontalBarProdajaKupLG", "BarWidth", 90/ratio);
         }
@@ -500,14 +498,12 @@ function setCustomerAndInvoiceCounts3(){
     }
     // bojeArray = {150, 190, 250};
     bojeArray = {196, 224, 138};
- MessageBox("cccc: "+prodaja_kup_og + "..."+ prodaja_kup_lg + "... "+ br_kupaca_lg);       
     Format("prodaja_kup_og", "nofd", recv: "prodaja_kup_og_string");
     HorizontalBar("HorizontalBarProdajaKupOG", "Text", prodaja_kup_og_string);
     HorizontalBar("HorizontalBarProdajaKupOG", "Color", bojeArray);
     Format("prodaja_kup_lg", "nofd", recv: "prodaja_kup_lg_string");
     HorizontalBar("HorizontalBarProdajaKupLG", "Text", prodaja_kup_lg_string);
     HorizontalBar("HorizontalBarProdajaKupLG", "Color", bojeArray);
- MessageBox("dddd: "+prodaja_kup_og_string + "..."+ prodaja_kup_lg_string + "... "+ br_kupaca_lg);       
     br_neazur= 0; 
 }
 

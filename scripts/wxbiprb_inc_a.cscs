@@ -319,7 +319,7 @@ function setChartByMonth()
         }
         sql_str += " LEFT JOIN " + proslaGodinaBaza + ".dbo.nkprinvl ON nkpr_gl_num = nkpr_ln_invnm";
         sql_str += " LEFT JOIN "+proslaGodinaBaza+".dbo.nkmkarti ON nkpr_ln_pcode= arti_artikl";
-        sql_str += " WHERE 1=1 AND year(nkpr_gl_datem) = " + lani_h; //BETWEEN '"+sqlDate(od_danaLG)+"' AND '"+sqlDate(do_danaLG)+"'"  ";
+        sql_str += " WHERE 1=1 AND nkpr_gl_invcd IN ('B', 'D') AND year(nkpr_gl_datem) = " + lani_h; //BETWEEN '"+sqlDate(od_danaLG)+"' AND '"+sqlDate(do_danaLG)+"'"  ";
         filterPart();
         sql_str += " GROUP BY CONVERT(varchar(6),nkpr_gl_datem,112)";
         sql_str += " ORDER BY CONVERT(varchar(6),nkpr_gl_datem,112);";
@@ -368,7 +368,7 @@ function setChartByMonth()
     }
     else
     {
-        sql_str += " Sales = cast(ISNULL(SUM(CASE WHEN nkpr_gl_dviza = 'D' THEN nkpr_gl_tecaj * nkpr_ln_pext ELSE nkpr_ln_pext END) , 0) as decimal (10))"; //" + cast(ISNULL(SUM(CASE WHEN c.nkpr_gl_dviza = 'D' THEN c.nkpr_gl_tecaj * e.nkpr_ln_pext ELSE e.nkpr_ln_pext END) , 0)as decimal (10))";
+        sql_str += " Sales = cast(ISNULL(SUM(CASE WHEN nkpr_gl_dviza = 'D' THEN nkpr_gl_tecaj * (nkpr_ln_amt+nkpr_ln_porez) ELSE nkpr_ln_amt+nkpr_ln_porez END) , 0) as decimal (10))"; //" + cast(ISNULL(SUM(CASE WHEN c.nkpr_gl_dviza = 'D' THEN c.nkpr_gl_tecaj * e.nkpr_ln_pext ELSE e.nkpr_ln_pext END) , 0)as decimal (10))";
     }
     sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv"; // b ON a.[Wk_Date] = DATEADD(month , DATEDIFF(month , 0 , b.nkpr_gl_datem) , 0) AND year(b.nkpr_gl_datem)='" + (int(ovagod_h) - 1) + "' ";
     if ( regija != "" )
@@ -378,7 +378,7 @@ function setChartByMonth()
     }
     sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkprinvl ON nkpr_gl_num = nkpr_ln_invnm";
     sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkmkarti ON nkpr_ln_pcode= arti_artikl";
-    sql_str += " WHERE 1=1 AND year(nkpr_gl_datem) = " + ovagod_h; //BETWEEN '"+sqlDate(od_danaLG)+"' AND '"+sqlDate(do_danaLG)+"'"  ";
+    sql_str += " WHERE 1=1 AND nkpr_gl_invcd IN ('B', 'D') AND year(nkpr_gl_datem) = " + ovagod_h; //BETWEEN '"+sqlDate(od_danaLG)+"' AND '"+sqlDate(do_danaLG)+"'"  ";
     filterPart();
     sql_str += " GROUP BY CONVERT(varchar(6),nkpr_gl_datem,112)";
     sql_str += " ORDER BY CONVERT(varchar(6),nkpr_gl_datem,112);";
