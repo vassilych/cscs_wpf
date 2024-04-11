@@ -5,6 +5,12 @@ include(strTrim(tpath()) +"wxbiposa_inc_b.cscs"); //look-up lists
 include(strTrim(tpath()) +"wxbiposa_inc_c.cscs"); //look-up lists
 CreateWindow(strTrim(tpath()) +"wxbiposa.xaml");
 
+// DEFINE var1, var2, var3 type i;
+// var1 = 100;
+// var2 = 90;
+// var3 = var1/var2;
+// MessageBox(var3); // 1.11111
+
 function Wxbiposa_onDisplay()
 {
     args = CommandLineArgs(); 
@@ -265,7 +271,7 @@ function setCustomerAndInvoiceCounts()
     {
         if(br_kupaca_lg != 0)
         {
-            ratio = br_kupaca_og/br_kupaca_lg;
+            ratio = 1.00*br_kupaca_og/br_kupaca_lg;
             HorizontalBar("HorizontalBarBrKupacaOG", "BarWidth", 90);
             HorizontalBar("HorizontalBarBrKupacaLG", "BarWidth", 90/ratio);
         }
@@ -286,7 +292,7 @@ function setCustomerAndInvoiceCounts()
     {
         if(br_kupaca_og != 0)
         {
-            ratio = br_kupaca_lg/br_kupaca_og;
+            ratio = 1.00*br_kupaca_lg/br_kupaca_og;
             HorizontalBar("HorizontalBarBrKupacaLG", "BarWidth", 90);
             HorizontalBar("HorizontalBarBrKupacaOG", "BarWidth", 90/ratio);
         }
@@ -316,7 +322,7 @@ function setCustomerAndInvoiceCounts()
     {
         if(broj_rac_og != 0)
         {
-            ratio = broj_rac_og/broj_rac_lg;
+            ratio = 1.00*broj_rac_og/broj_rac_lg;
             HorizontalBar("HorizontalBarBrRacunaOG", "BarWidth", 90);
             HorizontalBar("HorizontalBarBrRacunaLG", "BarWidth", 90/ratio);
         }
@@ -337,7 +343,7 @@ function setCustomerAndInvoiceCounts()
     {
         if(broj_rac_og != 0)
         {
-            ratio = Math.Round(broj_rac_lg/broj_rac_og,2);
+            ratio = 1.00*broj_rac_lg/broj_rac_og;
             HorizontalBar("HorizontalBarBrRacunaLG", "BarWidth", 90);
             HorizontalBar("HorizontalBarBrRacunaOG", "BarWidth", 90/ratio);
         }
@@ -365,7 +371,7 @@ function setCustomerAndInvoiceCounts()
     //---------------
     if(br_kupaca_og != 0)
     {
-        prodaja_kup_og = Math.Round(tot_ovagod/br_kupaca_og,2);
+        prodaja_kup_og = Math.round(1.00*tot_ovagod/br_kupaca_og, 0);
     }
     else
     {
@@ -373,10 +379,10 @@ function setCustomerAndInvoiceCounts()
     }
     if(br_kupaca_lg != 0)
     {
-        prodaja_kup_lg = Math.Round(tot_lani / br_kupaca_lg,2);
+        prodaja_kup_lg = math.round(1.00*tot_lani / br_kupaca_lg, 0);
         if (prodaja_kup_lg != 0)
         {
-                prod_kup_indx = Math.Round((( 100 * (prodaja_kup_og - prodaja_kup_lg) / prodaja_kup_lg )), 2);
+                prod_kup_indx = Math.round(( 100.00 * (prodaja_kup_og - prodaja_kup_lg) / prodaja_kup_lg ), 2);
         }
         else
         {
@@ -393,7 +399,7 @@ function setCustomerAndInvoiceCounts()
     {
         if(prodaja_kup_lg != 0)
         {
-            ratio = math.round(prodaja_kup_og/prodaja_kup_lg,2);
+            ratio = 1.00*prodaja_kup_og/prodaja_kup_lg;
             HorizontalBar("HorizontalBarProdajaKupOG", "BarWidth", 90);
             HorizontalBar("HorizontalBarProdajaKupLG", "BarWidth", 90/ratio);
         }
@@ -414,7 +420,7 @@ function setCustomerAndInvoiceCounts()
     {
         if(prodaja_kup_og != 0)
         {
-            ratio = math.round(prodaja_kup_lg/prodaja_kup_og,2);
+            ratio = 1.00*prodaja_kup_lg/prodaja_kup_og;
             HorizontalBar("HorizontalBarProdajaKupLG", "BarWidth", 90);
             HorizontalBar("HorizontalBarProdajaKupOG", "BarWidth", 90/ratio);
         }
@@ -530,7 +536,18 @@ function setCustomerAndInvoiceCounts()
         }
     }
     //sql_str= sql_str* " AND DATEDIFF(day,nkpr_gl_invdte, CURRENT_TIMESTAMP) BETWEEN 0 AND 31"
-    filterPart();
+    
+    //filterPart();
+    if (prodavac != "")
+	{
+        sql_str += " AND KS_IG_OSOBA = " + prodavac;
+	}
+    
+    if (posKasa != "")
+	{
+        sql_str += " AND KS_IG_KASA = " + posKasa;
+	}
+    
     sqlResult = SqlQuery(sql_str);
     if (size(sqlResult) > 1)
     {
@@ -565,7 +582,17 @@ function setCustomerAndInvoiceCounts()
         }
     }
     //sql_str= sql_str* " AND DATEDIFF(day,nkpr_gl_invdte, CURRENT_TIMESTAMP) BETWEEN 0 AND 31"
-    filterPart();
+    //filterPart();
+    if (prodavac != "")
+	{
+        sql_str += " AND KS_IG_OSOBA = " + prodavac;
+	}
+    
+    if (posKasa != "")
+	{
+        sql_str += " AND KS_IG_KASA = " + posKasa;
+	}
+    
     sqlResult = SqlQuery(sql_str);
     if (size(sqlResult) > 1)
     {
@@ -603,7 +630,7 @@ function setHorizontalBars()
     {
         if(tot_lani != 0)
         {
-            ratio = tot_ovagod/tot_lani;
+            ratio = 1.00*tot_ovagod/tot_lani;
             HorizontalBar("HorizontalBarOG", "BarWidth", 90);
             HorizontalBar("HorizontalBarLG", "BarWidth", 90/ratio);
         }
@@ -624,7 +651,7 @@ function setHorizontalBars()
     {
         if(tot_ovagod != 0)
         {
-            ratio = tot_lani/tot_ovagod;
+            ratio = 1.00*tot_lani/tot_ovagod;
             HorizontalBar("HorizontalBarLG", "BarWidth", 90);
             HorizontalBar("HorizontalBarOG", "BarWidth", 90/ratio);
             //HorizontalBar("HorizontalBarOG1", "BarWidth", 90/ratio);
@@ -656,9 +683,9 @@ function setHorizontalBars()
     {
         if(tot_proslimj != 0)
         {
-            iznos_a = 1.00*tot_ovajmj/tot_proslimj;
+            ratio = 1.00*tot_ovajmj/tot_proslimj;
             HorizontalBar("HorizontalBarOM", "BarWidth", 90);
-            HorizontalBar("HorizontalBarLM", "BarWidth", 90.00/iznos_a);
+            HorizontalBar("HorizontalBarLM", "BarWidth", 90.00/ratio);
         }
         else
         {
@@ -677,9 +704,9 @@ function setHorizontalBars()
     {
         if(tot_ovajmj != 0)
         {
-            iznos_a = tot_proslimj/tot_ovajmj;
+            ratio = 1.00*tot_proslimj/tot_ovajmj;
             HorizontalBar("HorizontalBarLM", "BarWidth", 90);
-            HorizontalBar("HorizontalBarOM", "BarWidth", 90.00/iznos_a);
+            HorizontalBar("HorizontalBarOM", "BarWidth", 90.00/ratio);
         }
         else
         {
@@ -706,7 +733,7 @@ function setHorizontalBars()
     }
     else
     {
-        postotak = Math.Round((100 * (tot_ovagod-tot_lani) /tot_lani), 2);
+        postotak = Math.Round((100.00 * (tot_ovagod-tot_lani) /tot_lani), 2);
     }
     if(tot_prosliMj == 0)
     {
@@ -714,7 +741,7 @@ function setHorizontalBars()
     }
     else
     {
-        postotakMj = Math.Round((100 *(tot_ovajmj-tot_prosliMj)/tot_prosliMj), 2);
+        postotakMj = Math.Round((100.00 *(tot_ovajmj-tot_prosliMj)/tot_prosliMj), 2);
     }
 }
 
@@ -813,7 +840,7 @@ function setWeekComparison()
 		week_c= sqlResult[1][0];
 		tot_prosliTj = sqlResult[2][1];
 		week_p= sqlResult[2][0];
-		postotakTj= Math.Round(((tot_ovajTj-tot_prosliTj)/tot_prosliTj)*100, 2);
+		postotakTj= Math.Round(((tot_ovajTj-tot_prosliTj)/tot_prosliTj)*100.00, 2);
 	}
 	// bojeArrayTJ = {252, 192, 131};
 	// bojeArrayTJ2 = {55, 153, 176};
@@ -822,12 +849,12 @@ function setWeekComparison()
     define a type n size 14 dec 2;
 	if (Math.Abs(tot_ovajTj) > Math.Abs(tot_ProsliTj))
 	{
-        if (tot_prosliTj== 0){
+        if (tot_prosliTj == 0){
     		HorizontalBar("HorizontalBarOT", "BarWidth", 100);
 	    	HorizontalBar("HorizontalBarLT", "BarWidth", 0);
         }
         else{
-            ratio = tot_ovajTj/tot_ProsliTj;
+            ratio = 1.00*tot_ovajTj/tot_ProsliTj;
 	    	HorizontalBar("HorizontalBarOT", "BarWidth", 90);
     		HorizontalBar("HorizontalBarLT", "BarWidth", 90/ratio);
         }
@@ -850,7 +877,7 @@ function setWeekComparison()
 	    	HorizontalBar("HorizontalBarLT", "BarWidth", 100);
         }
         else{
-            ratio = tot_ProsliTj/tot_ovajTj;
+            ratio = 1.00*tot_ProsliTj/tot_ovajTj;
 	    	HorizontalBar("HorizontalBarLT", "BarWidth", 90);
 		    HorizontalBar("HorizontalBarOT", "BarWidth", 90/ratio);
         }

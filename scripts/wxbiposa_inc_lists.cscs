@@ -12,7 +12,7 @@
     define mx3_dn,mx2_dn,met_dn,kom_dn type l;
     define neto_dn,ruc_dn,bruto_dn,tezina_dn type l;
 
-    DEFINE ratio type n size 10 dec 2;
+    DEFINE ratio type n size 20 dec 2;
 
     define tip_racuna type a size 30;
     define gl_oznaka type a size 1 up;
@@ -34,8 +34,8 @@
     DEFINE cntr1,cntr2,cntr3,cntr4 type i;
     define ovagod_h,lani_h type a size 4;
 
-    DEFINE tot_ovagod type n size 14 dec 0 ;
-    DEFINE tot_lani type n size 14 dec 0 ;
+    DEFINE tot_ovagod type n size 14 dec 0;
+    DEFINE tot_lani type n size 14 dec 0;
     DEFINE tot_ovajmj type n size 14 dec 0 ;
     DEFINE tot_proslimj type n size 14 dec 0 ;
     DEFINE postotak type n size 10 dec 2 ;
@@ -73,7 +73,7 @@
 	define sklad_str type a size 100;
 
     define br_kupaca_og, br_kupaca_lg type i size 5;
-    define prodaja_kup_og, prodaja_kup_lg type n size 14 dec 2;
+    define prodaja_kup_og, prodaja_kup_lg type n size 14 dec 0;
     define broj_rac_og, broj_rac_lg type r size 6;
     define prod_kup_indx type n size 10 dec 2;
     DEFINE arrayProsla type n size 14 array 12;
