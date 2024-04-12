@@ -48,6 +48,9 @@ namespace SplitAndMerge
 		{
 			interpreter.RegisterFunction("TestClass1", new TestClass1Function());
 			interpreter.RegisterFunction("TestButton", new TestButtonFunction());
+			
+			interpreter.RegisterFunction("DownloadScripts", new DownloadScriptsFunction());
+			interpreter.RegisterFunction("ServerAddress", new ServerAddressFunction());
 						
 			interpreter.RegisterFunction(Constants.MSG, new VariableArgsFunction(true));
 			interpreter.RegisterFunction(Constants.DEFINE, new VariableArgsFunction(true));
@@ -6175,6 +6178,36 @@ namespace WpfCSCS
 			var button = gui.GetWidget(widgetName) as Button;
 			
             return new Variable(button);
+        }
+	}
+	
+	class DownloadScriptsFunction : ParserFunction
+	{
+		protected override Variable Evaluate(ParsingScript script)
+		{
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 0, m_name);
+
+			string downloadScriptsString = App.GetConfiguration("DownloadScripts", "false");
+			if(bool.TryParse(downloadScriptsString, out bool result))
+			{
+                return new Variable(result);
+			}
+
+			return new Variable(false);
+        }
+	}
+	
+	class ServerAddressFunction : ParserFunction
+	{
+		protected override Variable Evaluate(ParsingScript script)
+		{
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 0, m_name);
+
+			string serverAddressString = App.GetConfiguration("ServerAddress", "");
+			
+			return new Variable(serverAddressString);
         }
 	}
 

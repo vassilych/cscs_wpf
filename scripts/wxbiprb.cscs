@@ -1,11 +1,20 @@
+
+include(strTrim(tpath()) +"chainLib.cscs"); //look-up lists
+
 Import(strTrim(mpath()) + "CSCS.Math.dll");
-include(strTrim(tpath()) +"wxbiprb_inc_lists.cscs"); //look-up lists
-include(strTrim(tpath()) +"wxbiprb_inc_a.cscs"); //look-up lists
-include(strTrim(tpath()) +"wxbiprb_inc_b.cscs"); //look-up lists
-CreateWindow(strTrim(tpath()) +"wxbiprb.xaml");
+
+IncludeScript("wxbiprb_inc_lists.cscs"); //look-up lists
+IncludeScript("wxbiprb_inc_a.cscs"); //look-up lists
+IncludeScript("wxbiprb_inc_b.cscs"); //look-up lists
+CreateWindowXaml("wxbiprb.xaml");
+
+// include(strTrim(tpath()) +"wxbiprb_inc_lists.cscs"); //look-up lists
+// include(strTrim(tpath()) +"wxbiprb_inc_a.cscs"); //look-up lists
+// include(strTrim(tpath()) +"wxbiprb_inc_b.cscs"); //look-up lists
+// CreateWindow(strTrim(tpath()) +"wxbiprb.xaml");
 
 function Wxbiprb_onDisplay()
-    {
+{
     args = CommandLineArgs(); 
     if(Size(args) > 2){
         companyCode = args[2];
@@ -76,17 +85,17 @@ function Wxbiprb_onDisplay()
     //kasnije zamijenit sa funkcijom, kada se bude koristi adictionary
     sqlQueryString = "select SY_CC_DBASE from " + CommonDBGet() + ".dbo.NKSYCCYR WHERE SY_CC_USER = '" + imeFirme + "' AND SY_CC_YEAR = '" + (int(ovagod_h) - 1) + "'";
     try
-        {
+    {
         sqlResult = sqlQuery(sqlQueryString);
         if (size(sqlResult) > 1)
         {
             proslaGodinaBaza = sqlResult[1][0].trim();
         }  
-        }
+    }
     catch(exc)
-        {
+    {
         MessageBox(exc);
-        }
+    }
     EUCountries= "'AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GB', 'GR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK', 'QP', 'QR', 'QV'";
     sqlNaDan = ovagod_h + "-12-31";
     sqlOdDana = string(int(ovagod_h) - 1) + "-01-01";
@@ -110,7 +119,7 @@ function Wxbiprb_onDisplay()
     setFocus("gbPripremi");
     tip_racuna= "SVI TIPOVI";
     gradoviRB= true;
-    }
+}
 
 function gbPripremi@clicked()
 {

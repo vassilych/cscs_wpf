@@ -456,6 +456,10 @@ AddMenuSeparator("OtherDC");
 
 AddMenuItem("OtherDC", "testDownload.cscs", "testDownload", "runScript");
 
+AddMenuSeparator("OtherDC");
+
+AddMenuItem("OtherDC", "testDownload2.cscs", "testDownload2", "runScript");
+
 
 //----- IVAN -------------------------------
 

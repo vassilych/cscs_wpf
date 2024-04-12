@@ -48,8 +48,7 @@ function paymentCodesPieChartDone(){
 
 //-------------------------------------------------------
 
-function setSellersPieChart()
-{
+function setSellersPieChart(){
 	//	MessageBox( pieChartStr);
 	sql_str = "";
 	sql_str += " SELECT CASE WHEN num<= 5 THEN Naziv ELSE 'Ostali' END AS Prodavac , round(sum(suma),0) as Origin";
@@ -112,8 +111,7 @@ function DisplaySellersPieChart(){
 
 //-------------------------------------------------------
 
-function setPaymentOptionsPieChart()
-{
+function setPaymentOptionsPieChart(){
 	//	MessageBox( pieChartStr);
 	sql_str = "";
 	sql_str += " SELECT CASE WHEN num <= 5 THEN Naziv ELSE 'Ostali' END AS Prodavac , round(sum(suma),0) as Origin";
@@ -198,8 +196,7 @@ function DisplayPaymentOptionsPieChart(){
 
 //-------------------------------------------------------
 
-function setPaymentCodesPieChart()
-{
+function setPaymentCodesPieChart(){
 	//	MessageBox( pieChartStr);
 	sql_str = "";
 	sql_str += " SELECT CASE WHEN num <= 5 THEN Naziv ELSE 'Ostali' END AS Prodavac , round(sum(suma),0) as Origin";
@@ -269,8 +266,7 @@ function DisplayPaymentCodesPieChart(){
 
 //-------------------------------------------------------
 
-function setTop30Nofisc()
-{
+function setTop30Nofisc(){
 	sql_str =  "SELECT TOP 30 KS_IG_RACUN, KS_OSB_IME, CONVERT(char(8) ,  KS_IG_DATUM , 3) AS datecr , convert(char(8) , KS_IG_SAT , 20) as KS_IG_SAT, KS_IG_TOTAL ";
 	
 	sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.NKKSINVG" ;

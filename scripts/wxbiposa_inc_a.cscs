@@ -265,7 +265,7 @@ function setChartByMonth()
     sql_str += " ORDER BY CONVERT(varchar(6),KS_IG_DATUM,112);";
     try
     {
-            SaveFile(sql_str);
+        //SaveFile(sql_str);
         queryResult = sqlquery(SQL_str);
     }
     catch(exc)

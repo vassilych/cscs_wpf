@@ -368,7 +368,7 @@ function fillProductsArrays(){
 }
 
 function fillProductsArrays2(){
-	for ( i = 1; 10; i++ )
+	for ( i = 1; i < 10; i++ )
 	{    
 		Indexart_ar[i] =  0;
 	}
@@ -383,7 +383,7 @@ function fillProductsArrays2(){
 			salesart2_ar[cntr2] =  sqlResult[i][1]; 
 			if(salesart2_ar[cntr2] != 0)
 			{
-				Indexart_ar[cntr2] =  Math.Round(((salesart1_ar[cntr2] - salesart2_ar[cntr2])/salesart2_ar[cntr2]) * 100, 0);
+				Indexart_ar[cntr2] =  Math.Round(((salesart1_ar[cntr2] - salesart2_ar[cntr2])/salesart2_ar[cntr2]) * 100.00, 0);
 			}
 			else
 			{
@@ -563,7 +563,7 @@ function setCntr2(){
 }
 
 function fillCustomerArrays2(){
-	for ( i = 1; 10; i++ )
+	for ( i = 1; i < 10; i++ )
 	{    
 		IndexPart_ar[i] =  0;
 	}
