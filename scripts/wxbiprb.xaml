@@ -553,7 +553,7 @@
                 IsTabStop="False"
                 Focusable="False"
                 Grid.Column="2" Grid.Row="1" />
-            <Label x:Name="label_Copy" Content="Omjer" Margin="169,15,0,0" FontFamily="Lato" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left" Width="213" Height="36" VerticalAlignment="Top" Grid.Row="2" Grid.ColumnSpan="2"/>
+            <Label x:Name="label_Copy" Content="Omjer prodaje VP/MP" Margin="169,15,0,0" FontFamily="Lato" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left" Width="251" Height="36" VerticalAlignment="Top" Grid.Row="2" Grid.ColumnSpan="2"/>
             <wcl:ASHorizontalBar x:Name="HorizontalBarOGVP"
                 Margin="309,53,0,0"
                 FontSize="24" Grid.Row="2" FontFamily="lato" FontWeight="Bold" Background="#FFB9B6B6" BarColor="#FFC4E08A" Height="32" VerticalAlignment="Top" HorizontalAlignment="Left" Width="180" Grid.ColumnSpan="2" />
@@ -1311,11 +1311,7 @@
                       InitialRotation="90"
                       MinValue="0"
                       MaxValue="100"
-                      Margin="475,323,0,0"
-                      Width="180"
-                      Height="160"
-                      VerticalAlignment="Top"
-                      HorizontalAlignment="Left" Grid.Column="1" Grid.Row="1" />
+                      Margin="475,323,385,0" Grid.Column="1" Grid.Row="1" Height="160" VerticalAlignment="Top" />
         <!-- <wcl:ASNumericBox HorizontalAlignment="Left"
         VerticalAlignment="Top"
         FontWeight="Bold"

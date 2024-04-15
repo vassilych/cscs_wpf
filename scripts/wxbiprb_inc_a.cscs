@@ -130,15 +130,17 @@ function setLast10InvoicesDataGrid()
     }
 }
 */
-
+/*
 function setTop10InvoicesDataGrid()
 {
 	t10NameMj_ar={}; // type a size 30 array 10;
 	t10CntrMj_ar={}; // type i size 2 array 10;
 	t10DatumMj_ar={}; // type d size 8 array 10;
 	t10RacunMj_ar={}; // type r size 8 array 10;
+    //t10IznosMj_ar={}; 
 	sql_str =  "SELECT TOP 10 nkpr_gl_num , nkpr_gl_cusnme , CONVERT(char(8) ,  nkpr_gl_invdte , 3) AS datecr , " ;
-	sql_str += " CAST(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_gl_total ELSE nkpr_gl_total END as decimal (10,2)) AS nkpr_gl_total ";
+	//sql_str += " CAST(CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_gl_total ELSE nkpr_gl_total END as decimal (10,2)) AS nkpr_gl_total ";
+	sql_str += " CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_gl_total ELSE nkpr_gl_total END AS nkpr_gl_total ";
 	sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv" ;
 	if ( regija != "" )
 	{
@@ -184,7 +186,7 @@ function setTop10InvoicesDataGrid()
 	}        
 
 }
-
+*/
 function setChartByDaysOfMonth()
     {
         if (neto_dn)
@@ -500,27 +502,27 @@ function setLast10InvoicesDataGrid()
 	}
     if (neto_dn)
 	{
-        sql_str += " ISNULL(ROUND(SUM(CASE WHEN nkpr_gl_dviza= 'D' THEN nkpr_gl_tecaj*nkpr_ln_amt ELSE nkpr_ln_amt END),0), 0)";
+        sql_str += " ISNULL(ROUND(SUM(CASE WHEN nkpr_gl_dviza= 'D' THEN nkpr_gl_tecaj*nkpr_ln_amt ELSE nkpr_ln_amt END),2), 0)";
 	}
     elif (razlikaUCijeniField)
 	{
-        sql_str += " ISNULL(ROUND(SUM(CASE WHEN nkpr_gl_dviza= 'D' THEN nkpr_gl_tecaj*(nkpr_ln_amt-nkpr_ln_cenan*nkpr_ln_qtyz) ELSE nkpr_ln_amt-nkpr_ln_cenan*nkpr_ln_qtyz END), 0), 0)";
+        sql_str += " ISNULL(ROUND(SUM(CASE WHEN nkpr_gl_dviza= 'D' THEN nkpr_gl_tecaj*(nkpr_ln_amt-nkpr_ln_cenan*nkpr_ln_qtyz) ELSE nkpr_ln_amt-nkpr_ln_cenan*nkpr_ln_qtyz END), 2), 0)";
 	}
     elif (tezina_dn )
 	{
-        sql_str += " ISNULL(ROUND(SUM(nkpr_ln_tezinan), 0), 0)";
+        sql_str += " ISNULL(ROUND(SUM(nkpr_ln_tezinan), 2), 0)";
 	}	
     elif (mx3_dn )
 	{
-        sql_str += " ISNULL(ROUND(SUM(nkpr_ln_metx3), 0), 0)";
+        sql_str += " ISNULL(ROUND(SUM(nkpr_ln_metx3), 2), 0)";
 	}	
     elif (mx2_dn )
 	{
-        sql_str += " ISNULL(ROUND(SUM(nkpr_ln_metx2), 0), 0)";
+        sql_str += " ISNULL(ROUND(SUM(nkpr_ln_metx2), 2), 0)";
 	}	
     elif (met_dn )
 	{
-        sql_str += " ISNULL(ROUND(SUM(nkpr_ln_met), 0), 0)";
+        sql_str += " ISNULL(ROUND(SUM(nkpr_ln_met), 2), 0)";
 	}	
     elif (kom_dn )
 	{
@@ -528,7 +530,7 @@ function setLast10InvoicesDataGrid()
 	}	
     else
 	{
-        sql_str += " ISNULL(ROUND(SUM(CASE WHEN nkpr_gl_dviza= 'D' THEN nkpr_gl_tecaj*nkpr_ln_pext ELSE nkpr_ln_pext END), 0), 0)";
+        sql_str += " ISNULL(ROUND(SUM(CASE WHEN nkpr_gl_dviza= 'D' THEN nkpr_gl_tecaj*nkpr_ln_pext ELSE nkpr_ln_pext END), 2), 0)";
 	}
 	sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv" ;
     if (regija!= "")
@@ -564,18 +566,18 @@ function setLast10InvoicesDataGrid()
 	}
     for ( i = 1; i < Size(sqlResult2); i++ )
     {      
-        nkpr_gl_num = sqlResult2[i][0];  
-        nkpr_gl_cusnme = sqlResult2[i][1];
-        datecr = sqlResult2[i][2];
-        nkpr_gl_timecr = sqlResult2[i][3];
-        nkpr_gl_total= sqlResult2[i][4];
+        //nkpr_gl_num = sqlResult2[i][0];  
+        //nkpr_gl_cusnme = sqlResult2[i][1];
+        //datecr = sqlResult2[i][2];
+        //nkpr_gl_timecr = sqlResult2[i][3];
+        //nkpr_gl_total= sqlResult2[i][4];
 
-        t10Namez_ar[i - 1] =  nkpr_gl_cusnme;
-        t10Iznosz_ar[i - 1] =  nkpr_gl_total;
+        t10Namez_ar[i - 1] =  sqlResult2[i][1]; //nkpr_gl_cusnme;
+        t10Iznosz_ar[i - 1] =  sqlResult2[i][4]; //nkpr_gl_total;
         t10Cntrz_ar[i - 1] =  i;
-        t10Datumz_ar[i - 1] =  datecr;
-        t10Racunz_ar[i - 1] =  nkpr_gl_num; 
-        t10Timez_ar[i - 1] =  nkpr_gl_timecr;
+        t10Datumz_ar[i - 1] =  sqlResult2[i][2]; //datecr;
+        t10Racunz_ar[i - 1] =  sqlResult2[i][0]; //nkpr_gl_num; 
+        t10Timez_ar[i - 1] =  sqlResult2[i][3]; //nkpr_gl_timecr;
     }
 }
 
@@ -608,38 +610,39 @@ function setTop10InvoicesDataGrid()
 		sql_str += " AND g.nksc_regija =  '" + regija + "'";
 	}
     */
+    
 	sql_str =  "SELECT TOP 10 nkpr_gl_num , nkpr_gl_cusnme , CONVERT(char(8) ,  nkpr_gl_invdte , 3) AS datecr , ";
     if (neto_dn)
 	{
-        sql_str += " ISNULL(ROUND(SUM(CASE WHEN nkpr_gl_dviza= 'D' THEN nkpr_gl_tecaj*nkpr_ln_amt ELSE nkpr_ln_amt END),0), 0)";
+        sql_str += " ISNULL(ROUND(SUM(CASE WHEN nkpr_gl_dviza= 'D' THEN nkpr_gl_tecaj*nkpr_ln_amt ELSE nkpr_ln_amt END),2), 0)";
 	}
     elif (razlikaUCijeniField)
 	{
-        sql_str += " ISNULL(ROUND(SUM(CASE WHEN nkpr_gl_dviza= 'D' THEN nkpr_gl_tecaj*(nkpr_ln_amt-nkpr_ln_cenan*nkpr_ln_qtyz) ELSE nkpr_ln_amt-nkpr_ln_cenan*nkpr_ln_qtyz END), 0), 0)";
+        sql_str += " ISNULL(ROUND(SUM(CASE WHEN nkpr_gl_dviza= 'D' THEN nkpr_gl_tecaj*(nkpr_ln_amt-nkpr_ln_cenan*nkpr_ln_qtyz) ELSE nkpr_ln_amt-nkpr_ln_cenan*nkpr_ln_qtyz END), 2), 0)";
 	}
     elif (tezina_dn )
 	{
-        sql_str += " ISNULL(ROUND(SUM(nkpr_ln_tezinan), 0), 0)";
+        sql_str += " ISNULL(ROUND(SUM(nkpr_ln_tezinan), 2), 0)";
 	}	
     elif (mx3_dn )
 	{
-        sql_str += " ISNULL(ROUND(SUM(nkpr_ln_metx3), 0), 0)";
+        sql_str += " ISNULL(ROUND(SUM(nkpr_ln_metx3), 2), 0)";
 	}	
     elif (mx2_dn )
 	{
-        sql_str += " ISNULL(ROUND(SUM(nkpr_ln_metx2), 0), 0)";
+        sql_str += " ISNULL(ROUND(SUM(nkpr_ln_metx2), 2), 0)";
 	}	
     elif (met_dn )
 	{
-        sql_str += " ISNULL(ROUND(SUM(nkpr_ln_met), 0), 0)";
+        sql_str += " ISNULL(ROUND(SUM(nkpr_ln_met), 2), 0)";
 	}	
     elif (kom_dn )
 	{
-        sql_str += " ISNULL(ROUND(SUM(nkpr_ln_kom), 0), 0)";
+        sql_str += " ISNULL(ROUND(SUM(nkpr_ln_kom), 2), 0)";
 	}	
     else
 	{
-        sql_str += " ISNULL(ROUND(SUM(CASE WHEN nkpr_gl_dviza= 'D' THEN nkpr_gl_tecaj*nkpr_ln_pext ELSE nkpr_ln_pext END), 0), 0)";
+        sql_str += " ISNULL(ROUND(SUM(CASE WHEN nkpr_gl_dviza= 'D' THEN nkpr_gl_tecaj*nkpr_ln_pext ELSE nkpr_ln_pext END), 2), 0)";
 	}
 	sql_str += " AS iznos FROM " + trenutnaGodinaBaza + ".dbo.nkprinv" ;
     if (regija!= "")
@@ -674,12 +677,13 @@ function setTop10InvoicesDataGrid()
 		nkpr_gl_invdte = sqlResult[i][2];
 		nkpr_gl_total= sqlResult[i][3];
 
-		t10NameMj_ar[i - 1] =  nkpr_gl_cusnme;
-		t10IznosMj_ar[i - 1] =  nkpr_gl_total;
+		t10NameMj_ar[i - 1] =  sqlResult[i][1]; //nkpr_gl_cusnme;
+		t10IznosMj_ar[i - 1] =  sqlResult[i][3]; //nkpr_gl_total;
 		t10CntrMj_ar[i - 1] =  i;
-		t10DatumMj_ar[i - 1] =  nkpr_gl_invdte;
-		t10RacunMj_ar[i - 1] =  nkpr_gl_num;
+		t10DatumMj_ar[i - 1] =  sqlResult[i][2]; //nkpr_gl_invdte;
+		t10RacunMj_ar[i - 1] =  sqlResult[i][0]; //nkpr_gl_num;
 	}        
 	return;
 }
+
 

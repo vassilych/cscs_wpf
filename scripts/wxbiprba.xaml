@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="Prodaja I"
         Height="600"
-        Width="1200" WindowStartupLocation="CenterScreen">
+        Width="1200" WindowStartupLocation="CenterScreen"  MinHeight="500" MinWidth="1000">
 
     <Grid Margin="10,30,10,30">
         <Grid.RowDefinitions>
@@ -21,11 +21,7 @@
         </Grid.ColumnDefinitions>
         <lvc:CartesianChart LegendPosition="Right"
                             x:Name="ChartPoMjesecima"
-                            VerticalAlignment="Top"
-                            HorizontalAlignment="Center"
-                            Margin="0,5,0,0"
-                            Width="544"
-                            Height="247" />
+                            Margin="23,5,23,10" />
         <lvc:CartesianChart x:Name="ChartPoDanima"
                             Grid.Column="1"
                             Grid.Row="0"
@@ -35,11 +31,7 @@
 
         <DataGrid GridLinesVisibility="Vertical"
                   VerticalGridLinesBrush="LightGray"
-                  HorizontalAlignment="Center"
-                  VerticalAlignment="Top"
-                  Height="216"
-                  Width="544"
-                  Margin="0,32,0,0"
+                  Margin="23,32,23,14"
                   IsReadOnly="true"
                   x:Name="dgRacuniLast"
                   AlternatingRowBackground="LightBlue"
@@ -131,11 +123,7 @@
         <Label HorizontalAlignment="Left" Content="Najveći računi" Grid.Row="1" Grid.Column="1" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="24,5,0,0" BorderBrush="{x:Null}"/>
         <Label HorizontalAlignment="Left" Content="Prodaja po mjesecima (x 1.000)" VerticalAlignment="Top" Width="272" FontSize="16" FontWeight="Bold" Margin="23,10,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
         <DataGrid GridLinesVisibility="None"
-                  HorizontalAlignment="Left"
-                  VerticalAlignment="Top"
-                  Height="216"
-                  Width="546"
-                  Margin="24,32,0,0"
+                  Margin="24,32,20,14"
                   IsReadOnly="true"
                   x:Name="dgRacuniMjesec"
                   AlternatingRowBackground="LightGray"
