@@ -356,7 +356,7 @@ namespace WpfCSCS
                         {
                             if (seriesList.Count <= i)
                                 break;
-
+                            
                             (seriesList[i] as PieSeries<double>).Fill = new SolidColorPaint(SKColor.Parse(ToHex((Color)ColorConverter.ConvertFromString(valueVariable.Tuple[i].String))));
                         }      
                         
@@ -419,6 +419,8 @@ namespace WpfCSCS
                 var widgetName = Utils.GetSafeString(args, 0).ToLower();
                 var optionString = Utils.GetSafeString(args, 1).ToLower();
                 var valueVariable = Utils.GetSafeVariable(args, 2);
+                var value2Variable = Utils.GetSafeVariable(args, 3);
+                var value3Variable = Utils.GetSafeVariable(args, 4);
 
                 var widget = gui.GetWidget(widgetName);
                 if (widget is PieChart)
@@ -434,8 +436,8 @@ namespace WpfCSCS
                                     valueVariable.Value,          // the gauge value
                                     series =>    // the series style
                                     {
-                                        series.MaxRadialColumnWidth = 50;
-                                        series.DataLabelsSize = 50;
+                                        series.MaxRadialColumnWidth = (value2Variable == null ? 50 : value2Variable.Value);
+                                        series.DataLabelsSize = (value3Variable == null ? 50 : value3Variable.Value);
                                     })
                                 );
                             pieWidget.Tooltip = null;
@@ -443,7 +445,7 @@ namespace WpfCSCS
                     }
                     else if (optionString == "color")
                     {
-                        var newColor = valueVariable.String;
+                        //var newColor = valueVariable.String;
 
                         var series_ienum_property = widget.GetType().GetProperty("Series");
 
@@ -453,7 +455,16 @@ namespace WpfCSCS
                             if (item is PieSeries<LiveChartsCore.Defaults.ObservableValue>)
                             {
                                 if (!(item as PieSeries<LiveChartsCore.Defaults.ObservableValue>).SeriesProperties.HasFlag(SeriesProperties.GaugeFill))
-                                    item.GetType().GetProperty("Fill").SetValue(item, new LiveChartsCore.SkiaSharpView.Painting.SolidColorPaint(SkiaSharp.SKColor.Parse(ToHex((Color)ColorConverter.ConvertFromString(newColor)))), null);
+                                {
+                                    if (valueVariable.Tuple?.Count > 0)
+                                    {
+                                        item.GetType().GetProperty("Fill").SetValue(item, new LiveChartsCore.SkiaSharpView.Painting.SolidColorPaint(SkiaSharp.SKColor.Parse(ToHex(new Color() { R = (byte)valueVariable.Tuple[0].Value, G = (byte)valueVariable.Tuple[1].Value, B = (byte)valueVariable.Tuple[2].Value }))), null);
+                                    }
+                                    else if (valueVariable.String != null)
+                                    { 
+                                        item.GetType().GetProperty("Fill").SetValue(item, new LiveChartsCore.SkiaSharpView.Painting.SolidColorPaint(SkiaSharp.SKColor.Parse(ToHex((Color)ColorConverter.ConvertFromString(valueVariable.String)))), null); 
+                                    }
+                                } 
                             }
                         }
                     }

@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:wcl="clr-namespace:WpfControlsLibrary;assembly=WpfControlsLibrary"
+        xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
         mc:Ignorable="d"
         Title="Sales Dashboard" Height="750" Width="1200"  WindowStartupLocation="CenterScreen" ResizeMode="NoResize" >
     <Window.Resources>
@@ -63,6 +64,7 @@
             <Rectangle x:Name="RectangleD" Grid.Column="0" Margin="10,11,10,10" Grid.Row="1" Stroke="Black" Fill="#FFEEEDF1" RadiusX="7" RadiusY="7" StrokeThickness="0"/>
             <Rectangle x:Name="RectangleE" Grid.Column="1" Margin="10,11,10,10" Grid.Row="1" Stroke="Black" Fill="#FFEEEDF1" RadiusX="7" RadiusY="7" StrokeThickness="0"/>
             <Rectangle x:Name="RectangleF" Grid.Column="2" Margin="10,9,10,12" Grid.Row="1" Stroke="Black" Fill="#FFEEEDF1" RadiusX="7" RadiusY="7" StrokeThickness="0"/>
+            <Rectangle x:Name="RectangleG" Margin="159,10,166,11" Grid.Row="2" Stroke="Black" Fill="#FFEEEDF1" RadiusX="7" RadiusY="7" StrokeThickness="0" Grid.ColumnSpan="3"/>
             <TextBlock HorizontalAlignment="Left"
                        VerticalAlignment="Top"
                        Height="30"
@@ -551,6 +553,33 @@
                 IsTabStop="False"
                 Focusable="False"
                 Grid.Column="2" Grid.Row="1" />
+            <Label x:Name="label_Copy" Content="Omjer" Margin="169,15,0,0" FontFamily="Lato" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left" Width="213" Height="36" VerticalAlignment="Top" Grid.Row="2" Grid.ColumnSpan="2"/>
+            <wcl:ASHorizontalBar x:Name="HorizontalBarOGVP"
+                Margin="309,53,0,0"
+                FontSize="24" Grid.Row="2" FontFamily="lato" FontWeight="Bold" Background="#FFB9B6B6" BarColor="#FFC4E08A" Height="32" VerticalAlignment="Top" HorizontalAlignment="Left" Width="180" Grid.ColumnSpan="2" />
+            <wcl:ASHorizontalBar x:Name="HorizontalBarOGMP"
+                Margin="309,93,0,0"
+                FontSize="24" Grid.Row="2" FontFamily="lato" FontWeight="Bold" Background="#FFB9B6B6" BarColor="#FFC4E08A" Height="32" VerticalAlignment="Top" HorizontalAlignment="Left" Width="180" Grid.ColumnSpan="2" />
+            <TextBlock HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Height="32"
+                Width="111"
+                Margin="203,60,0,0"
+                FontFamily="Lato"
+                x:Name="Label2_Copy1"
+                FontSize="16"
+                Foreground="black"
+                TextWrapping="Wrap" Grid.Row="2"><Run Language="hr-hr" Text="Veleprodaja"/><Run Text=": "/></TextBlock>
+            <TextBlock HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Height="32"
+                Width="111"
+                Margin="204,98,0,0"
+                FontFamily="Lato"
+                x:Name="Label2_Copy2"
+                FontSize="16"
+                Foreground="black"
+                TextWrapping="Wrap" Grid.Row="2"><Run Language="hr-hr" Text="Malo"/><Run Text="prodaja"/><Run Text=": "/></TextBlock>
 
         </Grid>
         <Button x:Name="gbProdaja1" Content="Prodaja I" Style="{StaticResource FlatButtonStyle}" Grid.Row="1" Margin="0,15,0,0"  HorizontalAlignment="Center" VerticalAlignment="Top" Width="140" Height="63" Background="#FF69A627" FontFamily="Lato" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}" TabIndex="32"/>
@@ -1278,6 +1307,15 @@
                  Grid.Column="0" Grid.Row="0" TextWrapping="Wrap" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" UseLayoutRounding="True" BorderBrush="{x:Null}" SelectionBrush="{x:Null}" BorderThickness="0,0,0,2" IsTabStop="False" Focusable="False" AllowDrop="False" IsEnabled="False"/>
         <Image x:Name="Logo" Margin="5,7,5,68" />
         <ComboBox x:Name="cbTipRacuna" DataContext="Tip_racuna" Grid.Column="1" HorizontalAlignment="Right" Margin="0,176,16,0" VerticalAlignment="Top" Width="149" Height="22" TabIndex="30"/>
+        <lvc:PieChart x:Name="GaugeChartTotOvagod"
+                      InitialRotation="90"
+                      MinValue="0"
+                      MaxValue="100"
+                      Margin="475,323,0,0"
+                      Width="180"
+                      Height="160"
+                      VerticalAlignment="Top"
+                      HorizontalAlignment="Left" Grid.Column="1" Grid.Row="1" />
         <!-- <wcl:ASNumericBox HorizontalAlignment="Left"
         VerticalAlignment="Top"
         FontWeight="Bold"

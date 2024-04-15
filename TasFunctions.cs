@@ -642,9 +642,17 @@ namespace WpfCSCS
                 }
                 else if (option == "color")
                 {
-                    var rgbArray = Utils.GetSafeVariable(args, 2).Tuple;
+                    //var rgbArray = Utils.GetSafeVariable(args, 2).Tuple;
+                    var valueVariable = Utils.GetSafeVariable(args, 2);
 
-                    ashb.BarColor = new SolidColorBrush(Color.FromRgb((byte)rgbArray[0].Value, (byte)rgbArray[1].Value, (byte)rgbArray[2].Value));
+                    if (valueVariable.String != null)
+                    {
+                        ashb.BarColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString(valueVariable.String));
+                    }
+                    else if (valueVariable.Tuple.Count == 3)
+                    {
+                        ashb.BarColor = new SolidColorBrush(Color.FromRgb((byte)valueVariable.Tuple[0].Value, (byte)valueVariable.Tuple[1].Value, (byte)valueVariable.Tuple[2].Value));
+                    }
                 }
             }
 

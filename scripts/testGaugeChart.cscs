@@ -1,4 +1,7 @@
 CreateWindow("../../scripts/testGaugeChart.xaml");
 
-GaugeChart("GaugeChart1", "value", 30);
-GaugeChart("GaugeChart1", "color", "green");
+GaugeChart("GaugeChart1", "value", 30, 15, 30);
+
+GaugeChart("GaugeChart1", "color", "red");
+// GaugeChart("GaugeChart1", "color", "#654321");
+// GaugeChart("GaugeChart1", "color", {250, 150, 80});
