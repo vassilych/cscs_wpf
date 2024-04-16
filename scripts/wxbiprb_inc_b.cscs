@@ -649,7 +649,7 @@ function fillProductsArrays2(){
 			}
 			else
 			{
-				//IndexPart_ar[cntr2] =  0;
+				IndexPart_ar[cntr2] =  0;
 			}
 			} 
 		}
@@ -883,7 +883,7 @@ function fillCustomerArrays2(){
 			}
 			else
 			{
-				//IndexPart_ar[cntr2] =  0;
+				IndexPart_ar[cntr2] =  0;
 			}
 			} 
 		}
