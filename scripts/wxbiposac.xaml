@@ -10,60 +10,61 @@
         xmlns:SKCharts="clr-namespace:LiveChartsCore.SkiaSharpView.SKCharts;assembly=LiveChartsCore.SkiaSharpView"
         mc:Ignorable="d"
         Title="Prodaja III"
-        Height="700"
-        Width="1000" WindowStartupLocation="CenterScreen">
-    <Grid Margin="25,0,-5,-20">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="488"/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="362"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <Label VerticalAlignment="Top" HorizontalAlignment="Left" Width="195" Height="35" Margin="0,10,0,0"
+        Height="675"
+        Width="1200" MinHeight="540" MinWidth="960" WindowStartupLocation="CenterScreen">
+    <Viewbox Stretch="Uniform">
+        <Grid Width="1210">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Label VerticalAlignment="Top" HorizontalAlignment="Left" Width="195" Height="35" Margin="0,10,0,0"
                Content="Prodavači - Top 6"
                Grid.Row="0"
                FontSize="16"
                FontWeight="Bold"/>
-        <lvc:PieChart LegendPosition="Bottom"
+            <lvc:PieChart LegendPosition="Bottom"
               Name="PieChartProdavaci"
-              VerticalAlignment="Center"
+              VerticalAlignment="Top"
               HorizontalAlignment="Left" Grid.Column="0"
-              Width="485"
-              Height="356" FontSize="10" HorizontalContentAlignment="Left"/>
+              Width="600"
+              Height="307" FontSize="10" HorizontalContentAlignment="Left" Margin="0,45,0,0"/>
 
-        <lvc:PieChart LegendPosition="Bottom"
+            <lvc:PieChart LegendPosition="Bottom"
                       Name="PieChartNaciniPlacanja"
-                      VerticalAlignment="Center"
+                      VerticalAlignment="Top"
                       HorizontalAlignment="Center" Grid.Column="1"
-                      Width="482"
-                      Height="354" FontSize="10" HorizontalContentAlignment="Left"/>
-        <Label VerticalAlignment="Top" HorizontalAlignment="Left" Width="195" Height="35" Margin="10,10,0,0" Content="Načini plaćanja" Grid.Column="1"
+                      Width="605"
+                      Height="299" FontSize="10" HorizontalContentAlignment="Left" Margin="0,49,0,0"/>
+            <Label VerticalAlignment="Top" HorizontalAlignment="Left" Width="195" Height="35" Margin="10,10,0,0" Content="Načini plaćanja" Grid.Column="1"
                FontSize="16"
                FontWeight="Bold"/>
-        <lvc:PieChart LegendPosition="Bottom"
+            <lvc:PieChart LegendPosition="Bottom"
               Name="PieChartSifrePlacanja"
               VerticalAlignment="Top"
               HorizontalAlignment="Left"
-              Width="482"
-              Height="295" FontSize="10" HorizontalContentAlignment="Left" Margin="-10,2,0,0" Grid.Row="1"/>
-        <Label VerticalAlignment="Top" HorizontalAlignment="Left" Width="195" Height="35" Margin="0,10,0,0" Content="Šifre plaćanja"
+              Width="575"
+              Height="266" FontSize="10" HorizontalContentAlignment="Left" Margin="10,44,0,0" Grid.Row="1"/>
+            <Label VerticalAlignment="Top" HorizontalAlignment="Left" Width="195" Height="35" Margin="0,10,0,0" Content="Šifre plaćanja"
                Grid.Row="1"
                FontSize="16"
                FontWeight="Bold"/>
-        <Label VerticalAlignment="Top" HorizontalAlignment="Left" Width="246" Height="35" Margin="21,10,0,0" Content="Top 30 - Nefiskalizirani računi"
+            <Label VerticalAlignment="Top" HorizontalAlignment="Left" Width="246" Height="35" Margin="21,10,0,0" Content="Top 30 - Nefiskalizirani računi"
                Grid.Row="1"
                Grid.Column="1"
                FontSize="16"
                FontWeight="Bold"/>
-        <DataGrid GridLinesVisibility="Vertical"
+            <DataGrid GridLinesVisibility="Vertical"
           VerticalGridLinesBrush="LightGray"
-          HorizontalAlignment="Left"
+          HorizontalAlignment="Center"
           VerticalAlignment="Top"
-          Height="255"
-          Width="482"
-          Margin="2,47,0,0"
+          Height="260"
+          Width="585"
+          Margin="0,44,0,0"
           IsReadOnly="true"
           x:Name="dgT30nofisc"
           AlternatingRowBackground="LightBlue"
@@ -72,87 +73,88 @@
           Background="White"
           Grid.Row="1"
           TabIndex="4" BorderThickness="0,0,0,0" Grid.Column="1">
-            <DataGrid.Resources>
-                <Style TargetType="{x:Type DataGridColumnHeader}">
-                    <Setter Property="Background"
+                <DataGrid.Resources>
+                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                        <Setter Property="Background"
                     Value="#FF006393" />
-                    <Setter Property="Foreground"
+                        <Setter Property="Foreground"
                     Value="White" />
-                    <Setter Property="FontSize" Value="17"/>
-                </Style>
-            </DataGrid.Resources>
-            <DataGrid.Columns>
-                <DataGridTemplateColumn Header="No."
+                        <Setter Property="FontSize" Value="17"/>
+                    </Style>
+                </DataGrid.Resources>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="No."
                                 Width="28">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <wcl:ASGridCell FieldName="T30RBR_AR"
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="T30RBR_AR"
                                     Editor="edDefault"
                                     EditLength="0" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Račun"
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Račun"
                                 Width="69">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <wcl:ASGridCell FieldName="T30RACUN_AR"
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="T30RACUN_AR"
                                     HorizontalContentAlignment="Right"
                                     Editor="edNumeric"
                                     EditLength="0" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Datum"
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Datum"
                                 Width="63">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <wcl:ASGridCell FieldName="T30DATUM_AR"
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="T30DATUM_AR"
                                     HorizontalContentAlignment="Center"
                                     Editor="edDefault"
                                     EditLength="8" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Sat"
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Sat"
                                 Width="50">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <wcl:ASGridCell FieldName="T30TIMEZ_AR"
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="T30TIMEZ_AR"
                                     HorizontalContentAlignment="Center"
                                     Editor="edDefault"
                                     EditLength="0" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Prodavač"
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Prodavač"
                                 Width="210">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <wcl:ASGridCell FieldName="T30SELLER_AR"
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="T30SELLER_AR"
                                     Editor="edDefault"
                                     Thousands="True"
                                     EditLength="0" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Iznos"
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Iznos"
                                 Width="90">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <wcl:ASGridCell FieldName="T30IZNOS_AR"
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="T30IZNOS_AR"
                                     Editor="edEditBtn"
                                     EditLength="0"
                                     x:Name="clickTest"
                                     Size="10"
                                     DecimalChrs="2"
                                     HorizontalContentAlignment="Right" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-            </DataGrid.Columns>
-        </DataGrid>
-        <!--<ComboBox x:Name="cbPieChart" DataContext="PieChartStr" HorizontalAlignment="Right" Margin="0,29,18,0" VerticalAlignment="Top" Width="149" Height="22" TabIndex="30"/>-->
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+            <!--<ComboBox x:Name="cbPieChart" DataContext="PieChartStr" HorizontalAlignment="Right" Margin="0,29,18,0" VerticalAlignment="Top" Width="149" Height="22" TabIndex="30"/>-->
 
-    </Grid>
+        </Grid>
+    </Viewbox>
 </Window>

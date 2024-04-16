@@ -963,11 +963,17 @@ function setGaugeChartRatio(){
 
 	Format("tot_ovagod_mp", "nofd", recv: "tot_ovagod_mp_string");
 	HorizontalBar("HorizontalBarOGMP", "Text", tot_ovagod_mp_string);
-	//HorizontalBar("HorizontalBarLT", "Color", bojeArrayTJ);
+	//HorizontalBar("HorizontalBarOGMP", "Color", bojeArrayTJ);
+	
+    tot_ovagod_ukupno = tot_ovagod + tot_ovagod_mp;
+
+    Format("tot_ovagod_ukupno", "nofd", recv: "tot_ovagod_ukupno_string");
+	HorizontalBar("HorizontalBarOGUkupno", "Text", tot_ovagod_ukupno_string);
+	//HorizontalBar("HorizontalBarOGUkupno", "Color", bojeArrayTJ);
 
 
-    GaugeChart("GaugeChartTotOvagod", "value", Math.round(100*tot_ovagod/(tot_ovagod + tot_ovagod_mp)), 25, 30);
-    GaugeChart("GaugeChartTotOvagod", "color", "red");
+    GaugeChart("GaugeChartOmjerProdaje", "value", Math.round(100*tot_ovagod/(tot_ovagod + tot_ovagod_mp)), 25, 30);
+    GaugeChart("GaugeChartOmjerProdaje", "color", "#118888");
 }
 //---------------------------------------------------------------
 

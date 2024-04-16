@@ -30,17 +30,17 @@ using static WpfCSCS.Btrieve;
 
 namespace SplitAndMerge
 {
-     public class CscsGuiModule : ICscsModule
-     {
-	public ICscsModuleInstance CreateInstance(Interpreter interpreter)
+	public class CscsGuiModule : ICscsModule
 	{
-	     return new CscsGuiModuleInstance(interpreter);
-	}
+		public ICscsModuleInstance CreateInstance(Interpreter interpreter)
+		{
+			return new CscsGuiModuleInstance(interpreter);
+		}
 
-	public void Terminate()
-	{
+		public void Terminate()
+		{
+		}
 	}
-     }
 
 	public class CscsGuiModuleInstance : ICscsModuleInstance
 	{
@@ -2740,6 +2740,11 @@ namespace WpfCSCS
 				var stack = content as StackPanel;
 				children = stack.Children.Cast<UIElement>().ToList();
 			}
+			else if (content is Viewbox)
+			{
+				var viewbox = content as Viewbox;
+				children = new List<UIElement>() { viewbox.Child };
+            }
 
 			CacheChildren(children, controls, win);
 			return controls;

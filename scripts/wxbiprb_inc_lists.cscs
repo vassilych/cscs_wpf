@@ -35,6 +35,7 @@
 
     DEFINE tot_ovagod type n size 14 dec 0 ;
     DEFINE tot_ovagod_mp type n size 14 dec 0 ;
+    DEFINE tot_ovagod_ukupno type n size 14 dec 0 ;
     DEFINE tot_lani type n size 14 dec 0 ;
     DEFINE tot_ovajmj type n size 14 dec 0 ;
     DEFINE tot_proslimj type n size 14 dec 0 ;
@@ -46,6 +47,7 @@
 
     DEFINE tot_ovagod_string type a size 20;
     DEFINE tot_ovagod_mp_string type a size 20;
+    DEFINE tot_ovagod_ukupno_string type a size 20;
     DEFINE tot_lani_string type a size 20;
     DEFINE tot_ovajmj_string type a size 20;
     DEFINE tot_proslimj_string type a size 20;
