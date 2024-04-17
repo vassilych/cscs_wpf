@@ -223,7 +223,7 @@ function setCustomerAndInvoiceCounts()
 
     if (proslaGodinaBaza != "")
     {
-        sql_str = "SELECT count(distinct nkpr_gl_cuscod) as br_kupaca_lg,count(distinct(nkpr_gl_num)) as broj_rac_lg";
+        sql_str = "SELECT count(distinct nkpr_gl_cuscod) as br_kupaca_lg,count(distinct nkpr_gl_num) as broj_rac_lg";
         sql_str += " FROM " + proslaGodinaBaza + ".dbo.nkprinv";
         sql_str += " LEFT JOIN "+proslaGodinaBaza+".dbo.nkprinvl ON nkpr_gl_num= nkpr_ln_invnm";
         sql_str += " LEFT JOIN "+proslaGodinaBaza+".dbo.nkmkarti ON nkpr_ln_pcode= arti_artikl";
@@ -252,7 +252,7 @@ function setCustomerAndInvoiceCounts()
     }  
 
     
-    sql_str = "SELECT count(distinct nkpr_gl_cuscod) as br_kupaca_og, count(distinct(nkpr_gl_num)) as broj_rac_og";
+    sql_str = "SELECT count(distinct nkpr_gl_cuscod) as br_kupaca_og, count(distinct nkpr_gl_num) as broj_rac_og";
     //sql_str += " ,count(CASE WHEN nkpr_gl_rts= 'N' THEN 1 END) as br_wait, COUNT(CASE WHEN nkpr_gl_invcd= '' THEN 1 END) as br_neazur";
     sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.nkprinv";
     sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkprinvl ON nkpr_gl_num= nkpr_ln_invnm";

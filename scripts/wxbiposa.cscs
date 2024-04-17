@@ -55,7 +55,7 @@ function Wxbiposa_onDisplay()
     sklad_str= "";
     //searchSklSifra = "";
     searchSklNaziv = "";
-    if (size(sqlResult) !== 0)
+    if (size(sqlResult) > 1)
     {
         imeFirme = sqlResult[1][0].trim(); // KAMEND
         ovagod_h = sqlResult[1][1].trim(); // 2022
@@ -79,7 +79,6 @@ function Wxbiposa_onDisplay()
         fiscal_yr = sqlResult[1][2];
     } 
     neto_dn = true;
-
     //kasnije zamijenit sa funkcijom, kada se bude koristi adictionary
     sqlQueryString = "select SY_CC_DBASE from " + CommonDBGet() + ".dbo.NKSYCCYR WHERE SY_CC_USER = '" + imeFirme + "' AND SY_CC_YEAR = '" + (int(ovagod_h) - 1) + "'";
     try
@@ -94,6 +93,7 @@ function Wxbiposa_onDisplay()
     {
         MessageBox(exc);
     }
+   
     EUCountries= "'AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GB', 'GR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK', 'QP', 'QR', 'QV'";
     sqlNaDan = ovagod_h + "-12-31";
     sqlOdDana = string(int(ovagod_h) - 1) + "-01-01";
@@ -117,6 +117,7 @@ function Wxbiposa_onDisplay()
     setFocus("gbPripremi");
     tip_racuna= "SVI TIPOVI";
     gradoviRB= true;
+ 
 }
 
 function gbPripremi@clicked()
@@ -211,7 +212,7 @@ function setCustomerAndInvoiceCounts()
     broj_rac_lg = 0;
     if (proslaGodinaBaza != "")
     {
-        sql_str = "SELECT count(distinct KS_IG_KUPAC) as br_kupaca_lg,count(KS_IG_RACUN) as broj_rac_lg";
+        sql_str = "SELECT count(distinct KS_IG_KUPAC) as br_kupaca_lg,count(DISTINCT KS_IG_RACUN) as broj_rac_lg";
         sql_str += " FROM " + proslaGodinaBaza + ".dbo.NKKSINVG";
         sql_str += " LEFT JOIN "+proslaGodinaBaza+".dbo.NKKSINVL ON KS_IG_RACUN = KS_IL_RACUN";
         sql_str += " LEFT JOIN "+proslaGodinaBaza+".dbo.nkmkarti ON KS_IL_PCODE = arti_artikl";
@@ -240,7 +241,7 @@ function setCustomerAndInvoiceCounts()
         }   
     } 
     //
-    sql_str = "SELECT count(distinct KS_IG_KUPAC) as br_kupaca_og, count(KS_IG_RACUN) as broj_rac_og";
+    sql_str = "SELECT count(distinct KS_IG_KUPAC) as br_kupaca_og, count(DISTINCT KS_IG_RACUN) as broj_rac_og";
     sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.NKKSINVG";
     sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.NKKSINVL ON KS_IG_RACUN= KS_IL_RACUN";
     sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkmkarti ON KS_IL_PCODE= arti_artikl";
@@ -262,6 +263,7 @@ function setCustomerAndInvoiceCounts()
     }
     //sql_str= sql_str* " AND DATEDIFF(day,nkpr_gl_invdte, CURRENT_TIMESTAMP) BETWEEN 0 AND 31"
     filterPart();
+
     sqlResult = SqlQuery(sql_str);
     if (size(sqlResult) !== 0)
     {
