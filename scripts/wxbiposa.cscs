@@ -13,6 +13,13 @@ CreateWindow(strTrim(tpath()) +"wxbiposa.xaml");
 
 function Wxbiposa_onDisplay()
 {
+    SetWidgetOptions("EllipseProdajaUGodini", "Visible", false);
+    SetWidgetOptions("EllipseProdajaUMjesecu", "Visible", false);
+    SetWidgetOptions("EllipseProdajaUTjednu", "Visible", false);
+    SetWidgetOptions("EllipseBrojKupaca", "Visible", false);
+    SetWidgetOptions("EllipseBrojRacuna", "Visible", false);
+    SetWidgetOptions("EllipseProsjProdajaPoKupcu", "Visible", false);
+
     args = CommandLineArgs(); 
     if(Size(args) > 2){
         companyCode = args[2];
@@ -117,7 +124,6 @@ function Wxbiposa_onDisplay()
     setFocus("gbPripremi");
     tip_racuna= "SVI TIPOVI";
     gradoviRB= true;
- 
 }
 
 function gbPripremi@clicked()
@@ -312,6 +318,24 @@ function setCustomerAndInvoiceCounts()
             }
         }
     }
+
+    //ellipse
+    SetWidgetOptions("EllipseBrojKupaca", "Visible", true);
+    if (br_kupaca_og > br_kupaca_lg)
+    {
+        SetWidgetOptions("EllipseBrojKupaca", "Color", "Lime");
+    }
+    elif(br_kupaca_og < br_kupaca_lg)
+    {
+        SetWidgetOptions("EllipseBrojKupaca", "Color", "Red");
+    }
+    else{
+        SetWidgetOptions("EllipseBrojKupaca", "Color", "Gray");
+    }
+    if(br_kupaca_og == 0 || br_kupaca_lg == 0){
+        SetWidgetOptions("EllipseBrojKupaca", "Visible", false);
+    }
+
     // bojeArray = {250, 100, 250};
     bojeArray = {111, 207, 247};
     Format("br_kupaca_og", "nofd", recv: "br_kupaca_og_string");
@@ -363,6 +387,24 @@ function setCustomerAndInvoiceCounts()
             }
         }
     }
+
+    //ellipse
+    SetWidgetOptions("EllipseBrojRacuna", "Visible", true);
+    if (broj_rac_og > broj_rac_lg)
+    {
+        SetWidgetOptions("EllipseBrojRacuna", "Color", "Lime");
+    }
+    elif(broj_rac_og < broj_rac_lg)
+    {
+        SetWidgetOptions("EllipseBrojRacuna", "Color", "Red");
+    }
+    else{
+        SetWidgetOptions("EllipseBrojRacuna", "Color", "Gray");
+    }
+    if(broj_rac_og == 0 || broj_rac_lg == 0){
+        SetWidgetOptions("EllipseBrojRacuna", "Visible", false);
+    }
+
     // bojeArray = {220, 150, 250};
     bojeArray = {111, 207, 247};
     Format("broj_rac_og", "nofd", recv: "broj_rac_og_string");
@@ -440,6 +482,24 @@ function setCustomerAndInvoiceCounts()
             }
         }
     }
+
+    //ellipse
+    SetWidgetOptions("EllipseProsjProdajaPoKupcu", "Visible", true);
+    if (prodaja_kup_og > prodaja_kup_lg)
+    {
+        SetWidgetOptions("EllipseProsjProdajaPoKupcu", "Color", "Lime");
+    }
+    elif(prodaja_kup_og < prodaja_kup_lg)
+    {
+        SetWidgetOptions("EllipseProsjProdajaPoKupcu", "Color", "Red");
+    }
+    else{
+        SetWidgetOptions("EllipseProsjProdajaPoKupcu", "Color", "Gray");
+    }
+    if(prodaja_kup_og == 0 || prodaja_kup_lg == 0){
+        SetWidgetOptions("EllipseProsjProdajaPoKupcu", "Visible", false);
+    }
+
     // bojeArray = {150, 190, 250};
     bojeArray = {111, 207, 247};
     Format("prodaja_kup_og", "nofd", recv: "prodaja_kup_og_string");
@@ -672,6 +732,27 @@ function setHorizontalBars()
             }
         }
     }
+    
+    // tot_ovagod = 10;
+    // tot_lani = 10;
+
+    //ellipse
+    SetWidgetOptions("EllipseProdajaUGodini", "Visible", true);
+    if (tot_ovagod > tot_lani)
+    {
+        SetWidgetOptions("EllipseProdajaUGodini", "Color", "Lime");
+    }
+    elif(tot_ovagod < tot_lani)
+    {
+        SetWidgetOptions("EllipseProdajaUGodini", "Color", "Red");
+    }
+    else{
+        SetWidgetOptions("EllipseProdajaUGodini", "Color", "Gray");
+    }
+    if(tot_ovagod == 0 || tot_lani == 0){
+        SetWidgetOptions("EllipseProdajaUGodini", "Visible", false);
+    }
+
     Format("tot_ovagod", "nofd", recv: "tot_ovagod_string");
     HorizontalBar("HorizontalBarOG", "Text", tot_ovagod_string);
     HorizontalBar("HorizontalBarOG", "Color", bojeArray);
@@ -724,6 +805,24 @@ function setHorizontalBars()
             }
         }
     }
+
+    //ellipse
+    SetWidgetOptions("EllipseProdajaUMjesecu", "Visible", true);
+    if (tot_ovajmj > tot_proslimj)
+    {
+        SetWidgetOptions("EllipseProdajaUMjesecu", "Color", "Lime");
+    }
+    elif(tot_ovajmj < tot_proslimj)
+    {
+        SetWidgetOptions("EllipseProdajaUMjesecu", "Color", "Red");
+    }
+    else{
+        SetWidgetOptions("EllipseProdajaUMjesecu", "Color", "Gray");
+    }
+    if(tot_ovajmj == 0 || tot_proslimj == 0){
+        SetWidgetOptions("EllipseProdajaUMjesecu", "Visible", false);
+    }
+
     Format("tot_ovajmj", "nofd", recv: "tot_ovajmj_string");
     HorizontalBar("HorizontalBarOM", "Text", tot_ovajmj_string);
     HorizontalBar("HorizontalBarOM", "Color", bojeArrayMJ);
@@ -885,6 +984,24 @@ function setWeekComparison()
 		    HorizontalBar("HorizontalBarOT", "BarWidth", 90/ratio);
         }
 	}
+
+    //ellipse
+    SetWidgetOptions("EllipseProdajaUTjednu", "Visible", true);
+    if (tot_ovajTj > tot_prosliTj)
+    {
+        SetWidgetOptions("EllipseProdajaUTjednu", "Color", "Lime");
+    }
+    elif(tot_ovajTj < tot_prosliTj)
+    {
+        SetWidgetOptions("EllipseProdajaUTjednu", "Color", "Red");
+    }
+    else{
+        SetWidgetOptions("EllipseProdajaUTjednu", "Color", "Gray");
+    }
+    if(tot_ovajTj == 0 || tot_prosliTj == 0){
+        SetWidgetOptions("EllipseProdajaUTjednu", "Visible", false);
+    }
+
 	Format("tot_ovajTj", "nofd", recv: "tot_ovajTj_string");
 	HorizontalBar("HorizontalBarOT", "Text", tot_ovajTj_string);
 	HorizontalBar("HorizontalBarOT", "Color", bojeArrayTJ);

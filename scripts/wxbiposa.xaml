@@ -292,7 +292,7 @@
                               DisplaySize="8"
                               Background="White"
                               Foreground="black"
-                              Width="101"
+                              Width="81"
                               Margin="215,20,0,0"
                               FontWeight="Bold"
                               DisplayDate="01/01/23"
@@ -388,7 +388,7 @@
                        VerticalAlignment="Top"
                        Height="32"
                        Width="126"
-                       Margin="35,11,0,0"
+                       Margin="21,14,0,0"
                        FontFamily="Lato"
                        FontWeight="Bold"
                        x:Name="Label2_Copy"
@@ -400,7 +400,7 @@
                        VerticalAlignment="Top"
                        Height="32"
                        Width="126"
-                       Margin="202,11,0,0"
+                       Margin="181,15,0,0"
                        FontFamily="Lato"
                        FontWeight="Bold"
                        x:Name="Label3_Copy"
@@ -432,7 +432,7 @@
                 VerticalAlignment="Top"
                 Height="32"
                 Width="109"
-                Margin="202,49,0,0"
+                Margin="197,51,0,0"
                 x:Name="HorizontalBarBrRacunaOG"
                 FontFamily="Lato"
                 FontSize="24"
@@ -442,7 +442,7 @@
                 VerticalAlignment="Top"
                 Height="32"
                 Width="108"
-                Margin="202,86,0,0"
+                Margin="198,86,0,0"
                 x:Name="HorizontalBarBrRacunaLG"
                 FontFamily="Lato"
                 FontSize="24"
@@ -616,7 +616,12 @@
                 <wcl:ASHorizontalBar x:Name="HorizontalBarOGUkupno"
                 Margin="53,123,0,0"
                 FontSize="20" Grid.Row="2" FontFamily="lato" FontWeight="Bold" Background="#66DD1111" BarColor="#FFC4E08A" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" Width="180" Grid.Column="1" />
-                <Ellipse HorizontalAlignment="Left" Height="30" Margin="302,16,0,0" Stroke="Black" VerticalAlignment="Top" Width="30"/>
+                <Ellipse Name="EllipseProdajaUGodini" HorizontalAlignment="Left" Height="30" Margin="302,16,0,0" Stroke="Black" VerticalAlignment="Top" Width="30"/>
+                <Ellipse x:Name="EllipseProdajaUTjednu" HorizontalAlignment="Left" Height="30" Margin="301,18,0,0" Stroke="Black" VerticalAlignment="Top" Width="30" Grid.Column="2"/>
+                <Ellipse x:Name="EllipseProdajaUMjesecu" HorizontalAlignment="Left" Height="30" Margin="297,18,0,0" Stroke="Black" VerticalAlignment="Top" Width="30" Grid.Column="1"/>
+                <Ellipse x:Name="EllipseBrojRacuna" HorizontalAlignment="Left" Height="30" Margin="277,123,0,0" Stroke="Black" VerticalAlignment="Top" Width="30" Grid.Column="1" Grid.Row="1"/>
+                <Ellipse x:Name="EllipseBrojKupaca" HorizontalAlignment="Left" Height="30" Margin="132,123,0,0" Stroke="Black" VerticalAlignment="Top" Width="30" Grid.Column="1" Grid.Row="1"/>
+                <Ellipse x:Name="EllipseProsjProdajaPoKupcu" HorizontalAlignment="Left" Height="30" Margin="301,16,0,0" Stroke="Black" VerticalAlignment="Top" Width="30" Grid.Column="2" Grid.Row="1"/>
 
 
             </Grid>
