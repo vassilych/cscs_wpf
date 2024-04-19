@@ -743,7 +743,11 @@ namespace WpfCSCS
 					{
 						continue;
 					}
-					var filename = Window2File[win];
+                    var filename = Window2File[win];
+                    if (this.Script.Filename != filename)
+					{
+						continue;
+					}
 					win.Close();
 					Window2File.Remove(win);
 					File2Window.Remove(filename);
