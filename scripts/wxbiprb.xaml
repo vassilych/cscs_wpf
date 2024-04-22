@@ -276,7 +276,7 @@
                 <TextBlock HorizontalAlignment="Left"
                        VerticalAlignment="Top"
                        Height="20"
-                       Width="93"
+                       Width="100"
                        Margin="25,95,0,0"
                        FontFamily="lato"
                        x:Name="Label15"
@@ -388,7 +388,7 @@
                        VerticalAlignment="Top"
                        Height="32"
                        Width="126"
-                       Margin="35,11,0,0"
+                       Margin="17,9,0,0"
                        FontFamily="Lato"
                        FontWeight="Bold"
                        x:Name="Label2_Copy"
@@ -400,7 +400,7 @@
                        VerticalAlignment="Top"
                        Height="32"
                        Width="126"
-                       Margin="202,11,0,0"
+                       Margin="182,9,0,0"
                        FontFamily="Lato"
                        FontWeight="Bold"
                        x:Name="Label3_Copy"
@@ -490,15 +490,14 @@
                 <TextBlock HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Height="32"
-                Width="178"
+                Width="254"
                 Margin="35,9,0,0"
                 FontFamily="Lato"
                 FontWeight="Bold"
                 x:Name="Label2_Copy7"
                 FontSize="22"
                 Foreground="black"
-                Text="Broj računa: "
-                TextWrapping="Wrap" Grid.Row="1"/>
+                TextWrapping="Wrap" Grid.Row="1"><Run Text="Broj računa"/><Run Language="hr-hr" Text=" "/><Run Text="sa statusom"/></TextBlock>
                 <wcl:ASEnterBox HorizontalAlignment="Left"
                 FontWeight="Bold"
                 VerticalAlignment="Top"
@@ -1336,12 +1335,12 @@
                       MinValue="0"
                       MaxValue="100"
                       Margin="605,323,255,0" Grid.Column="1" Grid.Row="1" Height="160" VerticalAlignment="Top" />
-            <Ellipse x:Name="EllipseProdajaUTjednu" HorizontalAlignment="Left" Height="30" Margin="990,18,0,0" Stroke="Black" VerticalAlignment="Top" Width="30" Grid.Column="1" Grid.Row="1"/>
-            <Ellipse x:Name="EllipseProdajaUGodini" HorizontalAlignment="Left" Height="30" Margin="295,17,0,0" Stroke="Black" VerticalAlignment="Top" Width="30" Grid.Column="1" Grid.Row="1"/>
-            <Ellipse x:Name="EllipseProdajaUMjesecu" HorizontalAlignment="Left" Height="30" Margin="640,18,0,0" Stroke="Black" VerticalAlignment="Top" Width="30" Grid.Column="1" Grid.Row="1"/>
-            <Ellipse x:Name="EllipseBrojKupaca" HorizontalAlignment="Left" Height="30" Margin="475,285,0,0" Stroke="Black" VerticalAlignment="Top" Width="30" Grid.Column="1" Grid.Row="1"/>
-            <Ellipse x:Name="EllipseBrojRacuna" HorizontalAlignment="Left" Height="30" Margin="620,285,0,0" Stroke="Black" VerticalAlignment="Top" Width="30" Grid.Column="1" Grid.Row="1"/>
-            <Ellipse x:Name="EllipseProsjProdajaPoKupcu" HorizontalAlignment="Left" Height="30" Margin="990,180,0,0" Stroke="Black" VerticalAlignment="Top" Width="30" Grid.Column="1" Grid.Row="1"/>
+            <Ellipse x:Name="EllipseProdajaUTjednu" HorizontalAlignment="Left" Height="20" Margin="990,18,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>
+            <Ellipse x:Name="EllipseProdajaUGodini" HorizontalAlignment="Left" Height="20" Margin="295,17,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>
+            <Ellipse x:Name="EllipseProdajaUMjesecu" HorizontalAlignment="Left" Height="20" Margin="640,18,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>
+            <Ellipse x:Name="EllipseBrojKupaca" HorizontalAlignment="Left" Height="20" Margin="485,176,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>
+            <Ellipse x:Name="EllipseBrojRacuna" HorizontalAlignment="Left" Height="20" Margin="650,176,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>
+            <Ellipse x:Name="EllipseProsjProdajaPoKupcu" HorizontalAlignment="Left" Height="20" Margin="990,180,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>
             <!-- <wcl:ASNumericBox HorizontalAlignment="Left"
         VerticalAlignment="Top"
         FontWeight="Bold"
