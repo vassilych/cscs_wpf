@@ -194,6 +194,7 @@
     define br_neazur_string type a size 30;
 
     define faktDa, faktNe, faktSve type l;
+    define local type a size 1;
 
 //=============================================
 

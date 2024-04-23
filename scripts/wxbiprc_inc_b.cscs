@@ -634,6 +634,10 @@ function fillProductsArrays(){
 }
 
 function fillProductsArrays2(){
+	for ( i = 1; i <= 10; i++ )
+	{
+		IndexArt_ar[i] =  0;
+	}	    
 	if(Size(sqlResult) > 1)
 	{
 
@@ -649,12 +653,12 @@ function fillProductsArrays2(){
 			}
 			else
 			{
-				IndexPart_ar[cntr2] =  0;
+				IndexArt_ar[cntr2] =  0;
 			}
 			} 
 			else
 			{
-				IndexPart_ar[cntr2] =  0;
+				IndexArt_ar[cntr2] =  0;
 			}
 		}
 	}
@@ -873,6 +877,10 @@ function setCntr2(){
 }
 
 function fillCustomerArrays2(){
+	for ( i = 1; i <= 10; i++ )
+	{
+		IndexPart_ar[i] =  0;
+	}	    
 	if(Size(sqlResult) > 1)
 	{
 		for ( i = 1; i < Size(sqlResult); i++ )

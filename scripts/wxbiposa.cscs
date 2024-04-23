@@ -69,7 +69,7 @@ function Wxbiposa_onDisplay()
     }    
     lani_h = string(int(ovagod_h) - 1); // 2
     trenutnaGodinaBaza = sqlResult[1][2].trim(); // ime baze
-    sqlQueryString = " SELECT TOP 1 kpsy_comp_name,kpsy_po_freight,FORMAT([KPSY_FISCAL_YR], 'yyyy-MM-dd') FROM " + trenutnaGodinaBaza + ".[dbo].[KPSYMSTR]";
+    sqlQueryString = " SELECT TOP 1 kpsy_comp_name,kpsy_po_freight,FORMAT([KPSY_FISCAL_YR], 'yyyy-MM-dd'),kpsy_ku_pnb FROM " + trenutnaGodinaBaza + ".[dbo].[KPSYMSTR]";
     try
         {
         sqlResult = sqlQuery(sqlQueryString);
@@ -84,6 +84,7 @@ function Wxbiposa_onDisplay()
         nazivFirme = sqlResult[1][0].trim();
         kpsy_po_freight= sqlResult[1][1].trim();
         fiscal_yr = sqlResult[1][2];
+        local = sqlResult[1][3];
     } 
     neto_dn = true;
     //kasnije zamijenit sa funkcijom, kada se bude koristi adictionary
@@ -102,6 +103,10 @@ function Wxbiposa_onDisplay()
     }
    
     EUCountries= "'AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GB', 'GR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK', 'QP', 'QR', 'QV'";
+    if(local== 'S' || local== 'B')
+    {
+        EUCountries= EUCountries+",HR";
+    }
     sqlNaDan = ovagod_h + "-12-31";
     sqlOdDana = string(int(ovagod_h) - 1) + "-01-01";
     //danas_chr= Now("dd/MM/yyyy");
