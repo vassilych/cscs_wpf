@@ -634,6 +634,10 @@ function fillProductsArrays(){
 }
 
 function fillProductsArrays2(){
+	for ( i = 1; i < 10; i++ )
+	{
+		IndexPart_ar[i] =  0;
+	}	    
 	if(Size(sqlResult) > 1)
 	{
 
@@ -873,6 +877,10 @@ function setCntr2(){
 }
 
 function fillCustomerArrays2(){
+	for ( i = 1; i < 10; i++ )
+	{
+		IndexPart_ar[i] =  0;
+	}	    
 	if(Size(sqlResult) > 1)
 	{
 		for ( i = 1; i < Size(sqlResult); i++ )
