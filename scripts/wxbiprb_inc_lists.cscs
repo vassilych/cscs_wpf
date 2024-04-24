@@ -251,6 +251,24 @@ function ceArtikl@post()
     {
         artiklNaziv= "";
     }
+    else{
+        sqlResult = {};
+        sqlString = "SELECT TOP 1 ARTI_NAZIV FROM " + trenutnaGodinaBaza + ".[dbo].[NKMKARTI] where ARTI_ARTIKL = '" + artikl + "' order by ARTI_ARTIKL";
+        try{
+            sqlResult = SqlQuery(sqlString);
+        }catch(ex){
+            MessageBox(ex);
+        }
+        if(sqlResult.length > 1){
+            artiklNaziv = sqlResult[1][0];
+        }
+        else{
+            MessageBox("Artikl ne postoji.");
+            artikl = "";
+            artiklNaziv = "";
+            return false;
+        }
+    }
 }
 
 //==============================================================
@@ -284,6 +302,24 @@ function cePartner@post()
     {
         partnerNaziv= "";
     }
+    else{
+        sqlResult = {};
+        sqlString = "SELECT TOP 1 NKSC_PARTNAME FROM  " + trenutnaGodinaBaza + ".[dbo].[NKSCPART] where NKSC_PARTCODE = '" + partner + "' ORDER BY nksc_partcode";
+        try{
+            sqlResult = SqlQuery(sqlString);
+        }catch(ex){
+            MessageBox(ex);
+        }
+        if(sqlResult.length > 1){
+            partnerNaziv = sqlResult[1][0];
+        }
+        else{
+            MessageBox("Partner ne postoji.");
+            partner = "";
+            partnerNaziv = "";
+            return false;
+        }
+    }
 }
 
 //==============================================================
@@ -294,7 +330,7 @@ function ceIsporuka@clicked()
         return;
     }
 
-    F2ListQueryString = "SELECT [NKSP_AD_CODEINT]  ,[NKSP_ad_naziv1] FROM  " + trenutnaGodinaBaza + ".[dbo].[NKSPADRS] where nksp_ad_code = " + partner + " AND NKSP_AD_CODEINT like '%{var1}%' and NKSP_AD_NAZIV1 like '%{var2}%' ORDER BY nksp_ad_codeint";    
+    F2ListQueryString = "SELECT [NKSP_AD_CODEINT]  ,[NKSP_ad_naziv1] FROM  " + trenutnaGodinaBaza + ".[dbo].[NKSPADRS] where nksp_ad_code = " + partner + " AND NKSP_AD_CODEINT like '%{var1}%' and NKSP_AD_NAZIV1 like '%{var2}%' ORDER BY nksp_ad_codeint";
     sifraFieldPointer -> isporuka;
     NazivFieldPointer -> isporukaNaziv;
 
@@ -317,9 +353,35 @@ function ceIsporuka@clicked()
 
 function ceIsporuka@post()
 {
-    if (isporuka== "")
+    if (isporuka == "")
     {
-        isporukaNaziv= "";
+        isporukaNaziv = "";
+    }
+    else{
+        if(partner.length == 0){
+            MessageBox("Molim unesite šifru partnera za izbor isporučnog mjesta.");
+            isporuka = "";
+            isporukaNaziv = "";
+            //SetFocus("cePartner");
+            return;
+        }
+
+        sqlResult = {};
+        sqlString = "SELECT TOP 1 [NKSP_ad_naziv1] FROM  " + trenutnaGodinaBaza + ".[dbo].[NKSPADRS] where nksp_ad_code = " + partner + " AND NKSP_AD_CODEINT = '" + isporuka + "' ORDER BY nksp_ad_codeint";
+        try{
+            sqlResult = SqlQuery(sqlString);
+        }catch(ex){
+            MessageBox(ex);
+        }
+        if(sqlResult.length > 1){
+            isporukaNaziv = sqlResult[1][0];
+        }
+        else{
+            MessageBox("Isporučno mjesto zadanog partnera ne postoji.");
+            isporuka = "";
+            isporukaNaziv = "";
+            return false;
+        }
     }
 }
 
@@ -348,9 +410,27 @@ function ceRegija@clicked()
 
 function ceRegija@post()
 {
-    if (regija== "")
+    if (regija == "")
     {
-        regijaNaziv= "";
+        regijaNaziv = "";
+    }
+    else{
+        sqlResult = {};
+        sqlString = "SELECT TOP 1 [KSDU_SF_OPIS1] FROM  " + trenutnaGodinaBaza + ".[dbo].[KPSYSIFA] WHERE [KSDU_SF_TIP] ='V' and KSDU_SF_CODE = '" + regija + "' ORDER BY ksdu_sf_code";
+        try{
+            sqlResult = SqlQuery(sqlString);
+        }catch(ex){
+            MessageBox(ex);
+        }
+        if(sqlResult.length > 1){
+            regijaNaziv = sqlResult[1][0];
+        }
+        else{
+            MessageBox("Regija ne postoji.");
+            regija = "";
+            regijaNaziv = "";
+            return false;
+        }
     }
 }
 
@@ -379,9 +459,27 @@ function ceKategorija@clicked()
 
 function ceKategorija@post()
 {
-    if (kategorija== "")
+    if (kategorija == "")
     {
-        kateglNaziv= "";
+        kategNaziv = "";
+    }
+    else{
+        sqlResult = {};
+        sqlString = "SELECT TOP 1 SUBSTRING(mkgr_rezerva,1,50) as mkgr_rezerva FROM  " + trenutnaGodinaBaza + ".[dbo].[pkmkgrup] WHERE [mkgr_vrsta] ='K' and mkgr_grupa = '" + kategorija + "' ORDER BY mkgr_grupa";
+        try{
+            sqlResult = SqlQuery(sqlString);
+        }catch(ex){
+            MessageBox(ex);
+        }
+        if(sqlResult.length > 1){
+            kategNaziv = sqlResult[1][0];
+        }
+        else{
+            MessageBox("Kategorija ne postoji.");
+            kategorija = "";
+            kategNaziv = "";
+            return false;
+        }
     }
 }
 
@@ -410,9 +508,27 @@ function ceKlasa@clicked()
 
 function ceKlasa@post()
 {
-    if (klasa== "")
+    if (klasa == "")
     {
-        klasalNaziv= "";
+        klasaNaziv = "";
+    }
+    else{
+        sqlResult = {};
+        sqlString = "SELECT TOP 1 SUBSTRING(mkgr_rezerva,1,50) FROM  " + trenutnaGodinaBaza + ".[dbo].[pkmkgrup] WHERE [mkgr_vrsta] ='L' and mkgr_grupa = '" + klasa + "' ORDER BY mkgr_grupa";
+        try{
+            sqlResult = SqlQuery(sqlString);
+        }catch(ex){
+            MessageBox(ex);
+        }
+        if(sqlResult.length > 1){
+            klasaNaziv = sqlResult[1][0];
+        }
+        else{
+            MessageBox("Klasa ne postoji.");
+            klasa = "";
+            klasaNaziv = "";
+            return false;
+        }
     }
 }
 
@@ -441,9 +557,27 @@ function neKomercijalist@clicked()
 
 function neKomercijalist@post()
 {
-    if (komercijalist== "")
+    if (komercijalist == "")
     {
-        komercNaziv= "";
+        komercNaziv = "";
+    }
+    else{
+        sqlResult = {};
+        sqlString = "SELECT TOP 1 kppr_rf_prezime + ' ' + kppr_rf_ime FROM  " + trenutnaGodinaBaza + ".[dbo].[kpprrefr] WHERE kppr_rf_code = '" + komercijalist + "' ORDER BY kppr_rf_code";
+        try{
+            sqlResult = SqlQuery(sqlString);
+        }catch(ex){
+            MessageBox(ex);
+        }
+        if(sqlResult.length > 1){
+            komercNaziv = sqlResult[1][0];
+        }
+        else{
+            MessageBox("Komercijalist ne postoji.");
+            komercijalist = "";
+            komercNaziv = "";
+            return false;
+        }
     }
 }
 
@@ -472,9 +606,27 @@ function neRnalog@clicked()
 
 function neRnalog@post()
 {
-    if (rnalog== "")
+    if (rnalog == "")
     {
-        rnalogNaziv= "";
+        rnalogNaziv = "";
+    }
+    else{
+        sqlResult = {};
+        sqlString = "SELECT TOP 1 nkpr_gl_cusnme FROM  " + trenutnaGodinaBaza + ".[dbo].[nkprglnl] WHERE nkpr_gl_nalog = '" + rnalog + "' ORDER BY nkpr_gl_nalog";
+        try{
+            sqlResult = SqlQuery(sqlString);
+        }catch(ex){
+            MessageBox(ex);
+        }
+        if(sqlResult.length > 1){
+            rnalogNaziv = sqlResult[1][0];
+        }
+        else{
+            MessageBox("Radni nalog ne postoji.");
+            rnalog = "";
+            rnalogNaziv = "";
+            return false;
+        }
     }
 }
 

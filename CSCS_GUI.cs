@@ -2722,19 +2722,17 @@ namespace WpfCSCS
 				return;
 			}
 
-            e.Handled = true;
-            if (e.Key != Key.Enter)
+            if (e.Key == Key.Enter)
             {
-				return;
+                e.Handled = true;
+                string funcName;
+                if (m_SelectHandlers.TryGetValue(widgetName, out funcName))
+                {
+                    Control2Window.TryGetValue(widget, out Window win);
+                    var result = Interpreter.Run(funcName, new Variable(widgetName), null,
+                        Variable.EmptyInstance, GetScript(win));
+                }
             }
-
-            string funcName;
-			if (m_SelectHandlers.TryGetValue(widgetName, out funcName))
-			{
-				Control2Window.TryGetValue(widget, out Window win);
-				var result = Interpreter.Run(funcName, new Variable(widgetName), null,
-				    Variable.EmptyInstance, GetScript(win));
-			}
 		}
 
 		public FrameworkElement GetWidget(string name)
