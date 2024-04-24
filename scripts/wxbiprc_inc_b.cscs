@@ -634,7 +634,7 @@ function fillProductsArrays(){
 }
 
 function fillProductsArrays2(){
-	for ( i = 1; i <= 10; i++ )
+	for ( i = 0; i < 10; i++ )
 	{
 		IndexArt_ar[i] =  0;
 	}	    
@@ -877,7 +877,7 @@ function setCntr2(){
 }
 
 function fillCustomerArrays2(){
-	for ( i = 1; i <= 10; i++ )
+	for ( i = 0; i < 10; i++ )
 	{
 		IndexPart_ar[i] =  0;
 	}	    

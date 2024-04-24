@@ -1587,6 +1587,9 @@ namespace WpfCSCS
 				m_SelectHandlers[name] = action;
 				dg.MouseDoubleClick -= new MouseButtonEventHandler(DataGrid_Select);
 				dg.MouseDoubleClick += new MouseButtonEventHandler(DataGrid_Select);
+				
+				dg.PreviewKeyDown += new KeyEventHandler(DataGrid_EnterKeyPressed);
+				dg.PreviewKeyDown += new KeyEventHandler(DataGrid_EnterKeyPressed);	
 
 				return true;
 			}
@@ -2691,6 +2694,41 @@ namespace WpfCSCS
 			}
 
 			string funcName;
+			if (m_SelectHandlers.TryGetValue(widgetName, out funcName))
+			{
+				Control2Window.TryGetValue(widget, out Window win);
+				var result = Interpreter.Run(funcName, new Variable(widgetName), null,
+				    Variable.EmptyInstance, GetScript(win));
+			}
+		}
+		
+		private void DataGrid_EnterKeyPressed(object sender, KeyEventArgs e)
+		{
+            DataGrid widget = sender as DataGrid;
+			var widgetName = GetWidgetName(widget);
+			if (string.IsNullOrWhiteSpace(widgetName))
+			{
+				return;
+			}
+			
+			if(widget.SelectedIndex < 0)
+			{
+				return;
+			}
+
+			//if dataGrid is in Edit mode this event is disabled
+			if (widget.IsReadOnly == false)
+			{
+				return;
+			}
+
+            e.Handled = true;
+            if (e.Key != Key.Enter)
+            {
+				return;
+            }
+
+            string funcName;
 			if (m_SelectHandlers.TryGetValue(widgetName, out funcName))
 			{
 				Control2Window.TryGetValue(widget, out Window win);

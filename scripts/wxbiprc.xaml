@@ -1201,7 +1201,7 @@
                         Foreground="black"
                         x:Name="ceArtikl"
                         FontSize="14"
-                        KeyTraps="F2|neArtikl@clicked"
+                        KeyTraps="F2|ceArtikl@clicked"
                         Case="Normal"
                         Height="22"
                         Width="120"
