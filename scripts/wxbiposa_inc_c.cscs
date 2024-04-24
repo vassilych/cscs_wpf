@@ -122,7 +122,7 @@ function setPaymentOptionsPieChart(){
 	
 	sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.NKKSINVG AS U";
 	sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkksupla ON ks_ig_racun = KS_upl_racun";
-	sql_str += " WHERE YEAR(KS_IG_DATUM)=" + ovagod_h ;
+	sql_str += " WHERE ks_upl_sif_pl<> 'POG' AND YEAR(KS_IG_DATUM)=" + ovagod_h ;
 	if (do_mjeseca  )
 	{
 		sql_str += " AND Month(KS_IG_DATUM)<=" + mjesec_h;
@@ -208,7 +208,7 @@ function setPaymentCodesPieChart(){
 	sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.NKKSINVG AS U";
 	sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkksupla ON ks_ig_racun = KS_upl_racun";
 	sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.kpksvrpl ON kpks_pl_sif_pl = ks_upl_sif_pl";
-	sql_str += " WHERE YEAR(KS_IG_DATUM)=" + ovagod_h ;
+	sql_str += " WHERE ks_upl_sif_pl<> 'POG' AND YEAR(KS_IG_DATUM)=" + ovagod_h ;
 	if (do_mjeseca  )
 	{
 		sql_str += " AND Month(KS_IG_DATUM)<=" + mjesec_h;
