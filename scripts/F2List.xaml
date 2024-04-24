@@ -35,7 +35,10 @@
                   HorizontalScrollBarVisibility="Auto"
                   VerticalScrollBarVisibility="Auto"
                   Background="White"
-                  TabIndex="0">
+                  TabIndex="2"
+                  SelectionMode="Single"
+                  SelectionUnit="FullRow"
+                  >
             <DataGrid.Resources>
                 <Style TargetType="{x:Type DataGridColumnHeader}">
                     <Setter Property="Background"
@@ -125,7 +128,9 @@
                 FontSize="15"
                 Width="87"
                 Visibility="Visible"
-                Name="gbCancel">
+                Name="gbCancel"
+                TabIndex="4"
+                IsTabStop="True">
         </Button>
         <Button HorizontalAlignment="Left"
                 VerticalAlignment="Top"
@@ -158,7 +163,7 @@
                           Foreground="Black"
                           FontFamily="Arial"
                           FontSize="15"
-                          TabIndex="1" /> -->
+                          /> -->
         <wcl:ASEnterBox HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         FontWeight="Bold"
@@ -172,7 +177,9 @@
                         Foreground="Black"
                         FontFamily="Arial"
                         FontSize="15"
-                        TabIndex="1" />
+                        TabIndex="0"
+                        IsTabStop="True"
+                        />
         <wcl:ASEnterBox HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         FontWeight="Bold"
@@ -186,7 +193,9 @@
                         Foreground="Black"
                         FontFamily="Arial"
                         FontSize="15"
-                        TabIndex="1" />
+                        TabIndex="1"
+                        IsTabStop="True"
+                        />
         <Button Content="Prihvati" HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Height="32"
@@ -195,7 +204,9 @@
                 FontSize="15"
                 Width="87"
                 Visibility="Visible"
-                Name="gbOk">
+                Name="gbOk"
+                TabIndex="3"
+                IsTabStop="True">
         </Button>
     </Grid>
 </Window>
