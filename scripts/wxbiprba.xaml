@@ -22,12 +22,12 @@
             </Grid.ColumnDefinitions>
             <lvc:CartesianChart LegendPosition="Right"
                             x:Name="ChartPoMjesecima"
-                            Margin="23,5,23,10" 
+                            Margin="23,45,23,10" 
                                Height="300" />
             <lvc:CartesianChart x:Name="ChartPoDanima"
                             Grid.Column="1"
                             Grid.Row="0"
-                            Margin="5,34,5,10" LegendPosition="Top" />
+                            Margin="5,45,5,10" LegendPosition="Top" />
             <Label HorizontalAlignment="Left" Content="Prodaja po danima" Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="24,5,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
             <Label HorizontalAlignment="Left" Content="Najnoviji računi" Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="23,5,0,0" BorderBrush="{x:Null}"/>
 

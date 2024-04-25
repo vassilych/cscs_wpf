@@ -2670,6 +2670,19 @@ d:\temp\aaa.txt, d:\temp\ggg.txt,
                     Console.WriteLine(i);
                 }
 
+                if (dg != null && dg.HasItems)
+                {
+                    //dg.Focus();
+                    if (dg.Items != null && dg.Items.Count > 0)
+                    {
+                        DataGridRow firstRow = dg.ItemContainerGenerator.ContainerFromItem(dg.Items[0]) as DataGridRow;
+                        if (firstRow != null)
+                        {
+                            firstRow.IsSelected = true;
+                        }
+                    }
+                }
+
                 return new Variable(sqlResult.Tuple.Count);
             }
 
