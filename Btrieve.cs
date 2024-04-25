@@ -8268,6 +8268,19 @@ $@"EXECUTE sp_executesql N'
 
                     case "redisplayfromtop":
 
+                        //if (dg != null && dg.HasItems)
+                        //{
+                        //    //dg.Focus();
+                        //    if (dg.Items != null && dg.Items.Count > 0)
+                        //    {
+                        //        DataGridRow firstRow = dg.ItemContainerGenerator.ContainerFromItem(dg.Items[0]) as DataGridRow;
+                        //        if (firstRow != null)
+                        //        {
+                        //            firstRow.IsSelected = true;
+                        //        }
+                        //    }
+                        //}
+
                         dg.ScrollIntoView(dg.Items.GetItemAt(0));
                         dg.SelectedIndex = 0;
 

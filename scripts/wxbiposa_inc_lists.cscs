@@ -422,7 +422,7 @@ function ceKlasa@post()
 
 function ceProdavac@clicked()
 {
-    F2ListQueryString = "SELECT distinct ks_ig_osoba, ks_osb_ime from  " + trenutnaGodinaBaza + ".[dbo].[NKKSINVG] left join nkksosob ON ks_ig_osoba = KS_OSB_SIFRA  WHERE  ks_ig_osoba like '%{var1}%' AND ks_osb_ime like '%{var2}%' order by ks_ig_osoba";
+    F2ListQueryString = "SELECT distinct ks_ig_osoba, ks_osb_ime from  " + trenutnaGodinaBaza + ".[dbo].[NKKSINVG] left join " + trenutnaGodinaBaza + ".[dbo].nkksosob ON ks_ig_osoba = KS_OSB_SIFRA  WHERE  ks_ig_osoba like '%{var1}%' AND ks_osb_ime like '%{var2}%' order by ks_ig_osoba";
     
     sifraFieldPointer -> prodavac;
     NazivFieldPointer -> prodavacNaziv;
@@ -450,7 +450,7 @@ function ceProdavac@post()
     }
     else{
         sqlResult = {};
-        sqlString = "SELECT TOP 1 ks_osb_ime from  " + trenutnaGodinaBaza + ".[dbo].[NKKSINVG] left join nkksosob ON ks_ig_osoba = KS_OSB_SIFRA  WHERE  ks_ig_osoba like '" + prodavac + "' order by ks_ig_osoba";
+        sqlString = "SELECT TOP 1 ks_osb_ime from  " + trenutnaGodinaBaza + ".[dbo].[NKKSINVG] left join " + trenutnaGodinaBaza + ".[dbo].nkksosob ON ks_ig_osoba = KS_OSB_SIFRA  WHERE  ks_ig_osoba like '" + prodavac + "' order by ks_ig_osoba";
         try{
             sqlResult = SqlQuery(sqlString);
         }catch(ex){
@@ -473,7 +473,7 @@ function ceProdavac@post()
 function cePosKasa@clicked()
 {
     // 
-    F2ListQueryString = "SELECT distinct ks_ig_kasa, ks_ks_naziv from  " + trenutnaGodinaBaza + ".[dbo].[NKKSINVG] left join nkkskasa ON ks_ig_kasa = KS_ks_sifra WHERE ks_ig_kasa like '%{var1}%' AND ks_ks_naziv like '%{var2}%' order by ks_ig_kasa";
+    F2ListQueryString = "SELECT distinct ks_ig_kasa, ks_ks_naziv from  " + trenutnaGodinaBaza + ".[dbo].[NKKSINVG] left join " + trenutnaGodinaBaza + ".[dbo].nkkskasa ON ks_ig_kasa = KS_ks_sifra WHERE ks_ig_kasa like '%{var1}%' AND ks_ks_naziv like '%{var2}%' order by ks_ig_kasa";
     
     sifraFieldPointer -> posKasa;
     NazivFieldPointer -> posKasaNaziv;
@@ -501,7 +501,7 @@ function cePosKasa@post()
     }
     else{
         sqlResult = {};
-        sqlString = "SELECT TOP 1 ks_ks_naziv from  " + trenutnaGodinaBaza + ".[dbo].[NKKSINVG] left join nkkskasa ON ks_ig_kasa = KS_ks_sifra WHERE ks_ig_kasa = '" + posKasa + "' order by ks_ig_kasa";
+        sqlString = "SELECT TOP 1 ks_ks_naziv from  " + trenutnaGodinaBaza + ".[dbo].[NKKSINVG] left join " + trenutnaGodinaBaza + ".[dbo].nkkskasa ON ks_ig_kasa = KS_ks_sifra WHERE ks_ig_kasa = '" + posKasa + "' order by ks_ig_kasa";
         try{
             sqlResult = SqlQuery(sqlString);
         }catch(ex){

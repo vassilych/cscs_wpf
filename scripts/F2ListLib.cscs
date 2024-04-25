@@ -18,10 +18,11 @@ function ShowF2List(){
 }
 
 function F2List_onDisplay(){
-    //SetFocus("ebSifra");
     FormatF2ListDataGrid( windowTitle, headersArray);
     searchSifra = &sifraFieldPointer;
     search();
+    //DisplayTable("dgF2List", "RedisplayfromTop");
+    //SetFocus("dgF2List");
 }
 
 function search()
