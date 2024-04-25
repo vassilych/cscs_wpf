@@ -212,7 +212,10 @@ function ceSkladiste@clicked()
     
     if(&sifraFieldPointer != ""){
         skladiste= &sifraFieldPointer;
-        sklad_str = (sklad_str== "") ? (sklad_str + skladiste) : (sklad_str + "," + skladiste);
+        if (skladiste != 0)
+        {
+            sklad_str = (sklad_str== "") ? (sklad_str + skladiste) : (sklad_str + "," + skladiste);
+        }    
     }
     searchSifra = "";
     searchNaziv = "";

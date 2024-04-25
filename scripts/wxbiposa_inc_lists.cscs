@@ -207,9 +207,12 @@ function ceSkladiste@clicked()
     headersArray = {"Skladište", "Naziv skladišta"};
     ShowF2List();
     
-    if(&sifraFieldPointer != ""){
+    if(&sifraFieldPointer != "" ){
         skladiste = &sifraFieldPointer;
-        sklad_str = (sklad_str== "") ? (sklad_str + skladiste) : (sklad_str + "," + skladiste);
+        if (skladiste != 0)
+        {
+            sklad_str = (sklad_str== "") ? (sklad_str + skladiste) : (sklad_str + "," + skladiste);
+        }    
     }
     searchSifra = "";
     searchNaziv = "";
