@@ -118,7 +118,7 @@ function setPaymentOptionsPieChart(){
 	sql_str += " FROM (SELECT ISNULL(ks_upl_vrsta, 'NEDEFINIRANO') as naziv,";
 	
     sql_str += " sum(CASE WHEN ks_upl_sif_pl= 'POG' THEN -1 ELSE 1 END * ks_upl_iznos) AS Suma,";
-	sql_str += " ROW_NUMBER() OVER( ORDER BY sum(ks_upl_iznos) DESC ) As Num";
+	sql_str += " ROW_NUMBER() OVER( ORDER BY sum(CASE WHEN ks_upl_sif_pl= 'POG' THEN -1 ELSE 1 END * ks_upl_iznos) DESC ) As Num";
 	
 	sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.NKKSINVG AS U";
 	sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkksupla ON ks_ig_racun = KS_upl_racun";
@@ -203,7 +203,7 @@ function setPaymentCodesPieChart(){
 	sql_str += " FROM (SELECT ISNULL(kpks_pl_opis, 'NEDEFINIRANO') as naziv,";
 	
     sql_str += " sum(CASE WHEN ks_upl_sif_pl= 'POG' THEN -1 ELSE 1 END * ks_upl_iznos) AS Suma,";
-	sql_str += " ROW_NUMBER() OVER( ORDER BY sum(ks_upl_iznos) DESC ) As Num";
+	sql_str += " ROW_NUMBER() OVER( ORDER BY sum(CASE WHEN ks_upl_sif_pl= 'POG' THEN -1 ELSE 1 END * ks_upl_iznos) DESC ) As Num";
 	
 	sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.NKKSINVG AS U";
 	sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkksupla ON ks_ig_racun = KS_upl_racun";
