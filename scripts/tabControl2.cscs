@@ -22,6 +22,8 @@ function btn2@clicked(){
     MessageBox("var1 = " + rb1);
     MessageBox("var2 = " + rb2);
     MessageBox("var3 = " + rb3);
+    
+    SetWidgetOptions("tabControl", "SelectedIndex", 5);
 }
 
 //kad se klikne na prostor groupbox-a

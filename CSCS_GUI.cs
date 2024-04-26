@@ -4441,8 +4441,8 @@ namespace WpfCSCS
             .Where(a => (a.Item1.ToLower() == widget.GetType().Name.ToLower() || a.Item1.ToLower() == "*") && a.Item2.ToLower() == option) // overrides or *'s
             .Select(a => a.Item3).FirstOrDefault();// real mapped prop name
             var prop_by_prop_mapped = widget.GetType().GetProperties().Where(a => a.Name.ToLower() == (prop_mapped ?? "").ToLower()).FirstOrDefault();
-
-            if (!string.IsNullOrEmpty(prop_mapped) && prop_by_prop_mapped != null)
+			
+			if (!string.IsNullOrEmpty(prop_mapped) && prop_by_prop_mapped != null)
             {
                 //Chart("ChartPoMjesecima", "init");
                 //Chart("ChartPoMjesecima", "seriesType", "Columnseries");
