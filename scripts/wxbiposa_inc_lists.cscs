@@ -196,11 +196,12 @@
 // // F2 SKLADISTA
 function ceSkladiste@clicked()
 {
-    F2ListQueryString = "SELECT [PKMK_SKL_CODE], [PKMK_SKL_NAZIV] FROM  " + trenutnaGodinaBaza + ".[dbo].[PKMKSKLA] where PKMK_SKL_NAZIV like '%{var2}%'";
+    F2ListQueryString = "SELECT [PKMK_SKL_CODE], [PKMK_SKL_NAZIV] FROM  " + trenutnaGodinaBaza + ".[dbo].[PKMKSKLA] where PKMK_SKL_NAZIV like '%{var2}%' and PKMK_SKL_CODE like '{var1}%'";
     //if(searchSklSifra != 0){
     //    F2ListQueryString += " and PKMK_SKL_CODE = '{var1}'";
     //}
     F2ListQueryString += " ORDER BY pkmk_skl_code";
+    skladiste = "";
     sifraFieldPointer -> skladiste;
     NazivFieldPointer -> SkladisteNaziv; 
     windowTitle = "F2 lista skladišta";
