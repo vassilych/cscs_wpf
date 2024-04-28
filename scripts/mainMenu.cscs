@@ -46,6 +46,7 @@ function mainMenuWindow_OnDisplay(){
     AddMenuItem("ScriptsDC", "wxbiposa.cscs", "wxbiposa", "runScript");
     AddMenuItem("ScriptsDC", "wxbiprc.cscs", "wxbiprc - Otpreme", "runScript");
     AddMenuItem("ScriptsDC", "wxbiprd.cscs", "wxbiprd - Ponude", "runScript");
+    AddMenuItem("ScriptsDC", "wxbicfa.cscs", "wxbicfa - Cash Flow", "runScript");
     AddMenuItem("ScriptsDC", "DashSLA.cscs", "DashSLA", "runScript"); // ?
     AddMenuItem("ScriptsDC", "windowtest.cscs", "windowtest", "runScript"); // ?
 
