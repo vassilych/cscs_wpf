@@ -179,7 +179,7 @@ function DisplayPaymentOptionsPieChart(){
         elif(queryResult[i][0].trim() == "A"){
             nacinPlacanja = "Kartice";
         }
-        elif(queryResult[i][0].trim() == "T"){
+        elif(queryResult[i][0].trim() == "B"){
             nacinPlacanja = "Transakcijsko";
         }
         elif(queryResult[i][0].trim() == "C"){
@@ -199,11 +199,11 @@ function DisplayPaymentOptionsPieChart(){
 function setPaymentCodesPieChart(){
 	//	MessageBox( pieChartStr);
 	sql_str = "";
-	sql_str += " SELECT CASE WHEN num <= 5 THEN Naziv ELSE 'Ostali' END AS Prodavac , round(sum(suma),0) as Origin";
+	sql_str += " SELECT KPKS_PL_TIP, ks_upl_sif_pl, avansTip, CASE WHEN num <= 5 THEN Naziv ELSE 'Ostali' END AS Prodavac , round(sum(suma),0) as Origin";
 	sql_str += " FROM (SELECT ISNULL(kpks_pl_opis, 'NEDEFINIRANO') as naziv,";
 	
     sql_str += " sum(CASE WHEN ks_upl_sif_pl= 'POG' THEN -1 ELSE 1 END * ks_upl_iznos) AS Suma,";
-	sql_str += " ROW_NUMBER() OVER( ORDER BY sum(CASE WHEN ks_upl_sif_pl= 'POG' THEN -1 ELSE 1 END * ks_upl_iznos) DESC ) As Num";
+	sql_str += " ROW_NUMBER() OVER( ORDER BY sum(CASE WHEN ks_upl_sif_pl= 'POG' THEN -1 ELSE 1 END * ks_upl_iznos) DESC ) As Num, KPKS_PL_TIP, ks_upl_sif_pl, cast(isnull(KPKS_PL_UVJPL, 0) as int) as avansTip ";
 	
 	sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.NKKSINVG AS U";
 	sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkksupla ON ks_ig_racun = KS_upl_racun";
@@ -220,12 +220,12 @@ function setPaymentCodesPieChart(){
 	
 	if (sklad_str != "")
 	{
-        sql_str += " AND KS_IG_SKLAD IN ("+sklad_str+")";
+        sql_str += " AND KS_IG_SKLAD IN (" + sklad_str + ")";
 	}
 
     if (partner != "")
 	{
-        sql_str += " AND KS_IG_KUPAC = '"+partner+"'";
+        sql_str += " AND KS_IG_KUPAC = '" + partner + "'";
 	}
     
     if (prodavac != "")
@@ -238,8 +238,8 @@ function setPaymentCodesPieChart(){
         sql_str += " AND KS_IG_KASA = " + posKasa;
 	}
 
-	sql_str += " GROUP BY kpks_pl_opis) t";
-	sql_str += " GROUP BY CASE WHEN num <= 5 THEN Naziv ELSE 'Ostali' END";
+	sql_str += " GROUP BY kpks_pl_opis, KPKS_PL_TIP, ks_upl_sif_pl, isnull(KPKS_PL_UVJPL, 0)) t";
+	sql_str += " GROUP BY CASE WHEN num <= 5 THEN Naziv ELSE 'Ostali' END, KPKS_PL_TIP, ks_upl_sif_pl, avansTip";
 	sql_str += " ORDER BY origin desc";
 	//SaveFile(sql_str);
 	try	{
@@ -253,12 +253,30 @@ function setPaymentCodesPieChart(){
 }
 
 function DisplayPaymentCodesPieChart(){
+
+	for(i = 1; i < queryResult.length; i++)
+	{
+		if(queryResult[i][1] != "POG"){
+			continue;
+		}
+
+		pog = queryResult[i][4];
+		queryResult[i][4] = 0;
+		for(j = 1; j < queryResult.length; j++)
+		{
+			if(queryResult[j][0] == "G" && queryResult[j][2] == 0 && queryResult[j][4] >= pog){
+				queryResult[j][4] = queryResult[j][4] + pog;
+				break;
+			}
+		}
+	}
+
 	PieChart("PieChartSifrePlacanja", "init");
     PieChart("PieChartSifrePlacanja", "seriesType", "pie");
 
 	for(i = 1; i < queryResult.length; i++)
 	{
-		PieChart("PieChartSifrePlacanja", "values", int(queryResult[i][1]) , substring(string(queryResult[i][0].trim()), 0, 30), 50);
+		PieChart("PieChartSifrePlacanja", "values", int(queryResult[i][4]) , substring(string(queryResult[i][3].trim()), 0, 30), 50);
 	}
 
 	PieChart("PieChartSifrePlacanja", "colors", { "#1C4E80", "#EA6A47", "#5acc6b", "#34d2fa", "#ff45d4", "#fae62f" });

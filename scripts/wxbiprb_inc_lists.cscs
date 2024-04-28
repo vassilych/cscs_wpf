@@ -148,7 +148,7 @@
     DEFINE razlikaUCijeniField type l;
     DEFINE tezina_dn type l;
 
-    DEFINE searchSklSifra type i size 5;
+    DEFINE searchSklSifra type a size 5;
     DEFINE searchSklNaziv type a size 50;
     DEFINE searchArtiklSifra type a size 50;
     DEFINE searchArtiklNaziv type a size 50;
@@ -199,11 +199,12 @@
 // // F2 SKLADISTA
 function ceSkladiste@clicked()
 {
-    F2ListQueryString = "SELECT [PKMK_SKL_CODE], [PKMK_SKL_NAZIV] FROM  " + trenutnaGodinaBaza + ".[dbo].[PKMKSKLA] where PKMK_SKL_NAZIV like '%{var2}%'";
-    //if(searchSklSifra != 0){
+    F2ListQueryString = "SELECT [PKMK_SKL_CODE], [PKMK_SKL_NAZIV] FROM  " + trenutnaGodinaBaza + ".[dbo].[PKMKSKLA] where PKMK_SKL_NAZIV like '%{var2}%' and PKMK_SKL_CODE like '{var1}%'";
+    // if(searchSklSifra != 0){
     //    F2ListQueryString += " and PKMK_SKL_CODE = '{var1}'";
-    //}
+    // }
     F2ListQueryString += " ORDER BY pkmk_skl_code";
+    skladiste = "";
     sifraFieldPointer -> skladiste;
     NazivFieldPointer -> SkladisteNaziv; 
     windowTitle = "F2 lista skladišta";
