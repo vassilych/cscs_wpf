@@ -59,66 +59,15 @@ function buty@clicked()
 }    
 function setChartByDaysOfMonth()
     {
-        if (neto_dn)
-        {
-             sql_str = "SELECT [wk_day] as dan2 , SalesDay = ISNULL(ROUND(SUM(CASE WHEN c.nkpr_gl_dviza = 'D' THEN c.nkpr_gl_tecaj * e.nkpr_ln_amt ELSE e.nkpr_ln_amt END),0) , 0)";
-             sql_str += ", ISNULL(ROUND(AVG(SUM(CASE WHEN c.nkpr_gl_dviza = 'D' THEN c.nkpr_gl_tecaj * e.nkpr_ln_amt ELSE e.nkpr_ln_amt END)) OVER(ORDER BY wk_day ROWS BETWEEN 6 PRECEDING AND CURRENT ROW), 0),0) AS moving_average_3_days";
-        }
-        elif (razlikaUCijeniField)
-        {
-             sql_str = "SELECT [wk_day] as dan2 , SalesDay = ISNULL(SUM(CASE WHEN c.nkpr_gl_dviza = 'D' THEN c.nkpr_gl_tecaj * (e.nkpr_ln_amt - e.nkpr_ln_cenan * e.nkpr_ln_qtyz) ELSE e.nkpr_ln_amt - e.nkpr_ln_cenan * e.nkpr_ln_qtyz END) , 0)";
-             sql_str += ", ISNULL(ROUND(AVG(SUM(CASE WHEN c.nkpr_gl_dviza = 'D' THEN c.nkpr_gl_tecaj * (e.nkpr_ln_amt - e.nkpr_ln_cenan * e.nkpr_ln_qtyz) ELSE e.nkpr_ln_amt - e.nkpr_ln_cenan * e.nkpr_ln_qtyz END)) OVER(ORDER BY wk_day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0),0) AS moving_average_3_days";
-        }
-        elif (tezina_dn)
-        {
-             sql_str = " SELECT [wk_day] as dan2, SalesDay=ISNULL(SUM(e.nkpr_ln_tezinan), 0) ";
-             sql_str += ", ISNULL(ROUND(AVG(SUM(e.nkpr_ln_tezinan)) OVER(ORDER BY wk_day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), 0) AS moving_average_3_days";
-        }
-        elif (mx3_dn)
-        {
-             sql_str = " SELECT [wk_day] as dan2, SalesDay=ISNULL(SUM(e.nkpr_ln_metx3), 0) ";
-             sql_str += ", ISNULL(ROUND(AVG(SUM(e.nkpr_ln_metx3)) OVER(ORDER BY wk_day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), 0) AS moving_average_3_days";
-        }
-        elif (mx2_dn)
-        {
-             sql_str = " SELECT [wk_day] as dan2, SalesDay=ISNULL(SUM(e.nkpr_ln_metx2), 0) ";
-             sql_str += ", ISNULL(ROUND(AVG(SUM(e.nkpr_ln_metx2)) OVER(ORDER BY wk_day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), 0) AS moving_average_3_days";
-        }
-        elif (met_dn)
-        {
-             sql_str = " SELECT [wk_day] as dan2, SalesDay=ISNULL(SUM(e.nkpr_ln_met), 0) ";
-             sql_str += ", ISNULL(ROUND(AVG(SUM(e.nkpr_ln_met)) OVER(ORDER BY wk_day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), 0) AS moving_average_3_days";
-        }
-        elif (kom_dn)
-        {
-             sql_str = " SELECT [wk_day] as dan2, SalesDay=ISNULL(SUM(e.nkpr_ln_kom), 0) ";
-             sql_str += ", ISNULL(ROUND(AVG(SUM(e.nkpr_ln_kom)) OVER(ORDER BY wk_day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 0), 0) AS moving_average_3_days";
-        }
-        else
-        {
-             sql_str = "SELECT [wk_day] as dan2 , SalesDay = ISNULL(SUM(CASE WHEN c.nkpr_gl_dviza = 'D' THEN c.nkpr_gl_tecaj * e.nkpr_ln_pext ELSE e.nkpr_ln_pext END) , 0)";
-             sql_str += ", ISNULL(ROUND(AVG(SUM(CASE WHEN c.nkpr_gl_dviza = 'D' THEN c.nkpr_gl_tecaj * e.nkpr_ln_pext ELSE e.nkpr_ln_pext END)) OVER(ORDER BY wk_day ROWS BETWEEN 6 PRECEDING AND CURRENT ROW), 0), 0) AS moving_average_3_days";
-        }
+        sql_str = "SELECT [wk_day] as dan2 , SalesDay = ISNULL(ROUND(SUM(CASE WHEN kdib_ln_dp='P' THEN kdib_ln_iznos ELSE 0 END),0) , 0)";
+        sql_str += ", ISNULL(ROUND(AVG(SUM(CASE WHEN kdib_ln_dp='P' THEN kdib_ln_iznos ELSE 0 END)) OVER(ORDER BY wk_day ROWS BETWEEN 6 PRECEDING AND CURRENT ROW), 0),0) AS moving_average_3_days";
         sql_str += " FROM " + CommonDBGet()+ ".dbo.Kalendar a";
-        //sql_str =  sql_str +  " LEFT JOIN " + ovagod_h * ".dbo.nkprinv b ON a.[Wk_Date]  =  DATEADD(month ,  DATEDIFF(month ,  0 ,  b.nkpr_gl_invdte) ,  0)"
-        sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkprinv c ON a.[Wk_Date] = c.nkpr_gl_datem ";
-        if ( razlikaUCijeniField   )
-        {
-            sql_str += " AND nkpr_gl_invcd != ''" ;
-            //da bi dobili ruc ,  treba ra?un biti a?uriran
-        }
+        sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.kpkdibgl ON [Wk_Date] = kdib_gl_datum ";
         if (partner != "")
     	{
-            sql_str += " AND nkpr_gl_cuscod= '"+partner+"'";
+            sql_str += " AND kdib_ln_partner= '"+partner+"'";
 	    }
-        if (isporuka != "")
-	    {
-            sql_str += " AND nkpr_gl_shpcod= '"+isporuka+"'";
-	    }
-        if (komercijalist != "")
-	    {
-            sql_str += " AND nkpr_gl_slsp= "+komercijalist;
-	    }
+        /*
         if (domaca_dn )
 	    {
             sql_str += " AND nkpr_gl_drzava= '"+kpsy_po_freight+"'";
@@ -131,68 +80,8 @@ function setChartByDaysOfMonth()
 	    {
             sql_str += " AND nkpr_gl_drzava != '"+kpsy_po_freight+"' AND NOT nkpr_gl_drzava IN ("+eucountries+")";
 	    }
-        if (gl_oznaka != "")
-   	    {
-            sql_str += " AND nkpr_gl_oznaka= '"+gl_oznaka+"'";
-        }    
-        sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkprinvl e ON c.nkpr_gl_num = e.nkpr_ln_invnm";
-        if (sklad_str != "")
-	    {
-            sql_str += " AND nkpr_ln_loc IN ("+sklad_str+")";
-	    }
-        if (artikl != "")
-	    {
-            sql_str += " AND nkpr_ln_pcode= '"+artikl+"'";
-	    }
-
-        if (roba_dn )
-	    {
-            sql_str += " AND nkpr_ln_ma_us IN ( 'R','G','S')";
-	    }
-        elif (usluge_dn )
-	    {
-            sql_str += " AND nkpr_ln_ma_us= 'N'";
-	    }
-        elif (povnak_dn )
-	    {
-            sql_str += " AND nkpr_ln_ma_us= 'P'";
-	    }
-        elif (avans_dn )
-	    {
-            sql_str += " AND nkpr_ln_ma_us= 'A'";
-	    }
-        if (rnalog != "")
-	    {
-            sql_str += " AND nkpr_ln_rnalg= "+rnalog;
-	    }
-        if (gl_oznaka != "")
-    	{
-	        if (GL_oznaka == "X" || GL_oznaka == "O" || GL_oznaka == "R" )  //ako je to storno, odobrenje ili reklamacija neka okrene
-		    {
-                sql_str += " AND nkpr_ln_pext< 0";
-		    }
-            else
-		    {
-                sql_str += " AND nkpr_ln_pext>= 0";
-		    }
-	    }
-        sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkmkarti ON nkpr_ln_pcode= arti_artikl";
-        if (kategorija != "")
-    	{
-            sql_str += " AND arti_kategorija='"+kategorija+"'";
-	    }
-        if (klasa != "")
-	    {
-            sql_str += " AND arti_klasa='"+klasa+"'";
-	    }
-
-        if ( regija != "" )
-        {
-            sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart g ON c.nkpr_gl_cuscod = g.nksc_partcode";
-    	{
-            sql_str += " AND g.nksc_regija= '"+regija+"'";
-	    }
-        }
+        */
+        sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.kpkdibln ON kdib_ln_num = kdib_gl_num ";
         sql_str += " WHERE 1 = 1";
         if (do_mjeseca)
         {
@@ -208,8 +97,7 @@ function setChartByDaysOfMonth()
         try
         {
             //SaveFile(sql_str);
-
-             queryResult = sqlquery(sql_str);
+            queryResult = sqlquery(sql_str);
         }catch(exc)
         {
               MessageBox(exc);

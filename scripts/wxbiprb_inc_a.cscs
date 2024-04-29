@@ -29,9 +29,9 @@ function wxbiprba_onStart()
     //Chart("ChartPoDanima", "labels", arrayDani);
     //Chart("ChartPoDanima", "xlabelsRotation", 0);
     Chart("ChartPoDanima", "SeparatorStep", 1);
-    Chart("ChartPoDanima", "values", "line", arrayVrijednosti, "Dnevno");
+    Chart("ChartPoDanima", "values", "bar", arrayVrijednosti, "Dnevno");
     Chart("ChartPoDanima", "values", "line", arrayAvr, "Prosjek7dana");
-    Chart("ChartPoDanima", "Color.Series", { "#7E909A", "#0091D5"});
+    Chart("ChartPoDanima", "Color.Series", { "#1C4E80", "#0091D5"});
     //Chart("ChartPoDanima", "Margins", {60, 20, 0, 30});
     //
     cntr2= 0;
