@@ -22,7 +22,7 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Label Name="Top6Prodaja" VerticalAlignment="Top" HorizontalAlignment="Left" Width="195" Height="35" Margin="77,23,0,0" Content="Top 6 - Prodaja"
+            <Label Name="Top6Prodaja" VerticalAlignment="Top" HorizontalAlignment="Left" Width="195" Height="35" Margin="77,23,0,0" Content="Top 6 - Otpreme"
                Grid.Row="0"
                FontSize="16"
                FontWeight="Bold"/>

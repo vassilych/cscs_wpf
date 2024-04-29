@@ -6,7 +6,7 @@
         xmlns:wcl="clr-namespace:WpfControlsLibrary;assembly=WpfControlsLibrary"
         xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
         mc:Ignorable="d"
-        Title="Prodaja I"
+        Title="Ponude I"
         Height="675"
         Width="1200" WindowStartupLocation="CenterScreen"  MinHeight="540" MinWidth="960">
     <Viewbox Stretch="Uniform">
@@ -28,7 +28,7 @@
                             Grid.Column="1"
                             Grid.Row="0"
                             Margin="5,45,5,10" LegendPosition="Top" />
-            <Label HorizontalAlignment="Left" Content="Prodaja po danima" Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="24,5,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
+            <Label HorizontalAlignment="Left" Content="Ponude po danima" Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="24,5,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
             <Label HorizontalAlignment="Left" Content="Najnovije ponude" Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="23,5,0,0" BorderBrush="{x:Null}"/>
 
             <DataGrid GridLinesVisibility="Vertical"
@@ -123,7 +123,7 @@
                 </DataGrid.Columns>
             </DataGrid>
             <Label HorizontalAlignment="Left" Content="Najveće ponude" Grid.Row="1" Grid.Column="1" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="24,5,0,0" BorderBrush="{x:Null}"/>
-            <Label HorizontalAlignment="Left" Content="Prodaja po mjesecima (x 1.000)" VerticalAlignment="Top" Width="272" FontSize="16" FontWeight="Bold" Margin="23,10,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
+            <Label HorizontalAlignment="Left" Content="Ponude po mjesecima (x 1.000)" VerticalAlignment="Top" Width="272" FontSize="16" FontWeight="Bold" Margin="23,10,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
             <DataGrid GridLinesVisibility="None"
                   Margin="24,32,20,14"
                   IsReadOnly="true"

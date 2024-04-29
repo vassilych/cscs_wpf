@@ -28,8 +28,8 @@
                             Grid.Column="1"
                             Grid.Row="0"
                             Margin="5,45,5,10" LegendPosition="Top" />
-            <Label HorizontalAlignment="Left" Content="Prodaja po danima" Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="24,5,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
-            <Label HorizontalAlignment="Left" Content="Najnoviji računi" Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="23,5,0,0" BorderBrush="{x:Null}"/>
+            <Label HorizontalAlignment="Left" Content="Otprema po danima" Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="24,5,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
+            <Label HorizontalAlignment="Left" Content="Najnovije otpremnice" Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="23,5,0,0" BorderBrush="{x:Null}"/>
 
             <DataGrid GridLinesVisibility="Vertical"
                   VerticalGridLinesBrush="LightGray"
@@ -62,8 +62,8 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Račun"
-                                        Width="69">
+                    <DataGridTemplateColumn Header="Otpremnica"
+                                        Width="90">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <wcl:ASGridCell FieldName="T10RACUNZ_AR"
@@ -122,8 +122,8 @@
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
-            <Label HorizontalAlignment="Left" Content="Najveći računi" Grid.Row="1" Grid.Column="1" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="24,5,0,0" BorderBrush="{x:Null}"/>
-            <Label HorizontalAlignment="Left" Content="Prodaja po mjesecima (x 1.000)" VerticalAlignment="Top" Width="272" FontSize="16" FontWeight="Bold" Margin="23,10,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
+            <Label HorizontalAlignment="Left" Content="Najveće otpremnice" Grid.Row="1" Grid.Column="1" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="24,5,0,0" BorderBrush="{x:Null}"/>
+            <Label HorizontalAlignment="Left" Content="Otprema po mjesecima (x 1.000)" VerticalAlignment="Top" Width="272" FontSize="16" FontWeight="Bold" Margin="23,10,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
             <DataGrid GridLinesVisibility="None"
                   Margin="24,32,20,14"
                   IsReadOnly="true"
@@ -155,8 +155,8 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Račun"
-                                        Width="69">
+                    <DataGridTemplateColumn Header="Otpremnica"
+                                        Width="90">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <wcl:ASGridCell FieldName="T10RACUNMJ_AR"

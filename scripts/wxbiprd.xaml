@@ -605,8 +605,8 @@
                 </wcl:ASHorizontalBar>
 
             </Grid>
-            <Button x:Name="gbProdaja1" Content="Prodaja I" Style="{StaticResource FlatButtonStyle}" Grid.Row="1" Margin="0,15,0,0"  HorizontalAlignment="Center" VerticalAlignment="Top" Width="140" Height="63" Background="#FF69A627" FontFamily="Lato" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}" TabIndex="32"/>
-            <Button x:Name="gbProdaja2" Content="Prodaja II" Style="{StaticResource FlatButtonStyle}" Margin="0,89,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Width="140" Height="63" Background="#FF2D50A6" FontFamily="Lato" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}" Grid.Row="1" TabIndex="33"/>
+            <Button x:Name="gbProdaja1" Content="Ponude I" Style="{StaticResource FlatButtonStyle}" Grid.Row="1" Margin="0,15,0,0"  HorizontalAlignment="Center" VerticalAlignment="Top" Width="140" Height="63" Background="#FF69A627" FontFamily="Lato" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}" TabIndex="32"/>
+            <Button x:Name="gbProdaja2" Content="Ponude II" Style="{StaticResource FlatButtonStyle}" Margin="0,89,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Width="140" Height="63" Background="#FF2D50A6" FontFamily="Lato" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}" Grid.Row="1" TabIndex="33"/>
             <Button x:Name="gbExit" Content="Izlaz" Style="{StaticResource FlatButtonStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Width="140" Height="62" Background="#FFE0582F" FontFamily="Lato" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}" Grid.Row="1" TabIndex="34"/>
             <Rectangle Fill="#FFE6E6E6" Grid.Column="1" Height="221" VerticalAlignment="Top" HorizontalAlignment="Center" Width="1040" />
             <TextBlock Grid.Column="1" HorizontalAlignment="Left"

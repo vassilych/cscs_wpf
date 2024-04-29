@@ -9,7 +9,7 @@
         xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts"
         xmlns:SKCharts="clr-namespace:LiveChartsCore.SkiaSharpView.SKCharts;assembly=LiveChartsCore.SkiaSharpView"
         mc:Ignorable="d"
-        Title="Prodaja II"
+        Title="Ponude II"
         Height="675"
         Width="1200" MinHeight="540" MinWidth="960" WindowStartupLocation="CenterScreen">
     <Viewbox Stretch="Uniform">
@@ -22,7 +22,7 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Label Name="Top6Prodaja" VerticalAlignment="Top" HorizontalAlignment="Left" Width="195" Height="35" Margin="77,23,0,0" Content="Top 6 - Prodaja"
+            <Label Name="Top6Prodaja" VerticalAlignment="Top" HorizontalAlignment="Left" Width="195" Height="35" Margin="77,23,0,0" Content="Top 6 - Ponude"
                Grid.Row="0"
                FontSize="16"
                FontWeight="Bold"/>
