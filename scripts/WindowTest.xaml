@@ -79,7 +79,7 @@
                    FontSize="14"
                    Foreground="Black"
                    Text="Artikl:" />
-        <wcl:ASEnterBox Grid.Column="1" ButtonSize="21"
+        <!--<wcl:ASEnterBox Grid.Column="1" ButtonSize="21"
                         FontWeight="Bold"
                         Size="0"
                         FieldName="partner"
@@ -209,7 +209,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         BorderThickness="0" BorderBrush="#00000000" Background="#FFB5DABD"
-                        TabIndex="10" />
+                        TabIndex="10" />-->
         <TextBlock HorizontalAlignment="Left" Grid.Column="1"
                    VerticalAlignment="Top"
                    Height="16"
@@ -239,7 +239,7 @@
                    FontSize="14"
                    Foreground="Black"
                    Text="Mjesec:" RenderTransformOrigin="0.346,0.707" />
-        <wcl:ASEnterBox ButtonSize="0" Grid.Column="1"
+        <!--<wcl:ASEnterBox ButtonSize="0" Grid.Column="1"
                         FontWeight="Bold"
                         Size="4"
                         FieldName="ovagod_h"
@@ -254,7 +254,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         BorderThickness="0" BorderBrush="#00000000" Background="#FFB5DABD"
-                        TabIndex="0" RenderTransformOrigin="-10.605,6.747" />
+                        TabIndex="0" RenderTransformOrigin="-10.605,6.747" />-->
         <wcl:ASDateEditer HorizontalAlignment="Left" Grid.Column="1"
                           VerticalAlignment="Top"
                           Height="22"
@@ -317,7 +317,7 @@
                              Foreground="Black" />
             </Grid>
         </GroupBox>
-        <wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
+        <!--<wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
                         FontWeight="Bold"
                         Size="2"
                         FieldName="mjesec_h"
@@ -332,7 +332,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         BorderThickness="0" BorderBrush="#00000000" Background="#FFB5DABD"
-                        TabIndex="11" />
+                        TabIndex="11" />-->
         <GroupBox HorizontalAlignment="Left"
                   VerticalAlignment="Top"
                   Height="26"
@@ -389,7 +389,7 @@
         <Button Name="Button1" Content="Prvi" HorizontalAlignment="Center"  Margin="0,30,0,22" RenderTransformOrigin="-0.285,-2.901" Height="75" Width="220" Grid.Row="1" Background="#FFE84646" FontSize="20" FontWeight="Bold"/>
         <Button Name="button2" Content="Drugi" HorizontalAlignment="Center" Margin="0,17,0,15" RenderTransformOrigin="-0.285,-2.901" Height="75" Width="220" Grid.Row="2" Background="#FFD46BED" FontSize="20" FontWeight="Bold"/>
         <Rectangle Grid.Column="1" HorizontalAlignment="Left" Height="122" Margin="667,90,0,0" Grid.Row="3" Stroke="Black" VerticalAlignment="Top" Width="266" Fill="#FF13541C" UseLayoutRounding="True" RadiusX="10" RadiusY="10"/>
-        <wcl:ASEnterBox ButtonSize="0"
+        <!--<wcl:ASEnterBox ButtonSize="0"
                         FontWeight="Bold"
                         Size="4"
                         FieldName="proba"
@@ -400,9 +400,9 @@
                         Height="22"
                         Width="266"
                         FontFamily="lato" Background="Transparent"
-                        TabIndex="0" RenderTransformOrigin="-10.605,6.747" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="667,129,0,0" Grid.Row="3" Grid.Column="1" UseLayoutRounding="True" />
-        <TextBox Grid.Column="1" x:Name="Probaxy" x:FieldModifier="PRoba" DataContext="Proba" HorizontalAlignment="Left" Margin="728,0,0,0" Grid.Row="3" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Center" Width="120" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalContentAlignment="Right" FontFamily="Lato" FontSize="24" FontWeight="Bold" Foreground="White" AutomationProperties.ItemType=""/>
-        <wcl:ASNumericBox Grid.Column="1"  Name="Probaxyw" FieldName="PRobaNum"  HorizontalAlignment="Left" Margin="720,103,0,0" Grid.Row="3" VerticalAlignment="Top" Width="152" Height="26" Background="#FF0A541C" Text="123456" Thousands="True" BorderBrush="#FF0A541C"/>
+                        TabIndex="0" RenderTransformOrigin="-10.605,6.747" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="667,129,0,0" Grid.Row="3" Grid.Column="1" UseLayoutRounding="True" />-->
+        <TextBox Grid.Column="1" x:Name="Probaxy"  DataContext="Proba" HorizontalAlignment="Left" Margin="728,0,0,0" Grid.Row="3" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Center" Width="120" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalContentAlignment="Right" FontFamily="Lato" FontSize="24" FontWeight="Bold" Foreground="White" AutomationProperties.ItemType=""/>
+        <!--<wcl:ASNumericBox Grid.Column="1"  Name="Probaxyw" FieldName="PRobaNum"  HorizontalAlignment="Left" Margin="720,103,0,0" Grid.Row="3" VerticalAlignment="Top" Width="152" Height="26" Background="#FF0A541C" Text="123456" Thousands="True" BorderBrush="#FF0A541C"/>-->
 
     </Grid>
 </Window>

@@ -1,12 +1,15 @@
 
+//MessageBox("asdasd1");
 include(strTrim(tpath()) +"chainLib.cscs"); //look-up lists
-
+//MessageBox("asdasd2");
 Import(strTrim(mpath()) + "CSCS.Math.dll");
-
+//MessageBox("asdasd3");
 IncludeScript("wxbiprb_inc_lists.cscs"); //look-up lists
 IncludeScript("wxbiprb_inc_a.cscs"); //look-up lists
 IncludeScript("wxbiprb_inc_b.cscs"); //look-up lists
+//MessageBox("asdasd4");
 CreateWindowXaml("wxbiprb.xaml");
+//MessageBox("asdasd5");
 
 // include(strTrim(tpath()) +"wxbiprb_inc_lists.cscs"); //look-up lists
 // include(strTrim(tpath()) +"wxbiprb_inc_a.cscs"); //look-up lists
@@ -15,6 +18,8 @@ CreateWindowXaml("wxbiprb.xaml");
 
 function Wxbiprb_onDisplay()
 {
+    //MessageBox("here");
+
     SetWidgetOptions("EllipseProdajaUGodini", "Visible", false);
     SetWidgetOptions("EllipseProdajaUMjesecu", "Visible", false);
     SetWidgetOptions("EllipseProdajaUTjednu", "Visible", false);
@@ -31,13 +36,13 @@ function Wxbiprb_onDisplay()
 
     sqlQueryString = "select SY_CC_USER, SY_CC_YEAR, SY_CC_DBASE from " + strtrim(CommonDBGet()) + ".dbo.NKSYCCYR WHERE SY_CC_CODE = '" + companyCode + "'";
     try
-        {
+    {
         sqlResult = sqlQuery(sqlQueryString);
-        }
+    }
     catch(exc)
-        {
+    {
         MessageBox(exc);
-        }
+    }
     if (ffile(strTrim(tpath())+"CompanyLogo.jpg",'f') == "CompanyLogo.jpg")
     { 
         setimage("Logo",strTrim(tpath())+"CompanyLogo.jpg");
@@ -131,6 +136,8 @@ function Wxbiprb_onDisplay()
     setFocus("gbPripremi");
     tip_racuna= "SVI TIPOVI";
     gradoviRB= true;
+
+    //MessageBox("here, ovagod_h = " + ovagod_h);
 }
 
 function gbPripremi@clicked()

@@ -127,14 +127,14 @@ function setChartByHours()
 
 function DisplayHoursChart(){
 	Chart("ChartPoSatima", "init");
-    Chart("ChartPoSatima", "seriesType", "lineseries");
+    //Chart("ChartPoSatima", "seriesType", "lineseries");
     //Chart("ChartPoSatima", "title", "Naslov grafa", 20);
     // Chart("ChartPoSatima", "labels", "y", 13);
     // Chart("ChartPoSatima", "labels", "x", 13, {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
     // Chart("ChartPoSatima", "xlabelsRotation", 0);
     
-	Chart("ChartPoSatima", "values", arrayHoursAmt, "po satu"); // !
-    Chart("ChartPoSatima", "values", arrayHoursAvr, "prosjek 3 sata"); //!
+	Chart("ChartPoSatima", "values", "line", arrayHoursAmt, "po satu"); // !
+    Chart("ChartPoSatima", "values", "line", arrayHoursAvr, "prosjek 3 sata"); //!
     
 	Chart("ChartPoSatima", "SeparatorStep", 1);
     

@@ -1,8 +1,10 @@
 #MAINMENU;
 #WINFORM mainMenuWindow.xaml;
-//CreateWindow("../../scripts/mainMenuWindow.xaml");
+// CreateWindow("../../scripts/mainMenuWindow.xaml");
 
 StartDebugger(13337, true, "*");
+
+//CreateWindow("../../scripts/testWindow2.xaml");
 
 define mainMenuDC type a;
 

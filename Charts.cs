@@ -53,7 +53,7 @@ namespace WpfCSCS
 
         class ChartFunction : ParserFunction
         {
-            static Dictionary<string, string> chartsTypes = new Dictionary<string, string>();
+            //static Dictionary<string, string> chartsTypes = new Dictionary<string, string>();
             protected override Variable Evaluate(ParsingScript script)
             {
                 List<Variable> args = script.GetFunctionArgs();
@@ -78,7 +78,7 @@ namespace WpfCSCS
 
                     if (optionString == "seriestype")
                     {
-                        chartsTypes[widgetName] = valueVariable.String.ToLower();
+                        //chartsTypes[widgetName] = valueVariable.String.ToLower();
                     }
                     else if (optionString == "init")
                     {
@@ -86,17 +86,18 @@ namespace WpfCSCS
                     }
                     else if (optionString == "values")
                     {
-                        if (valueVariable.Tuple.Count > 0)
+                        if (value2Variable.Tuple.Count > 0)
                         {
                             List<double> newList = new List<double>();
 
-                            foreach (var item in valueVariable.Tuple)
+                            foreach (var item in value2Variable.Tuple)
                             {
                                 newList.Add(item.Value);
                             }
 
                             var temp = cartesianWidget.Series.ToList();
-                            if (chartsTypes[widgetName] == "columnseries")
+                            //if (chartsTypes[widgetName] == "columnseries")
+                            if (valueVariable.String.ToLower() == "bar")
                             {
                                 temp.Add(new ColumnSeries<double>() { 
                                     Values = newList, /*, Fill = colorList[temp.Count]*/
@@ -104,7 +105,8 @@ namespace WpfCSCS
                                 });
                                 //Debug.WriteLine("temp.Count = " + temp.Count);
                             }
-                            else if (chartsTypes[widgetName] == "lineseries")
+                            //else if (chartsTypes[widgetName] == "lineseries")
+                            else if (valueVariable.String.ToLower() == "line")
                             {
                                 temp.Add(new LineSeries<double>()
                                 {
@@ -121,9 +123,9 @@ namespace WpfCSCS
 
                                 });
                             }
-                            if (!string.IsNullOrEmpty(value2Variable.String))
+                            if (!string.IsNullOrEmpty(value3Variable.String))
                             {
-                                temp.Last().Name = value2Variable.String;
+                                temp.Last().Name = value3Variable.String;
                             }
 
                             cartesianWidget.Series = temp;
@@ -188,11 +190,13 @@ namespace WpfCSCS
 
                         foreach (var series in cartesianWidget.Series)
                         {
-                            if (chartsTypes[widgetName] == "columnseries")
+                            //if (chartsTypes[widgetName] == "columnseries")
+                            if (series is ColumnSeries<double>)
                             {
                                 (series as ColumnSeries<double>).YToolTipLabelFormatter = (chartPoint) => $"{chartPoint.Coordinate.PrimaryValue.ToString($"N{valueVariable.Value}")}";
                             }
-                            else if (chartsTypes[widgetName] == "lineseries")
+                            //else if (chartsTypes[widgetName] == "lineseries")
+                            else if (series is LineSeries<double>)
                             {
                                 (series as LineSeries<double>).YToolTipLabelFormatter = (chartPoint) => $"{chartPoint.Coordinate.PrimaryValue.ToString($"N{valueVariable.Value}")}";
                             }
