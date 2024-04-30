@@ -63,10 +63,20 @@ function setChartByDaysOfMonth()
         sql_str += ", ISNULL(ROUND(AVG(SUM(CASE WHEN kdib_ln_dp='P' THEN kdib_ln_iznos ELSE 0 END)) OVER(ORDER BY wk_day ROWS BETWEEN 6 PRECEDING AND CURRENT ROW), 0),0) AS moving_average_3_days";
         sql_str += " FROM " + CommonDBGet()+ ".dbo.Kalendar a";
         sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.kpkdibgl ON [Wk_Date] = kdib_gl_datum ";
-        if (partner != "")
-    	{
-            sql_str += " AND kdib_ln_partner= '"+partner+"'";
+        
+        if (BANKA_str != "")
+	    {
+            sql_str += " AND kdib_gl_banka IN (" + BANKA_str + ")";
 	    }
+        if (KONTO_str != "")
+	    {
+            sql_str += " AND kdib_ln_konto IN (" + KONTO_str + ")";
+	    }
+        if (Izvadak != "")
+	    {
+            sql_str += " AND kdib_gl_num = '" + Izvadak + "'";
+	    }
+
         /*
         if (domaca_dn )
 	    {
@@ -82,7 +92,14 @@ function setChartByDaysOfMonth()
 	    }
         */
         sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.kpkdibln ON kdib_ln_num = kdib_gl_num ";
+        if (partner != "")
+    	{
+            sql_str += " AND kdib_ln_partner = '" + partner + "'";
+	    }
+        
         sql_str += " WHERE 1 = 1";
+        
+
         if (do_mjeseca)
         {
              sql_str += " AND [wk_Month]< = '" + mjesec_h + "' AND wk_Year = '" + ovagod_h + "'";
@@ -123,7 +140,7 @@ function setChartByMonth()
         sql_str += " FROM " + proslaGodinaBaza + ".dbo.kpkdibgl"; 
         sql_str += " LEFT JOIN " + proslaGodinaBaza + ".dbo.kpkdibln ON kdib_gl_num= kdib_ln_num";
         sql_str += " WHERE 1=1 AND year(kdib_gl_datum) = " + lani_h; 
-        //filterPart();
+        filterPart();
         sql_str += " GROUP BY CONVERT(varchar(6),kdib_gl_datum,112)";
         sql_str += " ORDER BY CONVERT(varchar(6),kdib_gl_datum,112);";
         try
@@ -140,16 +157,16 @@ function setChartByMonth()
     }
     
     //sada tekuća godina
-    sql_str = "SELECT '1' as tip,CONVERT(varchar(6),kdib_gl_datum,112) as yyyymm,sum(CASE WHEN kdib_ln_dp='D' THEN kdib_ln_iznos ELSE 0 END) AS Odliv, sum(CASE WHEN kdib_ln_dp='P' THEN kdib_ln_iznos ELSE 0 END) AS Priliv";
+    sql_str = "SELECT '1' as tip, CONVERT(varchar(6), kdib_gl_datum, 112) as yyyymm, sum(CASE WHEN kdib_ln_dp='D' THEN kdib_ln_iznos ELSE 0 END) AS Odliv, sum(CASE WHEN kdib_ln_dp='P' THEN kdib_ln_iznos ELSE 0 END) AS Priliv";
     sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.kpkdibgl"; 
-    sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.kpkdibln ON kdib_gl_num= kdib_ln_num";
-    sql_str += " WHERE 1=1 AND year(kdib_gl_datum) = " + ovagod_h; 
-    //filterPart();
-    sql_str += " GROUP BY CONVERT(varchar(6),kdib_gl_datum,112)";
-    sql_str += " ORDER BY CONVERT(varchar(6),kdib_gl_datum,112);";
+    sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.kpkdibln ON kdib_gl_num = kdib_ln_num";
+    sql_str += " WHERE 1 = 1 AND year(kdib_gl_datum) = " + ovagod_h; 
+    filterPart();
+    sql_str += " GROUP BY CONVERT(varchar(6), kdib_gl_datum, 112)";
+    sql_str += " ORDER BY CONVERT(varchar(6), kdib_gl_datum, 112);";
     try
     {
-            //SaveFile(sql_str);
+        //SaveFile(sql_str);
         queryResult = sqlquery(SQL_str);
     }
     catch(exc)
@@ -161,56 +178,62 @@ function setChartByMonth()
 }
 
 function setChartByMonth1(){
-    tot_proslimj = 0;
-    tot_ovajmj = 0;
-    tot_ovagod = 0;
-    tot_lani = 0;
+    tot_proslimj_priliv = 0;
+    tot_proslimj_odliv = 0;
+    tot_ovajmj_priliv = 0;
+    tot_ovajmj_odliv = 0;
+    tot_ovagod_priliv = 0;
+    tot_ovagod_odliv = 0;
+    tot_lani_priliv = 0;
+    tot_lani_odliv = 0;
     //cntry= 0;
     //sales_month_ar = {};
     define ar_cntr type i size 2;
 
-    for(i = 1; i <= Size(queryResult)-1; i++)
+    for(i = 0; i < 12; i++)
     {
-        
-        if(i >= Size(queryResult))
+        arrayProslaPriliv[i]= 0; 
+        arrayProslaOdliv[i] = 0;
+    }
+
+    for(i = 1; i <= Size(queryResult) - 1; i++)
+    {
+        ar_cntr = int(substring(queryResult[i][1], 4, 2));
+        arrayProslaPriliv[ar_cntr - 1] = math.round(queryResult[i][3]/1000,0); 
+        arrayProslaOdliv[ar_cntr - 1] = math.round(queryResult[i][2]/1000,0); 
+        // sales_month_ar[ar_cntr - 1]=queryResult[i][3];
+        if (do_mjeseca)
         {
-            arrayProsla[i-1]= 0; 
-            sales_month_ar[i-1]= 0; 
-            continue;
+            if(ar_cntr <= int(mjesec_h))
+            {
+                tot_lani_priliv += queryResult[i][3];
+                tot_lani_odliv += queryResult[i][2];
+            } 
         }
-        /*
         else
         {
-            */
-            ar_cntr= int(substring(queryResult[i][1],4,2));
-            arrayProsla[ar_cntr-1]= math.round(queryResult[i][2]/1000,0); 
-            sales_month_ar[ar_cntr-1]=queryResult[i][2];
-            if (do_mjeseca)
-            {
-                if(ar_cntr <= int(mjesec_h))
-                {
-                    tot_lani += queryResult[i][2];
-                } 
+            if(ar_cntr == int(mjesec_h))
+            {   
+                tot_lani_priliv = queryResult[i][3];
+                tot_lani_odliv = queryResult[i][2];
             }
-            else
-            {
-                if(ar_cntr == int(mjesec_h))
-                {   
-                    tot_lani =  queryResult[i][2] ;   
-                }
-            }
-        //}
+        }
     }
 }
 
 function setChartByMonth2(){
-    tot_proslimj = 0;
-    tot_ovajmj = 0;
-    for(i = 1; i <= Size(queryResult)-1; i++)
+    for(i = 0; i < 12; i++)
     {
-        ar_cntr= int(substring(queryResult[i][1],4,2)); //nađimo koji je to mjesec
-        arrayTrenutna[ar_cntr-1]= math.round(queryResult[i][2]/1000,0); 
-        sales_month_ar[ar_cntr-1]=queryResult[i][2];
+        arrayTrenutnaPriliv[i] = 0; 
+        arrayTrenutnaOdliv[i] = 0; 
+    }
+
+    for(i = 1; i <= Size(queryResult) - 1; i++)
+    {
+        ar_cntr = int(substring(queryResult[i][1], 4, 2)); //nađimo koji je to mjesec
+        arrayTrenutnaPriliv[ar_cntr-1]= math.round(queryResult[i][3]/1000,0); 
+        arrayTrenutnaOdliv[ar_cntr-1]= math.round(queryResult[i][2]/1000,0); 
+        // sales_month_ar[ar_cntr-1]=queryResult[i][3];
         mjesec_h0X = mjesec_h.length == 1 ? "0" + mjesec_h : mjesec_h;
         proslimjesec = string(int(mjesec_h) - 1); // 1
         proslimjesec0X = proslimjesec.length == 1 ? "0" + proslimjesec : proslimjesec;
@@ -218,24 +241,28 @@ function setChartByMonth2(){
         {
             if(ar_cntr <= int(mjesec_h))
             {
-                tot_ovagod += queryResult[i][2];
+                tot_ovagod_priliv += queryResult[i][3];
+                tot_ovagod_odliv += queryResult[i][2];
             } 
         }
         else
         {
             if(ar_cntr == int(mjesec_h))
             {   
-                tot_ovagod =  queryResult[i][2] ;   
+                tot_ovagod_priliv =  queryResult[i][3];   
+                tot_ovagod_odliv =  queryResult[i][2];   
             }
         }
         if (ovagod_h + mjesec_h0X == queryResult[i][1])
         {   
             //Ovaj mjesec
-            tot_ovajmj = queryResult[i][2];
+            tot_ovajmj_priliv = queryResult[i][3];
+            tot_ovajmj_odliv = queryResult[i][2];
         }
         elif (ovagod_h + proslimjesec0X == queryResult[i][1])
         {
-            tot_proslimj = queryResult[i][2];
+            tot_proslimj_priliv = queryResult[i][3];
+            tot_proslimj_odliv = queryResult[i][2];
         }
     }
 }
@@ -303,7 +330,7 @@ function setLast10InvoicesDataGrid()
 	{
 		sql_str += " AND month(nkpr_gl_datem) =  " + mjesec_h;
 	}
-    filterPart();
+    //filterPart();
 	sql_str += " GROUP BY nkpr_gl_num,nkpr_gl_cusnme,nkpr_gl_invdte,nkpr_gl_timecr" ;
 	//if (t10datrac)
 	//{
@@ -415,7 +442,7 @@ function setTop10InvoicesDataGrid()
 	{
 		sql_str += " AND month(nkpr_gl_datem) =  " + mjesec_h;
 	}
-    filterPart();
+    //filterPart();
 	sql_str += " GROUP BY nkpr_gl_num,nkpr_gl_cusnme,nkpr_gl_invdte,nkpr_gl_dviza,nkpr_gl_tecaj" ;
 	sql_str += " ORDER BY iznos DESC"; //CASE WHEN nkpr_gl_dviza =  'D' THEN nkpr_gl_tecaj * nkpr_gl_total ELSE nkpr_gl_total END DESC";
 	

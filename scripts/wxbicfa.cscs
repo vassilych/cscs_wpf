@@ -10,12 +10,15 @@ CreateWindowXaml("wxbicfa.xaml");
 
 function Wxbicfa_onDisplay()
 {
-    SetWidgetOptions("EllipseProdajaUGodini", "Visible", false);
-    SetWidgetOptions("EllipseProdajaUMjesecu", "Visible", false);
-    SetWidgetOptions("EllipseProdajaUTjednu", "Visible", false);
-    SetWidgetOptions("EllipseBrojKupaca", "Visible", false);
-    SetWidgetOptions("EllipseBrojRacuna", "Visible", false);
-    SetWidgetOptions("EllipseProsjProdajaPoKupcu", "Visible", false);
+    SetWidgetOptions("EllipseProdajaUGodiniPriliv", "Visible", false);
+    SetWidgetOptions("EllipseProdajaUMjesecuPriliv", "Visible", false);
+    SetWidgetOptions("EllipseProdajaUTjednuPriliv", "Visible", false);
+    SetWidgetOptions("EllipseProdajaUGodiniOdliv", "Visible", false);
+    SetWidgetOptions("EllipseProdajaUMjesecuOdliv", "Visible", false);
+    SetWidgetOptions("EllipseProdajaUTjednuOdliv", "Visible", false);
+    // SetWidgetOptions("EllipseBrojKupaca", "Visible", false);
+    // SetWidgetOptions("EllipseBrojRacuna", "Visible", false);
+    // SetWidgetOptions("EllipseProsjProdajaPoKupcu", "Visible", false);
 
     args = CommandLineArgs(); 
     if(Size(args) > 2){
@@ -171,16 +174,19 @@ function gbPripremi@clicked()
     AsyncCall("setChartByMonth", "callSetHorizontalBars");
 }
 function callSetHorizontalBars(){
-    AsyncCall("setHorizontalBars", "callSetWeekComparison");
+    //AsyncCall("setHorizontalBars", "callSetWeekComparison");
+    AsyncCall("setHorizontalBars", "end");
 }
+
 function callSetWeekComparison(){
-    AsyncCall("setWeekComparison", "callSetCustomerAndInvoiceCounts");
+    AsyncCall("setWeekComparison", "callSetCashFlowRatio");
 }
-function callSetCustomerAndInvoiceCounts(){
-    AsyncCall("setCustomerAndInvoiceCounts", "callSetSalesRatio");
-}
-function callSetSalesRatio(){
-    AsyncCall("setSalesRatio", "end");
+
+// function callSetCustomerAndInvoiceCounts(){
+//     AsyncCall("setCustomerAndInvoiceCounts", "callSetSalesRatio");
+// }
+function callSetCashFlowRatio(){
+    AsyncCall("setCashFlowRatio", "end");
 }
 function end(){
     cursor("dflt");
@@ -218,6 +224,24 @@ function gbProdaja2@clicked()
     }    
 }
 
+function gbProdaja3@clicked()
+{
+    if (pripremljeno   )
+    {
+    //     thread
+    //     (
+    //         lock{
+            result = modalWindow(strTrim(tpath()) +"wxbicfac.xaml");
+    //        }
+    //    )
+    }
+    else
+    {
+        MessageBox("Molim pripremite osnovne podatke prije nastavka!"); 
+        setfocus("gbPripremi");
+    }    
+}
+
 function gbExit@clicked()
 {
     quit;
@@ -232,7 +256,7 @@ function setCustomerAndInvoiceCounts()
     {
         sql_str = "SELECT count(distinct nkpr_gl_cuscod) as br_kupaca_lg,count(distinct nkpr_gl_num) as broj_rac_lg";
         sql_str += " FROM " + proslaGodinaBaza + ".dbo.nkprinv";
-        sql_str += " LEFT JOIN "+proslaGodinaBaza+".dbo.nkprinvl ON nkpr_gl_num= nkpr_ln_invnm";
+        sql_str += " LEFT JOIN " + proslaGodinaBaza+".dbo.nkprinvl ON nkpr_gl_num= nkpr_ln_invnm";
         sql_str += " LEFT JOIN "+proslaGodinaBaza+".dbo.nkmkarti ON nkpr_ln_pcode= arti_artikl";
         if (regija != "")
         {
@@ -252,7 +276,7 @@ function setCustomerAndInvoiceCounts()
                 sql_str += " AND YEAR(nkpr_gl_datem)= " + lani_h;
             }
         }
-        filterPart();
+        //filterPart();
         sqlResult = SqlQuery(sql_str);
         
         RunOnMain(setCustomerAndInvoiceCounts2); 
@@ -283,7 +307,7 @@ function setCustomerAndInvoiceCounts()
         }
     }
     //sql_str= sql_str* " AND DATEDIFF(day,nkpr_gl_invdte, CURRENT_TIMESTAMP) BETWEEN 0 AND 31"
-    filterPart();
+    //filterPart();
     sqlResult = SqlQuery(sql_str);
     
     RunOnMain("setCustomerAndInvoiceCounts3");
@@ -314,7 +338,7 @@ function setCustomerAndInvoiceCounts()
         }
     }
     //sql_str= sql_str* " AND DATEDIFF(day,nkpr_gl_invdte, CURRENT_TIMESTAMP) BETWEEN 0 AND 31"
-    filterPart();
+    //filterPart();
     sqlResult = SqlQuery(sql_str);
     
     RunOnMain("setCustomerAndInvoiceCounts4");
@@ -389,21 +413,21 @@ function setCustomerAndInvoiceCounts3(){
     }
 
     //ellipse
-    SetWidgetOptions("EllipseBrojKupaca", "Visible", true);
-    if (br_kupaca_og > br_kupaca_lg)
-    {
-        SetWidgetOptions("EllipseBrojKupaca", "Color", "Lime");
-    }
-    elif(br_kupaca_og < br_kupaca_lg)
-    {
-        SetWidgetOptions("EllipseBrojKupaca", "Color", "Red");
-    }
-    else{
-        SetWidgetOptions("EllipseBrojKupaca", "Color", "Gray");
-    }
-    if(br_kupaca_og == 0 || br_kupaca_lg == 0){
-        SetWidgetOptions("EllipseBrojKupaca", "Visible", false);
-    }
+    // SetWidgetOptions("EllipseBrojKupaca", "Visible", true);
+    // if (br_kupaca_og > br_kupaca_lg)
+    // {
+    //     SetWidgetOptions("EllipseBrojKupaca", "Color", "Lime");
+    // }
+    // elif(br_kupaca_og < br_kupaca_lg)
+    // {
+    //     SetWidgetOptions("EllipseBrojKupaca", "Color", "Red");
+    // }
+    // else{
+    //     SetWidgetOptions("EllipseBrojKupaca", "Color", "Gray");
+    // }
+    // if(br_kupaca_og == 0 || br_kupaca_lg == 0){
+    //     SetWidgetOptions("EllipseBrojKupaca", "Visible", false);
+    // }
 
     // bojeArray = {250, 100, 250};
     bojeArray = {196, 224, 138};
@@ -458,21 +482,21 @@ function setCustomerAndInvoiceCounts3(){
     }
 
     //ellipse
-    SetWidgetOptions("EllipseBrojRacuna", "Visible", true);
-    if (broj_rac_og > broj_rac_lg)
-    {
-        SetWidgetOptions("EllipseBrojRacuna", "Color", "Lime");
-    }
-    elif(broj_rac_og < broj_rac_lg)
-    {
-        SetWidgetOptions("EllipseBrojRacuna", "Color", "Red");
-    }
-    else{
-        SetWidgetOptions("EllipseBrojRacuna", "Color", "Gray");
-    }
-    if(broj_rac_og == 0 || broj_rac_lg == 0){
-        SetWidgetOptions("EllipseBrojRacuna", "Visible", false);
-    }
+    // SetWidgetOptions("EllipseBrojRacuna", "Visible", true);
+    // if (broj_rac_og > broj_rac_lg)
+    // {
+    //     SetWidgetOptions("EllipseBrojRacuna", "Color", "Lime");
+    // }
+    // elif(broj_rac_og < broj_rac_lg)
+    // {
+    //     SetWidgetOptions("EllipseBrojRacuna", "Color", "Red");
+    // }
+    // else{
+    //     SetWidgetOptions("EllipseBrojRacuna", "Color", "Gray");
+    // }
+    // if(broj_rac_og == 0 || broj_rac_lg == 0){
+    //     SetWidgetOptions("EllipseBrojRacuna", "Visible", false);
+    // }
 
     // bojeArray = {220, 150, 250};
     bojeArray = {196, 224, 138};
@@ -553,21 +577,21 @@ function setCustomerAndInvoiceCounts3(){
     }
 
     //ellipse
-    SetWidgetOptions("EllipseProsjProdajaPoKupcu", "Visible", true);
-    if (prodaja_kup_og > prodaja_kup_lg)
-    {
-        SetWidgetOptions("EllipseProsjProdajaPoKupcu", "Color", "Lime");
-    }
-    elif(prodaja_kup_og < prodaja_kup_lg)
-    {
-        SetWidgetOptions("EllipseProsjProdajaPoKupcu", "Color", "Red");
-    }
-    else{
-        SetWidgetOptions("EllipseProsjProdajaPoKupcu", "Color", "Gray");
-    }
-    if(prodaja_kup_og == 0 || prodaja_kup_lg == 0){
-        SetWidgetOptions("EllipseProsjProdajaPoKupcu", "Visible", false);
-    }
+    // SetWidgetOptions("EllipseProsjProdajaPoKupcu", "Visible", true);
+    // if (prodaja_kup_og > prodaja_kup_lg)
+    // {
+    //     SetWidgetOptions("EllipseProsjProdajaPoKupcu", "Color", "Lime");
+    // }
+    // elif(prodaja_kup_og < prodaja_kup_lg)
+    // {
+    //     SetWidgetOptions("EllipseProsjProdajaPoKupcu", "Color", "Red");
+    // }
+    // else{
+    //     SetWidgetOptions("EllipseProsjProdajaPoKupcu", "Color", "Gray");
+    // }
+    // if(prodaja_kup_og == 0 || prodaja_kup_lg == 0){
+    //     SetWidgetOptions("EllipseProsjProdajaPoKupcu", "Visible", false);
+    // }
 
     // bojeArray = {150, 190, 250};
     bojeArray = {196, 224, 138};
@@ -610,7 +634,7 @@ function setCustomerAndInvoiceCounts4(){
         }
     }
     //sql_str= sql_str* " AND DATEDIFF(day,nkpr_gl_invdte, CURRENT_TIMESTAMP) BETWEEN 0 AND 31"
-    filterPart();
+    //filterPart();
     sqlResult = SqlQuery(sql_str);
     if (size(sqlResult) !== 0)
     {
@@ -661,159 +685,321 @@ function setHorizontalBars()
 }
 
 function setHorizontalBars1(){
-    if (Math.Abs(tot_ovagod) > Math.Abs(tot_lani))
+    //PRILIV GODINE
+    if (Math.Abs(tot_ovagod_priliv) > Math.Abs(tot_lani_priliv))
     {
-        if(tot_lani != 0)
+        if(tot_lani_priliv != 0)
         {
-            ratio = 1.00 * tot_ovagod/tot_lani;
-            HorizontalBar("HorizontalBarOG", "BarWidth", 90);
-            HorizontalBar("HorizontalBarLG", "BarWidth", 90/ratio);
+            ratio = 1.00 * tot_ovagod_priliv/tot_lani_priliv;
+            HorizontalBar("HorizontalBarOGPriliv", "BarWidth", 90);
+            HorizontalBar("HorizontalBarLGPriliv", "BarWidth", 90/ratio);
         }
         else
         {
-            HorizontalBar("HorizontalBarLG", "BarWidth", 0);
-            if(tot_ovagod != 0)
+            HorizontalBar("HorizontalBarLGPriliv", "BarWidth", 0);
+            if(tot_ovagod_priliv != 0)
             {
-                HorizontalBar("HorizontalBarOG", "BarWidth", 90);
+                HorizontalBar("HorizontalBarOGPriliv", "BarWidth", 90);
             }
             else
             {
-                HorizontalBar("HorizontalBarOG", "BarWidth", 0);
+                HorizontalBar("HorizontalBarOGPriliv", "BarWidth", 0);
             }
         }
     }
     else
     {
-        if(tot_ovagod != 0)
+        if(tot_ovagod_priliv != 0)
         {
-            ratio = 1.00 * tot_lani/tot_ovagod;
-            HorizontalBar("HorizontalBarLG", "BarWidth", 90);
-            HorizontalBar("HorizontalBarOG", "BarWidth", 90/ratio);
+            ratio = 1.00 * tot_lani_priliv/tot_ovagod_priliv;
+            HorizontalBar("HorizontalBarLGPriliv", "BarWidth", 90);
+            HorizontalBar("HorizontalBarOGPriliv", "BarWidth", 90/ratio);
             // HorizontalBar("HorizontalBarOG1", "BarWidth", 90/ratio);
         }
         else
         {
-            HorizontalBar("HorizontalBarOG", "BarWidth", 0);
-            if(tot_lani != 0)
+            HorizontalBar("HorizontalBarOGPriliv", "BarWidth", 0);
+            if(tot_lani_priliv != 0)
             {
-                HorizontalBar("HorizontalBarLG", "BarWidth", 90);
+                HorizontalBar("HorizontalBarLGPriliv", "BarWidth", 90);
             }
             else
             {
-                HorizontalBar("HorizontalBarLG", "BarWidth", 0);
+                HorizontalBar("HorizontalBarLGPriliv", "BarWidth", 0);
             }
         }
     }
 
     //ellipse
-    SetWidgetOptions("EllipseProdajaUGodini", "Visible", true);
-    if (tot_ovagod > tot_lani)
+    SetWidgetOptions("EllipseProdajaUGodiniPriliv", "Visible", true);
+    if (tot_ovagod_priliv > tot_lani_priliv)
     {
-        SetWidgetOptions("EllipseProdajaUGodini", "Color", "Lime");
+        SetWidgetOptions("EllipseProdajaUGodiniPriliv", "Color", "Lime");
     }
-    elif(tot_ovagod < tot_lani)
+    elif(tot_ovagod_priliv < tot_lani_priliv)
     {
-        SetWidgetOptions("EllipseProdajaUGodini", "Color", "Red");
+        SetWidgetOptions("EllipseProdajaUGodiniPriliv", "Color", "Red");
     }
     else{
-        SetWidgetOptions("EllipseProdajaUGodini", "Color", "Gray");
+        SetWidgetOptions("EllipseProdajaUGodiniPriliv", "Color", "Gray");
     }
-    if(tot_ovagod == 0 || tot_lani == 0){
-        SetWidgetOptions("EllipseProdajaUGodini", "Visible", false);
+    if(tot_ovagod_priliv == 0 || tot_lani_priliv == 0){
+        SetWidgetOptions("EllipseProdajaUGodiniPriliv", "Visible", false);
     }
 
-    Format("tot_ovagod", "nofd", recv: "tot_ovagod_string");
-    HorizontalBar("HorizontalBarOG", "Text", tot_ovagod_string);
-    HorizontalBar("HorizontalBarOG", "Color", bojeArray);
-    Format("tot_lani", "nofd", recv: "tot_lani_string");
-    HorizontalBar("HorizontalBarLG", "Text", tot_lani_string);
-    HorizontalBar("HorizontalBarLG", "Color", bojeArray);
+    Format("tot_ovagod_priliv", "nofd", recv: "tot_ovagod_priliv_string");
+    HorizontalBar("HorizontalBarOGPriliv", "Text", tot_ovagod_priliv_string);
+    HorizontalBar("HorizontalBarOGPriliv", "Color", bojeArray);
+    Format("tot_lani_priliv", "nofd", recv: "tot_lani_priliv_string");
+    HorizontalBar("HorizontalBarLGPriliv", "Text", tot_lani_priliv_string);
+    HorizontalBar("HorizontalBarLGPriliv", "Color", bojeArray);
+    
+    //ODLIV GODINE
+    if (Math.Abs(tot_ovagod_odliv) > Math.Abs(tot_lani_odliv))
+    {
+        if(tot_lani_odliv != 0)
+        {
+            ratio = 1.00 * tot_ovagod_odliv/tot_lani_odliv;
+            HorizontalBar("HorizontalBarOGOdliv", "BarWidth", 90);
+            HorizontalBar("HorizontalBarLGOdliv", "BarWidth", 90/ratio);
+        }
+        else
+        {
+            HorizontalBar("HorizontalBarLGOdliv", "BarWidth", 0);
+            if(tot_ovagod_odliv != 0)
+            {
+                HorizontalBar("HorizontalBarOGOdliv", "BarWidth", 90);
+            }
+            else
+            {
+                HorizontalBar("HorizontalBarOGOdliv", "BarWidth", 0);
+            }
+        }
+    }
+    else
+    {
+        if(tot_ovagod_odliv != 0)
+        {
+            ratio = 1.00 * tot_lani_odliv/tot_ovagod_odliv;
+            HorizontalBar("HorizontalBarLGOdliv", "BarWidth", 90);
+            HorizontalBar("HorizontalBarOGOdliv", "BarWidth", 90/ratio);
+            // HorizontalBar("HorizontalBarOG1", "BarWidth", 90/ratio);
+        }
+        else
+        {
+            HorizontalBar("HorizontalBarOGOdliv", "BarWidth", 0);
+            if(tot_lani_odliv != 0)
+            {
+                HorizontalBar("HorizontalBarLGOdliv", "BarWidth", 90);
+            }
+            else
+            {
+                HorizontalBar("HorizontalBarLGOdliv", "BarWidth", 0);
+            }
+        }
+    }
+
+    //ellipse
+    SetWidgetOptions("EllipseProdajaUGodiniOdliv", "Visible", true);
+    if (tot_ovagod_odliv > tot_lani_odliv)
+    {
+        SetWidgetOptions("EllipseProdajaUGodiniOdliv", "Color", "Lime");
+    }
+    elif(tot_ovagod_odliv < tot_lani_odliv)
+    {
+        SetWidgetOptions("EllipseProdajaUGodiniOdliv", "Color", "Red");
+    }
+    else{
+        SetWidgetOptions("EllipseProdajaUGodiniOdliv", "Color", "Gray");
+    }
+    if(tot_ovagod_odliv == 0 || tot_lani_odliv == 0){
+        SetWidgetOptions("EllipseProdajaUGodiniOdliv", "Visible", false);
+    }
+
+    Format("tot_ovagod_odliv", "nofd", recv: "tot_ovagod_odliv_string");
+    HorizontalBar("HorizontalBarOGOdliv", "Text", tot_ovagod_odliv_string);
+    HorizontalBar("HorizontalBarOGOdliv", "Color", bojeArray);
+    Format("tot_lani_odliv", "nofd", recv: "tot_lani_odliv_string");
+    HorizontalBar("HorizontalBarLGOdliv", "Text", tot_lani_odliv_string);
+    HorizontalBar("HorizontalBarLGOdliv", "Color", bojeArray);
 }
 
 function setHorizontalBars2()
 {
-    if (Math.Abs(tot_ovajmj) > Math.Abs(tot_proslimj))
+    //PRILIV MJESECI
+    if (Math.Abs(tot_ovajmj_priliv) > Math.Abs(tot_proslimj_priliv))
     {
-        if(tot_proslimj != 0)
+        if(tot_proslimj_priliv != 0)
         {
-            ratio = 1.00 * tot_ovajmj/tot_proslimj;
-            HorizontalBar("HorizontalBarOM", "BarWidth", 90);
-            HorizontalBar("HorizontalBarLM", "BarWidth", 90.00/ratio);
+            ratio = 1.00 * tot_ovajmj_priliv/tot_proslimj_priliv;
+            HorizontalBar("HorizontalBarOMPriliv", "BarWidth", 90);
+            HorizontalBar("HorizontalBarLMPriliv", "BarWidth", 90.00/ratio);
         }
         else
         {
-            HorizontalBar("HorizontalBarLM", "BarWidth", 0);
-            if(tot_ovajmj != 0)
+            HorizontalBar("HorizontalBarLMPriliv", "BarWidth", 0);
+            if(tot_ovajmj_priliv != 0)
             {
-                HorizontalBar("HorizontalBarOM", "BarWidth", 90);
+                HorizontalBar("HorizontalBarOMPriliv", "BarWidth", 90);
             }
             else
             {
-                HorizontalBar("HorizontalBarOM", "BarWidth", 0);
+                HorizontalBar("HorizontalBarOMPriliv", "BarWidth", 0);
             }
         }
     }
     else
     {
-        if(tot_ovajmj != 0)
+        if(tot_ovajmj_priliv != 0)
         {
-            ratio = 1.00 * tot_proslimj/tot_ovajmj;
-            HorizontalBar("HorizontalBarLM", "BarWidth", 90);
-            HorizontalBar("HorizontalBarOM", "BarWidth", 90.00/ratio);
+            ratio = 1.00 * tot_proslimj_priliv/tot_ovajmj_priliv;
+            HorizontalBar("HorizontalBarLMPriliv", "BarWidth", 90);
+            HorizontalBar("HorizontalBarOMPriliv", "BarWidth", 90.00/ratio);
         }
         else
         {
-            HorizontalBar("HorizontalBarOM", "BarWidth", 0);
-            if(tot_proslimj != 0)
+            HorizontalBar("HorizontalBarOMPriliv", "BarWidth", 0);
+            if(tot_proslimj_priliv != 0)
             {
-                HorizontalBar("HorizontalBarLM", "BarWidth", 90);
+                HorizontalBar("HorizontalBarLMPriliv", "BarWidth", 90);
             }
             else
             {
-                HorizontalBar("HorizontalBarLM", "BarWidth", 0);
+                HorizontalBar("HorizontalBarLMPriliv", "BarWidth", 0);
             }
         }
     }
 
     //ellipse
-    SetWidgetOptions("EllipseProdajaUMjesecu", "Visible", true);
-    if (tot_ovajmj > tot_proslimj)
+    SetWidgetOptions("EllipseProdajaUMjesecuPriliv", "Visible", true);
+    if (tot_ovajmj_priliv > tot_proslimj_priliv)
     {
-        SetWidgetOptions("EllipseProdajaUMjesecu", "Color", "Lime");
+        SetWidgetOptions("EllipseProdajaUMjesecuPriliv", "Color", "Lime");
     }
-    elif(tot_ovajmj < tot_proslimj)
+    elif(tot_ovajmj_priliv < tot_proslimj_priliv)
     {
-        SetWidgetOptions("EllipseProdajaUMjesecu", "Color", "Red");
+        SetWidgetOptions("EllipseProdajaUMjesecuPriliv", "Color", "Red");
     }
     else{
-        SetWidgetOptions("EllipseProdajaUMjesecu", "Color", "Gray");
+        SetWidgetOptions("EllipseProdajaUMjesecuPriliv", "Color", "Gray");
     }
-    if(tot_ovajmj == 0 || tot_proslimj == 0){
-        SetWidgetOptions("EllipseProdajaUMjesecu", "Visible", false);
+    if(tot_ovajmj_priliv == 0 || tot_proslimj_priliv == 0){
+        SetWidgetOptions("EllipseProdajaUMjesecuPriliv", "Visible", false);
     }
 
-    Format("tot_ovajmj", "nofd", recv: "tot_ovajmj_string");
-    HorizontalBar("HorizontalBarOM", "Text", tot_ovajmj_string);
-    HorizontalBar("HorizontalBarOM", "Color", bojeArrayMJ);
-    Format("tot_proslimj", "nofd", recv: "tot_proslimj_string");
-    HorizontalBar("HorizontalBarLM", "Text", tot_proslimj_string);
-    HorizontalBar("HorizontalBarLM", "Color", bojeArrayMJ);
-
-    if(tot_lani == 0)
+    Format("tot_ovajmj_priliv", "nofd", recv: "tot_ovajmj_priliv_string");
+    HorizontalBar("HorizontalBarOMPriliv", "Text", tot_ovajmj_priliv_string);
+    HorizontalBar("HorizontalBarOMPriliv", "Color", bojeArrayMJ);
+    Format("tot_proslimj_priliv", "nofd", recv: "tot_proslimj_priliv_string");
+    HorizontalBar("HorizontalBarLMPriliv", "Text", tot_proslimj_priliv_string);
+    HorizontalBar("HorizontalBarLMPriliv", "Color", bojeArrayMJ);
+    
+    //ODLIV MJESECI
+    if (Math.Abs(tot_ovajmj_odliv) > Math.Abs(tot_proslimj_odliv))
     {
-        postotak = 0;
+        if(tot_proslimj_odliv != 0)
+        {
+            ratio = 1.00 * tot_ovajmj_odliv/tot_proslimj_odliv;
+            HorizontalBar("HorizontalBarOMOdliv", "BarWidth", 90);
+            HorizontalBar("HorizontalBarLMOdliv", "BarWidth", 90.00/ratio);
+        }
+        else
+        {
+            HorizontalBar("HorizontalBarLMOdliv", "BarWidth", 0);
+            if(tot_ovajmj_odliv != 0)
+            {
+                HorizontalBar("HorizontalBarOMOdliv", "BarWidth", 90);
+            }
+            else
+            {
+                HorizontalBar("HorizontalBarOMOdliv", "BarWidth", 0);
+            }
+        }
     }
     else
     {
-        postotak = Math.Round((100.00 * (tot_ovagod-tot_lani) /tot_lani), 2);
+        if(tot_ovajmj_odliv != 0)
+        {
+            ratio = 1.00 * tot_proslimj_odliv/tot_ovajmj_odliv;
+            HorizontalBar("HorizontalBarLMOdliv", "BarWidth", 90);
+            HorizontalBar("HorizontalBarOMOdliv", "BarWidth", 90.00/ratio);
+        }
+        else
+        {
+            HorizontalBar("HorizontalBarOMOdliv", "BarWidth", 0);
+            if(tot_proslimj_odliv != 0)
+            {
+                HorizontalBar("HorizontalBarLMOdliv", "BarWidth", 90);
+            }
+            else
+            {
+                HorizontalBar("HorizontalBarLMOdliv", "BarWidth", 0);
+            }
+        }
     }
-    if(tot_prosliMj == 0)
+
+    //ellipse
+    SetWidgetOptions("EllipseProdajaUMjesecuOdliv", "Visible", true);
+    if (tot_ovajmj_odliv > tot_proslimj_odliv)
     {
-        postotakMj = 0;
+        SetWidgetOptions("EllipseProdajaUMjesecuOdliv", "Color", "Lime");
+    }
+    elif(tot_ovajmj_odliv < tot_proslimj_odliv)
+    {
+        SetWidgetOptions("EllipseProdajaUMjesecuOdliv", "Color", "Red");
+    }
+    else{
+        SetWidgetOptions("EllipseProdajaUMjesecuOdliv", "Color", "Gray");
+    }
+    if(tot_ovajmj_odliv == 0 || tot_proslimj_odliv == 0){
+        SetWidgetOptions("EllipseProdajaUMjesecuOdliv", "Visible", false);
+    }
+
+    Format("tot_ovajmj_odliv", "nofd", recv: "tot_ovajmj_odliv_string");
+    HorizontalBar("HorizontalBarOMOdliv", "Text", tot_ovajmj_odliv_string);
+    HorizontalBar("HorizontalBarOMOdliv", "Color", bojeArrayMJ);
+    Format("tot_proslimj_odliv", "nofd", recv: "tot_proslimj_odliv_string");
+    HorizontalBar("HorizontalBarLMOdliv", "Text", tot_proslimj_odliv_string);
+    HorizontalBar("HorizontalBarLMOdliv", "Color", bojeArrayMJ);
+
+
+//????????
+    //index priliva - godine
+    if(tot_lani_priliv == 0)
+    {
+        postotakPriliv = 0;
     }
     else
     {
-        postotakMj = Math.Round((100.00 *(tot_ovajmj-tot_prosliMj)/tot_prosliMj), 2);
+        postotakPriliv = Math.Round((100.00 * (tot_ovagod_priliv-tot_lani_priliv) /tot_lani_priliv), 2);
+    }
+    //index odliv - godine
+    if(tot_lani_odliv == 0)
+    {
+        postotakOdliv = 0;
+    }
+    else
+    {
+        postotakOdliv = Math.Round((100.00 * (tot_ovagod_odliv-tot_lani_odliv) /tot_lani_odliv), 2);
+    }
+
+    //index priliva - mjeseca
+    if(tot_prosliMj_priliv == 0)
+    {
+        postotakMjPriliv = 0;
+    }
+    else
+    {
+        postotakMjPriliv = Math.Round((100.00 *(tot_ovajmj_priliv-tot_prosliMj_priliv)/tot_prosliMj_priliv), 2);
+    }
+    //index odliva - mjeseca
+    if(tot_prosliMj_odliv == 0)
+    {
+        postotakMjOdliv = 0;
+    }
+    else
+    {
+        postotakMjOdliv = Math.Round((100.00 *(tot_ovajmj_odliv-tot_prosliMj_odliv)/tot_prosliMj_odliv), 2);
     }
 }
 
@@ -877,7 +1063,7 @@ function setWeekComparison()
     
 	sql_str  += " WHERE wk_year = " + ovagod_h;
 	sql_str  += " AND nkpr_gl_datem >= '" + fiscal_yr + "'";
-    filterPart();
+    //filterPart();
     /*
     if (kategorija!= ''){ sql_str += " AND arti_kategorija='"+kategorija+"'";}
     if (klasa!= ''){ sql_str += " AND arti_klasa='"+klasa+"'";}
@@ -984,22 +1170,22 @@ function setWeekComparison2(){
         }
 	}
 
-    //ellipse
-    SetWidgetOptions("EllipseProdajaUTjednu", "Visible", true);
-    if (tot_ovajTj > tot_ProsliTj)
-    {
-        SetWidgetOptions("EllipseProdajaUTjednu", "Color", "Lime");
-    }
-    elif(tot_ovajTj < tot_ProsliTj)
-    {
-        SetWidgetOptions("EllipseProdajaUTjednu", "Color", "Red");
-    }
-    else{
-        SetWidgetOptions("EllipseProdajaUTjednu", "Color", "Gray");
-    }
-    if(tot_ovajTj == 0 || tot_ProsliTj == 0){
-        SetWidgetOptions("EllipseProdajaUTjednu", "Visible", false);
-    }
+    // //ellipse
+    // SetWidgetOptions("EllipseProdajaUTjednu", "Visible", true);
+    // if (tot_ovajTj > tot_ProsliTj)
+    // {
+    //     SetWidgetOptions("EllipseProdajaUTjednu", "Color", "Lime");
+    // }
+    // elif(tot_ovajTj < tot_ProsliTj)
+    // {
+    //     SetWidgetOptions("EllipseProdajaUTjednu", "Color", "Red");
+    // }
+    // else{
+    //     SetWidgetOptions("EllipseProdajaUTjednu", "Color", "Gray");
+    // }
+    // if(tot_ovajTj == 0 || tot_ProsliTj == 0){
+    //     SetWidgetOptions("EllipseProdajaUTjednu", "Visible", false);
+    // }
 
 	Format("tot_ovajTj", "nofd", recv: "tot_ovajTj_string");
 	HorizontalBar("HorizontalBarOT", "Text", tot_ovajTj_string);
@@ -1012,7 +1198,7 @@ function setWeekComparison2(){
 
 //---------------------------------------------------------------
 
-function setSalesRatio(){
+function setCashFlowRatio(){
 
     sql_str = "SELECT '1' as tip,CONVERT(varchar(6),KS_IG_DATUM,112) as yyyymm, ";
     if (neto_dn)
