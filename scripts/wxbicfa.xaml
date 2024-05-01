@@ -39,7 +39,7 @@
         </Style>
     </Window.Resources>
     <Viewbox Stretch="Fill">
-        <Grid Margin="0,0,0,0" Background="#FFE0F4CB">
+        <Grid Margin="0,0,0,0" Background="#FFf2cc8f">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="160"/>
                 <ColumnDefinition Width="*"/>
@@ -49,25 +49,26 @@
                 <RowDefinition/>
                 <RowDefinition Height="0"/>
             </Grid.RowDefinitions>
-            <Grid Margin="156,5,4,0" Grid.Row="1" Grid.ColumnSpan="2" Background="#FFE5FFE2">
+            <Grid Margin="156,5,4,0" Grid.Row="1" Grid.ColumnSpan="2" Background="#FFf4f1de">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="94*"/>
+                    <RowDefinition Height="61*"/>
+                    <RowDefinition Height="153*"/>
+                    <RowDefinition Height="156*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Rectangle x:Name="RectangleB" Grid.Column="1" Margin="8,5,0,0" Stroke="Black" RadiusX="7" RadiusY="7" StrokeThickness="0" Fill="#FFEEEDF1" Height="148" VerticalAlignment="Top" HorizontalAlignment="Left" Width="326" Grid.Row="1"/>
-                <Rectangle x:Name="RectangleA" Margin="0,5,0,0" Stroke="Black" RadiusX="7" RadiusY="7" StrokeThickness="0" Fill="#FFEEEDF1" Height="148" VerticalAlignment="Top" HorizontalAlignment="Center" Width="327" Grid.Row="1"/>
-                <Rectangle x:Name="RectangleC" Grid.Column="2" Margin="9,5,0,0" Stroke="Black" Fill="#FFEEEDF1" RadiusX="7" RadiusY="7" StrokeThickness="0" Height="148" VerticalAlignment="Top" HorizontalAlignment="Left" Width="327" Grid.Row="1"/>
-                <Rectangle x:Name="RectangleG" Margin="164,7,0,0" Stroke="Black" Fill="#FFEEEDF1" RadiusX="7" RadiusY="7" StrokeThickness="0" Grid.ColumnSpan="3" Height="148" VerticalAlignment="Top" HorizontalAlignment="Left" Width="715"/>
+                <Rectangle x:Name="RectangleB" Grid.Column="1" Margin="8,5,0,0" Stroke="Black" RadiusX="7" RadiusY="7" StrokeThickness="0" Fill="#FFEEEDF1" Height="148" VerticalAlignment="Top" HorizontalAlignment="Left" Width="326" Grid.Row="2"/>
+                <Rectangle x:Name="RectangleA" Margin="0,5,0,0" Stroke="Black" RadiusX="7" RadiusY="7" StrokeThickness="0" Fill="#FFEEEDF1" Height="148" VerticalAlignment="Top" HorizontalAlignment="Center" Width="327" Grid.Row="2"/>
+                <Rectangle x:Name="RectangleC" Grid.Column="2" Margin="9,5,0,0" Stroke="Black" Fill="#FFEEEDF1" RadiusX="7" RadiusY="7" StrokeThickness="0" Height="148" VerticalAlignment="Top" HorizontalAlignment="Left" Width="327" Grid.Row="2"/>
+                <Rectangle x:Name="RectangleG" Margin="164,7,0,0" Stroke="Black" Fill="#FFEEEDF1" RadiusX="7" RadiusY="7" StrokeThickness="0" Grid.ColumnSpan="3" Height="148" VerticalAlignment="Top" HorizontalAlignment="Left" Width="715" Grid.RowSpan="2"/>
                 <wcl:ASHorizontalBar x:Name="HorizontalBarLGPriliv"
                                      UseLayoutRounding="True"
                                      Margin="130,86,0,0"
-                                     FontSize="24" Grid.Column="0" Grid.Row="1" FontFamily="Lato" FontWeight="Bold" Background="#FFB9B6B6" BarColor="Aquamarine" BorderBrush="Transparent" BorderThickness="0" Foreground="Red" Height="31" VerticalAlignment="Top" HorizontalAlignment="Left" Width="180"/>
+                                     FontSize="24" Grid.Column="0" Grid.Row="2" FontFamily="Lato" FontWeight="Bold" Background="#FFB9B6B6" BarColor="Aquamarine" BorderBrush="Transparent" BorderThickness="0" Foreground="Red" Height="31" VerticalAlignment="Top" HorizontalAlignment="Left" Width="180"/>
                 <wcl:ASEnterBox HorizontalAlignment="Left"
                                 FontWeight="Bold"
                                 VerticalAlignment="Top"
@@ -81,7 +82,7 @@
                                 Width="45"
                                 IsTabStop="False"
                                 Focusable="False"
-                                Grid.Column="0" Grid.Row="1" />
+                                Grid.Column="0" Grid.Row="2" />
                 <wcl:ASEnterBox HorizontalAlignment="Left"
                                 FontWeight="Bold"
                                 VerticalAlignment="Top"
@@ -95,7 +96,7 @@
                                 Width="45"
                                 IsTabStop="False"
                                 Focusable="False"
-                                Grid.Column="0" Grid.Row="1" />
+                                Grid.Column="0" Grid.Row="2" />
                 <TextBlock HorizontalAlignment="Left"
                            VerticalAlignment="Top"
                            Height="25"
@@ -105,7 +106,7 @@
                            x:Name="Label20"
                            FontSize="16"
                            Foreground="black"
-                           Text="Index %:" Grid.Column="0" Grid.Row="1" />
+                           Text="Index %:" Grid.Column="0" Grid.Row="2" />
                 <wcl:ASNumericBox HorizontalAlignment="Left"
                                   FontWeight="Normal"
                                   ButtonSize="0"
@@ -114,19 +115,19 @@
                                   Margin="184,122,0,0"
                                   x:Name="TASNumEnter16"
                                   Thousands="True"
-                                  Background="#FFC4E08A"
+                                  Background="#FF81b29a"
                                   Foreground="black"
                                   FieldName="postotakPriliv"
                                   FontFamily="Lato"
                                   FontSize="20"
                                   HorizontalContentAlignment="Right"
                                   IsReadOnly="True"
-                                  Grid.Column="0" Grid.Row="1" Height="26" VerticalAlignment="Top"
+                                  Grid.Column="0" Grid.Row="2" Height="26" VerticalAlignment="Top"
                                   IsTabStop="False"/>
-                <Label x:Name="label" Content="Priliv u godini" Margin="34,9,0,0" FontFamily="Lato" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left" Width="213" Height="36" VerticalAlignment="Top" Grid.Row="1"/>
+                <Label x:Name="label" Content="Priliv u godini" Margin="34,9,0,0" FontFamily="Lato" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left" Width="213" Height="36" VerticalAlignment="Top" Grid.Row="2"/>
                 <wcl:ASHorizontalBar x:Name="HorizontalBarOGPriliv"
                                      Margin="130,49,0,0"
-                                     FontSize="24" Grid.Column="0" Grid.Row="1" FontFamily="lato" FontWeight="Bold" Background="#FFB9B6B6" BarColor="#FFC4E08A" Height="32" VerticalAlignment="Top" HorizontalAlignment="Left" Width="180" />
+                                     FontSize="24" Grid.Column="0" Grid.Row="2" FontFamily="lato" FontWeight="Bold" Background="#FFB9B6B6" BarColor="#FF81b29a" Height="32" VerticalAlignment="Top" HorizontalAlignment="Left" Width="180" />
                 <!-- <wcl:ASNumericBox HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 FontWeight="Bold"
@@ -163,14 +164,14 @@
                 IsReadOnly="True"
                 FontSize="17"
                 TabIndex="9" /> -->
-                <Label x:Name="labelmjesec" Content="Priliv u mjesecu" Grid.Column="1"  Grid.Row="1"  Margin="33,9,0,0" FontFamily="Lato" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left" Width="212" Height="36" VerticalAlignment="Top"/>
+                <Label x:Name="labelmjesec" Content="Priliv u mjesecu" Grid.Column="1"  Grid.Row="2"  Margin="33,9,0,0" FontFamily="Lato" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left" Width="212" Height="36" VerticalAlignment="Top"/>
                 <wcl:ASHorizontalBar x:Name="HorizontalBarOMPriliv"
                                      VerticalAlignment="Top"
                                      Margin="128,49,0,0"
-                                     FontSize="24" Height="32" Grid.Column="1" FontFamily="Lato" FontWeight="Bold" BarColor="#FFC4E08A" Background="#FFB9B6B6" HorizontalAlignment="Left" Width="180" Grid.Row="1" />
+                                     FontSize="24" Height="32" Grid.Column="1" FontFamily="Lato" FontWeight="Bold" BarColor="#FFC4E08A" Background="#FFB9B6B6" HorizontalAlignment="Left" Width="180" Grid.Row="2" />
                 <wcl:ASHorizontalBar x:Name="HorizontalBarLMPriliv"
                                      Margin="128,86,0,0"
-                                     FontSize="24" Height="32" Grid.Column="1" Grid.Row="1" FontFamily="Lato" FontWeight="Bold" BarColor="#FFC4E08A" Background="#FFB9B6B9" HorizontalAlignment="Left" Width="180" VerticalAlignment="Top" />
+                                     FontSize="24" Height="32" Grid.Column="1" Grid.Row="2" FontFamily="Lato" FontWeight="Bold" BarColor="#FFC4E08A" Background="#FFB9B6B9" HorizontalAlignment="Left" Width="180" VerticalAlignment="Top" />
                 <wcl:ASNumericBox HorizontalAlignment="Left"
                                   FontWeight="Normal"
                                   ButtonSize="0"
@@ -179,7 +180,7 @@
                                   Margin="183,122,0,0"
                                   x:Name="TASNumEnter3"
                                   Thousands="True"
-                                  Background="#FFC4E08A"
+                                  Background="#FF81b29a"
                                   Foreground="Black"
                                   FieldName="postotakMjPriliv"
                                   FontFamily="lato"
@@ -187,7 +188,7 @@
                                   IsReadOnly="True"
                                   FontSize="20"
                                   Grid.Column="1" Height="26" VerticalAlignment="Top"
-                                  IsTabStop="False" Grid.Row="1"/>
+                                  IsTabStop="False" Grid.Row="2"/>
                 <TextBlock HorizontalAlignment="Left"
                            VerticalAlignment="Top"
                            Height="25"
@@ -197,7 +198,7 @@
                            x:Name="Label5"
                            FontSize="16"
                            Foreground="black"
-                           Text="Index %:" Grid.Column="1" Background="#FFF7EEEE" Grid.Row="1" />
+                           Text="Index %:" Grid.Column="1" Background="#FFF7EEEE" Grid.Row="2" />
                 <TextBlock HorizontalAlignment="Left"
                            VerticalAlignment="Top"
                            Height="23"
@@ -207,7 +208,7 @@
                            x:Name="Label14"
                            FontSize="16"
                            Foreground="Black"
-                           Text="Ovaj mjesec:" Grid.Column="1" Background="#FFEEEDF5" Grid.Row="1"/>
+                           Text="Ovaj mjesec:" Grid.Column="1" Background="#FFEEEDF5" Grid.Row="2"/>
                 <TextBlock HorizontalAlignment="Left"
                            VerticalAlignment="Top"
                            Height="20"
@@ -217,8 +218,8 @@
                            x:Name="Label15"
                            FontSize="16"
                            Foreground="Black"
-                           Text="Prošli mjesec:" Grid.Column="1" Grid.Row="1" />
-                <Label x:Name="labeltjedan" Content="Priliv u tjednu" Grid.Column="2"  Grid.Row="1"  Margin="15,9,0,0" FontFamily="Lato" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left" Width="213" Height="36" VerticalAlignment="Top"/>
+                           Text="Prošli mjesec:" Grid.Column="1" Grid.Row="2" />
+                <Label x:Name="labeltjedan" Content="Priliv u tjednu" Grid.Column="2"  Grid.Row="2"  Margin="15,9,0,0" FontFamily="Lato" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left" Width="213" Height="36" VerticalAlignment="Top"/>
                 <wcl:ASDateEditer Grid.Column="2" HorizontalAlignment="Left"
                                   VerticalAlignment="Top"
                                   Height="22"
@@ -233,21 +234,21 @@
                                   DisplayDate="01/01/23"
                                   x:Name="deNaDan"
                                   DataContext="danas_h"
-                                  TabIndex="31" Grid.Row="1"/>
+                                  TabIndex="31" Grid.Row="2"/>
                 <wcl:ASHorizontalBar x:Name="HorizontalBarOTPriliv"
                                      HorizontalAlignment="Left"
                                      VerticalAlignment="Top"
                                      Height="32"
                                      Width="180"
                                      Margin="137,49,0,0"
-                                     FontSize="24" Grid.Column="2" Grid.Row="1" FontFamily="Lato" FontWeight="Bold"  BarColor="#FFC4E08A" Background="#FFB9B6B6" />
+                                     FontSize="24" Grid.Column="2" Grid.Row="2" FontFamily="Lato" FontWeight="Bold"  BarColor="#FFC4E08A" Background="#FFB9B6B6" />
                 <wcl:ASHorizontalBar x:Name="HorizontalBarLTPriliv"
                                      HorizontalAlignment="Left"
                                      VerticalAlignment="Top"
                                      Height="32"
                                      Width="180"
                                      Margin="137,86,0,0"
-                                     FontSize="24" Grid.Column="2" FontFamily="Lato" FontWeight="Bold" Grid.Row="1"  BarColor="#FFC4E08A" Background="#FFB9B6B6" />
+                                     FontSize="24" Grid.Column="2" FontFamily="Lato" FontWeight="Bold" Grid.Row="2"  BarColor="#FFC4E08A" Background="#FFB9B6B6" />
                 <wcl:ASNumericBox HorizontalAlignment="Left"
                                   VerticalAlignment="Top"
                                   FontWeight="Normal"
@@ -258,14 +259,14 @@
                                   Margin="191,122,0,0"
                                   x:Name="TASNumEnter7"
                                   Thousands="True"
-                                  Background="#FFC4E08A"
+                                  Background="#FF81b29a"
                                   Foreground="Black"
                                   FieldName="postotakTjPriliv"
                                   HorizontalContentAlignment="Right"
                                   IsReadOnly="True"
                                   FontFamily="lato"
                                   FontSize="20"
-                                  Grid.Column="2" Grid.Row="1" RenderTransformOrigin="0.421,1.463"
+                                  Grid.Column="2" Grid.Row="2" RenderTransformOrigin="0.421,1.463"
                                   IsTabStop="False"/>
                 <wcl:ASEnterBox HorizontalAlignment="Left"
                                 FontWeight="Bold"
@@ -278,7 +279,7 @@
                                 Background="White"
                                 Height="18"
                                 Width="72"
-                                IsTabStop="False" Grid.Column="2" Grid.Row="1" IsReadOnly="True" />
+                                IsTabStop="False" Grid.Column="2" Grid.Row="2" IsReadOnly="True" />
                 <wcl:ASEnterBox HorizontalAlignment="Left"
                                 FontWeight="Bold"
                                 VerticalAlignment="Top"
@@ -290,7 +291,7 @@
                                 Background="White"
                                 Height="18"
                                 Width="72"
-                                IsTabStop="False" Grid.Column="2" Grid.Row="1" IsReadOnly="True" />
+                                IsTabStop="False" Grid.Column="2" Grid.Row="2" IsReadOnly="True" />
                 <TextBlock HorizontalAlignment="Left"
                            Width="62"
                            FontFamily="lato"
@@ -298,7 +299,7 @@
                            FontSize="16"
                            Foreground="#FF295454"
                            Margin="111,123,0,0"
-                           Text="Index %:" Grid.Column="2" Grid.Row="1" Height="28" VerticalAlignment="Top" />
+                           Text="Index %:" Grid.Column="2" Grid.Row="2" Height="28" VerticalAlignment="Top" />
                 <TextBlock HorizontalAlignment="Left"
                            VerticalAlignment="Top"
                            Height="16"
@@ -308,7 +309,7 @@
                            x:Name="Label18"
                            FontSize="11"
                            Foreground="Black"
-                           Text="Ovaj tjedan:" Grid.Column="2" Grid.Row="1" />
+                           Text="Ovaj tjedan:" Grid.Column="2" Grid.Row="2" />
                 <TextBlock HorizontalAlignment="Left"
                            VerticalAlignment="Top"
                            Height="15"
@@ -318,19 +319,19 @@
                            x:Name="Label19"
                            FontSize="11"
                            Foreground="Black"
-                           Text="Prošli tjedan:" Grid.Column="2" Grid.Row="1" />
+                           Text="Prošli tjedan:" Grid.Column="2" Grid.Row="2" />
                 <Label x:Name="label_Copy" Content="Stanje na žiro računima" Margin="174,16,0,0" FontFamily="Lato" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left" Width="265" Height="36" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
                 <wcl:ASHorizontalBar x:Name="HorizontalBarTotPriliv"
-                                     Margin="82,51,0,0"
-                                     FontSize="20" FontFamily="lato" FontWeight="Bold" Background="#FFB9B6B6" BarColor="#FFC4E08A" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" Width="180" Grid.Column="1" />
+                                     Margin="173,50,0,0"
+                                     FontSize="20" FontFamily="lato" FontWeight="Bold" Background="#FFB9B6B6" BarColor="#FFC4E08A" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" Width="180" Grid.Column="1" Grid.ColumnSpan="2" />
                 <wcl:ASHorizontalBar x:Name="HorizontalBarTotOdliv"
-                                     Margin="82,86,0,0"
-                                     FontSize="20" FontFamily="lato" FontWeight="Bold" Background="#FFB9B6B6" BarColor="#FFC4E08A" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" Width="180" Grid.Column="1" />
+                                     Margin="173,82,0,0"
+                                     FontSize="20" FontFamily="lato" FontWeight="Bold" Background="#FFB9B6B6" BarColor="#FFC4E08A" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" Width="180" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" />
                 <TextBlock HorizontalAlignment="Left"
                            VerticalAlignment="Top"
                            Height="18"
                            Width="40"
-                           Margin="39,56,0,0"
+                           Margin="73,59,0,0"
                            FontFamily="Lato"
                            x:Name="Label2_Copy1"
                            FontSize="14"
@@ -340,25 +341,25 @@
                            VerticalAlignment="Top"
                            Height="22"
                            Width="41"
-                           Margin="36,89,0,0"
+                           Margin="71,90,0,0"
                            FontFamily="Lato"
                            x:Name="Label2_Copy2"
                            FontSize="14"
                            Foreground="black"
-                           TextWrapping="Wrap" Grid.Column="1"><Run Language="hr-hr" Text="Odliv:"/></TextBlock>
+                           TextWrapping="Wrap" Grid.Column="1" Grid.RowSpan="2"><Run Language="hr-hr" Text="Odliv:"/></TextBlock>
                 <TextBlock HorizontalAlignment="Left"
                            VerticalAlignment="Top"
                            Height="22"
-                           Width="46"
-                           Margin="31,122,0,0"
+                           Width="96"
+                           Margin="71,25,0,0"
                            FontFamily="Lato"
                            x:Name="Label2_Copy4"
                            FontSize="14"
                            Foreground="black"
-                           TextWrapping="Wrap" Grid.Column="1"><Run Language="hr-hr" Text="Stanje:"/></TextBlock>
+                           TextWrapping="Wrap" Grid.Column="1" Grid.Row="1"><Run Language="hr-hr" Text="Početno stanje:"/></TextBlock>
                 <wcl:ASHorizontalBar x:Name="HorizontalBarTot"
-                                     Margin="82,120,0,0"
-                                     FontSize="20" FontFamily="lato" FontWeight="Bold" Background="#66118888" BarColor="#FFC4E08A" HorizontalAlignment="Left" Height="26" Width="180" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" Grid.Column="1" >
+                                     Margin="184,77,0,0"
+                                     FontSize="26" FontFamily="lato" Foreground="White"  FontWeight="Bold" Background="#FF3d405b" BarColor="#FFC4E08A" HorizontalAlignment="Left" Height= "32" Width="211" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" Grid.ColumnSpan="2" Grid.RowSpan="2" >
                     <wcl:ASHorizontalBar.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleY="1"/>
@@ -368,218 +369,223 @@
                         </TransformGroup>
                     </wcl:ASHorizontalBar.RenderTransform>
                 </wcl:ASHorizontalBar>
-                <Rectangle x:Name="RectangleA_Copy" Stroke="Black" RadiusX="7" RadiusY="7" StrokeThickness="0" Fill="#FFEEEDF1" Height="148" VerticalAlignment="Top" HorizontalAlignment="Center" Width="327" Grid.Row="2" Margin="0,7,0,0"/>
+                <Rectangle x:Name="RectangleA_Copy" Stroke="Black" RadiusX="7" RadiusY="7" StrokeThickness="0" Fill="#FFEEEDF1" Height="148" VerticalAlignment="Top" HorizontalAlignment="Center" Width="327" Grid.Row="3" Margin="0,7,0,0"/>
                 <wcl:ASHorizontalBar x:Name="HorizontalBarLGOdliv"
-                    UseLayoutRounding="True"
-                    Margin="129,87,0,0"
-                    FontSize="24" Grid.Column="0" Grid.Row="2" FontFamily="Lato" FontWeight="Bold" Background="#FFB9B6B6" BarColor="Aquamarine" BorderBrush="Transparent" BorderThickness="0" Foreground="Red" Height="31" VerticalAlignment="Top" HorizontalAlignment="Left" Width="180"/>
+                                     UseLayoutRounding="True"
+                                     Margin="129,87,0,0"
+                                     FontSize="24" Grid.Column="0" Grid.Row="3" FontFamily="Lato" FontWeight="Bold" Background="#FFB9B6B6" BarColor="Aquamarine" BorderBrush="Transparent" BorderThickness="0" Foreground="Red" Height="31" VerticalAlignment="Top" HorizontalAlignment="Left" Width="180"/>
                 <wcl:ASEnterBox HorizontalAlignment="Left"
-                    FontWeight="Bold"
-                    VerticalAlignment="Top"
-                    Margin="78,94,0,0"
-                    FieldName="lani_h"
-                    x:Name="TASENTER2_Copy"
-                    FontSize="14"
-                    Foreground="black"
-                    Background="#FFB9B6B6" BorderBrush="Transparent"
-                    Height="18"
-                    Width="45"
-                    IsTabStop="False"
-                    Focusable="False"
-                    Grid.Column="0" Grid.Row="2" />
+                                FontWeight="Bold"
+                                VerticalAlignment="Top"
+                                Margin="78,94,0,0"
+                                FieldName="lani_h"
+                                x:Name="TASENTER2_Copy"
+                                FontSize="14"
+                                Foreground="black"
+                                Background="#FFB9B6B6" BorderBrush="Transparent"
+                                Height="18"
+                                Width="45"
+                                IsTabStop="False"
+                                Focusable="False"
+                                Grid.Column="0" Grid.Row="3" />
                 <wcl:ASEnterBox HorizontalAlignment="Left"
-                    FontWeight="Bold"
-                    VerticalAlignment="Top"
-                    Margin="78,61,0,0"
-                    FieldName="ovagod_h"
-                    x:Name="TASENTER1_Copy"
-                    FontSize="14"
-                    Foreground="black"
-                    Background="#FFB9B6B6" BorderBrush="Transparent"
-                    Height="18"
-                    Width="45"
-                    IsTabStop="False"
-                    Focusable="False"
-                    Grid.Column="0" Grid.Row="2" />
+                                FontWeight="Bold"
+                                VerticalAlignment="Top"
+                                Margin="78,61,0,0"
+                                FieldName="ovagod_h"
+                                x:Name="TASENTER1_Copy"
+                                FontSize="14"
+                                Foreground="black"
+                                Background="#FFB9B6B6" BorderBrush="Transparent"
+                                Height="18"
+                                Width="45"
+                                IsTabStop="False"
+                                Focusable="False"
+                                Grid.Column="0" Grid.Row="3" />
                 <TextBlock HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Height="25"
-                    Width="63"
-                    Margin="112,123,0,0"
-                    FontFamily="lato"
-                    x:Name="Label20_Copy"
-                    FontSize="16"
-                    Foreground="black"
-                    Text="Index %:" Grid.Column="0" Grid.Row="2" />
+                           VerticalAlignment="Top"
+                           Height="25"
+                           Width="63"
+                           Margin="112,123,0,0"
+                           FontFamily="lato"
+                           x:Name="Label20_Copy"
+                           FontSize="16"
+                           Foreground="black"
+                           Text="Index %:" Grid.Column="0" Grid.Row="3" />
                 <wcl:ASNumericBox HorizontalAlignment="Left"
-                    FontWeight="Normal"
-                    ButtonSize="0"
-                    Dec="2"
-                    Width="126"
-                    Margin="183,123,0,0"
-                    x:Name="TASNumEnter16_Copy"
-                    Thousands="True"
-                    Background="#FFC4E08A"
-                    Foreground="black"
-                    FieldName="postotakOdliv"
-                    FontFamily="Lato"
-                    FontSize="20"
-                    HorizontalContentAlignment="Right"
-                    IsReadOnly="True"
-                    Grid.Column="0" Grid.Row="2" Height="26" VerticalAlignment="Top"
-                    IsTabStop="False"/>
-                <Label x:Name="label_Copy1" Content="Odliv u godini" Margin="33,10,0,0" FontFamily="Lato" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left" Width="213" Height="36" VerticalAlignment="Top" Grid.Row="2"/>
+                                  FontWeight="Normal"
+                                  ButtonSize="0"
+                                  Dec="2"
+                                  Width="126"
+                                  Margin="183,123,0,0"
+                                  x:Name="TASNumEnter16_Copy"
+                                  Thousands="True"
+                                  Background="#FF81b29a"
+                                  Foreground="black"
+                                  FieldName="postotakOdliv"
+                                  FontFamily="Lato"
+                                  FontSize="20"
+                                  HorizontalContentAlignment="Right"
+                                  IsReadOnly="True"
+                                  Grid.Column="0" Grid.Row="3" Height="26" VerticalAlignment="Top"
+                                  IsTabStop="False"/>
+                <Label x:Name="label_Copy1" Content="Odliv u godini" Margin="33,10,0,0" FontFamily="Lato" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left" Width="213" Height="36" VerticalAlignment="Top" Grid.Row="3"/>
                 <wcl:ASHorizontalBar x:Name="HorizontalBarOGOdliv"
-                    Margin="129,50,0,0"
-                    FontSize="24" Grid.Column="0" Grid.Row="2" FontFamily="lato" FontWeight="Bold" Background="#FFB9B6B6" BarColor="#FFC4E08A" Height="32" VerticalAlignment="Top" HorizontalAlignment="Left" Width="180" />
-                <Rectangle x:Name="RectangleB_Copy" Grid.Column="1" Margin="12,8,0,0" Stroke="Black" RadiusX="7" RadiusY="7" StrokeThickness="0" Fill="#FFEEEDF1" Height="148" VerticalAlignment="Top" HorizontalAlignment="Left" Width="326" Grid.Row="2"/>
-                <Label x:Name="labelmjesec_Copy" Content="Odliv u mjesecu" Grid.Column="1"  Grid.Row="2"  Margin="37,12,0,0" FontFamily="Lato" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left" Width="212" Height="36" VerticalAlignment="Top"/>
+                                     Margin="129,50,0,0"
+                                     FontSize="24" Grid.Column="0" Grid.Row="3" FontFamily="lato" FontWeight="Bold" Background="#FFB9B6B6" BarColor="#FFC4E08A" Height="32" VerticalAlignment="Top" HorizontalAlignment="Left" Width="180" />
+                <Rectangle x:Name="RectangleB_Copy" Grid.Column="1" Margin="12,8,0,0" Stroke="Black" RadiusX="7" RadiusY="7" StrokeThickness="0" Fill="#FFEEEDF1" Height="148" VerticalAlignment="Top" HorizontalAlignment="Left" Width="326" Grid.Row="3"/>
+                <Label x:Name="labelmjesec_Copy" Content="Odliv u mjesecu" Grid.Column="1"  Grid.Row="3"  Margin="37,12,0,0" FontFamily="Lato" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left" Width="212" Height="36" VerticalAlignment="Top"/>
                 <wcl:ASHorizontalBar x:Name="HorizontalBarOMOdliv"
-                    VerticalAlignment="Top"
-                    Margin="132,52,0,0"
-                    FontSize="24" Height="32" Grid.Column="1" FontFamily="Lato" FontWeight="Bold" BarColor="#FFC4E08A" Background="#FFB9B6B6" HorizontalAlignment="Left" Width="180" Grid.Row="2" />
+                                     VerticalAlignment="Top"
+                                     Margin="132,52,0,0"
+                                     FontSize="24" Height="32" Grid.Column="1" FontFamily="Lato" FontWeight="Bold" BarColor="#FFC4E08A" Background="#FFB9B6B6" HorizontalAlignment="Left" Width="180" Grid.Row="3" />
                 <wcl:ASHorizontalBar x:Name="HorizontalBarLMOdliv"
-                    Margin="132,89,0,0"
-                    FontSize="24" Height="32" Grid.Column="1" Grid.Row="2" FontFamily="Lato" FontWeight="Bold" BarColor="#FFC4E08A" Background="#FFB9B6B9" HorizontalAlignment="Left" Width="180" VerticalAlignment="Top" />
+                                     Margin="132,89,0,0"
+                                     FontSize="24" Height="32" Grid.Column="1" Grid.Row="3" FontFamily="Lato" FontWeight="Bold" BarColor="#FFC4E08A" Background="#FFB9B6B9" HorizontalAlignment="Left" Width="180" VerticalAlignment="Top" />
                 <wcl:ASNumericBox HorizontalAlignment="Left"
-                    FontWeight="Normal"
-                    ButtonSize="0"
-                    Dec="2"
-                    Width="126"
-                    Margin="187,125,0,0"
-                    x:Name="TASNumEnter3_Copy"
-                    Thousands="True"
-                    Background="#FFC4E08A"
-                    Foreground="Black"
-                    FieldName="postotakMjOdliv"
-                    FontFamily="lato"
-                    HorizontalContentAlignment="Right"
-                    IsReadOnly="True"
-                    FontSize="20"
-                    Grid.Column="1" Height="26" VerticalAlignment="Top"
-                    IsTabStop="False" Grid.Row="2"/>
+                                  FontWeight="Normal"
+                                  ButtonSize="0"
+                                  Dec="2"
+                                  Width="126"
+                                  Margin="187,125,0,0"
+                                  x:Name="TASNumEnter3_Copy"
+                                  Thousands="True"
+                                  Background="#FF81b29a"
+                                  Foreground="Black"
+                                  FieldName="postotakMjOdliv"
+                                  FontFamily="lato"
+                                  HorizontalContentAlignment="Right"
+                                  IsReadOnly="True"
+                                  FontSize="20"
+                                  Grid.Column="1" Height="26" VerticalAlignment="Top"
+                                  IsTabStop="False" Grid.Row="3"/>
                 <TextBlock HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Height="25"
-                    Width="63"
-                    Margin="112,126,0,0"
-                    FontFamily="lato"
-                    x:Name="Label5_Copy"
-                    FontSize="16"
-                    Foreground="black"
-                    Text="Index %:" Grid.Column="1" Background="#FFF7EEEE" Grid.Row="2" />
+                           VerticalAlignment="Top"
+                           Height="25"
+                           Width="63"
+                           Margin="112,126,0,0"
+                           FontFamily="lato"
+                           x:Name="Label5_Copy"
+                           FontSize="16"
+                           Foreground="black"
+                           Text="Index %:" Grid.Column="1" Background="#FFF7EEEE" Grid.Row="3" />
                 <TextBlock HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Height="23"
-                    Width="97"
-                    Margin="27,65,0,0"
-                    FontFamily="lato"
-                    x:Name="Label14_Copy"
-                    FontSize="16"
-                    Foreground="Black"
-                    Text="Ovaj mjesec:" Grid.Column="1" Background="#FFEEEDF5" Grid.Row="2"/>
+                           VerticalAlignment="Top"
+                           Height="23"
+                           Width="97"
+                           Margin="27,65,0,0"
+                           FontFamily="lato"
+                           x:Name="Label14_Copy"
+                           FontSize="16"
+                           Foreground="Black"
+                           Text="Ovaj mjesec:" Grid.Column="1" Background="#FFEEEDF5" Grid.Row="3"/>
                 <TextBlock HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Height="20"
-                    Width="100"
-                    Margin="27,97,0,0"
-                    FontFamily="lato"
-                    x:Name="Label15_Copy"
-                    FontSize="16"
-                    Foreground="Black"
-                    Text="Prošli mjesec:" Grid.Column="1" Grid.Row="2" />
-                <Rectangle x:Name="RectangleC_Copy" Grid.Column="2" Stroke="Black" Fill="#FFEEEDF1" RadiusX="7" RadiusY="7" StrokeThickness="0" Height="148" VerticalAlignment="Top" HorizontalAlignment="Center" Width="327" Grid.Row="2" Margin="0,7,0,0"/>
-                <Label x:Name="labeltjedan_Copy" Content="Odliv u tjednu" Grid.Column="2"  Grid.Row="2"  Margin="15,10,0,0" FontFamily="Lato" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left" Width="213" Height="36" VerticalAlignment="Top"/>
+                           VerticalAlignment="Top"
+                           Height="20"
+                           Width="100"
+                           Margin="27,97,0,0"
+                           FontFamily="lato"
+                           x:Name="Label15_Copy"
+                           FontSize="16"
+                           Foreground="Black"
+                           Text="Prošli mjesec:" Grid.Column="1" Grid.Row="3" />
+                <Rectangle x:Name="RectangleC_Copy" Grid.Column="2" Stroke="Black" Fill="#FFEEEDF1" RadiusX="7" RadiusY="7" StrokeThickness="0" Height="148" VerticalAlignment="Top" HorizontalAlignment="Center" Width="327" Grid.Row="3" Margin="0,7,0,0"/>
+                <Label x:Name="labeltjedan_Copy" Content="Odliv u tjednu" Grid.Column="2"  Grid.Row="3"  Margin="15,10,0,0" FontFamily="Lato" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left" Width="213" Height="36" VerticalAlignment="Top"/>
                 <wcl:ASHorizontalBar x:Name="HorizontalBarOTOdliv"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Height="32"
-                    Width="180"
-                    Margin="137,50,0,0"
-                    FontSize="24" Grid.Column="2" Grid.Row="2" FontFamily="Lato" FontWeight="Bold"  BarColor="#FFC4E08A" Background="#FFB9B6B6" />
+                                     HorizontalAlignment="Left"
+                                     VerticalAlignment="Top"
+                                     Height="32"
+                                     Width="180"
+                                     Margin="137,50,0,0"
+                                     FontSize="24" Grid.Column="2" Grid.Row="3" FontFamily="Lato" FontWeight="Bold"  BarColor="#FFC4E08A" Background="#FFB9B6B6" />
                 <wcl:ASHorizontalBar x:Name="HorizontalBarLTOdliv"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Height="32"
-                    Width="180"
-                    Margin="137,87,0,0"
-                    FontSize="24" Grid.Column="2" FontFamily="Lato" FontWeight="Bold" Grid.Row="2"  BarColor="#FFC4E08A" Background="#FFB9B6B6" />
+                                     HorizontalAlignment="Left"
+                                     VerticalAlignment="Top"
+                                     Height="32"
+                                     Width="180"
+                                     Margin="137,87,0,0"
+                                     FontSize="24" Grid.Column="2" FontFamily="Lato" FontWeight="Bold" Grid.Row="3"  BarColor="#FFC4E08A" Background="#FFB9B6B6" />
                 <wcl:ASNumericBox HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    FontWeight="Normal"
-                    ButtonSize="0"
-                    Dec="2"
-                    Height="26"
-                    Width="126"
-                    Margin="191,123,0,0"
-                    x:Name="TASNumEnter7_Copy"
-                    Thousands="True"
-                    Background="#FFC4E08A"
-                    Foreground="Black"
-                    FieldName="postotakTjOdliv"
-                    HorizontalContentAlignment="Right"
-                    IsReadOnly="True"
-                    FontFamily="lato"
-                    FontSize="20"
-                    Grid.Column="2" Grid.Row="2" RenderTransformOrigin="0.421,1.463"
-                    IsTabStop="False"/>
+                                  VerticalAlignment="Top"
+                                  FontWeight="Normal"
+                                  ButtonSize="0"
+                                  Dec="2"
+                                  Height="26"
+                                  Width="126"
+                                  Margin="191,123,0,0"
+                                  x:Name="TASNumEnter7_Copy"
+                                  Thousands="True"
+                                  Background="#FF81b29a"
+                                  Foreground="Black"
+                                  FieldName="postotakTjOdliv"
+                                  HorizontalContentAlignment="Right"
+                                  IsReadOnly="True"
+                                  FontFamily="lato"
+                                  FontSize="20"
+                                  Grid.Column="2" Grid.Row="3" RenderTransformOrigin="0.421,1.463"
+                                  IsTabStop="False"/>
                 <wcl:ASEnterBox HorizontalAlignment="Left"
-                    FontWeight="Bold"
-                    VerticalAlignment="Top"
-                    Margin="36,64,0,0"
-                    FieldName="week_c"
-                    x:Name="TASENTER3_Copy"
-                    FontSize="11"
-                    Foreground="Black"
-                    Background="White"
-                    Height="18"
-                    Width="72"
-                    IsTabStop="False" Grid.Column="2" Grid.Row="2" IsReadOnly="True" />
+                                FontWeight="Bold"
+                                VerticalAlignment="Top"
+                                Margin="36,64,0,0"
+                                FieldName="week_c"
+                                x:Name="TASENTER3_Copy"
+                                FontSize="11"
+                                Foreground="Black"
+                                Background="White"
+                                Height="18"
+                                Width="72"
+                                IsTabStop="False" Grid.Column="2" Grid.Row="3" IsReadOnly="True" />
                 <wcl:ASEnterBox HorizontalAlignment="Left"
-                    FontWeight="Bold"
-                    VerticalAlignment="Top"
-                    Margin="36,100,0,0"
-                    FieldName="week_p"
-                    x:Name="TASENTER4_Copy"
-                    FontSize="11"
-                    Foreground="Black"
-                    Background="White"
-                    Height="18"
-                    Width="72"
-                    IsTabStop="False" Grid.Column="2" Grid.Row="2" IsReadOnly="True" />
+                                FontWeight="Bold"
+                                VerticalAlignment="Top"
+                                Margin="36,100,0,0"
+                                FieldName="week_p"
+                                x:Name="TASENTER4_Copy"
+                                FontSize="11"
+                                Foreground="Black"
+                                Background="White"
+                                Height="18"
+                                Width="72"
+                                IsTabStop="False" Grid.Column="2" Grid.Row="3" IsReadOnly="True" />
                 <TextBlock HorizontalAlignment="Left"
-                    Width="62"
-                    FontFamily="lato"
-                    x:Name="Label17_Copy"
-                    FontSize="16"
-                    Foreground="#FF295454"
-                    Margin="111,124,0,0"
-                    Text="Index %:" Grid.Column="2" Grid.Row="2" Height="28" VerticalAlignment="Top" />
+                           Width="62"
+                           FontFamily="lato"
+                           x:Name="Label17_Copy"
+                           FontSize="16"
+                           Foreground="#FF295454"
+                           Margin="111,124,0,0"
+                           Text="Index %:" Grid.Column="2" Grid.Row="3" Height="28" VerticalAlignment="Top" />
                 <TextBlock HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Height="16"
-                    Width="64"
-                    Margin="40,50,0,0"
-                    FontFamily="lato"
-                    x:Name="Label18_Copy"
-                    FontSize="11"
-                    Foreground="Black"
-                    Text="Ovaj tjedan:" Grid.Column="2" Grid.Row="2" />
+                           VerticalAlignment="Top"
+                           Height="16"
+                           Width="64"
+                           Margin="40,50,0,0"
+                           FontFamily="lato"
+                           x:Name="Label18_Copy"
+                           FontSize="11"
+                           Foreground="Black"
+                           Text="Ovaj tjedan:" Grid.Column="2" Grid.Row="3" />
                 <TextBlock HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Height="15"
-                    Width="68"
-                    Margin="36,87,0,0"
-                    FontFamily="lato"
-                    x:Name="Label19_Copy"
-                    FontSize="11"
-                    Foreground="Black"
-                    Text="Prošli tjedan:" Grid.Column="2" Grid.Row="2" />
+                           VerticalAlignment="Top"
+                           Height="15"
+                           Width="68"
+                           Margin="36,87,0,0"
+                           FontFamily="lato"
+                           x:Name="Label19_Copy"
+                           FontSize="11"
+                           Foreground="Black"
+                           Text="Prošli tjedan:" Grid.Column="2" Grid.Row="3" />
+                <wcl:ASHorizontalBar x:Name="HorizontalBarTotOdliv_Copy"
+                                     Margin="173,20,0,0"
+                                     FontSize="20" FontFamily="lato" FontWeight="Bold" Background="#FFB9B6B6" BarColor="#FFC4E08A" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" Width="180" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" />
 
             </Grid>
-            <Button x:Name="gbProdaja1" Content="Cash Flow I" Style="{StaticResource FlatButtonStyle}" Grid.Row="1" Margin="0,15,0,0"  HorizontalAlignment="Center" VerticalAlignment="Top" Width="140" Height="63" Background="#FF69A627" FontFamily="Lato" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}" TabIndex="32"/>
-            <Button x:Name="gbProdaja2" Content="Cash Flow II" Style="{StaticResource FlatButtonStyle}" Margin="0,89,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Width="140" Height="63" Background="#FF2D50A6" FontFamily="Lato" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}" Grid.Row="1" TabIndex="33"/>
-            <Button x:Name="gbExit" Content="Izlaz" Style="{StaticResource FlatButtonStyle}" HorizontalAlignment="Center" VerticalAlignment="Top" Width="140" Height="62" Background="#FFE0582F" FontFamily="Lato" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}" Grid.Row="1" TabIndex="34" Margin="0,277,0,0"/>
+            <Button x:Name="gbPriliv1" Content="Priliv I" Style="{StaticResource FlatButtonStyle}" Grid.Row="1" Margin="0,15,0,0"  HorizontalAlignment="Center" VerticalAlignment="Top" Width="140" Height="63" Background="#FF69A627" FontFamily="Lato" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}" TabIndex="32"/>
+            <Button x:Name="gbPriliv2" Content="Priliv II" Style="{StaticResource FlatButtonStyle}" Grid.Row="1" Margin="0,85,0,0"  HorizontalAlignment="Center" VerticalAlignment="Top" Width="140" Height="63" Background="#FF69A627" FontFamily="Lato" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}" TabIndex="32"/>
+            <Button x:Name="gbOdliv1" Content="Odliv I" Style="{StaticResource FlatButtonStyle}" Margin="0,154,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Width="140" Height="63" Background="#FF2D50A6" FontFamily="Lato" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}" Grid.Row="1" TabIndex="33"/>
+            <Button x:Name="gbOdliv2" Content="Odliv II" Style="{StaticResource FlatButtonStyle}" Margin="0,222,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Width="140" Height="63" Background="#FF2D50A6" FontFamily="Lato" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}" Grid.Row="1" TabIndex="33"/>
+            <Button x:Name="gbExit" Content="Izlaz" Style="{StaticResource FlatButtonStyle}" HorizontalAlignment="Center" VerticalAlignment="Top" Width="140" Height="62" Background="#FFE0582F" FontFamily="Lato" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}" Grid.Row="1" TabIndex="34" Margin="0,374,0,0"/>
             <Rectangle Fill="#FFE6E6E6" Grid.Column="1" Height="221" VerticalAlignment="Top" HorizontalAlignment="Center" Width="1040" />
             <TextBlock Grid.Column="1" HorizontalAlignment="Left"
                        VerticalAlignment="Top"
@@ -813,89 +819,89 @@
                           InitialRotation="90"
                           MinValue="0"
                           MaxValue="100"
-                          Margin="615,7,245,0" Grid.Column="1" Grid.Row="1" Height="160" VerticalAlignment="Top" />
+                          Margin="697,5,163,0" Grid.Column="1" Grid.Row="1" Height="160" VerticalAlignment="Top" />
             <Ellipse x:Name="EllipseProdajaUTjednuPriliv" HorizontalAlignment="Left" Height="20" Margin="990,176,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>
             <Ellipse x:Name="EllipseProdajaUGodiniPriliv" HorizontalAlignment="Left" Height="20" Margin="300,176,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>
             <Ellipse x:Name="EllipseProdajaUMjesecuPriliv" HorizontalAlignment="Left" Height="20" Margin="640,176,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>
             <wcl:ASEnterBox Grid.Column="1" HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                FontWeight="Bold"
-                ButtonSize="21"
-                Height="22"
-                Width="332"
-                Margin="65,6,0,0"
-                x:Name="ceBanka"
-                Background="White"
-                Foreground="black"
-                KeyTraps="F2|ceBanka@clicked"
-                FieldName="BANKA_str"
-                FontFamily="lato"
-                FontSize="14"
-                TabIndex="1"
-                ButtonBackground="Blue" BorderBrush="#FFFFFDFF"
-                IsTabStop="True"/>
+                            VerticalAlignment="Top"
+                            FontWeight="Bold"
+                            ButtonSize="21"
+                            Height="22"
+                            Width="332"
+                            Margin="65,6,0,0"
+                            x:Name="ceBanka"
+                            Background="White"
+                            Foreground="black"
+                            KeyTraps="F2|ceBanka@clicked"
+                            FieldName="BANKA_str"
+                            FontFamily="lato"
+                            FontSize="14"
+                            TabIndex="1"
+                            ButtonBackground="Blue" BorderBrush="#FFFFFDFF"
+                            IsTabStop="True"/>
             <wcl:ASEnterBox Grid.Column="1" HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                FontWeight="Bold"
-                ButtonSize="21"
-                Height="22"
-                Width="332"
-                Margin="65,30,0,0"
-                x:Name="ceKonto"
-                Background="White"
-                Foreground="black"
-                KeyTraps="F2|ceKonto@clicked"
-                FieldName="KONTO_str"
-                FontFamily="lato"
-                FontSize="14"
-                TabIndex="1"
-                ButtonBackground="yellow" BorderBrush="#FFFFFDFF"
-                IsTabStop="True"/>
+                            VerticalAlignment="Top"
+                            FontWeight="Bold"
+                            ButtonSize="21"
+                            Height="22"
+                            Width="332"
+                            Margin="65,30,0,0"
+                            x:Name="ceKonto"
+                            Background="White"
+                            Foreground="black"
+                            KeyTraps="F2|ceKonto@clicked"
+                            FieldName="KONTO_str"
+                            FontFamily="lato"
+                            FontSize="14"
+                            TabIndex="1"
+                            ButtonBackground="yellow" BorderBrush="#FFFFFDFF"
+                            IsTabStop="True"/>
             <TextBlock Grid.Column="1" HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Width="67"
-                Margin="8,81,0,0"
-                FontFamily="lato"
-                FontSize="14"
-                Foreground="Black"
-                Text="Br. izvatka:" Height="17" />
+                       VerticalAlignment="Top"
+                       Width="67"
+                       Margin="8,81,0,0"
+                       FontFamily="lato"
+                       FontSize="14"
+                       Foreground="Black"
+                       Text="Br. izvatka:" Height="17" />
             <wcl:ASEnterBox Grid.Column="1" ButtonSize="21"
-                FontWeight="Bold"
-                Size="0"
-                FieldName="Izvadak"
-                Foreground="black"
-                x:Name="ceIzvadak"
-                FontSize="14"
-                KeyTraps="F2|ceIzvadak@clicked"
-                Case="Normal"
-                Height="22"
-                Width="87"
-                Margin="78,78,0,0"
-                FontFamily="lato"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Background="White"
-                TabIndex="3"
-                IsTabStop="True"
-                ButtonBackground="Red"/>
+                            FontWeight="Bold"
+                            Size="0"
+                            FieldName="Izvadak"
+                            Foreground="black"
+                            x:Name="ceIzvadak"
+                            FontSize="14"
+                            KeyTraps="F2|ceIzvadak@clicked"
+                            Case="Normal"
+                            Height="22"
+                            Width="87"
+                            Margin="78,78,0,0"
+                            FontFamily="lato"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Background="White"
+                            TabIndex="3"
+                            IsTabStop="True"
+                            ButtonBackground="Red"/>
             <wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
-                BorderBrush="Transparent"
-                FontWeight="Bold"
-                FieldName="IzvadakNaziv"
-                Foreground="black"
-                x:Name="TASComboEnter5_Copy"
-                FontSize="14"
-                Case="Normal"
-                Height="22"
-                Width="230"
-                Margin="167,78,0,0"
-                FontFamily="lato"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Background="White"
-                IsTabStop="False"
-                Focusable="False"/>
-            <Button x:Name="gbProdaja3" Content="Cash flow III" Style="{StaticResource FlatButtonStyle}" Margin="0,163,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Width="140" Height="63" Background="#FFAA2046" FontFamily="Lato" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}" Grid.Row="1" TabIndex="34"/>
+                            BorderBrush="Transparent"
+                            FontWeight="Bold"
+                            FieldName="IzvadakNaziv"
+                            Foreground="black"
+                            x:Name="TASComboEnter5_Copy"
+                            FontSize="14"
+                            Case="Normal"
+                            Height="22"
+                            Width="230"
+                            Margin="167,78,0,0"
+                            FontFamily="lato"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Background="White"
+                            IsTabStop="False"
+                            Focusable="False"/>
+            <Button x:Name="gbCashFlow2" Content="Cash flow II" Style="{StaticResource FlatButtonStyle}" Margin="0,298,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Width="140" Height="63" Background="#FFAA2046" FontFamily="Lato" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}" Grid.Row="1" TabIndex="34" RenderTransformOrigin="0.524,0.896"/>
             <Ellipse x:Name="EllipseProdajaUGodiniOdliv" HorizontalAlignment="Left" Height="20" Margin="305,327,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>
             <Ellipse x:Name="EllipseProdajaUMjesecuOdliv" HorizontalAlignment="Left" Height="20" Margin="650,328,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>
             <Ellipse x:Name="EllipseProdajaUTjednuOdliv" HorizontalAlignment="Left" Height="20" Margin="1000,328,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>

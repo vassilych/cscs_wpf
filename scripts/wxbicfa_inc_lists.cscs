@@ -43,7 +43,7 @@
     
     DEFINE postotak type n size 10 dec 2 ;
     DEFINE postotakMj type n size 10 dec 2 ;
-    define postotakTj type n size 10 dec 2 ;
+    //define postotakTj type n size 10 dec 2 ;
     DEFINE artiklNaziv type a size 30;
     define artikl type a size 15 ;
 
@@ -69,6 +69,9 @@
     DEFINE tot_proslimj_odliv_string type a size 20;
     DEFINE tot_ovajTj_odliv_string type a size 20;
     DEFINE tot_ProsliTj_odliv_string type a size 20;
+
+    define stanjeOvagod, pocetnoStanjeOvagod type n size 14 dec 2;
+    define tot_stanjeOvagod, tot_pocetnoStanjeOvagod type a size 20;
 
 	define nameArt type a size 40;
 	define codeArt_ar type a size 15 array 10;
@@ -101,12 +104,14 @@
     DEFINE arrayProslaPriliv, arrayProslaOdliv type n size 14 array 12;
     DEFINE arrayTrenutnaPriliv, arrayTrenutnaOdliv type n size 14 array 12;
 
-	define tot_ovajTj type n size 14;
-	define tot_prosliTj type n size 14;
+	define tot_ovajTj_priliv type n size 14;
+	define tot_prosliTj_priliv type n size 14;
+	define tot_ovajTj_odliv type n size 14;
+	define tot_prosliTj_odliv type n size 14;
 	define sales_ar type n size 14 dec 0 array 10;        
 	define postotakPriliv, postotakOdliv type n size 10 dec 2;
 	define postotakMjPriliv, postotakMjOdliv type n size 10 dec 2;
-	//define postotakTj type n size 10 dec 2;
+	define postotakTjPriliv, postotakTjOdliv type n size 10 dec 2;
 	define week_c type a size 10;
 	define week_p type a size 10;
 	define week type i;
@@ -245,7 +250,7 @@ function ceBanka@clicked()
         banka = &sifraFieldPointer;
         if (banka != "")
         {
-            BANKA_str = (BANKA_str == "") ? (BANKA_str + banka) : (BANKA_str + "," + banka);
+            BANKA_str = (BANKA_str == "") ? (BANKA_str + "'"+banka+"'") : (BANKA_str + ",'" + banka+"'");
         }    
     }
     searchSifra = "";
@@ -278,7 +283,7 @@ function ceKonto@clicked()
         if (Konto != "")
         {
             Konto = strtrim(Konto);
-            KONTO_str = (KONTO_str == "") ? (KONTO_str + Konto) : (KONTO_str + "," + Konto);
+            KONTO_str = (KONTO_str == "") ? (KONTO_str + "'"+Konto+"'") : (KONTO_str + ",'" + Konto+"'");
         }    
     }
     searchSifra = "";
@@ -411,7 +416,7 @@ function filterPart()
     {
         sql_str += " AND kdib_gl_num = '" + Izvadak + "'";
     }
-
+/*
     if (domaca_dn )
 	{
         sql_str += " AND nkpr_gl_drzava= '" + kpsy_po_freight + "'";
@@ -442,83 +447,6 @@ function filterPart()
             sql_str += " AND nkpr_ln_pext>= 0";
 		}
 	}
-
-}
-
-function filterPart2()
-{
-
-    if (sklad_str != "")
-	{
-        sql_str += " AND KS_IG_SKLAD IN ("+sklad_str+")";
-	}
-    if ( razlikaUCijeniField   )
-    {
-        sql_str += " AND KS_IG_AZUR != ''" ;
-        //da bi dobili ruc ,  treba ra?un biti a?uriran
-    }
-    if (artikl != "")
-	{
-        sql_str += " AND KS_IL_PCODE = '"+artikl+"'";
-	}
-
-    if (roba_dn )
-	{
-        sql_str += " AND ARTI_TIP IN ( 'R','G','S')";
-	}
-    elif (usluge_dn )
-	{
-        sql_str += " AND ARTI_TIP= 'N'";
-	}
-    elif (povnak_dn )
-	{
-        sql_str += " AND ARTI_TIP = 'P'";
-	}
-    elif (avans_dn )
-	{
-        sql_str += " AND ARTI_TIP = 'A'";
-	}
-
-    if (kategorija != "")
-	{
-        sql_str += " AND arti_kategorija = '"+kategorija+"'";
-	}
-    if (klasa != "")
-	{
-        sql_str += " AND arti_klasa = '"+klasa+"'";
-	}
-    
-    if (partner != "")
-	{
-        sql_str += " AND KS_IG_KUPAC = '"+partner+"'";
-	}
-    
-    // if (prodavac != "")
-	// {
-    //     sql_str += " AND KS_IG_OSOBA = " + prodavac;
-	// }
-    
-    // if (posKasa != "")
-	// {
-    //     sql_str += " AND KS_IG_KASA = " + posKasa;
-	// }
-    
-    if (gl_oznaka != "")
-	{
-        if (GL_oznaka == "X" )
-		{
-            //storno
-            sql_str += " AND (KS_IL_TOTAL < 0 AND KS_IG_VRSTA <> 'U')";
-		}
-        elif(gl_oznaka == "P"){
-            //predujam
-            sql_str += " AND KS_IG_VRSTA = 'U'";
-        }
-        else
-		{
-            //standardni
-            sql_str += " AND (KS_IL_TOTAL >= 0 AND KS_IG_VRSTA <> 'U')";
-		}
-	}
+    */
 
 }
