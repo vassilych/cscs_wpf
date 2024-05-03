@@ -29,7 +29,7 @@ function wxbicfac_onStart()
     //Chart("ChartPoDanima", "labels", arrayDani);
     //Chart("ChartPoDanima", "xlabelsRotation", 0);
     Chart("ChartPoDanima", "SeparatorStep", 1);
-    Chart("ChartPoDanima", "values", "line", arrayVrijednosti, "Dnevno");
+    Chart("ChartPoDanima", "values", "line", arrayVrijednostiOdliv, "Dnevno");
     Chart("ChartPoDanima", "values", "line", arrayAvr, "Prosjek7dana");
     Chart("ChartPoDanima", "Color.Series", { "#fb8500", "#8ecae6"}); 
     //Chart("ChartPoDanima", "Margins", {60, 20, 0, 30});
@@ -122,12 +122,12 @@ function setChartByDaysOfMonthOdliv()
     }
     
     arrayDani = {};
-    arrayVrijednosti = {};
+    arrayVrijednostiOdliv = {};
     arrayAvr = {};
     for(i = 1; i < queryResult.length; i++)
     {
         arrayDani.add(string(queryResult[i][0]));
-        arrayVrijednosti.add(queryResult[i][1]);
+        arrayVrijednostiOdliv.add(queryResult[i][1]);
         arrayAvr.add(queryResult[i][2]);
     }
 }
@@ -272,33 +272,24 @@ function setChartByDaysOfMonthOdliv()
 
 function setLast10InvoicesDataGridOdliv()
 {
-    sql_str = "SELECT TOP 10 kdib_gl_num,kpsy_bnk_ime,CONVERT(char(8) , kdib_gl_datem  , 3),'12:12:12',sum(CASE WHEN kdib_ln_dp='D' THEN kdib_ln_iznos ELSE 0 END) as odliv"; // sum(CASE WHEN kdib_ln_dp='D' THEN kdib_ln_iznos ELSE 0 END) as odliv"; 
-    //umjesto 12:12:12 uzetui sat koji se nalazi u kdib_gl_rez na poziciji 10. karaktera i ima 8 znakova
-    //umjesto kdib_gl_datem treba uzeti poziciju od 2 pa 8 znakova i prikazati
+    sql_str = "SELECT TOP 10 kdib_gl_num, kpsy_bnk_ime, SUBSTRING(kdib_gl_rez , 2, 8) , SUBSTRING(kdib_gl_rez , 10, 8), sum(CASE WHEN kdib_ln_dp='D' THEN kdib_ln_iznos ELSE 0 END) as odliv"; // sum(CASE WHEN kdib_ln_dp='D' THEN kdib_ln_iznos ELSE 0 END) as odliv"; 
     sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.kpkdibgl";
-    //sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkscpart g ON kdib_ln_partnerd= g.nksc_partcode";
     sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.kpkdibln ON kdib_gl_num = kdib_ln_num";
     sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.kpsybank ON kdib_gl_banka = kpsy_bnk_code";
 	sql_str += " WHERE 1=1 AND kdib_gl_banka <> '' AND YEAR(kdib_gl_datem) =  " + ovagod_h  ;
 	if (do_mjeseca)
 	{
-		sql_str +=" AND month(kdib_gl_datem)< =  " + mjesec_h  ;
+		sql_str +=" AND month(kdib_gl_datem) <=  " + mjesec_h  ;
 	}
 	else 
 	{
 		sql_str += " AND month(kdib_gl_datem) =  " + mjesec_h;
 	}
     filterPart();
-	sql_str += " GROUP BY kdib_gl_num, kpsy_bnk_ime, kdib_gl_datem" ; //dodati time
-	//if (t10datrac)
-	//{
-		sql_str += " ORDER BY kdib_gl_datem DESC" ;//dodati time sa DESC
-	//}
-	//else 
-	//{
-	//	sql_str += " ORDER BY nkpr_gl_datecr DESC , nkpr_gl_timecr DESC" ;
-	//}
- //SaveFile(sql_str);
+	sql_str += " GROUP BY kdib_gl_num, kpsy_bnk_ime, SUBSTRING(kdib_gl_rez , 2, 8), SUBSTRING(kdib_gl_rez , 10, 8)" ;
+	sql_str += " ORDER BY CONVERT(date, SUBSTRING(kdib_gl_rez , 2, 8), 3) DESC, SUBSTRING(kdib_gl_rez , 10, 8) DESC" ;
+	
+    //SaveFile(sql_str);
 	try	{
 		sqlResult2 = sqlQuery(sql_str);
 	}catch(exc){
@@ -353,13 +344,7 @@ function setTop10InvoicesDataGridOdliv()
 
 	for ( i = 1; i < Size(sqlResult); i++ )
 	{    
-        /*  
-		nkpr_gl_num = sqlResult[i][0];  
-		nkpr_gl_cusnme = sqlResult[i][1];
-		nkpr_gl_invdte = sqlResult[i][2];
-		nkpr_gl_total= sqlResult[i][3];
-        */
-		t10NameMj_ar[i - 1] =  sqlResult[i][1]; //nkpr_gl_cusnme;
+        t10NameMj_ar[i - 1] =  sqlResult[i][1]; //nkpr_gl_cusnme;
 		t10IznosMj_ar[i - 1] =  sqlResult[i][3]; //nkpr_gl_total;
 		t10CntrMj_ar[i - 1] =  i;
 		t10DatumMj_ar[i - 1] =  sqlResult[i][2]; //nkpr_gl_invdte;
