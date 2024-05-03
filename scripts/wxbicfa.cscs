@@ -183,12 +183,12 @@ function callSetHorizontalBars(){
 }
 
 function callSetWeekComparison(){
-    AsyncCall("setWeekComparison", "callSetCashFlowRatio");
+    AsyncCall("setWeekComparison", "end");
 }
 
-function callSetCashFlowRatio(){
-    AsyncCall("setCashFlowRatio", "end");
-}
+// function callSetCashFlowRatio(){
+//     AsyncCall("setCashFlowRatio", "end");
+// }
 function end(){
     cursor("dflt");
     pripremljeno = true;
@@ -502,7 +502,30 @@ function setHorizontalBars1(){
 
     HorizontalBar("HorizontalBarTotOdliv", "Text", tot_ovagod_odliv_string);
 
-    stanjeOvagod= tot_ovagod_priliv- tot_ovagod_odliv+ pocetnoStanjeOvagod;
+
+    sql_str = "SELECT sum(kpsy_bnk_saldo) as poc_stanje ";
+    sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.kpsybank";
+    try
+    {
+        //SaveFile(sql_str);
+        queryResult = sqlquery(SQL_str);
+    }
+    catch(exc)
+    {
+        MessageBox(exc);
+    }
+    
+    pocetnoStanjeOvagod = queryResult[1][0];
+
+    //MessageBox("aaaa :"+100*tot_ovagod_priliv/(tot_ovagod_priliv + tot_ovagod_odliv));
+    GaugeChart("GaugeChartOmjerProdaje", "value", Math.round(100*tot_ovagod_priliv/(tot_ovagod_priliv + tot_ovagod_odliv)), 25, 30);
+    GaugeChart("GaugeChartOmjerProdaje", "color", "#118888");
+
+
+    Format("pocetnoStanjeOvagod", "nofd", recv: "tot_pocetnoStanjeOvagod");
+    HorizontalBar("HorizontalBarPocetnoStanje", "Text", tot_pocetnoStanjeOvagod);
+
+    stanjeOvagod = tot_ovagod_priliv - tot_ovagod_odliv + pocetnoStanjeOvagod;
     Format("stanjeOvagod", "nofd", recv: "tot_stanjeOvagod");
     HorizontalBar("HorizontalBarTot", "Text", tot_stanjeOvagod);
 
@@ -889,35 +912,6 @@ function setWeekComparison2(){
 
 }
 
-//---------------------------------------------------------------
-
-function setCashFlowRatio(){
-
-    sql_str = "SELECT sum(kpsy_bnk_saldo) as poc_stanje ";
-    sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.kpsybank";
-    sql_str += " WHERE 1=1";
-    try
-    {
-        //SaveFile(sql_str);
-        queryResult = sqlquery(SQL_str);
-    }
-    catch(exc)
-    {
-        MessageBox(exc);
-    }
-    //cntry= 0;
-        
-    RunOnMain("setGaugeChartRatio");
-}
-
-function setGaugeChartRatio(){
-    pocetnoStanjeOvagod = queryResult[1][0];
-
-
-//MessageBox("aaaa :"+100*tot_ovagod_priliv/(tot_ovagod_priliv + tot_ovagod_odliv));
-    GaugeChart("GaugeChartOmjerProdaje", "value", Math.round(100*tot_ovagod_priliv/(tot_ovagod_priliv + tot_ovagod_odliv)), 25, 30);
-    GaugeChart("GaugeChartOmjerProdaje", "color", "#118888");
-}
 //---------------------------------------------------------------
 
 function deNadan@LostFocus(){
