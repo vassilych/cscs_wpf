@@ -13,8 +13,6 @@ CreateWindowXaml("wxbicfa.xaml");
 
 function Wxbicfa_onDisplay()
 {
-    MessageBox("xxxxxxxxxxxxx");
-    
     SetWidgetOptions("EllipseProdajaUGodiniPriliv", "Visible", false);
     SetWidgetOptions("EllipseProdajaUMjesecuPriliv", "Visible", false);
     SetWidgetOptions("EllipseProdajaUTjednuPriliv", "Visible", false);
