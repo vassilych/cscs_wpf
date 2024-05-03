@@ -70,7 +70,7 @@
     DEFINE tot_ovajTj_odliv_string type a size 20;
     DEFINE tot_ProsliTj_odliv_string type a size 20;
 
-    define stanjeOvagod, pocetnoStanjeOvagod type n size 14 dec 2;
+    define stanjeOvagod, pocetnoStanjeOvagod type n size 14 dec 0;
     define tot_stanjeOvagod, tot_pocetnoStanjeOvagod type a size 20;
 
 	define nameArt type a size 40;
