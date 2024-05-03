@@ -713,6 +713,8 @@ function filterPart()
 	}
     if (gl_oznaka != "")
 	{
+         sql_str += " AND nkpr_gl_oznaka= '"+gl_oznaka+"'";
+         /*
 	    if (GL_oznaka == "X" || GL_oznaka == "O" || GL_oznaka == "R" )  //ako je to storno, odobrenje ili reklamacija neka okrene
 		{
             sql_str += " AND nkpr_gl_oznaka= '"+gl_oznaka+"'";
@@ -728,6 +730,7 @@ function filterPart()
             sql_str += " AND nkpr_gl_oznaka= '"+gl_oznaka+"'";
             sql_str += " AND nkpr_ln_pext>= 0";
 		}
+        */
 	}
 
 }

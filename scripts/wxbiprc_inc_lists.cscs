@@ -804,6 +804,8 @@ function filterPart2()
     
     if (gl_oznaka != "")
 	{
+         sql_str += " AND nkpr_gl_oznaka= '"+gl_oznaka+"'";
+         /*
         if (GL_oznaka == "X" )
 		{
             //storno
@@ -818,6 +820,7 @@ function filterPart2()
             //standardni
             sql_str += " AND (KS_IL_TOTAL >= 0 AND KS_IG_VRSTA <> 'U')";
 		}
+        */
 	}
 
 }
