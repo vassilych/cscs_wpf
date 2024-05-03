@@ -6,6 +6,7 @@ Import(strTrim(mpath()) + "CSCS.Math.dll");
 IncludeScript("wxbicfa_inc_lists.cscs"); //look-up lists
 IncludeScript("wxbicfa_inc_a.cscs"); //look-up lists
 IncludeScript("wxbicfa_inc_b.cscs"); //look-up lists
+IncludeScript("wxbicfa_inc_c.cscs");
 CreateWindowXaml("wxbicfa.xaml");
 
 function Wxbicfa_onDisplay()
@@ -177,7 +178,7 @@ function gbPripremi@clicked()
 }
 function callSetHorizontalBars(){
     AsyncCall("setHorizontalBars", "callSetWeekComparison");
-    AsyncCall("setHorizontalBars", "end");
+    //AsyncCall("setHorizontalBars", "end");
 }
 
 function callSetWeekComparison(){
@@ -230,7 +231,7 @@ function gbOdliv1@clicked()
 {
     if (pripremljeno   ) 
     {
-        result = modalWindow(strTrim(tpath()) +"wxbicfad.xaml");
+        result = modalWindow(strTrim(tpath()) +"wxbicfac.xaml");
     }
     else
     {
@@ -246,7 +247,7 @@ function gbOdliv2@clicked()
     //     thread
     //     (
     //         lock{
-            result = modalWindow(strTrim(tpath()) +"wxbicfae.xaml");
+            result = modalWindow(strTrim(tpath()) +"wxbicfad.xaml");
     //        }
     //    )
     }
@@ -264,7 +265,7 @@ function gbCashFlow2@clicked()
     //     thread
     //     (
     //         lock{
-            result = modalWindow(strTrim(tpath()) +"wxbicfac.xaml");
+            result = modalWindow(strTrim(tpath()) +"wxbicfae.xaml");
     //        }
     //    )
     }
@@ -1168,19 +1169,19 @@ function setWeekComparison2(){
     define a type n size 14 dec 2;
 	if (Math.Abs(tot_ovajTj_priliv) > Math.Abs(tot_ProsliTj_priliv))
 	{
-        if (tot_prosliTj_priliv== 0){
+        if (tot_prosliTj_priliv == 0){
     		HorizontalBar("HorizontalBarOTPriliv", "BarWidth", 100);
 	    	HorizontalBar("HorizontalBarLTPriliv", "BarWidth", 0);
         }
         else{
             ratio = 1.00 * tot_ovajTj_priliv/tot_ProsliTj_priliv;
-	    	HorizontalBar("HorizontalBarOTPrilivPriliv", "BarWidth", 90);
-    		HorizontalBar("HorizontalBarLTPrilivPriliv", "BarWidth", 90/ratio);
+	    	HorizontalBar("HorizontalBarOTPriliv", "BarWidth", 90);
+    		HorizontalBar("HorizontalBarLTPriliv", "BarWidth", 90/ratio);
         }
 	}
-    elif (tot_prosliTj_priliv== tot_ovajTj_priliv)
+    elif (tot_prosliTj_priliv == tot_ovajTj_priliv)
     {
-        if (tot_prosliTj_priliv== 0){
+        if (tot_prosliTj_priliv == 0){
     		HorizontalBar("HorizontalBarOTPriliv", "BarWidth", 0);
 	    	HorizontalBar("HorizontalBarLTPriliv", "BarWidth", 0);
         }
@@ -1191,7 +1192,7 @@ function setWeekComparison2(){
     }
 	else
 	{
-        if (tot_ovajTj_priliv== 0){
+        if (tot_ovajTj_priliv == 0){
     		HorizontalBar("HorizontalBarOTPriliv", "BarWidth", 0);
 	    	HorizontalBar("HorizontalBarLTPriliv", "BarWidth", 100);
         }
@@ -1202,22 +1203,22 @@ function setWeekComparison2(){
         }
 	}
 
-    // //ellipse
-    // SetWidgetOptions("EllipseProdajaUTjednu", "Visible", true);
-    // if (tot_ovajTj > tot_ProsliTj)
-    // {
-    //     SetWidgetOptions("EllipseProdajaUTjednu", "Color", "Lime");
-    // }
-    // elif(tot_ovajTj < tot_ProsliTj)
-    // {
-    //     SetWidgetOptions("EllipseProdajaUTjednu", "Color", "Red");
-    // }
-    // else{
-    //     SetWidgetOptions("EllipseProdajaUTjednu", "Color", "Gray");
-    // }
-    // if(tot_ovajTj == 0 || tot_ProsliTj == 0){
-    //     SetWidgetOptions("EllipseProdajaUTjednu", "Visible", false);
-    // }
+    //ellipse
+    SetWidgetOptions("EllipseProdajaUTjednuPriliv", "Visible", true);
+    if (tot_ovajTj_priliv > tot_ProsliTj_priliv)
+    {
+        SetWidgetOptions("EllipseProdajaUTjednuPriliv", "Color", "Lime");
+    }
+    elif(tot_ovajTj_priliv < tot_ProsliTj_priliv)
+    {
+        SetWidgetOptions("EllipseProdajaUTjednuPriliv", "Color", "Red");
+    }
+    else{
+        SetWidgetOptions("EllipseProdajaUTjednuPriliv", "Color", "Gray");
+    }
+    if(tot_ovajTj_priliv == 0 || tot_ProsliTj_priliv == 0){
+        SetWidgetOptions("EllipseProdajaUTjednuPriliv", "Visible", false);
+    }
 
 	Format("tot_ovajTj_priliv", "nofd", recv: "tot_ovajTj_priliv_string");
 	HorizontalBar("HorizontalBarOTPriliv", "Text", tot_ovajTj_priliv_string);
@@ -1226,7 +1227,8 @@ function setWeekComparison2(){
 	Format("tot_ProsliTj_priliv", "nofd", recv: "tot_ProsliTj_priliv_string");
 	HorizontalBar("HorizontalBarLTPriliv", "Text", tot_ProsliTj_priliv_string);
 	HorizontalBar("HorizontalBarLTPriliv", "Color", bojeArrayTJ);
-//sada odliv
+
+    //sada odliv
 	if (Math.Abs(tot_ovajTj_Odliv) > Math.Abs(tot_ProsliTj_Odliv))
 	{
         if (tot_prosliTj_Odliv== 0){
@@ -1263,22 +1265,22 @@ function setWeekComparison2(){
         }
 	}
 
-    // //ellipse
-    // SetWidgetOptions("EllipseProdajaUTjednu", "Visible", true);
-    // if (tot_ovajTj > tot_ProsliTj)
-    // {
-    //     SetWidgetOptions("EllipseProdajaUTjednu", "Color", "Lime");
-    // }
-    // elif(tot_ovajTj < tot_ProsliTj)
-    // {
-    //     SetWidgetOptions("EllipseProdajaUTjednu", "Color", "Red");
-    // }
-    // else{
-    //     SetWidgetOptions("EllipseProdajaUTjednu", "Color", "Gray");
-    // }
-    // if(tot_ovajTj == 0 || tot_ProsliTj == 0){
-    //     SetWidgetOptions("EllipseProdajaUTjednu", "Visible", false);
-    // }
+    //ellipse
+    SetWidgetOptions("EllipseProdajaUTjednuOdliv", "Visible", true);
+    if (tot_ovajTj_Odliv > tot_ProsliTj_Odliv)
+    {
+        SetWidgetOptions("EllipseProdajaUTjednuOdliv", "Color", "Lime");
+    }
+    elif(tot_ovajTj_Odliv < tot_ProsliTj_Odliv)
+    {
+        SetWidgetOptions("EllipseProdajaUTjednuOdliv", "Color", "Red");
+    }
+    else{
+        SetWidgetOptions("EllipseProdajaUTjednuOdliv", "Color", "Gray");
+    }
+    if(tot_ovajTj_Odliv == 0 || tot_ProsliTj_Odliv == 0){
+        SetWidgetOptions("EllipseProdajaUTjednuOdliv", "Visible", false);
+    }
 
 	Format("tot_ovajTj_Odliv", "nofd", recv: "tot_ovajTj_Odliv_string");
 	HorizontalBar("HorizontalBarOTOdliv", "Text", tot_ovajTj_Odliv_string);

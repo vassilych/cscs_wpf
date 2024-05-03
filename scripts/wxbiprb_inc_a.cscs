@@ -651,6 +651,8 @@ function setLast10InvoicesDataGrid()
 	}catch(exc){
 		MessageBox(exc);
 	}
+
+
     for ( i = 1; i < Size(sqlResult2); i++ )
     {      
         //nkpr_gl_num = sqlResult2[i][0];  
@@ -759,10 +761,10 @@ function setTop10InvoicesDataGrid()
 
 	for ( i = 1; i < Size(sqlResult); i++ )
 	{      
-		nkpr_gl_num = sqlResult[i][0];  
-		nkpr_gl_cusnme = sqlResult[i][1];
-		nkpr_gl_invdte = sqlResult[i][2];
-		nkpr_gl_total= sqlResult[i][3];
+		// nkpr_gl_num = sqlResult[i][0];  
+		// nkpr_gl_cusnme = sqlResult[i][1];
+		// nkpr_gl_invdte = sqlResult[i][2];
+		// nkpr_gl_total= sqlResult[i][3];
 
 		t10NameMj_ar[i - 1] =  sqlResult[i][1]; //nkpr_gl_cusnme;
 		t10IznosMj_ar[i - 1] =  sqlResult[i][3]; //nkpr_gl_total;

@@ -132,7 +132,7 @@
                 <wcl:ASHorizontalBar x:Name="HorizontalBarLG"
                                      UseLayoutRounding="True"
                                      Margin="131,87,0,0"
-                                     FontSize="24" Grid.Column="0" Grid.Row="0" FontFamily="Lato" FontWeight="Bold" Background="#FFB9B6B6" BarColor="Aquamarine" BorderBrush="Transparent" BorderThickness="0" Foreground="Red" Height="31" VerticalAlignment="Top" HorizontalAlignment="Left" Width="180"/>
+                                     FontSize="24" Grid.Column="0" Grid.Row="0" FontFamily="Lato" FontWeight="Bold" Background="#FFB9B6B6" BarColor="Aquamarine" BorderBrush="Transparent" BorderThickness="0" Height="31" VerticalAlignment="Top" HorizontalAlignment="Left" Width="180"/>
                 <wcl:ASEnterBox HorizontalAlignment="Left"
                                 FontWeight="Bold"
                                 VerticalAlignment="Top"

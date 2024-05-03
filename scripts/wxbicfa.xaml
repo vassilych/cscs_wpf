@@ -68,7 +68,7 @@
                 <wcl:ASHorizontalBar x:Name="HorizontalBarLGPriliv"
                                      UseLayoutRounding="True"
                                      Margin="130,86,0,0"
-                                     FontSize="24" Grid.Column="0" Grid.Row="2" FontFamily="Lato" FontWeight="Bold" Background="#FFB9B6B6" BarColor="Aquamarine" BorderBrush="Transparent" BorderThickness="0" Foreground="Red" Height="31" VerticalAlignment="Top" HorizontalAlignment="Left" Width="180"/>
+                                     FontSize="24" Grid.Column="0" Grid.Row="2" FontFamily="Lato" FontWeight="Bold" Background="#FFB9B6B6" BarColor="Aquamarine" BorderBrush="Transparent" BorderThickness="0" Height="31" VerticalAlignment="Top" HorizontalAlignment="Left" Width="180"/>
                 <wcl:ASEnterBox HorizontalAlignment="Left"
                                 FontWeight="Bold"
                                 VerticalAlignment="Top"
@@ -373,7 +373,7 @@
                 <wcl:ASHorizontalBar x:Name="HorizontalBarLGOdliv"
                                      UseLayoutRounding="True"
                                      Margin="129,87,0,0"
-                                     FontSize="24" Grid.Column="0" Grid.Row="3" FontFamily="Lato" FontWeight="Bold" Background="#FFB9B6B6" BarColor="Aquamarine" BorderBrush="Transparent" BorderThickness="0" Foreground="Red" Height="31" VerticalAlignment="Top" HorizontalAlignment="Left" Width="180"/>
+                                     FontSize="24" Grid.Column="0" Grid.Row="3" FontFamily="Lato" FontWeight="Bold" Background="#FFB9B6B6" BarColor="Aquamarine" BorderBrush="Transparent" BorderThickness="0" Height="31" VerticalAlignment="Top" HorizontalAlignment="Left" Width="180"/>
                 <wcl:ASEnterBox HorizontalAlignment="Left"
                                 FontWeight="Bold"
                                 VerticalAlignment="Top"

@@ -769,10 +769,10 @@ function setTop10InvoicesDataGrid()
 
 	for ( i = 1; i < Size(sqlResult); i++ )
 	{      
-		nkpr_gl_brotp = sqlResult[i][0];  
-		nkpr_gl_cusnme = sqlResult[i][1];
-		nkpr_gl_esd = sqlResult[i][2];
-		nkpr_gl_total= sqlResult[i][3];
+		// nkpr_gl_brotp = sqlResult[i][0];  
+		// nkpr_gl_cusnme = sqlResult[i][1];
+		// nkpr_gl_esd = sqlResult[i][2];
+		// nkpr_gl_total= sqlResult[i][3];
 
 		t10NameMj_ar[i - 1] =  sqlResult[i][1]; //nkpr_gl_cusnme;
 		t10IznosMj_ar[i - 1] =  sqlResult[i][3]; //nkpr_gl_total;

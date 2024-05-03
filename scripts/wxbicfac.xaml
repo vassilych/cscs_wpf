@@ -6,11 +6,11 @@
         xmlns:wcl="clr-namespace:WpfControlsLibrary;assembly=WpfControlsLibrary"
         xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
         mc:Ignorable="d"
-        Title="Cash flow III"
+        Title="Cash Flow - odliv I"
         Height="675"
         Width="1200" WindowStartupLocation="CenterScreen"  MinHeight="540" MinWidth="960">
     <Viewbox Stretch="Uniform">
-        <!--<Grid
+        <Grid
             Margin="10,30,10,30">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
@@ -20,248 +20,190 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            
-        </Grid>-->
-        <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-            <Rectangle x:Name="RectangleD" Grid.Column="0" Margin="10,164,0,0" Stroke="Black" Fill="#FFEEEDF1" RadiusX="7" RadiusY="7" StrokeThickness="0" Height="149" VerticalAlignment="Top" HorizontalAlignment="Left" Width="327"/>
-            <Rectangle x:Name="RectangleE" Margin="357,164,0,0" Stroke="Black" Fill="#FFEEEDF1" RadiusX="7" RadiusY="7" StrokeThickness="0" Height="149" VerticalAlignment="Top" HorizontalAlignment="Left" Width="326"/>
-            <Rectangle x:Name="RectangleF" Margin="703,168,0,0" Stroke="Black" Fill="#FFEEEDF1" RadiusX="7" RadiusY="7" StrokeThickness="0" Height="149" VerticalAlignment="Top" HorizontalAlignment="Left" Width="327"/>
-            <TextBlock HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Height="30"
-                Width="273"
-                Margin="732,170,0,0"
-                x:Name="Label2_Copy3"
-                FontFamily="Lato"
-                FontSize="22"
-                FontWeight="Bold"
-                Foreground="black"
-                Text="Prosj. prodaja po kupcu"
-        />
-            <wcl:ASHorizontalBar
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Height="32"
-                Width="126"
-                Margin="885,208,0,0"
-                BarColor="#FFC4E08A" Background="#FFB9B6B6"
-                x:Name="HorizontalBarProdajaKupOG"
-                FontFamily="Lato"
-                FontSize="24"
-                FontWeight="Bold" />
-            <wcl:ASHorizontalBar
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Height="32"
-                Width="126"
-                Margin="885,245,0,0"
-                x:Name="HorizontalBarProdajaKupLG"
-                FontFamily="Lato"
-                FontSize="24"
-                FontWeight="Bold" BarColor="#FFC4E08A" Background="#FFB9B6B6" />
-            <TextBlock HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Height="26"
-                Width="59"
-                Margin="816,282,0,0"
-                FontFamily="lato"
-                x:Name="Label20_Copy"
-                FontSize="16"
-                Foreground="black"
-                Text="Index %:" RenderTransformOrigin="0.795,0.667" />
-            <wcl:ASNumericBox HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                FontWeight="Bold"
-                ButtonSize="0"
-                Dec="2"
-                Height="26"
-                Width="126"
-                Margin="885,282,0,0"
-                x:Name="TASNumEnter7_Copy"
-                Thousands="True"
-                Foreground="Black"
-                Background="#FFC4E08A"
-                FieldName="prod_kup_indx"
-                HorizontalContentAlignment="Right"
-                IsReadOnly="True"
-                FontFamily="Lato"
-                FontSize="20"
-                IsTabStop="False"/>
-            <TextBlock HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Height="32"
-                Width="126"
-                Margin="364,168,0,0"
-                FontFamily="Lato"
-                FontWeight="Bold"
-                x:Name="Label2_Copy"
-                FontSize="22"
-                Foreground="black"
-                Text="Broj kupaca"
-                TextWrapping="Wrap"/>
-            <TextBlock HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Height="32"
-                Width="126"
-                Margin="529,168,0,0"
-                FontFamily="Lato"
-                FontWeight="Bold"
-                x:Name="Label3_Copy"
-                FontSize="22"
-                Foreground="black"
-                Text="Broj računa"
-                TextWrapping="Wrap"/>
-            <wcl:ASHorizontalBar
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Height="32"
-                Width="66"
-                Margin="442,208,0,0"
-                x:Name="HorizontalBarBrKupacaOG"
-                FontFamily="Lato"
-                FontSize="24"
-                FontWeight="Bold" Background="#FFB9B6B6" />
-            <wcl:ASHorizontalBar HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Height="32"
-                Width="66"
-                Margin="442,245,0,0"
-                x:Name="HorizontalBarBrKupacaLG"
-                FontFamily="Lato"
-                FontSize="24"
-                FontWeight="Bold" RenderTransformOrigin="0.697,0.519" Background="#FFB9B6B6" />
-            <wcl:ASHorizontalBar
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Height="32"
-                Width="109"
-                Margin="549,208,0,0"
-                x:Name="HorizontalBarBrRacunaOG"
-                FontFamily="Lato"
-                FontSize="24"
-                FontWeight="Bold" Background="#FFB9B6B6" />
-            <wcl:ASHorizontalBar
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Height="32"
-                Width="108"
-                Margin="549,245,0,0"
-                x:Name="HorizontalBarBrRacunaLG"
-                FontFamily="Lato"
-                FontSize="24"
-                FontWeight="Bold" Background="#FFB9B6B6" />
-            <TextBlock HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Height="32"
-                Width="111"
-                Margin="80,220,0,0"
-                FontFamily="Lato"
-                x:Name="Label2_Copy6"
-                FontSize="16"
-                Foreground="black"
-                Text="Neažurirani: "
-                TextWrapping="Wrap"/>
-            <wcl:ASHorizontalBar
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Height="32"
-                Width="109"
-                Margin="202,208,0,0"
-                x:Name="HorizontalBarBrNeazur"
-                FontFamily="Lato"
-                FontSize="24" FontWeight="Bold" Background="#FFB9B6B6" />
-            <TextBlock HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Height="32"
-                Width="89"
-                Margin="80,256,0,0"
-                FontFamily="Lato"
-                x:Name="Label2"
-                FontSize="16"
-                Foreground="black"
-                Text="Na čekanju: "
-                TextWrapping="Wrap" RenderTransformOrigin="0.658,0.95"/>
-            <wcl:ASHorizontalBar
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Height="32"
-                Width="109"
-                Margin="202,245,0,0"
-                x:Name="HorizontalBarBrWait"
-                FontFamily="Lato"
-                FontSize="24" FontWeight="Bold" Background="#FFB9B6B6" />
-            <TextBlock HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Height="32"
-                Width="254"
-                Margin="35,168,0,0"
-                FontFamily="Lato"
-                FontWeight="Bold"
-                x:Name="Label2_Copy7"
-                FontSize="22"
-                Foreground="black"
-                TextWrapping="Wrap"><Run Text="Broj računa"/><Run Language="hr-hr" Text=" "/><Run Text="sa statusom"/></TextBlock>
-            <wcl:ASEnterBox HorizontalAlignment="Left"
-                FontWeight="Bold"
-                VerticalAlignment="Top"
-                Margin="384,222,0,0"
-                FieldName="ovagod_h"
-                x:Name="TASENTER1_Copy"
-                FontSize="14"
-                Foreground="black"
-                Background="#FFB9B6B6" BorderBrush="Transparent"
-                Height="18"
-                Width="45"
-                IsTabStop="False"
-                Focusable="False"
-        />
-            <wcl:ASEnterBox HorizontalAlignment="Left"
-                FontWeight="Bold"
-                VerticalAlignment="Top"
-                Margin="384,255,0,0"
-                FieldName="lani_h"
-                x:Name="TASENTER2_Copy"
-                FontSize="14"
-                Foreground="black"
-                Background="#FFB9B6B6" BorderBrush="Transparent"
-                Height="18"
-                Width="45"
-                IsTabStop="False"
-                Focusable="False"
-        />
-            <wcl:ASEnterBox HorizontalAlignment="Left"
-                FontWeight="Bold"
-                VerticalAlignment="Top"
-                Margin="816,222,0,0"
-                FieldName="ovagod_h"
-                x:Name="TASENTER1_Copy1"
-                FontSize="14"
-                Foreground="black"
-                Background="#FFB9B6B6" BorderBrush="Transparent"
-                Height="18"
-                Width="45"
-                IsTabStop="False"
-                Focusable="False"
-        />
-            <wcl:ASEnterBox HorizontalAlignment="Left"
-                FontWeight="Bold"
-                VerticalAlignment="Top"
-                Margin="816,256,0,0"
-                FieldName="lani_h"
-                x:Name="TASENTER2_Copy1"
-                FontSize="14"
-                Foreground="black"
-                Background="#FFB9B6B6" BorderBrush="Transparent"
-                Height="18"
-                Width="45"
-                IsTabStop="False"
-                Focusable="False"
-        />
+            <lvc:CartesianChart LegendPosition="Right"
+                                x:Name="ChartPoMjesecima"
+                                Margin="23,45,23,10"
+                                Height="300" />
+            <lvc:CartesianChart x:Name="ChartPoDanima"
+                                Grid.Column="1"
+                                Grid.Row="0"
+                                Margin="5,45,5,10" LegendPosition="Top" />
+            <Label HorizontalAlignment="Left" Content="Odliv po danima" Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="24,5,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
+            <Label HorizontalAlignment="Left" Content="Najnoviji odliv" Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="23,5,0,0" BorderBrush="{x:Null}"/>
 
-            <Ellipse x:Name="EllipseBrojKupaca" HorizontalAlignment="Left" Height="20" Margin="491,172,0,0" VerticalAlignment="Top" Width="20"/>
-            <Ellipse x:Name="EllipseBrojRacuna" HorizontalAlignment="Left" Height="20" Margin="654,172,0,0" VerticalAlignment="Top" Width="20"/>
-            <Ellipse x:Name="EllipseProsjProdajaPoKupcu" HorizontalAlignment="Left" Height="20" Margin="996,180,0,0" VerticalAlignment="Top" Width="20"/>
-
+            <DataGrid GridLinesVisibility="Vertical"
+                      VerticalGridLinesBrush="LightGray"
+                      Margin="23,32,23,14"
+                      IsReadOnly="true"
+                      x:Name="dgRacuniLast"
+                      AlternatingRowBackground="LightBlue"
+                      HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto"
+                      Background="White"
+                      Grid.Row="1"
+                      TabIndex="4" BorderThickness="0,0,0,0">
+                <DataGrid.Resources>
+                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                        <Setter Property="Background"
+                                Value="#FF006393" />
+                        <Setter Property="Foreground"
+                                Value="White" />
+                        <Setter Property="FontSize" Value="17"/>
+                    </Style>
+                </DataGrid.Resources>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="No."
+                                            Width="28">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="T10CNTRZ_AR"
+                                                Editor="edDefault"
+                                                EditLength="0" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Izvadak"
+                                            Width="69">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="T10RACUNZ_AR"
+                                                HorizontalContentAlignment="Right"
+                                                Editor="edNumeric"
+                                                EditLength="0" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Datum"
+                                            Width="63">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="T10DATUMZ_AR"
+                                                HorizontalContentAlignment="Center"
+                                                Editor="edDefault"
+                                                EditLength="8" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Sat"
+                                            Width="50">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="T10TIMEZ_AR"
+                                                HorizontalContentAlignment="Center"
+                                                Editor="edDefault"
+                                                EditLength="0" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Banka"
+                                            Width="210">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="T10NAMEZ_AR"
+                                                Editor="edDefault"
+                                                Thousands="True"
+                                                EditLength="0" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Ukupno"
+                                            Width="90">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="T10IZNOSZ_AR"
+                                                Editor="edEditBtn"
+                                                EditLength="0"
+                                                x:Name="clickTest"
+                                                Size="10"
+                                                DecimalChrs="2"
+                                                HorizontalContentAlignment="Right" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+            <Label HorizontalAlignment="Left" Content="Najveći odliv" Grid.Row="1" Grid.Column="1" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="24,5,0,0" BorderBrush="{x:Null}"/>
+            <Label HorizontalAlignment="Left" Content="Odliv po mjesecima (x 1.000)" VerticalAlignment="Top" Width="272" FontSize="16" FontWeight="Bold" Margin="23,5,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
+            <DataGrid GridLinesVisibility="None"
+                      Margin="24,32,20,14"
+                      IsReadOnly="true"
+                      x:Name="dgRacuniMjesec"
+                      AlternatingRowBackground="LightGray"
+                      HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto"
+                      Background="White"
+                      Grid.Column="1"
+                      Grid.Row="1"
+                      TabIndex="3" BorderThickness="0,0,0,0" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False">
+                <DataGrid.Resources>
+                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                        <Setter Property="Background"
+                                Value="#FF326363" />
+                        <Setter Property="Foreground"
+                                Value="White" />
+                        <Setter Property="FontSize" Value="17"/>
+                    </Style>
+                </DataGrid.Resources>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="No."
+                                            Width="28">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="T10CNTRMJ_AR"
+                                                Editor="edDefault"
+                                                EditLength="0" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Rač/Ispl"
+                                            Width="69">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="T10RACUNMJ_AR"
+                                                Editor="edNumeric"
+                                                HorizontalContentAlignment="Right"
+                                                EditLength="0" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Datum"
+                                            Width="63">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="T10DATUMMJ_AR"
+                                                HorizontalContentAlignment="Center"
+                                                Editor="edDefault"
+                                                EditLength="8" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Dobavljač"
+                                            Width="250">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="T10NAMEMJ_AR"
+                                                Editor="edDefault"
+                                                EditLength="0" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Iznos"
+                                            Width="90">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="T10IZNOSMJ_AR"
+                                                Editor="edEditBtn"
+                                                EditLength="0"
+                                                x:Name="clickTest"
+                                                Thousands="True"
+                                                Size="10"
+                                                DecimalChrs="2"
+                                                HorizontalContentAlignment="Right" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
         </Grid>
     </Viewbox>
 </Window>

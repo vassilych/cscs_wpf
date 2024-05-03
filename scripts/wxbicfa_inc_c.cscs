@@ -1,9 +1,9 @@
-function wxbicfaa_onStart()
+function wxbicfac_onStart()
 {
     cursor("wait");
     t10datrac=true;
     
-    setChartByDaysOfMonth();
+    setChartByDaysOfMonthOdliv();
     //
     Chart("ChartPoMjesecima", "init");
     //Chart("ChartPoMjesecima", "seriesType", "Columnseries");
@@ -11,8 +11,8 @@ function wxbicfaa_onStart()
     // Chart("ChartPoMjesecima", "labels", "y", 13);
     // Chart("ChartPoMjesecima", "labels", "x", 13, {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
     // Chart("ChartPoMjesecima", "xlabelsRotation", 0);
-    Chart("ChartPoMjesecima", "values", "bar", arrayProslaPriliv, STRING(proslaGodina)); // !
-    Chart("ChartPoMjesecima", "values", "bar", arrayTrenutnaPriliv, STRING(ovagod_h)); //!
+    Chart("ChartPoMjesecima", "values", "bar", arrayProslaOdliv, STRING(proslaGodina)); // !
+    Chart("ChartPoMjesecima", "values", "bar", arrayTrenutnaOdliv, STRING(ovagod_h)); //!
     Chart("ChartPoMjesecima", "SeparatorStep", 1);
     //Chart("ChartPoMjesecima", "Margins", {50, 20, 0, 30});
     Chart("ChartPoMjesecima", "TooltipDecimalPlaces", 0);
@@ -35,7 +35,7 @@ function wxbicfaa_onStart()
     //Chart("ChartPoDanima", "Margins", {60, 20, 0, 30});
     //
     cntr2= 0;
-    setLast10InvoicesDataGrid();
+    setLast10InvoicesDataGridOdliv();
     Format("T10IZNOSZ_AR", "nofd");
     Format("T10IZNOSMJ_AR", "nofd");
     DisplayArray("dgRacuniLast", "close");
@@ -43,8 +43,8 @@ function wxbicfaa_onStart()
     //
 	DisplayArray("dgRacuniMjesec", "close");
 	//DisplayArraySetup("dgRacuniMjesec", counterFld: "cntr3", activeElements: Size(sqlResult) - 1, maxElements: 10);
-    setTop10InvoicesDataGrid();
-    cntr3= 0;
+    setTop10InvoicesDataGridOdliv();
+    cntr3 = 0;
 	DisplayArraySetup("dgRacuniMjesec", counterFld: cntr3, activeElements: Size(sqlResult) - 1, maxElements: 10);
     cursor("dflt");
 }
@@ -57,10 +57,11 @@ function buty@clicked()
     Chart("ChartPoMjesecima", "Color.Series", { "Blue", "Green"}); 
 	DisplayArraySetup("dgRacuniMjesec", counterFld: cntr3, activeElements: Size(sqlResult) - 1, maxElements: 10);
 }    
-function setChartByDaysOfMonth()
+
+function setChartByDaysOfMonthOdliv()
 {
-    sql_str = "SELECT [wk_day] as dan2 , SalesDay = ISNULL(ROUND(SUM(CASE WHEN kdib_ln_dp='P' THEN kdib_ln_iznos ELSE 0 END),0) , 0)";
-    sql_str += ", ISNULL(ROUND(AVG(SUM(CASE WHEN kdib_ln_dp='P' THEN kdib_ln_iznos ELSE 0 END)) OVER(ORDER BY wk_day ROWS BETWEEN 6 PRECEDING AND CURRENT ROW), 0),0) AS moving_average_3_days";
+    sql_str = "SELECT [wk_day] as dan2 , SalesDay = ISNULL(ROUND(SUM(CASE WHEN kdib_ln_dp='D' THEN kdib_ln_iznos ELSE 0 END),0) , 0)";
+    sql_str += ", ISNULL(ROUND(AVG(SUM(CASE WHEN kdib_ln_dp='D' THEN kdib_ln_iznos ELSE 0 END)) OVER(ORDER BY wk_day ROWS BETWEEN 6 PRECEDING AND CURRENT ROW), 0),0) AS moving_average_3_days";
     sql_str += " FROM " + CommonDBGet()+ ".dbo.Kalendar a";
     sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.kpkdibgl ON [Wk_Date] = kdib_gl_datum ";
     
@@ -102,11 +103,11 @@ function setChartByDaysOfMonth()
 
     if (do_mjeseca)
     {
-            sql_str += " AND [wk_Month]< = '" + mjesec_h + "' AND wk_Year = '" + ovagod_h + "'";
+        sql_str += " AND [wk_Month]< = '" + mjesec_h + "' AND wk_Year = '" + ovagod_h + "'";
     }
     else
     {
-            sql_str += " AND [wk_Month] = '" + mjesec_h + "' AND wk_Year = '" + ovagod_h + "'";
+        sql_str += " AND [wk_Month] = '" + mjesec_h + "' AND wk_Year = '" + ovagod_h + "'";
     }
     //filterPart();
     sql_str += " GROUP BY Wk_day";
@@ -117,7 +118,7 @@ function setChartByDaysOfMonth()
         queryResult = sqlquery(sql_str);
     }catch(exc)
     {
-            MessageBox(exc);
+        MessageBox(exc);
     }
     
     arrayDani = {};
@@ -131,154 +132,154 @@ function setChartByDaysOfMonth()
     }
 }
 
-function setChartByMonth()
-{
-    SQL_str = "SET query_governor_cost_limit 0;";
-    if ( proslaGodinaBaza != "" )
-    {
-        sql_str += "SELECT '0' as tip,CONVERT(varchar(6),kdib_gl_datum,112) as yyyymm,sum(CASE WHEN kdib_ln_dp='D' THEN kdib_ln_iznos ELSE 0 END) AS Odliv, sum(CASE WHEN kdib_ln_dp='P' THEN kdib_ln_iznos ELSE 0 END) AS Priliv ";
-        sql_str += " FROM " + proslaGodinaBaza + ".dbo.kpkdibgl"; 
-        sql_str += " LEFT JOIN " + proslaGodinaBaza + ".dbo.kpkdibln ON kdib_gl_num= kdib_ln_num";
-        sql_str += " WHERE 1=1 AND kdib_gl_banka<> '' AND year(kdib_gl_datum) = " + lani_h; 
-        filterPart();
-        sql_str += " GROUP BY CONVERT(varchar(6),kdib_gl_datum,112)";
-        sql_str += " ORDER BY CONVERT(varchar(6),kdib_gl_datum,112);";
-        try
-        {
-             //SaveFile(sql_str);
-            queryResult = sqlquery(SQL_str);
-        }
-        catch(exc)
-        {
-            MessageBox(exc);
-        }
+// function setChartByMonth()
+// {
+//     SQL_str = "SET query_governor_cost_limit 0;";
+//     if ( proslaGodinaBaza != "" )
+//     {
+//         sql_str += "SELECT '0' as tip,CONVERT(varchar(6),kdib_gl_datum,112) as yyyymm,sum(CASE WHEN kdib_ln_dp='D' THEN kdib_ln_iznos ELSE 0 END) AS Odliv, sum(CASE WHEN kdib_ln_dp='D' THEN kdib_ln_iznos ELSE 0 END) AS Priliv ";
+//         sql_str += " FROM " + proslaGodinaBaza + ".dbo.kpkdibgl"; 
+//         sql_str += " LEFT JOIN " + proslaGodinaBaza + ".dbo.kpkdibln ON kdib_gl_num= kdib_ln_num";
+//         sql_str += " WHERE 1=1 AND kdib_gl_banka<> '' AND year(kdib_gl_datum) = " + lani_h; 
+//         filterPart();
+//         sql_str += " GROUP BY CONVERT(varchar(6),kdib_gl_datum,112)";
+//         sql_str += " ORDER BY CONVERT(varchar(6),kdib_gl_datum,112);";
+//         try
+//         {
+//              //SaveFile(sql_str);
+//             queryResult = sqlquery(SQL_str);
+//         }
+//         catch(exc)
+//         {
+//             MessageBox(exc);
+//         }
         
-        RunOnMain("setChartByMonth1");
-    }
+//         RunOnMain("setChartByMonth1");
+//     }
     
-    //sada tekuća godina
-    sql_str = "SELECT '1' as tip, CONVERT(varchar(6), kdib_gl_datum, 112) as yyyymm, sum(CASE WHEN kdib_ln_dp='D' THEN kdib_ln_iznos ELSE 0 END) AS Odliv, sum(CASE WHEN kdib_ln_dp='P' THEN kdib_ln_iznos ELSE 0 END) AS Priliv";
-    sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.kpkdibgl"; 
-    sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.kpkdibln ON kdib_gl_num = kdib_ln_num";
-    sql_str += " WHERE 1 = 1 AND kdib_gl_banka<> '' AND year(kdib_gl_datum) = " + ovagod_h; 
-    filterPart();
-    sql_str += " GROUP BY CONVERT(varchar(6), kdib_gl_datum, 112)";
-    sql_str += " ORDER BY CONVERT(varchar(6), kdib_gl_datum, 112);";
-    try
-    {
-        //SaveFile(sql_str);
-        queryResult = sqlquery(SQL_str);
-    }
-    catch(exc)
-    {
-        MessageBox(exc);
-    }
+//     //sada tekuća godina
+//     sql_str = "SELECT '1' as tip, CONVERT(varchar(6), kdib_gl_datum, 112) as yyyymm, sum(CASE WHEN kdib_ln_dp='D' THEN kdib_ln_iznos ELSE 0 END) AS Odliv, sum(CASE WHEN kdib_ln_dp='D' THEN kdib_ln_iznos ELSE 0 END) AS Priliv";
+//     sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.kpkdibgl"; 
+//     sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.kpkdibln ON kdib_gl_num = kdib_ln_num";
+//     sql_str += " WHERE 1 = 1 AND kdib_gl_banka<> '' AND year(kdib_gl_datum) = " + ovagod_h; 
+//     filterPart();
+//     sql_str += " GROUP BY CONVERT(varchar(6), kdib_gl_datum, 112)";
+//     sql_str += " ORDER BY CONVERT(varchar(6), kdib_gl_datum, 112);";
+//     try
+//     {
+//         //SaveFile(sql_str);
+//         queryResult = sqlquery(SQL_str);
+//     }
+//     catch(exc)
+//     {
+//         MessageBox(exc);
+//     }
 
-    RunOnMain("setChartByMonth2");
-}
+//     RunOnMain("setChartByMonth2");
+// }
 
-function setChartByMonth1(){
-    tot_proslimj_priliv = 0;
-    tot_proslimj_odliv = 0;
-    tot_ovajmj_priliv = 0;
-    tot_ovajmj_odliv = 0;
-    tot_ovagod_priliv = 0;
-    tot_ovagod_odliv = 0;
-    tot_lani_priliv = 0;
-    tot_lani_odliv = 0;
-    //cntry= 0;
-    //sales_month_ar = {};
-    define ar_cntr type i size 2;
+// function setChartByMonth1(){
+//     tot_proslimj_priliv = 0;
+//     tot_proslimj_odliv = 0;
+//     tot_ovajmj_priliv = 0;
+//     tot_ovajmj_odliv = 0;
+//     tot_ovagod_priliv = 0;
+//     tot_ovagod_odliv = 0;
+//     tot_lani_priliv = 0;
+//     tot_lani_odliv = 0;
+//     //cntry= 0;
+//     //sales_month_ar = {};
+//     define ar_cntr type i size 2;
 
-    for(i = 0; i < 12; i++)
-    {
-        arrayProslaPriliv[i]= 0; 
-        arrayProslaOdliv[i] = 0;
-    }
+//     for(i = 0; i < 12; i++)
+//     {
+//         arrayProslaPriliv[i]= 0; 
+//         arrayProslaOdliv[i] = 0;
+//     }
 
-    for(i = 1; i <= Size(queryResult) - 1; i++)
-    {
-        ar_cntr = int(substring(queryResult[i][1], 4, 2));
-        arrayProslaPriliv[ar_cntr - 1] = math.round(queryResult[i][3]/1000,0); 
-        arrayProslaOdliv[ar_cntr - 1] = math.round(queryResult[i][2]/1000,0); 
-        // sales_month_ar[ar_cntr - 1]=queryResult[i][3];
-        if (do_mjeseca)
-        {
-            if(ar_cntr <= int(mjesec_h))
-            {
-                tot_lani_priliv += queryResult[i][3];
-                tot_lani_odliv += queryResult[i][2];
-            } 
-        }
-        else
-        {
-            if(ar_cntr == int(mjesec_h))
-            {   
-                tot_lani_priliv = queryResult[i][3];
-                tot_lani_odliv = queryResult[i][2];
-            }
-        }
-    }
-}
+//     for(i = 1; i <= Size(queryResult) - 1; i++)
+//     {
+//         ar_cntr = int(substring(queryResult[i][1], 4, 2));
+//         arrayProslaPriliv[ar_cntr - 1] = math.round(queryResult[i][3]/1000,0); 
+//         arrayProslaOdliv[ar_cntr - 1] = math.round(queryResult[i][2]/1000,0); 
+//         // sales_month_ar[ar_cntr - 1]=queryResult[i][3];
+//         if (do_mjeseca)
+//         {
+//             if(ar_cntr <= int(mjesec_h))
+//             {
+//                 tot_lani_priliv += queryResult[i][3];
+//                 tot_lani_odliv += queryResult[i][2];
+//             } 
+//         }
+//         else
+//         {
+//             if(ar_cntr == int(mjesec_h))
+//             {   
+//                 tot_lani_priliv = queryResult[i][3];
+//                 tot_lani_odliv = queryResult[i][2];
+//             }
+//         }
+//     }
+// }
 
-function setChartByMonth2(){
-    for(i = 0; i < 12; i++)
-    {
-        arrayTrenutnaPriliv[i] = 0; 
-        arrayTrenutnaOdliv[i] = 0; 
-    }
+// function setChartByMonth2(){
+//     for(i = 0; i < 12; i++)
+//     {
+//         arrayTrenutnaPriliv[i] = 0; 
+//         arrayTrenutnaOdliv[i] = 0; 
+//     }
 
-    for(i = 1; i <= Size(queryResult) - 1; i++)
-    {
-        ar_cntr = int(substring(queryResult[i][1], 4, 2)); //nađimo koji je to mjesec
-        arrayTrenutnaPriliv[ar_cntr-1]= math.round(queryResult[i][3]/1000,0); 
-        arrayTrenutnaOdliv[ar_cntr-1]= math.round(queryResult[i][2]/1000,0); 
-        // sales_month_ar[ar_cntr-1]=queryResult[i][3];
-        mjesec_h0X = mjesec_h.length == 1 ? "0" + mjesec_h : mjesec_h;
-        proslimjesec = string(int(mjesec_h) - 1); // 1
-        proslimjesec0X = proslimjesec.length == 1 ? "0" + proslimjesec : proslimjesec;
-        if (do_mjeseca)
-        {
-            if(ar_cntr <= int(mjesec_h))
-            {
-                tot_ovagod_priliv += queryResult[i][3];
-                tot_ovagod_odliv += queryResult[i][2];
-            } 
-        }
-        else
-        {
-            if(ar_cntr == int(mjesec_h))
-            {   
-                tot_ovagod_priliv =  queryResult[i][3];   
-                tot_ovagod_odliv =  queryResult[i][2];   
-            }
-        }
-        if (ovagod_h + mjesec_h0X == queryResult[i][1])
-        {   
-            //Ovaj mjesec
-            tot_ovajmj_priliv = queryResult[i][3];
-            tot_ovajmj_odliv = queryResult[i][2];
-        }
-        elif (ovagod_h + proslimjesec0X == queryResult[i][1])
-        {
-            tot_proslimj_priliv = queryResult[i][3];
-            tot_proslimj_odliv = queryResult[i][2];
-        }
-    }
-}
+//     for(i = 1; i <= Size(queryResult) - 1; i++)
+//     {
+//         ar_cntr = int(substring(queryResult[i][1], 4, 2)); //nađimo koji je to mjesec
+//         arrayTrenutnaPriliv[ar_cntr-1]= math.round(queryResult[i][3]/1000,0); 
+//         arrayTrenutnaOdliv[ar_cntr-1]= math.round(queryResult[i][2]/1000,0); 
+//         // sales_month_ar[ar_cntr-1]=queryResult[i][3];
+//         mjesec_h0X = mjesec_h.length == 1 ? "0" + mjesec_h : mjesec_h;
+//         proslimjesec = string(int(mjesec_h) - 1); // 1
+//         proslimjesec0X = proslimjesec.length == 1 ? "0" + proslimjesec : proslimjesec;
+//         if (do_mjeseca)
+//         {
+//             if(ar_cntr <= int(mjesec_h))
+//             {
+//                 tot_ovagod_priliv += queryResult[i][3];
+//                 tot_ovagod_odliv += queryResult[i][2];
+//             } 
+//         }
+//         else
+//         {
+//             if(ar_cntr == int(mjesec_h))
+//             {   
+//                 tot_ovagod_priliv =  queryResult[i][3];   
+//                 tot_ovagod_odliv =  queryResult[i][2];   
+//             }
+//         }
+//         if (ovagod_h + mjesec_h0X == queryResult[i][1])
+//         {   
+//             //Ovaj mjesec
+//             tot_ovajmj_priliv = queryResult[i][3];
+//             tot_ovajmj_odliv = queryResult[i][2];
+//         }
+//         elif (ovagod_h + proslimjesec0X == queryResult[i][1])
+//         {
+//             tot_proslimj_priliv = queryResult[i][3];
+//             tot_proslimj_odliv = queryResult[i][2];
+//         }
+//     }
+// }
 
 //--------------------------------------------------------
 
-function setLast10InvoicesDataGrid()
+function setLast10InvoicesDataGridOdliv()
 {
-    sql_str = "SELECT TOP 10 kdib_gl_num,kpsy_bnk_ime,CONVERT(char(8) , kdib_gl_datem  , 3),'12:12:12',sum(CASE WHEN kdib_ln_dp='P' THEN kdib_ln_iznos ELSE 0 END) as priliv"; // sum(CASE WHEN kdib_ln_dp='D' THEN kdib_ln_iznos ELSE 0 END) as odliv"; 
+    sql_str = "SELECT TOP 10 kdib_gl_num,kpsy_bnk_ime,CONVERT(char(8) , kdib_gl_datem  , 3),'12:12:12',sum(CASE WHEN kdib_ln_dp='D' THEN kdib_ln_iznos ELSE 0 END) as odliv"; // sum(CASE WHEN kdib_ln_dp='D' THEN kdib_ln_iznos ELSE 0 END) as odliv"; 
     //umjesto 12:12:12 uzetui sat koji se nalazi u kdib_gl_rez na poziciji 10. karaktera i ima 8 znakova
     //umjesto kdib_gl_datem treba uzeti poziciju od 2 pa 8 znakova i prikazati
     sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.kpkdibgl";
     //sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkscpart g ON kdib_ln_partnerd= g.nksc_partcode";
     sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.kpkdibln ON kdib_gl_num = kdib_ln_num";
     sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.kpsybank ON kdib_gl_banka = kpsy_bnk_code";
-	sql_str += " WHERE 1=1 AND kdib_gl_banka<> '' AND YEAR(kdib_gl_datem) =  " + ovagod_h  ;
+	sql_str += " WHERE 1=1 AND kdib_gl_banka <> '' AND YEAR(kdib_gl_datem) =  " + ovagod_h  ;
 	if (do_mjeseca)
 	{
 		sql_str +=" AND month(kdib_gl_datem)< =  " + mjesec_h  ;
@@ -288,7 +289,7 @@ function setLast10InvoicesDataGrid()
 		sql_str += " AND month(kdib_gl_datem) =  " + mjesec_h;
 	}
     filterPart();
-	sql_str += " GROUP BY kdib_gl_num,kpsy_bnk_ime,kdib_gl_datem" ; //dodati time
+	sql_str += " GROUP BY kdib_gl_num, kpsy_bnk_ime, kdib_gl_datem" ; //dodati time
 	//if (t10datrac)
 	//{
 		sql_str += " ORDER BY kdib_gl_datem DESC" ;//dodati time sa DESC
@@ -303,6 +304,9 @@ function setLast10InvoicesDataGrid()
 	}catch(exc){
 		MessageBox(exc);
 	}
+
+
+
     for ( i = 1; i < Size(sqlResult2); i++ )
     {      
         //nkpr_gl_num = sqlResult2[i][0];  
@@ -320,10 +324,10 @@ function setLast10InvoicesDataGrid()
     }
 }
 
-function setTop10InvoicesDataGrid()
+function setTop10InvoicesDataGridOdliv()
 {
 	sql_str =  "SELECT TOP 10 CASE WHEN kdib_ln_racun > 0 THEN kdib_ln_racun ELSE kdib_ln_uplata END as brdok , CASE WHEN kdib_ln_partner<> '' THEN nksc_partname ELSE kdib_ln_opis END as opis, CONVERT(char(8) ,  kdib_gl_datem , 3) AS datecr , ";
-    sql_str += " ISNULL(ROUND(SUM(CASE WHEN kdib_ln_dp= 'P' THEN kdib_ln_iznos ELSE 0 END),2), 0) as iznos";
+    sql_str += " ISNULL(ROUND(SUM(CASE WHEN kdib_ln_dp = 'D' THEN kdib_ln_iznos ELSE 0 END),2), 0) as iznos";
     sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.kpkdibgl";
     sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.kpkdibln ON kdib_gl_num = kdib_ln_num";
     sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart ON kdib_ln_partner= nksc_partcode";
@@ -331,7 +335,7 @@ function setTop10InvoicesDataGrid()
 	sql_str += " WHERE 1=1 AND kdib_gl_banka<> '' AND YEAR(kdib_gl_datem) =  " + ovagod_h  ;
 	if (do_mjeseca)
 	{
-		sql_str +=" AND month(kdib_gl_datem)< =  " + mjesec_h  ;
+		sql_str +=" AND month(kdib_gl_datem) < =  " + mjesec_h  ;
 	}
 	else 
 	{
