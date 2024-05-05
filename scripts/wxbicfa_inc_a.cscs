@@ -12,7 +12,7 @@ function wxbicfaa_onStart()
     // Chart("ChartPoMjesecima", "labels", "x", 13, {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
     // Chart("ChartPoMjesecima", "xlabelsRotation", 0);
     Chart("ChartPoMjesecima", "values", "bar", arrayProslaPriliv, STRING(proslaGodina)); // !
-    Chart("ChartPoMjesecima", "values", "bar", arrayTrenutnaPriliv, STRING(ovagod_h)); //!
+    Chart("ChartPoMjesecima", "values", "bar", arrayTrenutnaPriliv, ovagod_h); //!
     Chart("ChartPoMjesecima", "SeparatorStep", 1);
     //Chart("ChartPoMjesecima", "Margins", {50, 20, 0, 30});
     Chart("ChartPoMjesecima", "TooltipDecimalPlaces", 0);
@@ -98,15 +98,13 @@ function setChartByDaysOfMonth()
     }
     
     sql_str += " WHERE 1 = 1 AND kdib_gl_banka<> '' ";
-    
-
     if (do_mjeseca)
     {
-            sql_str += " AND [wk_Month]< = '" + mjesec_h + "' AND wk_Year = '" + ovagod_h + "'";
+        sql_str += " AND [wk_Month]< = '" + mjesec_h + "' AND wk_Year = '" + ovagod_h + "'";
     }
     else
     {
-            sql_str += " AND [wk_Month] = '" + mjesec_h + "' AND wk_Year = '" + ovagod_h + "'";
+        sql_str += " AND [wk_Month] = '" + mjesec_h + "' AND wk_Year = '" + ovagod_h + "'";
     }
     //filterPart();
     sql_str += " GROUP BY Wk_day";
@@ -227,7 +225,7 @@ function setChartByMonth2(){
         arrayTrenutnaPriliv[i] = 0; 
         arrayTrenutnaOdliv[i] = 0; 
     }
-
+    //byMonthNum= Size(queryResult);
     for(i = 1; i <= Size(queryResult) - 1; i++)
     {
         ar_cntr = int(substring(queryResult[i][1], 4, 2)); //nađimo koji je to mjesec
@@ -275,14 +273,14 @@ function setLast10InvoicesDataGrid()
     sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.kpkdibgl";
     sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.kpkdibln ON kdib_gl_num = kdib_ln_num";
     sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.kpsybank ON kdib_gl_banka = kpsy_bnk_code";
-	sql_str += " WHERE 1=1 AND kdib_gl_banka<> '' AND YEAR(kdib_gl_datem) =  " + ovagod_h  ;
+	sql_str += " WHERE 1=1 AND kdib_gl_banka<> '' AND YEAR(kdib_gl_datem) =  '" + ovagod_h+"'"  ;
 	if (do_mjeseca)
 	{
-		sql_str +=" AND month(kdib_gl_datem)< =  " + mjesec_h  ;
+		sql_str +=" AND month(kdib_gl_datem)< =  '" + mjesec_h+"'"  ;
 	}
 	else 
 	{
-		sql_str += " AND month(kdib_gl_datem) =  " + mjesec_h;
+		sql_str += " AND month(kdib_gl_datem) =  '" + mjesec_h+"'";
 	}
     filterPart();
 	sql_str += " GROUP BY kdib_gl_num, kpsy_bnk_ime, SUBSTRING(kdib_gl_rez , 2, 8), SUBSTRING(kdib_gl_rez , 10, 8)" ;
@@ -313,14 +311,14 @@ function setTop10InvoicesDataGrid()
     sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.kpkdibln ON kdib_gl_num = kdib_ln_num";
     sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.nkscpart ON kdib_ln_partner= nksc_partcode";
     sql_str += " LEFT JOIN " + trenutnaGodinaBaza + ".dbo.kpsybank ON kdib_gl_banka = kpsy_bnk_code";
-	sql_str += " WHERE 1=1 AND kdib_gl_banka<> '' AND YEAR(kdib_gl_datem) =  " + ovagod_h  ;
+	sql_str += " WHERE 1=1 AND kdib_gl_banka<> '' AND YEAR(kdib_gl_datem) =  '" + ovagod_h+"'"  ;
 	if (do_mjeseca)
 	{
-		sql_str +=" AND month(kdib_gl_datem)< =  " + mjesec_h  ;
+		sql_str +=" AND month(kdib_gl_datem)< =  '" + mjesec_h+"'"  ;
 	}
 	else 
 	{
-		sql_str += " AND month(kdib_gl_datem) =  " + mjesec_h;
+		sql_str += " AND month(kdib_gl_datem) =  '" + mjesec_h+"'";
 	}
     filterPart();
 	sql_str += " GROUP BY CASE WHEN kdib_ln_racun > 0 THEN kdib_ln_racun ELSE kdib_ln_uplata END , CASE WHEN kdib_ln_partner<> '' THEN nksc_partname ELSE kdib_ln_opis END,kdib_gl_datem,kdib_ln_dp" ;

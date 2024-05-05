@@ -2,6 +2,7 @@ function wxbicfae_onStart()
 {
     cursor("wait");
     t10datrac=true;
+    ovagod_h2= ovagod_h;
     
     //setChartByDaysOfMonth();
     //
@@ -19,7 +20,6 @@ function wxbicfae_onStart()
     Chart("ChartPoMjesecima", "Color.Series", { "#ffb703", "#219ebc"}); 
 
     Chart("ChartPoMjesecima", "labels", "x", 13, {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
-
     setChartByDaysOfMonthCF();
     
     Chart("ChartPoDanima", "init");
@@ -69,11 +69,11 @@ function setChartByDaysOfMonthCF()
 
     if (do_mjeseca)
     {
-            sql_str += " AND [wk_Month]< = '" + mjesec_h + "' AND wk_Year = '" + ovagod_h + "'";
+            sql_str += " AND [wk_Month]< = '" + mjesec_h + "' AND wk_Year = '" + ovagod_h2 + "'";
     }
     else
     {
-            sql_str += " AND [wk_Month] = '" + mjesec_h + "' AND wk_Year = '" + ovagod_h + "'";
+            sql_str += " AND [wk_Month] = '" + mjesec_h + "' AND wk_Year = '" + ovagod_h2 + "'";
     }
     //filterPart();
     sql_str += " GROUP BY Wk_day";
@@ -152,13 +152,13 @@ function setCustomerAndInvoiceCounts()
     {
         if(do_mjeseca)
         {
-            sql_str += " AND month(nkpr_gl_datem)<= " + mjesec_h;
-            sql_str += " AND YEAR(nkpr_gl_datem)= " + ovagod_h;
+            sql_str += " AND month(nkpr_gl_datem)<= '" + mjesec_h+"'";
+            sql_str += " AND YEAR(nkpr_gl_datem)= '" + ovagod_h2+"'";
         }
         else
         {
-            sql_str += " AND month(nkpr_gl_datem)= " + mjesec_h;
-            sql_str += " AND YEAR(nkpr_gl_datem)= " + ovagod_h;
+            sql_str += " AND month(nkpr_gl_datem)= '" + mjesec_h+"'";
+            sql_str += " AND YEAR(nkpr_gl_datem)= '" + ovagod_h2+"'";
         }
     }
     //sql_str= sql_str* " AND DATEDIFF(day,nkpr_gl_invdte, CURRENT_TIMESTAMP) BETWEEN 0 AND 31"
@@ -183,13 +183,13 @@ function setCustomerAndInvoiceCounts()
     {
         if(do_mjeseca)
         {
-            sql_str += " AND month(nkpr_gl_datem)<= " + mjesec_h;
-            sql_str += " AND YEAR(nkpr_gl_datem)= " + ovagod_h;
+            sql_str += " AND month(nkpr_gl_datem)<= '" + mjesec_h+"'";
+            sql_str += " AND YEAR(nkpr_gl_datem)= '" + ovagod_h2+"'";
         }
         else
         {
-            sql_str += " AND month(nkpr_gl_datem)= " + mjesec_h;
-            sql_str += " AND YEAR(nkpr_gl_datem)= " + ovagod_h;
+            sql_str += " AND month(nkpr_gl_datem)= '" + mjesec_h+"'";
+            sql_str += " AND YEAR(nkpr_gl_datem)= '" + ovagod_h2+"'";
         }
     }
     //sql_str= sql_str* " AND DATEDIFF(day,nkpr_gl_invdte, CURRENT_TIMESTAMP) BETWEEN 0 AND 31"
@@ -479,13 +479,13 @@ function setCustomerAndInvoiceCounts4(){
     {
         if(do_mjeseca)
         {
-            sql_str += " AND month(nkpr_gl_datem)<= " + mjesec_h;
-            sql_str += " AND YEAR(nkpr_gl_datem)= " + ovagod_h;
+            sql_str += " AND month(nkpr_gl_datem)<= '" + mjesec_h+"'";
+            sql_str += " AND YEAR(nkpr_gl_datem)= '" + ovagod_h2+"'";
         }
         else
         {
-            sql_str += " AND month(nkpr_gl_datem)= " + mjesec_h;
-            sql_str += " AND YEAR(nkpr_gl_datem)= " + ovagod_h;
+            sql_str += " AND month(nkpr_gl_datem)= '" + mjesec_h+"'";
+            sql_str += " AND YEAR(nkpr_gl_datem)= '" + ovagod_h2+"'";
         }
     }
     //sql_str= sql_str* " AND DATEDIFF(day,nkpr_gl_invdte, CURRENT_TIMESTAMP) BETWEEN 0 AND 31"

@@ -20,197 +20,197 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <lvc:CartesianChart LegendPosition="Right"
-                            x:Name="ChartPoMjesecima"
-                            VerticalAlignment="Bottom"
-                            HorizontalAlignment="Center"
-                            Margin="0,42,0,0"
-                            Width="544"
-                            Height="249" />
+                                x:Name="ChartPoMjesecima"
+                                VerticalAlignment="Bottom"
+                                HorizontalAlignment="Center"
+                                Margin="0,42,0,0"
+                                Width="544"
+                                Height="249" />
             <lvc:CartesianChart x:Name="ChartPoDanima"
-                            Grid.Column="1"
-                            Grid.Row="0"
-                            Margin="10,36,10,0" LegendPosition="Top" />
+                                Grid.Column="1"
+                                Grid.Row="0"
+                                Margin="10,36,10,0" LegendPosition="Top" />
             <Label HorizontalAlignment="Left" Content="Prodaja po danima" Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="24,5,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
             <Label HorizontalAlignment="Left" Content="Najnoviji računi" Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="23,5,0,0" BorderBrush="{x:Null}"/>
 
             <DataGrid GridLinesVisibility="Vertical"
-                  VerticalGridLinesBrush="LightGray"
-                  HorizontalAlignment="Center"
-                  VerticalAlignment="Top"
-                  Height="242"
-                  Width="516"
+                      VerticalGridLinesBrush="LightGray"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Top"
+                      Height="242"
+                      Width="516"
                       RowHeight="21"
                       FontSize="14"
-                  Margin="0,39,0,0"
-                  IsReadOnly="true"
-                  x:Name="dgRacuniLast"
-                  AlternatingRowBackground="LightBlue"
-                  HorizontalScrollBarVisibility="Auto"
-                  VerticalScrollBarVisibility="Auto"
-                  Background="White"
-                  Grid.Row="1"
-                  TabIndex="4" BorderThickness="0,0,0,0">
+                      Margin="0,39,0,0"
+                      IsReadOnly="true"
+                      x:Name="dgRacuniLast"
+                      AlternatingRowBackground="LightBlue"
+                      HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto"
+                      Background="White"
+                      Grid.Row="1"
+                      TabIndex="4" BorderThickness="0,0,0,0">
                 <DataGrid.Resources>
                     <Style TargetType="{x:Type DataGridColumnHeader}">
                         <Setter Property="Background"
-                            Value="#FF006393" />
+                                Value="#FF006393" />
                         <Setter Property="Foreground"
-                            Value="White" />
+                                Value="White" />
                         <Setter Property="FontSize" Value="17"/>
                     </Style>
                 </DataGrid.Resources>
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="No."
-                                        Width="28">
+                                            Width="28">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <wcl:ASGridCell FieldName="T10CNTRZ_AR"
-                                            Editor="edDefault"
-                                            EditLength="0" />
+                                                Editor="edDefault"
+                                                EditLength="0" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Header="Račun"
-                                        Width="69">
+                                            Width="69">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <wcl:ASGridCell FieldName="T10RACUNZ_AR"
-                                            HorizontalContentAlignment="Right"
-                                            Editor="edNumeric"
-                                            EditLength="0" />
+                                                HorizontalContentAlignment="Right"
+                                                Editor="edNumeric"
+                                                EditLength="0" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Header="Datum"
-                                        Width="63">
+                                            Width="63">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <wcl:ASGridCell FieldName="T10DATUMZ_AR"
-                                            HorizontalContentAlignment="Center"
-                                            Editor="edDefault"
-                                            EditLength="8" />
+                                                HorizontalContentAlignment="Center"
+                                                Editor="edDefault"
+                                                EditLength="8" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Header="Sat"
-                                        Width="50">
+                                            Width="50">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <wcl:ASGridCell FieldName="T10TIMEZ_AR"
-                                            HorizontalContentAlignment="Center"
-                                            Editor="edDefault"
-                                            EditLength="0" />
+                                                HorizontalContentAlignment="Center"
+                                                Editor="edDefault"
+                                                EditLength="0" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Header="Kupac"
-                                        Width="210">
+                                            Width="210">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <wcl:ASGridCell FieldName="T10NAMEZ_AR"
-                                            Editor="edDefault"
-                                            Thousands="True"
-                                            EditLength="0" />
+                                                Editor="edDefault"
+                                                Thousands="True"
+                                                EditLength="0" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Header="Ukupno"
-                                        Width="90">
+                                            Width="90">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <wcl:ASGridCell FieldName="T10IZNOSZ_AR"
-                                            Editor="edEditBtn"
-                                            EditLength="0"
-                                            x:Name="clickTest"
-                                            Size="10"
-                                            DecimalChrs="2"
-                                            HorizontalContentAlignment="Right" />
+                                                Editor="edEditBtn"
+                                                EditLength="0"
+                                                x:Name="clickTest"
+                                                Size="10"
+                                                DecimalChrs="2"
+                                                HorizontalContentAlignment="Right" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
             <Label HorizontalAlignment="Left" Content="Najveći računi" Grid.Row="1" Grid.Column="1" VerticalAlignment="Top" Width="193" FontSize="16" FontWeight="Bold" Margin="24,5,0,0" BorderBrush="{x:Null}"/>
-            <Label HorizontalAlignment="Left" Content="Prodaja po mjesecima (x 1.000)" VerticalAlignment="Top" Width="272" FontSize="16" FontWeight="Bold" Margin="23,10,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
+            <Label HorizontalAlignment="Left" Content="Prodaja po mjesecima " VerticalAlignment="Top" Width="272" FontSize="16" FontWeight="Bold" Margin="23,10,0,0" BorderBrush="{x:Null}" Background="{x:Null}"/>
             <DataGrid GridLinesVisibility="None"
-                  HorizontalAlignment="Center"
-                  Width="550"
-                    RowHeight="21"
-                    FontSize="14"
-                  Margin="10,0,10,10"
-                  IsReadOnly="true"
-                  x:Name="dgRacuniMjesec"
-                  AlternatingRowBackground="LightGray"
-                  HorizontalScrollBarVisibility="Auto"
-                  VerticalScrollBarVisibility="Auto"
-                  Background="White"
-                  Grid.Column="1"
-                  Grid.Row="1"
-                  TabIndex="3" BorderThickness="0,0,0,0" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" Height="242" VerticalAlignment="Bottom">
+                      HorizontalAlignment="Center"
+                      Width="550"
+                      RowHeight="21"
+                      FontSize="14"
+                      Margin="10,0,10,10"
+                      IsReadOnly="true"
+                      x:Name="dgRacuniMjesec"
+                      AlternatingRowBackground="LightGray"
+                      HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto"
+                      Background="White"
+                      Grid.Column="1"
+                      Grid.Row="1"
+                      TabIndex="3" BorderThickness="0,0,0,0" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" Height="242" VerticalAlignment="Bottom">
                 <DataGrid.Resources>
                     <Style TargetType="{x:Type DataGridColumnHeader}">
                         <Setter Property="Background"
-                            Value="#FF326363" />
+                                Value="#FF326363" />
                         <Setter Property="Foreground"
-                            Value="White" />
+                                Value="White" />
                         <Setter Property="FontSize" Value="17"/>
                     </Style>
                 </DataGrid.Resources>
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="No."
-                                        Width="28">
+                                            Width="28">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <wcl:ASGridCell FieldName="T10CNTRMJ_AR"
-                                            Editor="edDefault"
-                                            EditLength="0" />
+                                                Editor="edDefault"
+                                                EditLength="0" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Header="Račun"
-                                        Width="69">
+                                            Width="69">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <wcl:ASGridCell FieldName="T10RACUNMJ_AR"
-                                            Editor="edNumeric"
-                                            HorizontalContentAlignment="Right"
-                                            EditLength="0" />
+                                                Editor="edNumeric"
+                                                HorizontalContentAlignment="Right"
+                                                EditLength="0" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Header="Datum"
-                                        Width="63">
+                                            Width="63">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <wcl:ASGridCell FieldName="T10DATUMMJ_AR"
-                                            HorizontalContentAlignment="Center"
-                                            Editor="edDefault"
-                                            EditLength="8" />
+                                                HorizontalContentAlignment="Center"
+                                                Editor="edDefault"
+                                                EditLength="8" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Header="Kupac"
-                                        Width="250">
+                                            Width="250">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <wcl:ASGridCell FieldName="T10NAMEMJ_AR"
-                                            Editor="edDefault"
-                                            EditLength="0" />
+                                                Editor="edDefault"
+                                                EditLength="0" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Header="Iznos"
-                                        Width="90">
+                                            Width="90">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <wcl:ASGridCell FieldName="T10IZNOSMJ_AR"
-                                            Editor="edEditBtn"
-                                            EditLength="0"
-                                            x:Name="clickTest"
-                                            Thousands="True"
-                                            Size="10"
-                                            DecimalChrs="2"
-                                            HorizontalContentAlignment="Right" />
+                                                Editor="edEditBtn"
+                                                EditLength="0"
+                                                x:Name="clickTest"
+                                                Thousands="True"
+                                                Size="10"
+                                                DecimalChrs="2"
+                                                HorizontalContentAlignment="Right" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
