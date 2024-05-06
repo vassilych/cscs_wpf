@@ -152,7 +152,7 @@
                       HorizontalAlignment="Center"
                       VerticalAlignment="Top"
                       Height="266"
-                      Width="540"
+                      Width="560"
                       IsReadOnly="true"
                       Name="dgArtikli"
                       RowHeight="22"
@@ -183,8 +183,8 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Artikl"
-                                            Width="160">
+                    <DataGridTemplateColumn Header="Naziv priliva (konta)"
+                                            Width="245">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <wcl:ASGridCell FieldName="NAMEART_AR"
