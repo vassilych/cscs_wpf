@@ -82,7 +82,7 @@
                                 Width="45"
                                 IsTabStop="False"
                                 Focusable="False"
-                                Grid.Column="0" Grid.Row="2" />
+                                Grid.Column="0" Grid.Row="2" IsReadOnly="True"/>
                 <wcl:ASEnterBox HorizontalAlignment="Left"
                                 FontWeight="Bold"
                                 VerticalAlignment="Top"
@@ -96,7 +96,7 @@
                                 Width="45"
                                 IsTabStop="False"
                                 Focusable="False"
-                                Grid.Column="0" Grid.Row="2" />
+                                Grid.Column="0" Grid.Row="2" IsReadOnly="True"/>
                 <TextBlock HorizontalAlignment="Left"
                            VerticalAlignment="Top"
                            Height="25"
@@ -387,7 +387,7 @@
                                 Width="45"
                                 IsTabStop="False"
                                 Focusable="False"
-                                Grid.Column="0" Grid.Row="3" />
+                                Grid.Column="0" Grid.Row="3" IsReadOnly="True"/>
                 <wcl:ASEnterBox HorizontalAlignment="Left"
                                 FontWeight="Bold"
                                 VerticalAlignment="Top"
@@ -401,7 +401,7 @@
                                 Width="45"
                                 IsTabStop="False"
                                 Focusable="False"
-                                Grid.Column="0" Grid.Row="3" />
+                                Grid.Column="0" Grid.Row="3" IsReadOnly="True"/>
                 <TextBlock HorizontalAlignment="Left"
                            VerticalAlignment="Top"
                            Height="25"
@@ -643,13 +643,14 @@
                             Case="Normal"
                             Height="18"
                             Width="52"
-                            Margin="520,148,0,0"
+                            Margin="520,151,0,0"
                             FontFamily="lato"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top"
-                            Background="White"
+                            Background="Transparent"
                             TabIndex="18"
-                            IsTabStop="True"/>
+                            IsTabStop="True"
+                            IsReadOnly="True"/>
             <GroupBox Grid.Column="1" Padding="0"
                       HorizontalAlignment="Left"
                       VerticalAlignment="Top"
@@ -743,30 +744,14 @@
                             VerticalAlignment="Top"
                             Background="White"
                             IsTabStop="False"
-                            Focusable="False"/>
-            <wcl:ASEnterBox Grid.Column="1" ButtonSize="0"
-                            FontWeight="Bold"
-                            Size="2"
-                            FieldName="mjesec_h"
-                            Foreground="black"
-                            x:Name="TASComboEnter11"
-                            FontSize="14"
-                            Case="Normal"
-                            Height="18"
-                            Width="34"
-                            Margin="462,175,0,0"
-                            FontFamily="lato"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Top"
-                            Background="White"
-                            TabIndex="19"
-                            IsTabStop="True"/>
+                            Focusable="False"
+                            IsReadOnly="True"/>
             <GroupBox Grid.Column="1" HorizontalAlignment="Left"
                       VerticalAlignment="Top"
                       Height="29"
                       Width="93"
                       BorderThickness="0"
-                      Margin="501,170,0,0">
+                      Margin="502,173,0,0">
                 <Grid Margin="-8,0,-12,0" Height="34">
                     <CheckBox HorizontalAlignment="Left"
                               Width="89"
@@ -900,11 +885,13 @@
                             VerticalAlignment="Top"
                             Background="White"
                             IsTabStop="False"
-                            Focusable="False"/>
+                            Focusable="False"
+                            IsReadOnly="True"/>
             <Button x:Name="gbCashFlow2" Content="Cash flow II" Style="{StaticResource FlatButtonStyle}" Margin="0,298,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Width="140" Height="63" Background="#FFAA2046" FontFamily="Lato" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}" Grid.Row="1" TabIndex="34" RenderTransformOrigin="0.524,0.896"/>
             <Ellipse x:Name="EllipseProdajaUGodiniOdliv" HorizontalAlignment="Left" Height="20" Margin="305,327,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>
             <Ellipse x:Name="EllipseProdajaUMjesecuOdliv" HorizontalAlignment="Left" Height="20" Margin="650,328,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>
             <Ellipse x:Name="EllipseProdajaUTjednuOdliv" HorizontalAlignment="Left" Height="20" Margin="1000,328,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>
+            <ComboBox x:Name="comboBoxMjesec" DataContext="mjesec_h" Grid.Column="1" HorizontalAlignment="Right" Margin="0,178,535,0" VerticalAlignment="Top" Width="45" Height="22" TabIndex="19"/>
             <!-- <wcl:ASNumericBox HorizontalAlignment="Left"
             VerticalAlignment="Top"
             FontWeight="Bold"

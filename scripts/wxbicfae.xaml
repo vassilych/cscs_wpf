@@ -73,7 +73,7 @@
                     Height="32"
                     Width="126"
                     Margin="885,245,0,0"
-                    x:Name="HorizontalBarProdajaKupLG"
+                    x:Name="HorizontalBarProdajaKupLGX"
                     FontFamily="Lato"
                     FontSize="24"
                     FontWeight="Bold" BarColor="#FFC4E08A" Background="#FFB9B6B6" />
@@ -223,7 +223,7 @@
                                 FontWeight="Bold"
                                 VerticalAlignment="Top"
                                 Margin="384,222,0,0"
-                                FieldName="ovagod_h2"
+                                FieldName="ovagod_h"
                                 x:Name="TASENTER1_yr4"
                                 FontSize="14"
                                 Foreground="black"
@@ -232,7 +232,7 @@
                                 Width="45"
                                 IsTabStop="False"
                                 Focusable="False"
-                                />
+                                IsReadOnly="True"/>
                 <wcl:ASEnterBox HorizontalAlignment="Left"
                                 FontWeight="Bold"
                                 VerticalAlignment="Top"
@@ -246,12 +246,12 @@
                                 Width="45"
                                 IsTabStop="False"
                                 Focusable="False"
-                                />
+                                IsReadOnly="True"/>
                 <wcl:ASEnterBox HorizontalAlignment="Left"
                                 FontWeight="Bold"
                                 VerticalAlignment="Top"
                                 Margin="816,222,0,0"
-                                FieldName="ovagod_h2"
+                                FieldName="ovagod_h"
                                 x:Name="TASENTER1_yr3"
                                 FontSize="14"
                                 Foreground="black"
@@ -260,7 +260,7 @@
                                 Width="45"
                                 IsTabStop="False"
                                 Focusable="False"
-                                />
+                                IsReadOnly="True"/>
                 <wcl:ASEnterBox HorizontalAlignment="Left"
                                 FontWeight="Bold"
                                 VerticalAlignment="Top"
@@ -274,7 +274,7 @@
                                 Width="45"
                                 IsTabStop="False"
                                 Focusable="False"
-                                />
+                                IsReadOnly="True"/>
 
                 <Ellipse x:Name="EllipseBrojKupaca" HorizontalAlignment="Left" Height="20" Margin="491,172,0,0" VerticalAlignment="Top" Width="20"/>
                 <Ellipse x:Name="EllipseBrojRacuna" HorizontalAlignment="Left" Height="20" Margin="654,172,0,0" VerticalAlignment="Top" Width="20"/>

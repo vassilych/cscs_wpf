@@ -219,7 +219,10 @@ namespace WpfControlsLibrary
             if (!loaded)
             {
                 enterBoxTextBox.Size = Size == 0 ? Int32.MaxValue : Size;
-                enterBoxTextBox.Text = Text;
+                
+                if (Text != null)
+                    enterBoxTextBox.Text = Text;
+
                 enterBoxTextBox.CharacterCasing = Case?.ToLower() == "up" ? CharacterCasing.Upper : (Case?.ToLower() == "down" ? CharacterCasing.Lower : CharacterCasing.Normal);
                 enterBoxTextBox.FontWeight = FontWeight;
 

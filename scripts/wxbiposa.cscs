@@ -116,6 +116,10 @@ function Wxbiposa_onDisplay()
     {
         //danas_h= "31/12/"+subString(ovagod_h,2,2); //riješiti kada dobijemo funkciju ctod()
     }
+
+    comboItems2 = {"1","2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"};
+    AddWidgetData("comboBoxMjesec", comboItems2);
+
     mjesec_h = Now("MM");
     mjesec_h = string(int(mjesec_h) - 1);
     mjesec_h= Mjesec_h=< "0" ? "12" : mjesec_h;

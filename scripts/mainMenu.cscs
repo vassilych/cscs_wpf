@@ -465,6 +465,10 @@ function mainMenuWindow_OnDisplay(){
 
     AddMenuItem("OtherDC", "testDownload2.cscs", "testDownload2", "runScript");
 
+    AddMenuSeparator("OtherDC");
+
+    AddMenuItem("OtherDC", "testScript1.cscs", "testScript1", "runScript");
+
 
     //----- IVAN -------------------------------
 
