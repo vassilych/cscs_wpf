@@ -683,11 +683,8 @@
                            FontSize="16"
                            Foreground="black"
                            TextWrapping="Wrap"
-                           Grid.Row="1">
-                    <Run Text="Neažuriran" />
-                    <Run Language="hr-hr"
-                         Text="e" />
-                    <Run Text=": " />
+                           Grid.Row="1"
+                           Text="Neažurirane:" >
                 </TextBlock>
                 <wcl:ASHorizontalBar HorizontalAlignment="Left"
                                      VerticalAlignment="Top"
@@ -874,11 +871,8 @@
                            Foreground="black"
                            TextWrapping="Wrap"
                            Grid.Row="2"
-                           Grid.ColumnSpan="2">
-                    <Run Language="hr-hr"
-                         Text="Malo" />
-                    <Run Text="prodaja" />
-                    <Run Text=": " />
+                           Grid.ColumnSpan="2"
+                           Text="Maloprodaja:">
                 </TextBlock>
                 <TextBlock HorizontalAlignment="Left"
                            VerticalAlignment="Top"
@@ -891,11 +885,8 @@
                            Foreground="black"
                            TextWrapping="Wrap"
                            Grid.Row="2"
-                           Grid.ColumnSpan="2">
-                    <Run Text="Ukupna " />
-                    <Run Language="hr-hr"
-                         Text="otprema" />
-                    <Run Text=": " />
+                           Grid.ColumnSpan="2"
+                           Text="Ukupno:" >
                 </TextBlock>
                 <wcl:ASHorizontalBar x:Name="HorizontalBarOGUkupno"
                                      Margin="77,119,0,0"
