@@ -1,10 +1,12 @@
-﻿using SplitAndMerge;
+﻿using HarfBuzzSharp;
+using SplitAndMerge;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -18,6 +20,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using WpfControlsLibrary;
 
 namespace WpfCSCS
@@ -6983,7 +6986,15 @@ $@"EXECUTE sp_executesql N'
                             var asgc = cell as ASGridCell;
                             if (asgc.FieldName != null)
                             {
-                                gridsArrayClass[gridName].tagsAndTypes.Add(asgc.FieldName.ToString(), typeof(object));
+                                if (asgc.IsImage)
+                                {
+                                    gridsArrayClass[gridName].tagsAndTypes.Add(asgc.FieldName.ToString(), typeof(BitmapImage));
+                                }
+                                else
+                                {
+                                    gridsArrayClass[gridName].tagsAndTypes.Add(asgc.FieldName.ToString(), typeof(object));
+                                }
+                                
                                 gridsArrayClass[gridName].tagsAndHeaders.Add(asgc.FieldName.ToString(), dgtc.Header.ToString());
                                 gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[asgc.FieldName.ToString()] = asgc.EditLength;
                                 gridsArrayClass[gridName].tagsAndEditors[asgc.FieldName.ToString()] = asgc.Editor;
@@ -7022,7 +7033,11 @@ $@"EXECUTE sp_executesql N'
                     newColumn.ColumnName = item.Key;
                     newColumn.DataType = item.Value;
 
-                    if (Gui.DEFINES.TryGetValue(item.Key.ToLower(), out DefineVariable defVariable))
+                    if (newColumn.DataType == typeof(BitmapImage))
+                    {
+                        gridsArrayClass[gridName].newTagsAndTypes[item.Key] = typeof(BitmapImage);
+                    }
+                    else if (Gui.DEFINES.TryGetValue(item.Key.ToLower(), out DefineVariable defVariable))
                     {
                         switch (defVariable.DefType.ToUpper())
                         {
@@ -7250,11 +7265,22 @@ $@"EXECUTE sp_executesql N'
                                         currentRow[column.Key] = TimeSpan.ParseExact(current.AsString(), "hh\\:mm\\:ss", CultureInfo.InvariantCulture);
                                     }
                                     break;
+                                case "BitmapImage":
+                                    if(File.Exists(current.AsString()))
+                                    {
+                                        currentRow[column.Key] = new BitmapImage(new Uri(current.AsString(), UriKind.Absolute));
+                                    }
+                                    else
+                                    {
+                                        currentRow[column.Key] = new BitmapImage();
+                                    }
+                                    break;
                                 default:
                                     throw new Exception("Type " + column.Value.Name + " implementation missing!");
                             }
                         }
                     }
+
                     gridsDataTables[gridName].Rows.Add(currentRow);
                 }
             }
@@ -7449,7 +7475,7 @@ $@"EXECUTE sp_executesql N'
                             Binding bindDouble = new Binding(tag);
                             bindDouble.Mode = BindingMode.TwoWay;
                             bindDouble.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-                            
+
                             bindDouble.ConverterCulture = CultureInfo.CurrentCulture; // , and . -> numeric decimal and group separator
 
                             if (FormatFunction.variablesStringFormats.TryGetValue(tag.ToLower(), out string strFormat))
@@ -7565,6 +7591,31 @@ $@"EXECUTE sp_executesql N'
                             boolColumn.CellEditingTemplate = checkBoxEditingTemplate;
 
                             newColumn = boolColumn;
+
+                            break;
+
+                        case "BitmapImage":
+
+                            //-- - - - - - --  -- - 
+                            // Create The Column
+                            DataGridTemplateColumn imageColumn = new DataGridTemplateColumn();
+
+                            Binding bindImage = new Binding(tag);
+                            bindImage.Mode = BindingMode.TwoWay;
+                            bindImage.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+
+                            // Create the TextBlock
+                            FrameworkElementFactory imageFactory = new FrameworkElementFactory(typeof(System.Windows.Controls.Image));
+                            imageFactory.SetBinding(System.Windows.Controls.Image.SourceProperty, bindImage);
+
+                            DataTemplate imageTemplate = new DataTemplate();
+                            imageTemplate.VisualTree = imageFactory;
+
+                            //// Set the Templates to the Column
+                            imageColumn.CellTemplate = imageTemplate;
+                            imageColumn.CellEditingTemplate = imageTemplate;
+
+                            newColumn = imageColumn;
 
                             break;
                         default:
