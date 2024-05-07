@@ -73,13 +73,13 @@ function Wxbiprd_onDisplay()
     trenutnaGodinaBaza = sqlResult[1][2].trim(); // ime baze
     sqlQueryString = " SELECT TOP 1 kpsy_comp_name,kpsy_po_freight,FORMAT([KPSY_FISCAL_YR], 'yyyy-MM-dd'),kpsy_ku_pnb FROM " + trenutnaGodinaBaza + ".[dbo].[KPSYMSTR]";
     try
-        {
+    {
         sqlResult = sqlQuery(sqlQueryString);
-        }
+    }
     catch(exc)
-        {
+    {
         MessageBox(exc);
-        }
+    }
     if (size(sqlResult) > 1)
     {
         proslaGodina = (int(ovagod_h) - 1);
@@ -118,6 +118,10 @@ function Wxbiprd_onDisplay()
     {
         //danas_h= "31/12/"+subString(ovagod_h,2,2); //riješiti kada dobijemo funkciju ctod()
     }
+
+    comboItems2 = {"1","2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"};
+    AddWidgetData("comboBoxMjesec", comboItems2);
+
     mjesec_h = Now("MM");
     mjesec_h = string(int(mjesec_h) - 1);
     mjesec_h= Mjesec_h=< "0" ? "12" : mjesec_h;

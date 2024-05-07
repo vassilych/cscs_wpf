@@ -140,6 +140,17 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header=""
+                                        Width="40">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell 
+                                    IsImage="True"
+                                    FieldName="imagePart_ar"
+                                            HorizontalContentAlignment="Center" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
             <Label Name="Top10Partner" VerticalAlignment="Top" HorizontalAlignment="Left" Width="196" Height="35" Margin="21,10,0,0" Content="Top 10 - Kupci"
@@ -225,6 +236,16 @@
                                             Editor="edNumeric"
                                             EditLength="0"
                                             HorizontalContentAlignment="Right" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header=""
+                                        Width="40">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell IsImage="True" 
+                                                FieldName="imageArt_ar"
+                                                />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
