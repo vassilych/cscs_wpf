@@ -333,7 +333,7 @@ function setPieChart(){
     PieChart("PieChart1", "title", "Pie Chart Title", 20);    
 	for(i = 1; i < queryResult.length; i++)
 	{
-		PieChart("PieChart1", "values", int(queryResult[i][1]) , substring(string(queryResult[i][0].trim()), 0, 30), 50);
+		PieChart("PieChart1", "values", int(queryResult[i][1]) , substring(string(queryResult[i][0].trim()), 0, 30), 30);
 	}
 }
 
@@ -430,7 +430,7 @@ function DisplayKategPieChart(){
 
 	for(i = 1; i < queryResult.length; i++)
 	{
-		PieChart("PieChartKat", "values", int(queryResult[i][1]) , substring(string(queryResult[i][0].trim()), 0, 30), 50);
+		PieChart("PieChartKat", "values", int(queryResult[i][1]) , substring(string(queryResult[i][0].trim()), 0, 30), 30);
 	}
 
 	PieChart("PieChartKAt", "colors", { "#1C4E80", "#EA6A47", "#5acc6b", "#34d2fa", "#ff45d4", "#fae62f" });

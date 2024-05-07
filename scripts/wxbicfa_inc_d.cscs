@@ -79,7 +79,7 @@ function setBankPChartOdliv()
 		{
 			queryResult[i][0]= "NEDEFINIRANO";
 		}
-		PieChart("PieChartBankOdliv", "values", int(queryResult[i][1]) , substring(string(queryResult[i][0].trim()), 0, 30), 50);
+		PieChart("PieChartBankOdliv", "values", int(queryResult[i][1]) , substring(string(queryResult[i][0].trim()), 0, 30), 30);
 	}
 }
 
@@ -184,7 +184,7 @@ function setPieChartOdliv(){
 		{
 			queryResult[i][0]= "NEDEFINIRANO";
 		}
-		PieChart("PieChart1Odliv", "values", int(queryResult[i][1]) , substring(string(queryResult[i][0].trim()), 0, 30), 50);
+		PieChart("PieChart1Odliv", "values", int(queryResult[i][1]) , substring(string(queryResult[i][0].trim()), 0, 30), 30);
 	}
 }
 
