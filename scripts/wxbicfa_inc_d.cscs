@@ -2,41 +2,41 @@ function wxbicfad_onDisplay()
 {
 	cursor("wait");
 
-	do_mjeseca2= do_mjeseca;
+	do_mjeseca2 = do_mjeseca;
 	refreshPie = false;
     comboItems = {"Gradovi","Regije", "Države"};
-    AddWidgetData(cbPieChart, comboItems);
+    AddWidgetData(cbPieChartOdliv, comboItems);
     pieChartStr= "Gradovi";
 
-	AsyncCall("setRegionPieChart", "regionPieChartDone");
+	AsyncCall("setRegionPieChartOdliv", "regionPieChartOdlivDone");
 	refreshPie = true;
 }
 
-function cbPieChart@SelectionChanged(){
+function cbPieChartOdliv@SelectionChanged(){
 	if (refreshPie == false)
 	{
 		return;
 	}
 
 	cursor("wait");
-	AsyncCall("setRegionPieChart", "setDefaultCursor");
+	AsyncCall("setRegionPieChartOdliv", "setDefaultCursorOdliv");
 }
 
-function regionPieChartDone(){
+function regionPieChartOdlivDone(){
 	//AsyncCall("setKategPieChart", "kategPieChartDone");
-	AsyncCall("setBankPieChart", "BankPieChartDone");
+	AsyncCall("setBankPieChartOdliv", "BankPieChartOdlivDone");
 }
-function bankPieChartDone(){
-	AsyncCall("setTop10Products", "top10ProductsDone");
+function bankPieChartOdlivDone(){
+	AsyncCall("setTop10ProductsOdliv", "top10ProductsOdlivDone");
 }
-function top10ProductsDone(){
-	AsyncCall("setCustomerDataGrid", "setDefaultCursor");
+function top10ProductsOdlivDone(){
+	AsyncCall("setCustomerDataGridOdliv", "setDefaultCursorOdliv");
 }
-function setDefaultCursor(){
+function setDefaultCursorOdliv(){
 	cursor("dflt");
 }
 
-function setBankPieChart()
+function setBankPieChartOdliv()
 {
 		sql_str = "";
         sql_str += " SELECT CASE WHEN num<= 5 THEN kpsy_bnk_ime ELSE 'Ostale' END AS BankaName , round(sum(suma),0) as Origin ";
@@ -65,25 +65,25 @@ function setBankPieChart()
 		MessageBox(exc);
 	}
     
-	RunOnMain("setBankPChart");
+	RunOnMain("setBankPChartOdliv");
 
 }
-function setBankPChart()
+function setBankPChartOdliv()
 {
-	PieChart("PieChartBank", "init");
-    PieChart("PieChartBank", "seriesType", "pie");
-    PieChart("PieChartBank", "title", "Pie Chart Title", 20);    
+	PieChart("PieChartBankOdliv", "init");
+    PieChart("PieChartBankOdliv", "seriesType", "pie");
+    PieChart("PieChartBankOdliv", "title", "Pie Chart Title", 20);    
 	for(i = 1; i < queryResult.length; i++)
 	{
 		if(queryResult[i][0]=="")
 		{
 			queryResult[i][0]= "NEDEFINIRANO";
 		}
-		PieChart("PieChartBank", "values", int(queryResult[i][1]) , substring(string(queryResult[i][0].trim()), 0, 30), 50);
+		PieChart("PieChartBankOdliv", "values", int(queryResult[i][1]) , substring(string(queryResult[i][0].trim()), 0, 30), 50);
 	}
 }
 
-function setRegionPieChart()
+function setRegionPieChartOdliv()
 {
 	//	MessageBox( pieChartStr);
 	if (pieChartStr== "Gradovi"); //(gradoviRB)
@@ -171,26 +171,26 @@ function setRegionPieChart()
 		MessageBox(exc);
 	}
     
-	RunOnMain("setPieChart");
+	RunOnMain("setPieChartOdliv");
 }
 
-function setPieChart(){
-	PieChart("PieChart1", "init");
-    PieChart("PieChart1", "seriesType", "pie");
-    PieChart("PieChart1", "title", "Pie Chart Title", 20);    
+function setPieChartOdliv(){
+	PieChart("PieChart1Odliv", "init");
+    PieChart("PieChart1Odliv", "seriesType", "pie");
+    PieChart("PieChart1Odliv", "title", "Pie Chart Title", 20);    
 	for(i = 1; i < queryResult.length; i++)
 	{
 		if(queryResult[i][0]=="")
 		{
 			queryResult[i][0]= "NEDEFINIRANO";
 		}
-		PieChart("PieChart1", "values", int(queryResult[i][1]) , substring(string(queryResult[i][0].trim()), 0, 30), 50);
+		PieChart("PieChart1Odliv", "values", int(queryResult[i][1]) , substring(string(queryResult[i][0].trim()), 0, 30), 50);
 	}
 }
 
 //-------------------------------------------------------
 
-function setTop10Products()
+function setTop10ProductsOdliv()
 {
 	SQL_str ="SET query_governor_cost_limit 0;";
     sql_str += "WITH sales AS (";
@@ -227,7 +227,7 @@ function setTop10Products()
 		MessageBox(exc);
 	}
 
-	RunOnMain("fillProductsArrays");
+	RunOnMain("fillProductsArraysOdliv");
 
     if (proslaGodinaBaza != "")
 	{
@@ -261,12 +261,12 @@ function setTop10Products()
 		MessageBox(exc);
 	}
 	
-	RunOnMain("fillProductsArrays2");
+	RunOnMain("fillProductsArrays2Odliv");
 	}
-	RunOnMain("top10Products");
+	RunOnMain("top10ProductsOdliv");
 }
 
-function fillProductsArrays(){
+function fillProductsArraysOdliv(){
 	if(Size(sqlResult) > 1)
 	{
 		for ( i = 1; i < Size(sqlResult); i++ )
@@ -278,7 +278,6 @@ function fillProductsArrays(){
 			top10art_ar[i - 1] =  i;
 		} 
 	}
-
 
 	in_string= "";
 	for (cntr = 0; cntr < Size(codeart_ar); cntr++ )
@@ -295,14 +294,13 @@ function fillProductsArrays(){
     }
 }
 
-function fillProductsArrays2(){
+function fillProductsArrays2Odliv(){
 	for ( i = 0; i < 10; i++ )
 	{
 		IndexArt_ar[i] =  0;
 	}	    
 	if(Size(sqlResult) > 1)
 	{
-
 		for ( i = 1; i < Size(sqlResult); i++ )
 		{    
 			cntr2= find_index(codeart_ar,sqlResult[i][0]);    
@@ -326,17 +324,17 @@ function fillProductsArrays2(){
 	}
 }
 
-function top10Products(){
-	DisplayArray("dgArtikli", "close");
+function top10ProductsOdliv(){
+	DisplayArray("dgArtikliOdliv", "close");
 	Format("SALESART2_AR", "nofd");
 	Format("SALESART1_AR", "nofd");
 	
-	DisplayArraySetup("dgArtikli", counterFld: "cntr4", activeElements: Size(codeart_ar), maxElements: 10);
+	DisplayArraySetup("dgArtikliOdliv", counterFld: "cntr4", activeElements: Size(codeart_ar), maxElements: 10);
 }
 
 //---------------------------------------------------------------------------
 
-function setCustomerDataGrid()
+function setCustomerDataGridOdliv()
 {
     SQL_str ="SET query_governor_cost_limit 0;";
     sql_str += "WITH sales AS (";
@@ -374,12 +372,12 @@ function setCustomerDataGrid()
 	}
 
 	//SaveFile(sql_str);
-	RunOnMain("fillCustomerArrays");
+	RunOnMain("fillCustomerArraysOdliv");
 
     if (proslaGodinaBaza != "")
 	{
 
-    RunOnMain("setCntr2");
+    RunOnMain("setCntr2Odliv");
 
     //sql_str= "";
 	
@@ -412,12 +410,12 @@ function setCustomerDataGrid()
 		MessageBox(exc);
 	}
 	
-	RunOnMain("fillCustomerArrays2");
+	RunOnMain("fillCustomerArrays2Odliv");
 
-	RunOnMain("customerDataGrid");
+	RunOnMain("customerDataGridOdliv");
 }
 
-function fillCustomerArrays(){
+function fillCustomerArraysOdliv(){
 	if(Size(sqlResult) > 1)
 	{
 		for ( i = 1; i < Size(sqlResult); i++ )
@@ -445,11 +443,11 @@ function fillCustomerArrays(){
     }
 }
 
-function setCntr2(){
+function setCntr2Odliv(){
 	cntr2= 0;
 }
 
-function fillCustomerArrays2(){
+function fillCustomerArrays2Odliv(){
 	for ( i = 0; i < 10; i++ )
 	{
 		IndexPart_ar[i] =  0;
@@ -479,11 +477,11 @@ function fillCustomerArrays2(){
 	}
 }
 
-function customerDataGrid(){
-	DisplayArray("dgStavke", "close");
+function customerDataGridOdliv(){
+	DisplayArray("dgStavkeOdliv", "close");
 	Format("SALESPART2_AR", "nofd");
 	Format("SALESPART1_AR", "nofd");
-	DisplayArraySetup("dgStavke", counterFld: "cntr1", activeElements: Size(codePart_ar), maxElements: 10);
+	DisplayArraySetup("dgStavkeOdliv", counterFld: "cntr1", activeElements: Size(codePart_ar), maxElements: 10);
 }
 
 //-----------------------------------------------------------

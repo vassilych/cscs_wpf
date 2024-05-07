@@ -27,7 +27,7 @@
                    FontSize="16"
                    FontWeight="Bold"/>
             <lvc:PieChart LegendPosition="Bottom"
-                          Name="PieChart1"
+                          Name="PieChart1Odliv"
                           VerticalAlignment="Top"
                           HorizontalAlignment="Center"
                           Width="571"
@@ -36,7 +36,7 @@
                    FontSize="16"
                    FontWeight="Bold"/>
             <lvc:PieChart LegendPosition="Bottom"
-                          Name="PieChartBank"
+                          Name="PieChartBankOdliv"
                           VerticalAlignment="Top"
                           HorizontalAlignment="Center" Grid.Column="1"
                           Width="581"
@@ -55,7 +55,7 @@
                       FontSize="15"
                       Margin="0,42,0,0"
                       IsReadOnly="true"
-                      Name="dgStavke"
+                      Name="dgStavkeOdliv"
                       AlternatingRowBackground="LightGray"
                       HorizontalScrollBarVisibility="Auto"
                       VerticalScrollBarVisibility="Auto"
@@ -154,7 +154,7 @@
                       Height="266"
                       Width="560"
                       IsReadOnly="true"
-                      Name="dgArtikli"
+                      Name="dgArtikliOdliv"
                       RowHeight="22"
                       FontSize="15"
                       AlternatingRowBackground="LightGray"
@@ -230,7 +230,7 @@
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
-            <ComboBox x:Name="cbPieChart" DataContext="PieChartStr" HorizontalAlignment="Right" Margin="0,29,18,0" VerticalAlignment="Top" Width="149" Height="22" TabIndex="30"/>
+            <ComboBox x:Name="cbPieChartOdliv" DataContext="PieChartStr" HorizontalAlignment="Right" Margin="0,29,18,0" VerticalAlignment="Top" Width="149" Height="22" TabIndex="30"/>
 
         </Grid>
     </Viewbox>

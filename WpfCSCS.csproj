@@ -341,11 +341,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="scripts\wxbicfadd.xaml">
+    <Page Include="scripts\wxbicfab.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="scripts\wxbicfab.xaml">
+    <Page Include="scripts\wxbicfad.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

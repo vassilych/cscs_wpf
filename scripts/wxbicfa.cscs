@@ -7,7 +7,7 @@ IncludeScript("wxbicfa_inc_lists.cscs"); //look-up lists
 IncludeScript("wxbicfa_inc_a.cscs"); //look-up lists
 IncludeScript("wxbicfa_inc_b.cscs"); //look-up lists
 IncludeScript("wxbicfa_inc_c.cscs");
-
+IncludeScript("wxbicfa_inc_d.cscs");
 IncludeScript("wxbicfa_inc_e.cscs");
 CreateWindowXaml("wxbicfa.xaml");
 
@@ -244,7 +244,7 @@ function gbOdliv1@clicked()
 
 function gbOdliv2@clicked()
 {
-    if (pripremljeno   )
+    if (pripremljeno)
     {
     //     thread
     //     (
