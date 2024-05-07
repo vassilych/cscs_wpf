@@ -76,9 +76,11 @@
 	define sklad_str type a size 100;
 
     define br_kupaca_og, br_kupaca_lg type i size 5;
+    define br_otpMjes_og, br_otpMjes_lg type i size 5;
     define prodaja_kup_og, prodaja_kup_lg type n size 14;
     define broj_rac_og, broj_rac_lg type r size 6;
     define prod_kup_indx type n size 10 dec 2;
+    define prod_otpMjes_indx type n size 10 dec 2;
     DEFINE arrayProsla type n size 14 array 12;
     DEFINE arrayTrenutna type n size 14 array 12;
 
@@ -182,6 +184,7 @@
     DEFINE sqlOdDana type a size 10;  
     DEFINE fiscal_yr type a size 10;  
     DEFINE br_kupaca_og_string, br_kupaca_lg_string type a size 50;
+    DEFINE br_otpMjes_og_string, br_otpMjes_lg_string type a size 50;
     DEFINE broj_rac_og_string, broj_rac_lg_string type a size 50;
     DEFINE prodaja_kup_og_string, prodaja_kup_lg_string type a size 50;
     define dan2 type i;

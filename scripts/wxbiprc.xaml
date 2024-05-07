@@ -386,33 +386,33 @@
                            Text="Prošli tjedan:" Grid.Column="2" Grid.Row="0" />
                 <TextBlock HorizontalAlignment="Left"
                            VerticalAlignment="Top"
-                           Height="32"
-                           Width="126"
-                           Margin="17,9,0,0"
+                           Height="29"
+                           Width="56"
+                           Margin="11,6,0,0"
                            FontFamily="Lato"
                            FontWeight="Bold"
                            x:Name="Label2_Copy"
                            FontSize="22"
                            Foreground="black"
-                           Text="Broj kupaca"
+                           Text="Broj:"
                            TextWrapping="Wrap" Grid.Row="1" Grid.Column="1"/>
                 <TextBlock HorizontalAlignment="Left"
                            VerticalAlignment="Top"
-                           Height="32"
-                           Width="120"
-                           Margin="182,9,0,0"
+                           Height="26                            "
+                           Width="91"
+                           Margin="241,26,0,0"
                            FontFamily="Lato"
                            FontWeight="Bold"
                            x:Name="Label3_Copy"
-                           FontSize="22"
+                           FontSize="16"
                            Foreground="black"
-                           TextWrapping="Wrap" Grid.Row="1" Grid.Column="1"><Run Text="Br"/><Run Language="hr-hr" Text="."/><Run Text=" otprem"/><Run Language="hr-hr" Text="."/></TextBlock>
+                           TextWrapping="Wrap" Grid.Row="1" Grid.Column="1" Text="Otpremnica"/>
                 <wcl:ASHorizontalBar
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     Height="32"
                     Width="66"
-                    Margin="95,49,0,0"
+                    Margin="67,49,0,0"
                     x:Name="HorizontalBarBrKupacaOG"
                     FontFamily="Lato"
                     FontSize="24"
@@ -421,7 +421,7 @@
                                      VerticalAlignment="Top"
                                      Height="32"
                                      Width="66"
-                                     Margin="95,86,0,0"
+                                     Margin="67,86,0,0"
                                      x:Name="HorizontalBarBrKupacaLG"
                                      FontFamily="Lato"
                                      FontSize="24"
@@ -430,8 +430,8 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     Height="32"
-                    Width="109"
-                    Margin="202,49,0,0"
+                    Width="91"
+                    Margin="241,49,0,0"
                     x:Name="HorizontalBarBrRacunaOG"
                     FontFamily="Lato"
                     FontSize="24"
@@ -440,12 +440,12 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     Height="32"
-                    Width="108"
-                    Margin="202,86,0,0"
+                    Width="90"
+                    Margin="242,86,0,0"
                     x:Name="HorizontalBarBrRacunaLG"
                     FontFamily="Lato"
                     FontSize="24"
-                    Grid.Column="1" FontWeight="Bold" Grid.Row="1" Background="#FFB9B6B6" />
+                    Grid.Column="1" FontWeight="Bold" Grid.Row="1" Background="#FFB9B6B6" RenderTransformOrigin="0.604,0.587" />
                 <TextBlock HorizontalAlignment="Left"
                            VerticalAlignment="Top"
                            Height="32"
@@ -499,7 +499,7 @@
                 <wcl:ASEnterBox HorizontalAlignment="Left"
                                 FontWeight="Bold"
                                 VerticalAlignment="Top"
-                                Margin="37,63,0,0"
+                                Margin="17,63,0,0"
                                 FieldName="ovagod_h"
                                 x:Name="TASENTER1_Copy"
                                 FontSize="14"
@@ -513,7 +513,7 @@
                 <wcl:ASEnterBox HorizontalAlignment="Left"
                                 FontWeight="Bold"
                                 VerticalAlignment="Top"
-                                Margin="37,96,0,0"
+                                Margin="17,100,0,0"
                                 FieldName="lani_h"
                                 x:Name="TASENTER2_Copy"
                                 FontSize="14"
@@ -601,6 +601,48 @@
                         </TransformGroup>
                     </wcl:ASHorizontalBar.RenderTransform>
                 </wcl:ASHorizontalBar>
+                <TextBlock HorizontalAlignment="Left"
+                           VerticalAlignment="Top"
+                           Height="26                            "
+                           Width="55"
+                           Margin="68,26,0,0"
+                           FontFamily="Lato"
+                           FontWeight="Bold"
+                           x:Name="Label3_Copy1"
+                           FontSize="16"
+                           Foreground="black"
+                           TextWrapping="Wrap" Grid.Row="1" Grid.Column="1" Text="Kupaca"/>
+                <TextBlock HorizontalAlignment="Left"
+                           VerticalAlignment="Top"
+                           Height="26                            "
+                           Width="105"
+                           Margin="138,25,0,0"
+                           FontFamily="Lato"
+                           FontWeight="Bold"
+                           x:Name="Label3_Copy2"
+                           FontSize="16"
+                           Foreground="black"
+                           TextWrapping="Wrap" Grid.Row="1" Grid.Column="1"><Run Text="Otprem"/><Run Text=".mjes."/></TextBlock>
+                <wcl:ASHorizontalBar
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Height="32"
+                    Width="97"
+                    Margin="138,49,0,0"
+                    x:Name="HorizontalBarBrOtpMjestaOG"
+                    FontFamily="Lato"
+                    FontSize="24"
+                    Grid.Column="1" FontWeight="Bold" Grid.Row="1" Background="#FFB9B6B6" />
+                <wcl:ASHorizontalBar
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Height="32"
+                    Width="97"
+                    Margin="138,86,0,0"
+                    x:Name="HorizontalBarBrOtpMjestaLG"
+                    FontFamily="Lato"
+                    FontSize="24"
+                    Grid.Column="1" FontWeight="Bold" Grid.Row="1" Background="#FFB9B6B6" />
 
             </Grid>
             <Button x:Name="gbProdaja1" Content="Otprema I" Style="{StaticResource FlatButtonStyle}" Grid.Row="1" Margin="0,15,0,0"  HorizontalAlignment="Center" VerticalAlignment="Top" Width="140" Height="63" Background="#FF69A627" FontFamily="Lato" FontSize="20" Foreground="#FFFBFBFB" BorderBrush="{x:Null}" TabIndex="32"/>
@@ -703,7 +745,7 @@
                        x:Name="Label22"
                        FontSize="14"
                        Foreground="Black"
-                       Text="Vrste računa" />
+                       Text="Vrste otpremnica" />
             <TextBlock Grid.Column="1" HorizontalAlignment="Left"
                        VerticalAlignment="Top"
                        Height="15"
@@ -1318,8 +1360,8 @@
             <Ellipse x:Name="EllipseProdajaUTjednu" HorizontalAlignment="Left" Height="20" Margin="995,18,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>
             <Ellipse x:Name="EllipseProdajaUGodini" HorizontalAlignment="Left" Height="20" Margin="305,18,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>
             <Ellipse x:Name="EllipseProdajaUMjesecu" HorizontalAlignment="Left" Height="20" Margin="650,18,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>
-            <Ellipse x:Name="EllipseBrojKupaca" HorizontalAlignment="Left" Height="20" Margin="485,176,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>
-            <Ellipse x:Name="EllipseBrojRacuna" HorizontalAlignment="Left" Height="20" Margin="650,176,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>
+            <Ellipse x:Name="EllipseBrojKupaca" HorizontalAlignment="Left" Height="20" Margin="452,173,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>
+            <Ellipse x:Name="EllipseBrojRacuna" HorizontalAlignment="Left" Height="20" Margin="650,173,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>
             <Ellipse x:Name="EllipseProsjProdajaPoKupcu" HorizontalAlignment="Left" Height="20" Margin="990,180,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>
             <GroupBox Grid.Column="1" Padding="0"
                       HorizontalAlignment="Left"
@@ -1369,6 +1411,7 @@
                                  TabIndex="23"/>
                 </Grid>
             </GroupBox>
+            <Ellipse x:Name="EllipseBrojOtpMjesta" HorizontalAlignment="Left" Height="20" Margin="552,173,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>
             <!-- <wcl:ASNumericBox HorizontalAlignment="Left"
             VerticalAlignment="Top"
             FontWeight="Bold"

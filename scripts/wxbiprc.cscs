@@ -241,7 +241,7 @@ function setCustomerAndInvoiceCounts()
 
     if (proslaGodinaBaza != "")
     {
-        sql_str = "SELECT count(distinct nkpr_gl_cuscod) as br_kupaca_lg,count(distinct nkpr_gl_brotp) as broj_rac_lg";
+        sql_str = "SELECT count(distinct nkpr_gl_cuscod) as br_kupaca_lg,count(distinct nkpr_gl_brotp) as broj_rac_lg, count(distinct concat(nkpr_gl_cuscod,nkpr_gl_shpcod)) as broj_otpmj_lg";
         sql_str += " FROM " + proslaGodinaBaza + ".dbo.nkprglot";
         sql_str += " LEFT JOIN "+proslaGodinaBaza+".dbo.nkprlnot ON nkpr_gl_brotp= nkpr_ln_invnm";
         sql_str += " LEFT JOIN "+proslaGodinaBaza+".dbo.nkmkarti ON nkpr_ln_pcode= arti_artikl";
@@ -264,13 +264,14 @@ function setCustomerAndInvoiceCounts()
             }
         }
         filterPart();
+    //SaveFile(sql_str);
         sqlResult = SqlQuery(sql_str);
         
         RunOnMain(setCustomerAndInvoiceCounts2); 
     }  
 
     
-    sql_str = "SELECT count(distinct nkpr_gl_cuscod) as br_kupaca_og, count(distinct nkpr_gl_brotp) as broj_rac_og";
+    sql_str = "SELECT count(distinct nkpr_gl_cuscod) as br_kupaca_og, count(distinct nkpr_gl_brotp) as broj_rac_og, count(distinct concat(nkpr_gl_cuscod,nkpr_gl_shpcod)) as broj_otpmj_og";
     //sql_str += " ,count(CASE WHEN nkpr_gl_rts= 'N' THEN 1 END) as br_wait, COUNT(CASE WHEN nkpr_gl_invcd= '' THEN 1 END) as br_neazur";
     sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.nkprglot";
     sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkprlnot ON nkpr_gl_brotp = nkpr_ln_invnm";
@@ -295,6 +296,7 @@ function setCustomerAndInvoiceCounts()
     }
     //sql_str= sql_str* " AND DATEDIFF(day,nkpr_gl_invdte, CURRENT_TIMESTAMP) BETWEEN 0 AND 31"
     filterPart();
+    //SaveFile(sql_str);
     sqlResult = SqlQuery(sql_str);
     
     RunOnMain("setCustomerAndInvoiceCounts3");
@@ -334,6 +336,8 @@ function setCustomerAndInvoiceCounts()
 function setCustomerAndInvoiceCounts1(){
     br_kupaca_og = 0;
     br_kupaca_lg = 0;
+    br_otpMjes_og = 0;
+    br_otpMjes_lg = 0;
     broj_rac_og = 0;
     broj_rac_lg = 0;
     br_wait= 0;
@@ -345,6 +349,7 @@ function setCustomerAndInvoiceCounts2(){
     {
         br_kupaca_lg = sqlResult[1][0];
         broj_rac_lg = sqlResult[1][1];
+        br_otpmjes_lg = sqlResult[1][2];
     }
 }
 
@@ -353,6 +358,7 @@ function setCustomerAndInvoiceCounts3(){
     {
         br_kupaca_og = sqlResult[1][0];
         broj_rac_og = sqlResult[1][1];
+        br_otpmjes_og = sqlResult[1][2];
         //br_wait = sqlResult[1][2];
         //br_neazur = sqlResult[1][3];
     }    
@@ -425,6 +431,74 @@ function setCustomerAndInvoiceCounts3(){
     Format("br_kupaca_lg", "nofd", recv: "br_kupaca_lg_string");
     HorizontalBar("HorizontalBarBrKupacaLG", "Text", br_kupaca_lg_string);
     HorizontalBar("HorizontalBarBrKupacaLG", "Color", bojeArray);
+
+    //sada broj otpremnih mjesta
+    if(Math.Abs(br_otpMjes_og) > Math.Abs(br_otpMjes_lg))
+    {
+        if(br_otpMjes_lg != 0)
+        {
+            ratio = 1.00 * br_otpMjes_og/br_otpMjes_lg;
+            HorizontalBar("HorizontalBarBrOtpMjestaOG", "BarWidth", 90);
+            HorizontalBar("HorizontalBarBrOtpMjestaLG", "BarWidth", 90/ratio);
+        }
+        else
+        {
+            HorizontalBar("HorizontalBarBrOtpMjestaLG", "BarWidth", 0);
+            if(br_otpMjes_og != 0)
+            {
+                HorizontalBar("HorizontalBarBrOtpMjesOG", "BarWidth", 90);
+            }
+            else
+            {
+                HorizontalBar("HorizontalBarBrOtpMjesOG", "BarWidth", 0);
+            }
+        }
+    }
+    else
+    {
+        if(br_otpMjes_og != 0)
+        {
+            ratio = 1.00 * br_otpMjes_lg/br_otpMjes_og;
+            HorizontalBar("HorizontalBarBrOtpMjestaLG", "BarWidth", 90);
+            HorizontalBar("HorizontalBarBrOtpMjestaOG", "BarWidth", 90/ratio);
+        }
+        else
+        {
+            HorizontalBar("HorizontalBarBrOtpMjestaOG", "BarWidth", 0);
+            if(br_otpMjes_lg != 0)
+            {
+                HorizontalBar("HorizontalBarBrOtpMjestaLG", "BarWidth", 90);
+            }
+            else
+            {
+                HorizontalBar("HorizontalBarBrOtpMjestaLG", "BarWidth", 0);
+            }
+        }
+    }
+        //ellipse
+    SetWidgetOptions("EllipseBrojOtpMjesta", "Visible", true);
+    if (br_otpMjes_og > br_otpMjes_lg)
+    {
+        SetWidgetOptions("EllipseBrojOtpMjesta", "Color", "Lime");
+    }
+    elif(br_otpMjes_og < br_otpMjes_lg)
+    {
+        SetWidgetOptions("EllipseBrojOtpMjesta", "Color", "Red");
+    }
+    else{
+        SetWidgetOptions("EllipseBrojOtpMjesta", "Color", "Gray");
+    }
+    if(br_otpMjes_og == 0 || br_otpMjes_lg == 0){
+        SetWidgetOptions("EllipseBrojOtpMjesta", "Visible", false);
+    }
+
+    bojeArray = {255, 232, 115};
+    Format("br_otpMjes_og", "nofd", recv: "br_otpMjes_og_string");
+    HorizontalBar("HorizontalBarBrOtpMjestaOG", "Text", br_otpMjes_og_string);
+    HorizontalBar("HorizontalBarBrOtpMjestaOG", "Color", bojeArray);
+    Format("br_otpMjes_lg", "nofd", recv: "br_otpMjes_lg_string");
+    HorizontalBar("HorizontalBarBrOtpMjestaLG", "Text", br_otpMjes_lg_string);
+    HorizontalBar("HorizontalBarBrOtpMjestaLG", "Color", bojeArray);
     //---------------
     if(Math.Abs(broj_rac_og) > Math.Abs(broj_rac_lg))
     {
