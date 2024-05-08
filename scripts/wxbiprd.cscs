@@ -50,7 +50,7 @@ function Wxbiprd_onDisplay()
         }
         else
         {
-            MessageBox("Molim da postavite logo znak firme kao: "+strTrim(tpath())+"CompanyLogo.jpg")
+            MessageBox("Molim da postavite logo znak firme kao: "+strTrim(tpath())+"CompanyLogo.jpg");
         }
     }
     //tableHndl = OPENV("KPSYMSTR","B"+companycode); //, coGet());
