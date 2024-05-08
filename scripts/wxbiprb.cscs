@@ -18,8 +18,6 @@ CreateWindowXaml("wxbiprb.xaml");
 
 function Wxbiprb_onDisplay()
 {
-    //MessageBox("here");
-
     SetWidgetOptions("EllipseProdajaUGodini", "Visible", false);
     SetWidgetOptions("EllipseProdajaUMjesecu", "Visible", false);
     SetWidgetOptions("EllipseProdajaUTjednu", "Visible", false);
@@ -1121,3 +1119,14 @@ function deNadan@LostFocus(){
 //     MessageBox("AAAA");
 //     gbPripremi@clicked();
 // }
+
+
+function gbPrint@clicked(){
+    PrintWindow();
+}
+function gbPrint1@clicked(){
+    PrintWindow();
+}
+function gbPrint2@clicked(){
+    PrintWindow();
+}

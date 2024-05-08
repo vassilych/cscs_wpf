@@ -1742,6 +1742,34 @@
                                HorizontalAlignment="Center" />
                 </Grid>
             </Button>
+            <Button Grid.Column="1"
+VerticalAlignment="Top"
+Height="39"
+Margin="0,85,15,0"
+FontFamily="lato"
+Visibility="Visible"
+BorderBrush="Transparent"
+BorderThickness="0"
+Padding="-8"
+x:Name="gbPrint"
+Background="gray"
+TabIndex="35"
+HorizontalAlignment="Right"
+Width="110">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius"
+            Value="6" />
+                    </Style>
+                </Button.Resources>
+                <Grid Grid.Column="1">
+                    <TextBlock FontSize="20"
+           Foreground="#FFFDFDFD"
+           VerticalAlignment="Center"
+           Text="Ispis"
+           HorizontalAlignment="Center" />
+                </Grid>
+            </Button>
             <TextBox HorizontalAlignment="Center"
                      VerticalAlignment="Center"
                      Height="49"

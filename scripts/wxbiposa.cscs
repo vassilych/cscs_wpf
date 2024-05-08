@@ -1136,3 +1136,17 @@ function deNadan@LostFocus(){
 //     MessageBox("AAAA");
 //     gbPripremi@clicked();
 // }
+
+
+function gbPrint@clicked(){
+    PrintWindow();
+}
+function gbPrint1@clicked(){
+    PrintWindow();
+}
+function gbPrint2@clicked(){
+    PrintWindow();
+}
+function gbPrint3@clicked(){
+    PrintWindow();
+}

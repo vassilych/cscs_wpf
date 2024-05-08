@@ -245,7 +245,34 @@
                 </DataGrid.Columns>
             </DataGrid>
             <ComboBox x:Name="cbPieChartOdliv" DataContext="PieChartStr" HorizontalAlignment="Right" Margin="0,29,18,0" VerticalAlignment="Top" Width="149" Height="22" TabIndex="30"/>
-
+            <Button Grid.Column="1"
+VerticalAlignment="Top"
+Height="39"
+Margin="0,9,10,0"
+FontFamily="lato"
+Visibility="Visible"
+BorderBrush="Transparent"
+BorderThickness="0"
+Padding="-8"
+x:Name="gbPrint4"
+Background="gray"
+TabIndex="35"
+HorizontalAlignment="Right"
+Width="110">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius"
+            Value="6" />
+                    </Style>
+                </Button.Resources>
+                <Grid Grid.Column="1">
+                    <TextBlock FontSize="20"
+           Foreground="#FFFDFDFD"
+           VerticalAlignment="Center"
+           Text="Ispis"
+           HorizontalAlignment="Center" />
+                </Grid>
+            </Button>
         </Grid>
     </Viewbox>
 </Window>

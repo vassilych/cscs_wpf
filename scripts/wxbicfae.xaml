@@ -40,6 +40,8 @@
                                 Margin="0,45,0,0" LegendPosition="Top" />
 
             <Grid Grid.Row="1" Grid.ColumnSpan="2">
+                <!--
+                
                 <Rectangle x:Name="RectangleD" Grid.Column="0" Margin="10,164,0,0" Stroke="Black" Fill="#FFEEEDF1" RadiusX="7" RadiusY="7" StrokeThickness="0" Height="149" VerticalAlignment="Top" HorizontalAlignment="Left" Width="327"/>
                 <Rectangle x:Name="RectangleE" Margin="357,164,0,0" Stroke="Black" Fill="#FFEEEDF1" RadiusX="7" RadiusY="7" StrokeThickness="0" Height="149" VerticalAlignment="Top" HorizontalAlignment="Left" Width="326"/>
                 <Rectangle x:Name="RectangleF" Margin="703,168,0,0" Stroke="Black" Fill="#FFEEEDF1" RadiusX="7" RadiusY="7" StrokeThickness="0" Height="149" VerticalAlignment="Top" HorizontalAlignment="Left" Width="327"/>
@@ -279,10 +281,15 @@
                 <Ellipse x:Name="EllipseBrojKupaca" HorizontalAlignment="Left" Height="20" Margin="491,172,0,0" VerticalAlignment="Top" Width="20"/>
                 <Ellipse x:Name="EllipseBrojRacuna" HorizontalAlignment="Left" Height="20" Margin="654,172,0,0" VerticalAlignment="Top" Width="20"/>
                 <Ellipse x:Name="EllipseProsjProdajaPoKupcu" HorizontalAlignment="Left" Height="20" Margin="996,180,0,0" VerticalAlignment="Top" Width="20"/>
+                
+                -->
+                
+                
+                
                 <TextBlock HorizontalAlignment="Left"
                            VerticalAlignment="Top"
                            Height="32"
-                           Width="254"
+                           Width="359"
                            Margin="10,-378,0,0"
                            FontFamily="Lato"
                            FontWeight="Bold"
@@ -293,7 +300,7 @@
                 <TextBlock HorizontalAlignment="Left"
                            VerticalAlignment="Top"
                            Height="30"
-                           Width="341"
+                           Width="361"
                            Margin="675,-378,0,0"
                            x:Name="Label2_Copy2"
                            FontFamily="Lato"
@@ -305,6 +312,35 @@
 
             </Grid>
 
+
+            <Button Grid.Column="1"
+VerticalAlignment="Top"
+Height="39"
+Margin="0,11,12,0"
+FontFamily="lato"
+Visibility="Visible"
+BorderBrush="Transparent"
+BorderThickness="0"
+Padding="-8"
+x:Name="gbPrint5"
+Background="gray"
+TabIndex="35"
+HorizontalAlignment="Right"
+Width="110">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius"
+            Value="6" />
+                    </Style>
+                </Button.Resources>
+                <Grid Grid.Column="1">
+                    <TextBlock FontSize="20"
+           Foreground="#FFFDFDFD"
+           VerticalAlignment="Center"
+           Text="Ispis"
+           HorizontalAlignment="Center" />
+                </Grid>
+            </Button>
         </Grid>
     </Viewbox>
 </Window>

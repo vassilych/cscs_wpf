@@ -1,4 +1,6 @@
 using CSCS.InterpreterManager;
+using DevExpress.XtraCharts.Printing;
+using DevExpress.XtraPrinting;
 using SplitAndMerge;
 using System;
 using System.Collections.Generic;
@@ -6,11 +8,16 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Drawing.Imaging;
+
+//using System.Drawing;
+using System.Drawing.Printing;
 using System.Dynamic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,6 +30,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using System.Windows.Xps;
 using WpfControlsLibrary;
 using WpfCSCS;
 
@@ -48,6 +56,8 @@ namespace SplitAndMerge
 		{
 			interpreter.RegisterFunction("TestClass1", new TestClass1Function());
 			interpreter.RegisterFunction("TestButton", new TestButtonFunction());
+			
+			interpreter.RegisterFunction("PrintWindow", new PrintWindowFunction());
 			
 			interpreter.RegisterFunction("DownloadScripts", new DownloadScriptsFunction());
 			interpreter.RegisterFunction("ServerAddress", new ServerAddressFunction());
@@ -6231,6 +6241,76 @@ namespace WpfCSCS
             return new Variable(button);
         }
 	}
+	
+	class PrintWindowFunction : ParserFunction
+	{
+		protected override Variable Evaluate(ParsingScript script)
+		{
+            var imagePath = Path.Combine(App.GetConfiguration("ImagesPath", ""), "tempScreenshot.jpg");
+            ScreenShot(imagePath);
+
+			PrintImage(imagePath);
+
+            return Variable.EmptyInstance;
+        }
+
+        private void PrintImage(string path)
+        {
+            string fileName = path;//pass in or whatever you need
+            var p = new Process();
+            p.StartInfo.FileName = fileName;
+            p.StartInfo.Verb = "Print";
+            p.Start();
+
+
+			//var bi = new BitmapImage();
+			//bi.BeginInit();
+			//bi.CacheOption = BitmapCacheOption.OnLoad;
+			//bi.UriSource = new Uri(path);
+			//bi.EndInit();
+
+			//var vis = new DrawingVisual();
+			//using (var dc = vis.RenderOpen())
+			//{
+			//	dc.DrawImage(bi, new Rect { Width = bi.Width, Height = bi.Height });
+			//}
+
+			//var pdialog = new PrintDialog();
+			//if (pdialog.ShowDialog() == true)
+			//{
+			//	pdialog.PrintVisual(vis, "My Image");
+			//}
+		}
+
+        public bool ScreenShot(string saveAs)
+        {
+            try
+            {
+                //Get the Current instance of the window
+                Window window = Application.Current.Windows.OfType<Window>().Single(x => x.IsActive);
+
+                //Render the current control (window) with specified parameters of: Widht, Height, horizontal DPI of the bitmap, vertical DPI of the bitmap, The format of the bitmap
+                RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap((int)window.ActualWidth, (int)window.ActualHeight, 96, 96, PixelFormats.Pbgra32);
+                renderTargetBitmap.Render(window);
+
+                //Encoding the rendered bitmap as desired (PNG,on my case because I wanted losless compression)
+                PngBitmapEncoder png = new PngBitmapEncoder();
+                png.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
+
+                //Save the image on the desired location, on my case saveAs was C:\test.png
+                using (Stream stm = File.Create(saveAs))
+                {
+                    png.Save(stm);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+    }
 	
 	class DownloadScriptsFunction : ParserFunction
 	{
