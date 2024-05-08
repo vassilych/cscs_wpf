@@ -21,6 +21,8 @@ function F2List_onDisplay(){
     FormatF2ListDataGrid( windowTitle, headersArray);
     searchSifra = &sifraFieldPointer;
     search();
+    //DisplayTable("dgF2List", "RedisplayfromTop");
+    //SetFocus("dgF2List");
 }
 
 function search()

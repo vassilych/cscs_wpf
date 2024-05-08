@@ -112,6 +112,20 @@ namespace WpfControlsLibrary
             }
         }
 
+        public static readonly DependencyProperty ForegroundProperty = DependencyProperty.Register("Foreground", typeof(Brush), typeof(ASHorizontalBar));
+        public Brush Foreground
+        {
+            get
+            {
+                return (Brush)base.GetValue(ForegroundProperty);
+            }
+            set
+            {
+                base.SetValue(ForegroundProperty, value);
+                //BarFill.Background = value;
+            }
+        }
+
         public ASHorizontalBar()
         {
             InitializeComponent();
@@ -140,6 +154,8 @@ namespace WpfControlsLibrary
                 ((Border)tbBorder).CornerRadius = new CornerRadius(CornerRadius);
 
                 widgetBackground.Background = Background;
+
+                InsideText.Foreground = Foreground == null ? new SolidColorBrush() { Color = Colors.Black } : Foreground;
 
                 loaded = true;
             }

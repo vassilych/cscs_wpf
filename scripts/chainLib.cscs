@@ -1,0 +1,40 @@
+DEFINE serverAddress type a size 100;
+serverAddress = ServerAddress();
+
+function ChainTo(scriptName){
+    if(DownloadScripts()){
+        MessageBox("Downloading " + scriptName);
+        CHAIN Download(serverAddress+scriptName);
+    }else{
+        CHAIN strTrim(tpath())+scriptName;
+    }
+}
+
+function IncludeScript(scriptName){
+    if(DownloadScripts()){
+        MessageBox("Downloading " + scriptName);
+        include(Download(serverAddress + scriptName));
+    }else{
+        include(strTrim(tpath()) + scriptName);
+    }
+}
+
+function CreateWindowXaml(xamlName){
+    if(DownloadScripts()){
+        MessageBox("Downloading " + xamlName);
+        CreateWindow(Download(serverAddress + xamlName));
+    }else{
+        CreateWindow(strTrim(tpath()) + xamlName);
+    }
+}
+
+
+
+// function ImportFile(){
+//     if(DownloadScripts()){
+//         Import(Download(serverAddress + scriptName));
+//     }else{
+//         Import(strTrim(tpath()) + scriptName);
+//     }
+// }
+

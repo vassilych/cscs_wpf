@@ -87,6 +87,19 @@ namespace WpfControlsLibrary
                 base.SetValue(ThousandsProperty, value);
             }
         }
+        
+        public static readonly DependencyProperty IsImageProperty = DependencyProperty.Register("IsImage", typeof(bool), typeof(ASGridCell));
+        public bool IsImage
+        {
+            get
+            {
+                return (bool)base.GetValue(IsImageProperty);
+            }
+            set
+            {
+                base.SetValue(IsImageProperty, value);
+            }
+        }
 
         public override void OnApplyTemplate()
         {

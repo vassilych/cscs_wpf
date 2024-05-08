@@ -1,0 +1,279 @@
+﻿<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfCSCS"
+        xmlns:wcl="clr-namespace:WpfControlsLibrary;assembly=WpfControlsLibrary"
+        xmlns:asdads="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+        xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+        xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts"
+        xmlns:SKCharts="clr-namespace:LiveChartsCore.SkiaSharpView.SKCharts;assembly=LiveChartsCore.SkiaSharpView"
+        mc:Ignorable="d"
+        Title="Cash Flow - Priliv II"
+        Height="675"
+        Width="1200" MinHeight="540" MinWidth="960" WindowStartupLocation="CenterScreen">
+    <Viewbox Stretch="Uniform">
+        <Grid Width="1162" Margin="15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition  Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Label Name="Top6Prodaja" VerticalAlignment="Top" HorizontalAlignment="Left" Width="195" Height="35" Margin="77,23,0,0" Content="Top 6 - Priliv"
+                   Grid.Row="0"
+                   FontSize="16"
+                   FontWeight="Bold"/>
+            <lvc:PieChart LegendPosition="Bottom"
+                          Name="PieChart1"
+                          VerticalAlignment="Top"
+                          HorizontalAlignment="Center"
+                          Width="571"
+                          Height="273" FontSize="10" HorizontalContentAlignment="Left" Margin="0,57,0,0"/>
+            <Label Name="Top6Banaka" VerticalAlignment="Top" HorizontalAlignment="Left" Width="207" Height="35" Margin="10,10,0,0" Content="Top 6 - Priliv po bankama" Grid.Column="1"
+                   FontSize="16"
+                   FontWeight="Bold"/>
+            <lvc:PieChart LegendPosition="Bottom"
+                          Name="PieChartBank"
+                          VerticalAlignment="Top"
+                          HorizontalAlignment="Center" Grid.Column="1"
+                          Width="581"
+                          Height="283" FontSize="10" HorizontalContentAlignment="Left" Margin="0,47,0,0"/>
+            <Label Name="Top10Artikli" VerticalAlignment="Top" HorizontalAlignment="Left" Width="290" Height="35" Margin="0,10,0,0" Content="Top 10 - Vrste priliva po kontima"
+                   Grid.Row="1"
+                   FontSize="16"
+                   FontWeight="Bold"/>
+
+            <DataGrid GridLinesVisibility="None"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Top"
+                      Height="266"
+                      Width="550"
+                      RowHeight="22"
+                      FontSize="15"
+                      Margin="0,42,0,0"
+                      IsReadOnly="true"
+                      Name="dgStavke"
+                      AlternatingRowBackground="LightGray"
+                      HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto"
+                      Background="White"
+                      TabIndex="2" Grid.Row="1" Grid.Column="1" BorderThickness="0,0,0,0">
+                <DataGrid.Resources>
+                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                        <Setter Property="Background"
+                                Value="#FFAE0000" />
+                        <Setter Property="Foreground"
+                                Value="White" />
+                        <Setter Property="FontSize" Value="17"/>
+                    </Style>
+                </DataGrid.Resources>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="No."
+                                            Width="28">
+                        <DataGridTemplateColumn.CellStyle>
+                            <Style TargetType="{x:Type DataGridCell}">
+                                <Setter Property="Background"
+                                        Value="Red" />
+                                <Setter Property="BorderThickness"
+                                        Value="0" />
+                            </Style>
+                        </DataGridTemplateColumn.CellStyle>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="TOP10PART_AR"
+                                                Editor="edDefault"
+                                                EditLength="0" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Kupac"
+                                            Width="220">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="NAMEPART_AR"
+                                                Editor="edDefault"
+                                                EditLength="0" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Ova godina"
+                                            Width="100">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="SALESPART1_AR"
+                                                Editor="edEditBtn"
+                                                EditLength="0"
+                                                Name="clickTest"
+                                                Thousands="True"
+                                                Size="10"
+                                                HorizontalContentAlignment="Right" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Preth.godina"
+                                            Width="100">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="SALESPART2_AR"
+                                                Editor="edEditBtn"
+                                                EditLength="0"
+                                                Name="clickTest"
+                                                Size="10"
+                                                HorizontalContentAlignment="Right" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Index%"
+                                            Width="54">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="INDEXPART_AR"
+                                                Editor="edEditBtn"
+                                                EditLength="0"
+                                                Name="clickTest"
+                                                Thousands="True"
+                                                Size="10"
+                                                HorizontalContentAlignment="Right" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell IsImage="True" FieldName="ImagePART_AR"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+            <Label Name="Top10Partner" VerticalAlignment="Top" HorizontalAlignment="Left" Width="217" Height="35" Margin="21,10,0,0" Content="Top 10 - Najveći platitelji"
+                   Grid.Row="1"
+                   Grid.Column="1"
+                   FontSize="16"
+                   FontWeight="Bold"/>
+
+            <DataGrid GridLinesVisibility="None"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Top"
+                      Height="266"
+                      Width="560"
+                      IsReadOnly="true"
+                      Name="dgArtikli"
+                      RowHeight="22"
+                      FontSize="15"
+                      AlternatingRowBackground="LightGray"
+                      HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto"
+                      Background="White"
+                      TabIndex="19" Margin="0,42,0,0" Grid.Row="1" BorderThickness="0,0,0,0">
+                <DataGrid.Resources>
+                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                        <Setter Property="Background"
+                                Value="#FF0000A0" />
+                        <Setter Property="Foreground"
+                                Value="White" />
+                        <Setter Property="FontSize" Value="17"/>
+                    </Style>
+                </DataGrid.Resources>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="No."
+                                            Width="28">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="TOP10ART_AR"
+                                                Editor="edDefault"
+                                                EditLength="0"
+                                                HorizontalContentAlignment="Center" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Naziv priliva (konta)"
+                                            Width="245">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="NAMEART_AR"
+                                                Editor="edDefault"
+                                                EditLength="0"
+                                                HorizontalContentAlignment="Left" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Ova godina"
+                                            Width="100">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="SALESART1_AR"
+                                                Editor="edNumeric"
+                                                EditLength="0"
+                                                HorizontalContentAlignment="Right" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Preth.godina"
+                                            Width="100">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="SALESART2_AR"
+                                                Editor="edNumeric"
+                                                EditLength="0"
+                                                Size="10"
+                                                HorizontalContentAlignment="Right" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Index%"
+                                            Width="54">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell FieldName="INDEXART_AR"
+                                                Editor="edNumeric"
+                                                EditLength="0"
+                                                HorizontalContentAlignment="Right" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell IsImage="True" FieldName="ImageART_AR"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+            <ComboBox x:Name="cbPieChart" DataContext="PieChartStr" HorizontalAlignment="Right" Margin="0,29,18,0" VerticalAlignment="Top" Width="149" Height="22" TabIndex="30"/>
+
+            <Button Grid.Column="1"
+VerticalAlignment="Top"
+Height="39"
+Margin="0,11,10,0"
+FontFamily="lato"
+Visibility="Visible"
+BorderBrush="Transparent"
+BorderThickness="0"
+Padding="-8"
+x:Name="gbPrint2"
+Background="gray"
+TabIndex="35"
+HorizontalAlignment="Right"
+Width="110">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius"
+            Value="6" />
+                    </Style>
+                </Button.Resources>
+                <Grid Grid.Column="1">
+                    <TextBlock FontSize="20"
+           Foreground="#FFFDFDFD"
+           VerticalAlignment="Center"
+           Text="Ispis"
+           HorizontalAlignment="Center" />
+                </Grid>
+            </Button>
+        </Grid>
+    </Viewbox>
+</Window>

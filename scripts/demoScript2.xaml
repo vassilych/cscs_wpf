@@ -1,0 +1,25 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfCSCS"
+        xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+        mc:Ignorable="d"
+        Title="Script 2" Height="450" Width="500" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <lvc:CartesianChart LegendPosition="Top"
+                            x:Name="LineChart"
+                            Margin="0"
+                            Height="294"
+                            Width="500"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top" />
+        <Button Name="exitButton"
+                Content="Exit"
+                HorizontalAlignment="Left"
+                Margin="190,324,0,0"
+                VerticalAlignment="Top"
+                Height="60"
+                Width="115" />
+    </Grid>
+</Window>

@@ -1,0 +1,4 @@
+include(strTrim(tpath()) + "chainLib.cscs");
+
+ChainTo("wxbiprb.cscs");
+//ChainTo("script5.cscs");

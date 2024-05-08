@@ -1,0 +1,18 @@
+CreateWindow(strTrim(tpath()) + "demoScript2.xaml");
+
+function demoScript2_onDisplay(){
+	PARAM(arg1,arg2);
+	MessageBox(arg1 + arg2);
+
+    Chart("LineChart", "init");
+    Chart("LineChart", "seriesType", "lineSeries");
+    Chart("LineChart", "labels","x", 12,  {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"});
+    Chart("LineChart", "SeparatorStep", 1);
+    Chart("LineChart", "values", {100, 512, 265, 300, 1000, 456, 365, 111, 900, 800}, "Sample data 1");
+    Chart("LineChart", "values", {30, 500, 345, 456, 567, 678, 789, 890, 500, 200}, "Sample data 2");
+    Chart("LineChart", "Color.Series", { "#0091D5", "red"}); 
+}
+
+function exitButton@clicked(){
+    quit;
+}

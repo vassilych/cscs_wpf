@@ -1,4 +1,6 @@
 using CSCS.InterpreterManager;
+using DevExpress.XtraCharts.Printing;
+using DevExpress.XtraPrinting;
 using SplitAndMerge;
 using System;
 using System.Collections.Generic;
@@ -6,11 +8,16 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Drawing.Imaging;
+
+//using System.Drawing;
+using System.Drawing.Printing;
 using System.Dynamic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,6 +30,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using System.Windows.Xps;
 using WpfControlsLibrary;
 using WpfCSCS;
 
@@ -30,17 +38,17 @@ using static WpfCSCS.Btrieve;
 
 namespace SplitAndMerge
 {
-     public class CscsGuiModule : ICscsModule
-     {
-	public ICscsModuleInstance CreateInstance(Interpreter interpreter)
+	public class CscsGuiModule : ICscsModule
 	{
-	     return new CscsGuiModuleInstance(interpreter);
-	}
+		public ICscsModuleInstance CreateInstance(Interpreter interpreter)
+		{
+			return new CscsGuiModuleInstance(interpreter);
+		}
 
-	public void Terminate()
-	{
+		public void Terminate()
+		{
+		}
 	}
-     }
 
 	public class CscsGuiModuleInstance : ICscsModuleInstance
 	{
@@ -48,6 +56,11 @@ namespace SplitAndMerge
 		{
 			interpreter.RegisterFunction("TestClass1", new TestClass1Function());
 			interpreter.RegisterFunction("TestButton", new TestButtonFunction());
+			
+			interpreter.RegisterFunction("PrintWindow", new PrintWindowFunction());
+			
+			interpreter.RegisterFunction("DownloadScripts", new DownloadScriptsFunction());
+			interpreter.RegisterFunction("ServerAddress", new ServerAddressFunction());
 						
 			interpreter.RegisterFunction(Constants.MSG, new VariableArgsFunction(true));
 			interpreter.RegisterFunction(Constants.DEFINE, new VariableArgsFunction(true));
@@ -310,6 +323,7 @@ namespace SplitAndMerge
 	public const string INT = "INT";
 	public const string ISAL = "ISAL";
 	public const string TPATH = "TPATH";
+	public const string IPATH = "IPATH";
 	public const string MPATH = "MPATH";
 	public const string GFLD = "GFLD";
 	public const string SNDX = "SNDX";
@@ -749,7 +763,7 @@ namespace WpfCSCS
 					{
 						continue;
 					}
-					var filename = Window2File[win];
+                    var filename = Window2File[win];
 					win.Close();
 					Window2File.Remove(win);
 					File2Window.Remove(filename);
@@ -1589,6 +1603,9 @@ namespace WpfCSCS
 				m_SelectHandlers[name] = action;
 				dg.MouseDoubleClick -= new MouseButtonEventHandler(DataGrid_Select);
 				dg.MouseDoubleClick += new MouseButtonEventHandler(DataGrid_Select);
+				
+				dg.PreviewKeyDown += new KeyEventHandler(DataGrid_EnterKeyPressed);
+				dg.PreviewKeyDown += new KeyEventHandler(DataGrid_EnterKeyPressed);	
 
 				return true;
 			}
@@ -2700,6 +2717,39 @@ namespace WpfCSCS
 				    Variable.EmptyInstance, GetScript(win));
 			}
 		}
+		
+		private void DataGrid_EnterKeyPressed(object sender, KeyEventArgs e)
+		{
+            DataGrid widget = sender as DataGrid;
+			var widgetName = GetWidgetName(widget);
+			if (string.IsNullOrWhiteSpace(widgetName))
+			{
+				return;
+			}
+			
+			if(widget.SelectedIndex < 0)
+			{
+				return;
+			}
+
+			//if dataGrid is in Edit mode this event is disabled
+			if (widget.IsReadOnly == false)
+			{
+				return;
+			}
+
+            if (e.Key == Key.Enter)
+            {
+                e.Handled = true;
+                string funcName;
+                if (m_SelectHandlers.TryGetValue(widgetName, out funcName))
+                {
+                    Control2Window.TryGetValue(widget, out Window win);
+                    var result = Interpreter.Run(funcName, new Variable(widgetName), null,
+                        Variable.EmptyInstance, GetScript(win));
+                }
+            }
+		}
 
 		public FrameworkElement GetWidget(string name)
 		{
@@ -2746,6 +2796,11 @@ namespace WpfCSCS
 				var stack = content as StackPanel;
 				children = stack.Children.Cast<UIElement>().ToList();
 			}
+			else if (content is Viewbox)
+			{
+				var viewbox = content as Viewbox;
+				children = new List<UIElement>() { viewbox.Child };
+            }
 
 			CacheChildren(children, controls, win);
 			return controls;
@@ -4402,8 +4457,8 @@ namespace WpfCSCS
             .Where(a => (a.Item1.ToLower() == widget.GetType().Name.ToLower() || a.Item1.ToLower() == "*") && a.Item2.ToLower() == option) // overrides or *'s
             .Select(a => a.Item3).FirstOrDefault();// real mapped prop name
             var prop_by_prop_mapped = widget.GetType().GetProperties().Where(a => a.Name.ToLower() == (prop_mapped ?? "").ToLower()).FirstOrDefault();
-
-            if (!string.IsNullOrEmpty(prop_mapped) && prop_by_prop_mapped != null)
+			
+			if (!string.IsNullOrEmpty(prop_mapped) && prop_by_prop_mapped != null)
             {
                 //Chart("ChartPoMjesecima", "init");
                 //Chart("ChartPoMjesecima", "seriesType", "Columnseries");
@@ -6184,6 +6239,106 @@ namespace WpfCSCS
 			var button = gui.GetWidget(widgetName) as Button;
 			
             return new Variable(button);
+        }
+	}
+	
+	class PrintWindowFunction : ParserFunction
+	{
+		protected override Variable Evaluate(ParsingScript script)
+		{
+            var imagePath = Path.Combine(App.GetConfiguration("ImagesPath", ""), "tempScreenshot.jpg");
+            ScreenShot(imagePath);
+
+			PrintImage(imagePath);
+
+            return Variable.EmptyInstance;
+        }
+
+        private void PrintImage(string path)
+        {
+            string fileName = path;//pass in or whatever you need
+            var p = new Process();
+            p.StartInfo.FileName = fileName;
+            p.StartInfo.Verb = "Print";
+            p.Start();
+
+
+			//var bi = new BitmapImage();
+			//bi.BeginInit();
+			//bi.CacheOption = BitmapCacheOption.OnLoad;
+			//bi.UriSource = new Uri(path);
+			//bi.EndInit();
+
+			//var vis = new DrawingVisual();
+			//using (var dc = vis.RenderOpen())
+			//{
+			//	dc.DrawImage(bi, new Rect { Width = bi.Width, Height = bi.Height });
+			//}
+
+			//var pdialog = new PrintDialog();
+			//if (pdialog.ShowDialog() == true)
+			//{
+			//	pdialog.PrintVisual(vis, "My Image");
+			//}
+		}
+
+        public bool ScreenShot(string saveAs)
+        {
+            try
+            {
+                //Get the Current instance of the window
+                Window window = Application.Current.Windows.OfType<Window>().Single(x => x.IsActive);
+
+                //Render the current control (window) with specified parameters of: Widht, Height, horizontal DPI of the bitmap, vertical DPI of the bitmap, The format of the bitmap
+                RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap((int)window.ActualWidth, (int)window.ActualHeight, 96, 96, PixelFormats.Pbgra32);
+                renderTargetBitmap.Render(window);
+
+                //Encoding the rendered bitmap as desired (PNG,on my case because I wanted losless compression)
+                PngBitmapEncoder png = new PngBitmapEncoder();
+                png.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
+
+                //Save the image on the desired location, on my case saveAs was C:\test.png
+                using (Stream stm = File.Create(saveAs))
+                {
+                    png.Save(stm);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+    }
+	
+	class DownloadScriptsFunction : ParserFunction
+	{
+		protected override Variable Evaluate(ParsingScript script)
+		{
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 0, m_name);
+
+			string downloadScriptsString = App.GetConfiguration("DownloadScripts", "false");
+			if(bool.TryParse(downloadScriptsString, out bool result))
+			{
+                return new Variable(result);
+			}
+
+			return new Variable(false);
+        }
+	}
+	
+	class ServerAddressFunction : ParserFunction
+	{
+		protected override Variable Evaluate(ParsingScript script)
+		{
+            List<Variable> args = script.GetFunctionArgs();
+            Utils.CheckArgs(args.Count, 0, m_name);
+
+			string serverAddressString = App.GetConfiguration("ServerAddress", "");
+			
+			return new Variable(serverAddressString);
         }
 	}
 

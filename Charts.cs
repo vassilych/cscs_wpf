@@ -53,7 +53,7 @@ namespace WpfCSCS
 
         class ChartFunction : ParserFunction
         {
-            static Dictionary<string, string> chartsTypes = new Dictionary<string, string>();
+            //static Dictionary<string, string> chartsTypes = new Dictionary<string, string>();
             protected override Variable Evaluate(ParsingScript script)
             {
                 List<Variable> args = script.GetFunctionArgs();
@@ -78,7 +78,7 @@ namespace WpfCSCS
 
                     if (optionString == "seriestype")
                     {
-                        chartsTypes[widgetName] = valueVariable.String.ToLower();
+                        //chartsTypes[widgetName] = valueVariable.String.ToLower();
                     }
                     else if (optionString == "init")
                     {
@@ -86,17 +86,18 @@ namespace WpfCSCS
                     }
                     else if (optionString == "values")
                     {
-                        if (valueVariable.Tuple.Count > 0)
+                        if (value2Variable.Tuple.Count > 0)
                         {
                             List<double> newList = new List<double>();
 
-                            foreach (var item in valueVariable.Tuple)
+                            foreach (var item in value2Variable.Tuple)
                             {
                                 newList.Add(item.Value);
                             }
 
                             var temp = cartesianWidget.Series.ToList();
-                            if (chartsTypes[widgetName] == "columnseries")
+                            //if (chartsTypes[widgetName] == "columnseries")
+                            if (valueVariable.String.ToLower() == "bar")
                             {
                                 temp.Add(new ColumnSeries<double>() { 
                                     Values = newList, /*, Fill = colorList[temp.Count]*/
@@ -104,7 +105,8 @@ namespace WpfCSCS
                                 });
                                 //Debug.WriteLine("temp.Count = " + temp.Count);
                             }
-                            else if (chartsTypes[widgetName] == "lineseries")
+                            //else if (chartsTypes[widgetName] == "lineseries")
+                            else if (valueVariable.String.ToLower() == "line")
                             {
                                 temp.Add(new LineSeries<double>()
                                 {
@@ -121,9 +123,9 @@ namespace WpfCSCS
 
                                 });
                             }
-                            if (!string.IsNullOrEmpty(value2Variable.String))
+                            if (!string.IsNullOrEmpty(value3Variable.String))
                             {
-                                temp.Last().Name = value2Variable.String;
+                                temp.Last().Name = value3Variable.String;
                             }
 
                             cartesianWidget.Series = temp;
@@ -188,11 +190,13 @@ namespace WpfCSCS
 
                         foreach (var series in cartesianWidget.Series)
                         {
-                            if (chartsTypes[widgetName] == "columnseries")
+                            //if (chartsTypes[widgetName] == "columnseries")
+                            if (series is ColumnSeries<double>)
                             {
                                 (series as ColumnSeries<double>).YToolTipLabelFormatter = (chartPoint) => $"{chartPoint.Coordinate.PrimaryValue.ToString($"N{valueVariable.Value}")}";
                             }
-                            else if (chartsTypes[widgetName] == "lineseries")
+                            //else if (chartsTypes[widgetName] == "lineseries")
+                            else if (series is LineSeries<double>)
                             {
                                 (series as LineSeries<double>).YToolTipLabelFormatter = (chartPoint) => $"{chartPoint.Coordinate.PrimaryValue.ToString($"N{valueVariable.Value}")}";
                             }
@@ -356,7 +360,7 @@ namespace WpfCSCS
                         {
                             if (seriesList.Count <= i)
                                 break;
-
+                            
                             (seriesList[i] as PieSeries<double>).Fill = new SolidColorPaint(SKColor.Parse(ToHex((Color)ColorConverter.ConvertFromString(valueVariable.Tuple[i].String))));
                         }      
                         
@@ -419,6 +423,8 @@ namespace WpfCSCS
                 var widgetName = Utils.GetSafeString(args, 0).ToLower();
                 var optionString = Utils.GetSafeString(args, 1).ToLower();
                 var valueVariable = Utils.GetSafeVariable(args, 2);
+                var value2Variable = Utils.GetSafeVariable(args, 3);
+                var value3Variable = Utils.GetSafeVariable(args, 4);
 
                 var widget = gui.GetWidget(widgetName);
                 if (widget is PieChart)
@@ -434,8 +440,8 @@ namespace WpfCSCS
                                     valueVariable.Value,          // the gauge value
                                     series =>    // the series style
                                     {
-                                        series.MaxRadialColumnWidth = 50;
-                                        series.DataLabelsSize = 50;
+                                        series.MaxRadialColumnWidth = (value2Variable == null ? 50 : value2Variable.Value);
+                                        series.DataLabelsSize = (value3Variable == null ? 50 : value3Variable.Value);
                                     })
                                 );
                             pieWidget.Tooltip = null;
@@ -443,7 +449,7 @@ namespace WpfCSCS
                     }
                     else if (optionString == "color")
                     {
-                        var newColor = valueVariable.String;
+                        //var newColor = valueVariable.String;
 
                         var series_ienum_property = widget.GetType().GetProperty("Series");
 
@@ -453,7 +459,16 @@ namespace WpfCSCS
                             if (item is PieSeries<LiveChartsCore.Defaults.ObservableValue>)
                             {
                                 if (!(item as PieSeries<LiveChartsCore.Defaults.ObservableValue>).SeriesProperties.HasFlag(SeriesProperties.GaugeFill))
-                                    item.GetType().GetProperty("Fill").SetValue(item, new LiveChartsCore.SkiaSharpView.Painting.SolidColorPaint(SkiaSharp.SKColor.Parse(ToHex((Color)ColorConverter.ConvertFromString(newColor)))), null);
+                                {
+                                    if (valueVariable.Tuple?.Count > 0)
+                                    {
+                                        item.GetType().GetProperty("Fill").SetValue(item, new LiveChartsCore.SkiaSharpView.Painting.SolidColorPaint(SkiaSharp.SKColor.Parse(ToHex(new Color() { R = (byte)valueVariable.Tuple[0].Value, G = (byte)valueVariable.Tuple[1].Value, B = (byte)valueVariable.Tuple[2].Value }))), null);
+                                    }
+                                    else if (valueVariable.String != null)
+                                    { 
+                                        item.GetType().GetProperty("Fill").SetValue(item, new LiveChartsCore.SkiaSharpView.Painting.SolidColorPaint(SkiaSharp.SKColor.Parse(ToHex((Color)ColorConverter.ConvertFromString(valueVariable.String)))), null); 
+                                    }
+                                } 
                             }
                         }
                     }

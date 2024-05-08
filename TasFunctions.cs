@@ -110,6 +110,7 @@ namespace WpfCSCS
             interpreter.RegisterFunction(Constants.REGEDIT, new REGEDITFunction());
             interpreter.RegisterFunction(Constants.EMAIL, new EMAILFunction());
 	  interpreter.RegisterFunction(Constants.TPATH, new TPATHFunction());
+	  interpreter.RegisterFunction(Constants.IPATH, new IPATHFunction());
 	  interpreter.RegisterFunction(Constants.MPATH, new MPATHFunction());
 
             interpreter.RegisterFunction("FillOutGrid", new FillOutGridFunction());
@@ -642,9 +643,17 @@ namespace WpfCSCS
                 }
                 else if (option == "color")
                 {
-                    var rgbArray = Utils.GetSafeVariable(args, 2).Tuple;
+                    //var rgbArray = Utils.GetSafeVariable(args, 2).Tuple;
+                    var valueVariable = Utils.GetSafeVariable(args, 2);
 
-                    ashb.BarColor = new SolidColorBrush(Color.FromRgb((byte)rgbArray[0].Value, (byte)rgbArray[1].Value, (byte)rgbArray[2].Value));
+                    if (valueVariable.String != null)
+                    {
+                        ashb.BarColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString(valueVariable.String));
+                    }
+                    else if (valueVariable.Tuple.Count == 3)
+                    {
+                        ashb.BarColor = new SolidColorBrush(Color.FromRgb((byte)valueVariable.Tuple[0].Value, (byte)valueVariable.Tuple[1].Value, (byte)valueVariable.Tuple[2].Value));
+                    }
                 }
             }
 
@@ -2240,6 +2249,14 @@ d:\temp\aaa.txt, d:\temp\ggg.txt,
 		}
 	}
     
+    class IPATHFunction : ParserFunction
+	{
+		protected override Variable Evaluate(ParsingScript script)
+		{
+			return new Variable(App.GetConfiguration("ImagesPath", ""));
+		}
+	}
+    
     class MPATHFunction : ParserFunction
 	{
 		protected override Variable Evaluate(ParsingScript script)
@@ -2660,6 +2677,19 @@ d:\temp\aaa.txt, d:\temp\ggg.txt,
                     }
                     dg.Items.Add(row);
                     Console.WriteLine(i);
+                }
+
+                if (dg != null && dg.HasItems)
+                {
+                    //dg.Focus();
+                    if (dg.Items != null && dg.Items.Count > 0)
+                    {
+                        DataGridRow firstRow = dg.ItemContainerGenerator.ContainerFromItem(dg.Items[0]) as DataGridRow;
+                        if (firstRow != null)
+                        {
+                            firstRow.IsSelected = true;
+                        }
+                    }
                 }
 
                 return new Variable(sqlResult.Tuple.Count);

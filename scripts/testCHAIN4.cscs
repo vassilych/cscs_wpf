@@ -27,7 +27,7 @@ try{
 MessageBox("2");
 
 try{
-    CHAIN var1 WITH "myGrid" "bla1"+"bla2" "bla3" "bla4"; // dela
+    CHAIN var1 WITH "myGrid" "bla1"+"bla2" "bla3" func2(); // "bla4"; // dela
 }catch(ex){
     MessageBox(ex);
 }
@@ -53,7 +53,7 @@ try{
 MessageBox("5");
 
 try{
-    CHAIN "../../scripts/script6.cscs" WITH "myGrid" "bla1"+"bla2" "bla3" func2(); // dela
+    CHAIN "../../scripts/" + "script6.cscs" WITH "myGrid" "bla1"+"bla2" "bla3"; //func2(); // dela
 }catch(ex){
     MessageBox(ex);
 }

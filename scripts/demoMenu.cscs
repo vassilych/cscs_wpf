@@ -1,0 +1,18 @@
+CreateWindow(strTrim(tpath()) + "demoMenuWindow.xaml");
+
+define mainMenuDC type a;
+
+function runScript(sender, load){
+    if(sender == "exit"){
+        exit;
+    }
+
+    CHAIN strTrim(tpath())+strTrim(sender);
+}
+
+function demoMenuWindow_OnDisplay(){
+    AddMenuItem("mainMenuDC", "ScriptsDC", "Scripts");
+
+    AddMenuItem("ScriptsDC", "demoScript1.cscs", "Run script1", "runScript");
+    AddMenuItem("ScriptsDC", "exit", "Exit", "runScript");
+}
