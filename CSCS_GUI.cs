@@ -732,8 +732,17 @@ namespace WpfCSCS
 				File2Window[filename] = window;
 			}
 		}
+        public void UncacheWindow(Window window, string tag)
+        {
+            if (Window2File.TryGetValue(window, out string filename))
+            {
+                Window2File.Remove(window);
+                File2Window.Remove(filename);
+            }
+            Tag2Parent.Remove(tag);
+        }
 
-		public void CloseAllWindows()
+        public void CloseAllWindows()
 		{
 			CSCS_GUI.Dispatcher.Invoke((Action)delegate ()
 			{
@@ -6364,7 +6373,7 @@ namespace WpfCSCS
 			else if (m_mode == MODE.DELETE)
 			{
 				wind.Close();
-				RemoveWindow(wind);
+				RemoveWindow(wind, Gui);
 			}
 
 			return new Variable(instanceName);
@@ -6422,11 +6431,19 @@ namespace WpfCSCS
             return modalwin;
 		}
 
-		public static void RemoveWindow(Window wind)
+		public static void RemoveWindow(Window wind, CSCS_GUI Gui)
 		{
-			s_windows.Remove(wind.Tag.ToString());
+            var tag = wind.Tag.ToString();
+            s_windows.Remove(tag);
+			if (s_typeWindow.TryGetValue(tag, out string instanceName))
+			{
+				s_typeWindow.Remove(tag);
+				s_windowType.Remove(instanceName);
+			}
+            
 			SpecialWindow.RemoveInstance(wind);
-		}
+			Gui.UncacheWindow(wind, tag);
+        }
 
 		static void HideAll()
 		{
