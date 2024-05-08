@@ -350,25 +350,8 @@ namespace WpfCSCS
             parent?.Focus();
 
             NewWindowFunction.RemoveWindow(win);
-            var scriptName = CSCS_GUI.Window2File.FirstOrDefault(p => p.Key == win).Value;
-            CSCS_GUI.Window2File.Remove(win);
-
-            CSCS_GUI.File2Window.Remove(scriptName);
-
+            //CSCS_GUI.Window2File.Remove(win);
             //CSCS_GUI.File2Window.Remove(Gui.Script.Filename);
-            //foreach (var entry in CSCS_GUI.Window2File)
-            //{
-            //    if (entry.Value == scriptName && entry.Key != win)
-            //    {
-            //        CSCS_GUI.File2Window[scriptName] = entry.Key;
-            //        break;
-            //    }
-            //}
-
-            //if (!CSCS_GUI.File2Window.Any(p => p.Key == scriptName))
-            //{
-            //    QuitFunction.QuitScript(Gui.Script.ParentScript, 0);
-            //}
         }
 
         private void Win_Closing(object sender, System.ComponentModel.CancelEventArgs e)
