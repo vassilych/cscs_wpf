@@ -658,13 +658,15 @@ function fillProductsArrays2(){
 			{
 				IndexArt_ar[cntr2] =  0;
 			}
+		}
 
-			if(IndexArt_ar[cntr2] > 0){
-				imageArt_ar[cntr2] = strtrim(ipath()) + "green.png";
-			}elif(IndexArt_ar[cntr2] < 0){
-				imageArt_ar[cntr2] = strtrim(ipath()) + "red.png";
+		for(i = 0; i < Size(salesArt1_ar); i++){
+			if(salesart1_ar[i] > salesart2_ar[i]){
+				imageArt_ar[i] = strtrim(ipath()) + "green.png";
+			}elif(salesart1_ar[i] < salesart2_ar[i]){
+				imageArt_ar[i] = strtrim(ipath()) + "red.png";
 			}else{
-				imageArt_ar[cntr2] = "";
+				imageArt_ar[i] = "";
 			}
 		}
 	}
@@ -908,13 +910,15 @@ function fillCustomerArrays2(){
 			{
 				IndexPart_ar[cntr2] =  0;
 			}
+		}
 
-			if(IndexPart_ar[cntr2] > 0){
-				imagePart_ar[cntr2] = strtrim(ipath()) + "green.png";
-			}elif(IndexPart_ar[cntr2] < 0){
-				imagePart_ar[cntr2] = strtrim(ipath()) + "red.png";
+		for(i = 0; i < Size(salesPart1_ar); i++){
+			if(salesPart1_ar[i] > salesPart2_ar[i]){
+				imagePart_ar[i] = strtrim(ipath()) + "green.png";
+			}elif(salesPart1_ar[i] < salesPart2_ar[i]){
+				imagePart_ar[i] = strtrim(ipath()) + "red.png";
 			}else{
-				imagePart_ar[cntr2] = "";
+				imagePart_ar[i] = "";
 			}
 		}
 	}

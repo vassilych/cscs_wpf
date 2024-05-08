@@ -64,7 +64,6 @@
     <Compile Include="ASEnterBox.xaml.cs">
       <DependentUpon>ASEnterBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ASGridCellImageConverter.cs" />
     <Compile Include="ASHorizontalBar.xaml.cs">
       <DependentUpon>ASHorizontalBar.xaml</DependentUpon>
     </Compile>

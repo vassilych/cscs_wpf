@@ -9,6 +9,7 @@ IncludeScript("wxbicfa_inc_b.cscs"); //look-up lists
 IncludeScript("wxbicfa_inc_c.cscs");
 IncludeScript("wxbicfa_inc_d.cscs");
 IncludeScript("wxbicfa_inc_e.cscs");
+
 CreateWindowXaml("wxbicfa.xaml");
 
 function Wxbicfa_onDisplay()

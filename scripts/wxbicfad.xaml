@@ -90,7 +90,7 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Header="Dobavljač"
-                                            Width="150">
+                                            Width="220">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <wcl:ASGridCell FieldName="NAMEPART_AR"
@@ -137,6 +137,13 @@
                                                 Thousands="True"
                                                 Size="10"
                                                 HorizontalContentAlignment="Right" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell IsImage="True" FieldName="ImagePART_AR"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -225,6 +232,13 @@
                                                 Editor="edNumeric"
                                                 EditLength="0"
                                                 HorizontalContentAlignment="Right" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <wcl:ASGridCell IsImage="True" FieldName="ImageART_AR"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

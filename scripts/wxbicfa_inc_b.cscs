@@ -437,19 +437,29 @@ function fillProductsArrays2(){
 			cntr2= find_index(codeart_ar,sqlResult[i][0]);    
 			if (cntr2 >= 0)  //if not -1
 			{
-			salesart2_ar[cntr2] =  sqlResult[i][1]; 
-			if(salesart2_ar[cntr2] != 0)
-			{
-				Indexart_ar[cntr2] =  Math.Round(((salesart1_ar[cntr2] - salesart2_ar[cntr2])/salesart2_ar[cntr2]) * 100.00, 0);
-			}
-			else
-			{
-				IndexArt_ar[cntr2] =  0;
-			}
+				salesart2_ar[cntr2] =  sqlResult[i][1]; 
+				if(salesart2_ar[cntr2] != 0)
+				{
+					Indexart_ar[cntr2] =  Math.Round(((salesart1_ar[cntr2] - salesart2_ar[cntr2])/salesart2_ar[cntr2]) * 100.00, 0);
+				}
+				else
+				{
+					IndexArt_ar[cntr2] =  0;
+				}
 			} 
 			else
 			{
 				IndexArt_ar[cntr2] =  0;
+			}
+		}
+
+		for(i = 0; i < Size(salesArt1_ar); i++){
+			if(salesart1_ar[i] > salesart2_ar[i]){
+				imageArt_ar[i] = strtrim(ipath()) + "green.png";
+			}elif(salesart1_ar[i] < salesart2_ar[i]){
+				imageArt_ar[i] = strtrim(ipath()) + "red.png";
+			}else{
+				imageArt_ar[i] = "";
 			}
 		}
 	}
@@ -590,19 +600,29 @@ function fillCustomerArrays2(){
 			cntr2= find_index(codepart_ar,sqlResult[i][0]);    
 			if (cntr2 >= 0)  //if not -1
 			{
-			salesPart2_ar[cntr2] =  sqlResult[i][1]; 
-			if(salesPart2_ar[cntr2] != 0)
-			{
-				IndexPart_ar[cntr2] =  Math.Round(((salesPart1_ar[cntr2] - salesPart2_ar[cntr2])/salesPart2_ar[cntr2]) * 100, 0);
-			}
-			else
-			{
-				IndexPart_ar[cntr2] =  0;
-			}
+				salesPart2_ar[cntr2] =  sqlResult[i][1]; 
+				if(salesPart2_ar[cntr2] != 0)
+				{
+					IndexPart_ar[cntr2] =  Math.Round(((salesPart1_ar[cntr2] - salesPart2_ar[cntr2])/salesPart2_ar[cntr2]) * 100, 0);
+				}
+				else
+				{
+					IndexPart_ar[cntr2] =  0;
+				}
 			} 
 			else
 			{
 				IndexPart_ar[cntr2] =  0;
+			}
+		}
+
+		for(i = 0; i < Size(salesPart1_ar); i++){
+			if(salesPart1_ar[i] > salesPart2_ar[i]){
+				imagePart_ar[i] = strtrim(ipath()) + "green.png";
+			}elif(salesPart1_ar[i] < salesPart2_ar[i]){
+				imagePart_ar[i] = strtrim(ipath()) + "red.png";
+			}else{
+				imagePart_ar[i] = "";
 			}
 		}
 	}

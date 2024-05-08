@@ -80,6 +80,7 @@
     define NameArt_ar type a size 40 array 10;
     define top10Art_ar type i size 2 array 10;
     define indexArt_ar type n size 4 dec 0 array 10;
+    define imageArt_ar type a size 120 array 10;
     define ArtikliCntr type i size 2;
 
     define namePart type a size 40;
@@ -89,6 +90,7 @@
     define CodePart_ar type a size 10 array 10;
     define top10Part_ar type i array 10;
     define indexPart_ar type n size 4 dec 0 array 10;
+    define imagePart_ar type a size 120 array 10;
     define salesCntr type i;
     define sales1 type n size 16 dec 2;
     define sales2 type n size 16 dec 2;
