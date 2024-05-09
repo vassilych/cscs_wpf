@@ -510,7 +510,7 @@ function setHorizontalBars1(){
 
     sql_str = "SELECT sum(kpsy_bnk_saldo) as poc_stanje ";
     sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.kpsybank";
-    sql_str += " WHERE 1=1";
+    sql_str += " WHERE 1=1 AND kpsy_bnk_blag != 'D'";
     if (BANKA_str != "")
     {
         sql_str += " AND kpsy_bnk_code IN (" + BANKA_str + ")";

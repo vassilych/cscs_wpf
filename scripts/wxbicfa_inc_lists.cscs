@@ -418,6 +418,7 @@ function filterPart()
     {
         sql_str += " AND kdib_gl_num = '" + Izvadak + "'";
     }
+    //sql_str += " AND kpsy_bnk_blag != 'D'";
 /*
     if (domaca_dn )
 	{
