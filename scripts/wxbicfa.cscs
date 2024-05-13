@@ -536,9 +536,15 @@ function setHorizontalBars1(){
     pocetnoStanjeOvagod = queryResult[1][0];
 
     //MessageBox("aaaa :"+100*tot_ovagod_priliv/(tot_ovagod_priliv + tot_ovagod_odliv));
-    GaugeChart("GaugeChartOmjerProdaje", "value", Math.round(100*tot_ovagod_priliv/(tot_ovagod_priliv + tot_ovagod_odliv)), 25, 30);
-    GaugeChart("GaugeChartOmjerProdaje", "color", "#118888");
-
+    
+    // GaugeChart("GaugeChartOmjerProdaje", "value", Math.round(100*tot_ovagod_priliv/(tot_ovagod_priliv + tot_ovagod_odliv)), 25, 30);
+    // GaugeChart("GaugeChartOmjerProdaje", "color", "#118888");
+   
+    PieChart("PieChartOmjerProdaje", "init");
+    PieChart("PieChartOmjerProdaje", "seriesType", "pie");  
+	PieChart("PieChartOmjerProdaje", "values", tot_ovagod_priliv , "Priliv");
+	PieChart("PieChartOmjerProdaje", "values", tot_ovagod_odliv , "Odliv");
+	PieChart("PieChartOmjerProdaje", "colors", {"#3636FF", "#FF3636"});
 
     Format("pocetnoStanjeOvagod", "nofd", recv: "tot_pocetnoStanjeOvagod");
     HorizontalBar("HorizontalBarPocetnoStanje", "Text", tot_pocetnoStanjeOvagod);
