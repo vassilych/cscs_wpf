@@ -544,7 +544,7 @@ function setHorizontalBars1(){
     PieChart("PieChartOmjerProdaje", "seriesType", "pie");  
 	PieChart("PieChartOmjerProdaje", "values", tot_ovagod_priliv , "Priliv");
 	PieChart("PieChartOmjerProdaje", "values", tot_ovagod_odliv , "Odliv");
-	PieChart("PieChartOmjerProdaje", "colors", {"#3636FF", "#FF3636"});
+	PieChart("PieChartOmjerProdaje", "colors", {"#FF69A627", "#FFE0582F"});
 
     Format("pocetnoStanjeOvagod", "nofd", recv: "tot_pocetnoStanjeOvagod");
     HorizontalBar("HorizontalBarPocetnoStanje", "Text", tot_pocetnoStanjeOvagod);
