@@ -1,16 +1,24 @@
 //akoje kdib_gl_banka='' to bi značilo da niej bilo priliva niti odliva nego da je kompenzacija
-include(strTrim(tpath()) +"chainLib.cscs"); //look-up lists
+
+//include(strTrim(tpath()) +"chainLib.cscs");
 
 Import(strTrim(mpath()) + "CSCS.Math.dll");
 
-IncludeScript("wxbicfa_inc_lists.cscs"); //look-up lists
-IncludeScript("wxbicfa_inc_a.cscs"); //look-up lists
-IncludeScript("wxbicfa_inc_b.cscs"); //look-up lists
-IncludeScript("wxbicfa_inc_c.cscs");
-IncludeScript("wxbicfa_inc_d.cscs");
-IncludeScript("wxbicfa_inc_e.cscs");
+include(strTrim(tpath()) + "wxbicfa_inc_lists.cscs");
+include(strTrim(tpath()) + "wxbicfa_inc_a.cscs");
+include(strTrim(tpath()) + "wxbicfa_inc_b.cscs");
+include(strTrim(tpath()) + "wxbicfa_inc_c.cscs");
+include(strTrim(tpath()) + "wxbicfa_inc_d.cscs");
+include(strTrim(tpath()) + "wxbicfa_inc_e.cscs");
+// IncludeScript("wxbicfa_inc_lists.cscs"); //look-up lists
+// IncludeScript("wxbicfa_inc_a.cscs"); //look-up lists
+// IncludeScript("wxbicfa_inc_b.cscs"); //look-up lists
+// IncludeScript("wxbicfa_inc_c.cscs"); //look-up lists
+// IncludeScript("wxbicfa_inc_d.cscs"); //look-up lists
+// IncludeScript("wxbicfa_inc_e.cscs"); //look-up lists
 
-CreateWindowXaml("wxbicfa.xaml");
+CreateWindow(strTrim(tpath()) + "wxbicfa.xaml");
+// CreateWindowXaml("wxbicfa.xaml");
 
 function Wxbicfa_onDisplay()
 {

@@ -1,17 +1,16 @@
-
-include(strTrim(tpath()) +"chainLib.cscs"); //look-up lists
+//include(strTrim(tpath()) +"chainLib.cscs");
 
 Import(strTrim(mpath()) + "CSCS.Math.dll");
 
-IncludeScript("wxbiprc_inc_lists.cscs"); //look-up lists
-IncludeScript("wxbiprc_inc_a.cscs"); //look-up lists
-IncludeScript("wxbiprc_inc_b.cscs"); //look-up lists
-CreateWindowXaml("wxbiprc.xaml");
+include(strTrim(tpath()) + "wxbiprc_inc_lists.cscs");
+include(strTrim(tpath()) + "wxbiprc_inc_a.cscs");
+include(strTrim(tpath()) + "wxbiprc_inc_b.cscs");
+// IncludeScript("wxbiprc_inc_lists.cscs"); //look-up lists
+// IncludeScript("wxbiprc_inc_a.cscs"); //look-up lists
+// IncludeScript("wxbiprc_inc_b.cscs"); //look-up lists
 
-// include(strTrim(tpath()) +"wxbiprb_inc_lists.cscs"); //look-up lists
-// include(strTrim(tpath()) +"wxbiprb_inc_a.cscs"); //look-up lists
-// include(strTrim(tpath()) +"wxbiprb_inc_b.cscs"); //look-up lists
-// CreateWindow(strTrim(tpath()) +"wxbiprb.xaml");
+CreateWindow(strTrim(tpath()) + "wxbiprc.xaml");
+// CreateWindowXaml("wxbiprc.xaml");
 
 function Wxbiprc_onDisplay()
 {

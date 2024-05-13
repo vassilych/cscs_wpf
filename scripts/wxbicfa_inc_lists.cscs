@@ -1,5 +1,5 @@
-    //include("../../scripts/F2ListLib.cscs");
-    includeScript("F2ListLib.cscs");
+    include(strTrim(tpath()) + "F2ListLib.cscs");
+    // includeScript("F2ListLib.cscs");
     
     define kategorija,klasa type a size 6 up;
     define kategNaziv,klasaNaziv,KomercNaziv type a size 50;
