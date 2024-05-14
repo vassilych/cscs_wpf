@@ -162,6 +162,7 @@ function gbPripremi@clicked()
     setHorizontalBars();
     setWeekComparison();
     setCustomerAndInvoiceCounts();
+    setCash();
     setSalesRatio();
     pripremljeno = true;
     cursor("dflt");
@@ -1022,6 +1023,72 @@ function setWeekComparison()
 	HorizontalBar("HorizontalBarLT", "Text", tot_ProsliTj_string);
 	HorizontalBar("HorizontalBarLT", "Color", bojeArrayTJ);
 	return;
+}
+
+function setCash(){
+    //ukupna primljena gotovina
+    sql_str = "SELECT CASE WHEN ks_upl_vrsta = 'G' THEN ISNULL(ROUND(sum(CASE WHEN ks_upl_sif_pl= 'POG' THEN -1 ELSE 1 END * ks_upl_iznos),2),0) END as gotovina ";
+    sql_str += " FROM dbo.NKKSINVG AS U";
+    sql_str += " LEFT JOIN dbo.nkksupla ON ks_ig_racun = KS_upl_racun";
+    sql_str += " LEFT JOIN dbo.nkkskasa ON ks_ks_sifra = ks_ig_kasa";
+    sql_str += " WHERE YEAR(KS_IG_DATUM)=" + ovagod_h + " AND ks_ig_obracun = 0";
+    if (posKasa != "")
+    {
+        // sql_str += " AND ks_ig_kasa IN (" +  + ")";
+        sql_str += " AND ks_ig_kasa = '" + posKasa + "'";
+    }
+    sql_str += " GROUP BY ks_upl_vrsta";
+    sql_str += " ORDER BY ks_upl_vrsta desc";
+    try
+    {
+        //SaveFile(sql_str);
+        queryResult = sqlquery(SQL_str);
+    }
+    catch(exc)
+    {
+        MessageBox(exc);
+    }
+
+    if(Size(queryResult) == 1){
+        UkupnaPrimljenaGotovina = 0;
+    }elif(Size(queryResult) == 2){
+        UkupnaPrimljenaGotovina = queryResult[1][0];
+    }
+
+    Format("UkupnaPrimljenaGotovina", "nofd", recv: "UkupnaPrimljenaGotovina_string");
+	HorizontalBar("HorizontalBarUkPrimGot", "Text", UkupnaPrimljenaGotovina_string);
+	//HorizontalBar("HorizontalBarUkPrimGot", "Color", bojeArrayTJ);
+
+    //pocetno stanje
+    sql_str = "SELECT SUM(ks_ks_pocsal) FROM dbo.nkkskasa WHERE ks_ks_rez2 <> 'D' ";
+    if (posKasa != "")
+    {
+        // sql_str += " AND AND ks_ks_sifra IN (" +  + ")";
+        sql_str += " AND ks_ks_sifra = '" + posKasa + "'";
+    }
+    try
+    {
+        //SaveFile(sql_str);
+        queryResult = sqlquery(SQL_str);
+    }
+    catch(exc)
+    {
+        MessageBox(exc);
+    }
+
+    if(Size(queryResult) == 2){
+        PocetnoStanje = queryResult[1][0];
+    }
+
+    Format("PocetnoStanje", "nofd", recv: "PocetnoStanje_string");
+	HorizontalBar("HorizontalBarPocStanje", "Text", PocetnoStanje_string);
+	//HorizontalBar("HorizontalBarPocStanje", "Color", bojeArrayTJ);
+
+    //X-Total
+    XTotal = UkupnaPrimljenaGotovina + PocetnoStanje;
+    Format("XTotal", "nofd", recv: "XTotal_string");
+	HorizontalBar("HorizontalBarXTotal", "Text", XTotal_string);
+	//HorizontalBar("HorizontalBarXTotal", "Color", bojeArrayTJ);
 }
 
 function setSalesRatio(){

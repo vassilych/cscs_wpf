@@ -34,6 +34,9 @@
     DEFINE cntr1,cntr2,cntr3,cntr4 type i;
     define ovagod_h,lani_h type a size 4;
 
+    DEFINE UkupnaPrimljenaGotovina, PocetnoStanje, XTotal type n size 14 dec 2;
+    DEFINE UkupnaPrimljenaGotovina_string, PocetnoStanje_string, XTotal_string type a size 20;
+
     DEFINE tot_ovagod type n size 14 dec 0;
     DEFINE tot_ovagod_vp type n size 14 dec 0;
     DEFINE tot_ovagod_ukupno type n size 14 dec 0;
