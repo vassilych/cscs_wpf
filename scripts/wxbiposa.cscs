@@ -1027,11 +1027,11 @@ function setWeekComparison()
 
 function setCash(){
     //ukupna primljena gotovina
-    sql_str = "SELECT CASE WHEN ks_upl_vrsta = 'G' THEN ISNULL(ROUND(sum(CASE WHEN ks_upl_sif_pl= 'POG' THEN -1 ELSE 1 END * ks_upl_iznos),2),0) END as gotovina ";
+    sql_str = "SELECT isnull(ROUND(sum(CASE WHEN ks_upl_sif_pl= 'POG' THEN -1 ELSE 1 END * ks_upl_iznos), 2), 0) as gotovina ";
     sql_str += " FROM dbo.NKKSINVG AS U";
     sql_str += " LEFT JOIN dbo.nkksupla ON ks_ig_racun = KS_upl_racun";
     sql_str += " LEFT JOIN dbo.nkkskasa ON ks_ks_sifra = ks_ig_kasa";
-    sql_str += " WHERE YEAR(KS_IG_DATUM)=" + ovagod_h + " AND ks_ig_obracun = 0";
+    sql_str += " WHERE YEAR(KS_IG_DATUM)=" + ovagod_h + " AND ks_ig_obracun = 0 AND ks_upl_vrsta = 'G'";
     if (posKasa != "")
     {
         // sql_str += " AND ks_ig_kasa IN (" +  + ")";
