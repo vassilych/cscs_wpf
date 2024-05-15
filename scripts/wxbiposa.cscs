@@ -132,6 +132,9 @@ function Wxbiposa_onDisplay()
     do_mjeseca = true;
     comboItems = {"SVI TIPOVI","STANDARDNI", "PREDUJAM", "STORNO"};
     AddWidgetData(cbTipRacuna, comboItems);
+    
+    today = Now("dd/MM/yyyy");
+
     pripremljeno = false;
     setFocus("gbPripremi");
     tip_racuna= "SVI TIPOVI";
@@ -678,6 +681,43 @@ function setCustomerAndInvoiceCounts()
     Format("br_naknadnoFiskalizirani", "nofd", recv: "br_naknadnoFiskalizirani_string");   
     HorizontalBar("HorizontalBarBrNaknadnoFiskalizirani", "Text", br_naknadnoFiskalizirani_string);
     HorizontalBar("HorizontalBarBrNaknadnoFiskalizirani", "Color", bojeArray);
+
+
+    //računi na čekanju
+    br_nacekanju = 0;    
+    sql_str = "SELECT count(distinct KS_IG_RACUN) as br_nacekanju";
+    sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.NKKSINWG";
+    sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.NKKSINWL ON KS_IG_RACUN= KS_IL_RACUN";
+    sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkmkarti ON KS_IL_PCODE= arti_artikl";
+    sql_str += " WHERE 1 = 1";
+    if(mjesec_h != "")
+    {
+        if(do_mjeseca)
+        {
+            sql_str += " AND month(KS_IG_DATUM)<= " + mjesec_h;
+            sql_str += " AND YEAR(KS_IG_DATUM)= " + ovagod_h;
+        }
+        else
+        {
+            sql_str += " AND month(KS_IG_DATUM)= " + mjesec_h;
+            sql_str += " AND YEAR(KS_IG_DATUM)= " + ovagod_h;
+        }
+    }
+    filterPart();
+    try	{
+		sqlResult = sqlQuery(sql_str);
+	}catch(exc){
+		MessageBox(exc);
+	}
+
+    if (Size(sqlResult) > 1)
+    {
+        br_nacekanju = sqlResult[1][0];
+    } 
+
+    Format("br_nacekanju", "nofd", recv: "br_nacekanju_string"); 
+    HorizontalBar("HorizontalBarBrNaCekanju", "Text", br_nacekanju_string);
+    //HorizontalBar("HorizontalBarBrNaCekanju", "Color", bojeArray);
 }
 
 
