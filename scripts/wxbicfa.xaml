@@ -64,7 +64,7 @@
                 <Rectangle x:Name="RectangleB" Grid.Column="1" Margin="8,5,0,0" Stroke="Black" RadiusX="7" RadiusY="7" StrokeThickness="0" Fill="#FFEEEDF1" Height="148" VerticalAlignment="Top" HorizontalAlignment="Left" Width="326" Grid.Row="2"/>
                 <Rectangle x:Name="RectangleA" Margin="0,5,0,0" Stroke="Black" RadiusX="7" RadiusY="7" StrokeThickness="0" Fill="#FFEEEDF1" Height="148" VerticalAlignment="Top" HorizontalAlignment="Center" Width="327" Grid.Row="2"/>
                 <Rectangle x:Name="RectangleC" Grid.Column="2" Margin="9,5,0,0" Stroke="Black" Fill="#FFEEEDF1" RadiusX="7" RadiusY="7" StrokeThickness="0" Height="148" VerticalAlignment="Top" HorizontalAlignment="Left" Width="327" Grid.Row="2"/>
-                <Rectangle x:Name="RectangleG" Margin="164,7,0,0" Stroke="Black" Fill="#FFEEEDF1" RadiusX="7" RadiusY="7" StrokeThickness="0" Grid.ColumnSpan="3" Height="148" VerticalAlignment="Top" HorizontalAlignment="Left" Width="715" Grid.RowSpan="2"/>
+                <Rectangle x:Name="RectangleG" Margin="164,7,0,0" Stroke="Black" Fill="#FFEEEDF1" RadiusX="7" RadiusY="7" StrokeThickness="0" Grid.ColumnSpan="3" Height="148" VerticalAlignment="Top" HorizontalAlignment="Left" Width="800" Grid.RowSpan="2"/>
                 <wcl:ASHorizontalBar x:Name="HorizontalBarLGPriliv"
                                      UseLayoutRounding="True"
                                      Margin="130,86,0,0"
@@ -828,11 +828,18 @@ Width="110">
                      DataContext="NazivFirme"
                      Grid.Column="0" Grid.Row="0" TextWrapping="Wrap" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" UseLayoutRounding="True" BorderBrush="{x:Null}" SelectionBrush="{x:Null}" BorderThickness="0,0,0,2" IsTabStop="False" Focusable="False" AllowDrop="False" IsEnabled="False"/>
             <Image x:Name="Logo" Margin="5,7,5,68" />
-            <lvc:PieChart x:Name="GaugeChartOmjerProdaje"
+            <!--<lvc:PieChart x:Name="GaugeChartOmjerProdaje"
                           InitialRotation="90"
                           MinValue="0"
                           MaxValue="100"
-                          Margin="697,5,163,0" Grid.Column="1" Grid.Row="1" Height="160" VerticalAlignment="Top" />
+                          Margin="697,5,163,0" Grid.Column="1" Grid.Row="1" Height="160" VerticalAlignment="Top" />-->
+            <lvc:PieChart LegendPosition="Right"
+          Name="PieChartOmjerProdaje"
+        InitialRotation="90"
+          VerticalAlignment="Top"
+          HorizontalAlignment="Left"
+          Width="250"
+          Height="159" FontSize="10" HorizontalContentAlignment="Left" Margin="700,4,0,0" Grid.Column="1" Grid.Row="1"/>
             <Ellipse x:Name="EllipseProdajaUTjednuPriliv" HorizontalAlignment="Left" Height="20" Margin="990,176,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>
             <Ellipse x:Name="EllipseProdajaUGodiniPriliv" HorizontalAlignment="Left" Height="20" Margin="300,176,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>
             <Ellipse x:Name="EllipseProdajaUMjesecuPriliv" HorizontalAlignment="Left" Height="20" Margin="640,176,0,0" VerticalAlignment="Top" Width="20" Grid.Column="1" Grid.Row="1"/>

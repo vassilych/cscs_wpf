@@ -18,9 +18,16 @@
         <Button Name="button1"
                 Content="CHAIN to script 2"
                 HorizontalAlignment="Left"
-                Margin="185,334,0,0"
+                Margin="90,334,0,0"
                 VerticalAlignment="Top"
                 Height="60"
                 Width="115" />
+        <Button x:Name="button2"
+            Content="CHAIN to script 2(NEWRUNTIME)"
+            HorizontalAlignment="Left"
+            Margin="250,334,0,0"
+            VerticalAlignment="Top"
+            Height="60"
+            Width="210" />
     </Grid>
 </Window>

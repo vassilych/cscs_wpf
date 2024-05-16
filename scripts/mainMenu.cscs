@@ -1,6 +1,6 @@
 #MAINMENU;
-#WINFORM mainMenuWindow.xaml;
-// CreateWindow("../../scripts/mainMenuWindow.xaml");
+//#WINFORM mainMenuWindow.xaml;
+CreateWindow(strtrim(tpath()) + "mainMenuWindow.xaml");
 
 StartDebugger(13337, true, "*");
 

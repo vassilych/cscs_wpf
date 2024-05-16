@@ -4142,8 +4142,8 @@ WHERE ID = {thisOpenv.currentRow}
         }
 
 
-        static Dictionary<string, DataTable> gridsDataTables = new Dictionary<string, DataTable>(); // <gridName, DataTable>
-        static Dictionary<string, OpenvTable> gridsOpenvs = new Dictionary<string, OpenvTable>(); // <gridName, OpenvTable>
+        Dictionary<string, DataTable> gridsDataTables = new Dictionary<string, DataTable>(); // <gridName, DataTable>
+        Dictionary<string, OpenvTable> gridsOpenvs = new Dictionary<string, OpenvTable>(); // <gridName, OpenvTable>
 
         public class DisplayTableSetupWhereFunction : ParserFunction
         {
@@ -4186,16 +4186,16 @@ WHERE ID = {thisOpenv.currentRow}
                 //whileString = Utils.GetSafeString(args, 4).ToLower();
                 //forString = Utils.GetSafeString(args, 5).ToLower();
 
-                gridsTableWhereClass[gridName] = new DisplayTableWhereClass();
-                gridsTableWhereClass[gridName].joinString = Utils.GetSafeString(args, 3);
-                gridsTableWhereClass[gridName].whereString = Utils.GetSafeString(args, 4);
+                Gui.Btrieve.gridsTableWhereClass[gridName] = new DisplayTableWhereClass();
+                Gui.Btrieve.gridsTableWhereClass[gridName].joinString = Utils.GetSafeString(args, 3);
+                Gui.Btrieve.gridsTableWhereClass[gridName].whereString = Utils.GetSafeString(args, 4);
                 
 
                 //------------------------------------------------------------------------
 
                 thisOpenv = Btrieve.OPENVs[tableHndlNum];
 
-                gridsOpenvs[gridName.ToLower()] = thisOpenv;
+                Gui.Btrieve.gridsOpenvs[gridName.ToLower()] = thisOpenv;
 
                 if (!string.IsNullOrEmpty(tableKey))
                 {
@@ -4296,13 +4296,13 @@ WHERE ID = {thisOpenv.currentRow}
                     }
                 }
 
-                gridsDataTables[gridName] = new DataTable();
+                Gui.Btrieve.gridsDataTables[gridName] = new DataTable();
                 var idColumn = new DataColumn();
                 idColumn.DataType = System.Type.GetType("System.Int32");
                 idColumn.ColumnName = "ID";
                 idColumn.Caption = "ID";
                 idColumn.ReadOnly = true;
-                gridsDataTables[gridName].Columns.Add(idColumn);
+                Gui.Btrieve.gridsDataTables[gridName].Columns.Add(idColumn);
 
                 newTagsAndTypes = new Dictionary<string, Type>();
                 foreach (var item in tagsAndTypes)
@@ -4355,7 +4355,7 @@ WHERE ID = {thisOpenv.currentRow}
 
 
                     newColumn.Caption = tagsAndHeaders[item.Key];
-                    gridsDataTables[gridName].Columns.Add(newColumn);
+                    Gui.Btrieve.gridsDataTables[gridName].Columns.Add(newColumn);
                 }
 
                 //StringBuilder selectSb = new StringBuilder();
@@ -4382,7 +4382,7 @@ WHERE ID = {thisOpenv.currentRow}
                 dg.SelectionMode = DataGridSelectionMode.Single;
                 dg.SelectionUnit = DataGridSelectionUnit.FullRow;
 
-                dg.ItemsSource = gridsDataTables[gridName].AsDataView();
+                dg.ItemsSource = Gui.Btrieve.gridsDataTables[gridName].AsDataView();
                 //dg.ItemsSource = gridSource.DefaultView;
 
                 //dg.SelectionChanged += Dg_SelectionChanged;
@@ -4398,14 +4398,14 @@ WHERE ID = {thisOpenv.currentRow}
                 //{
                 //    dg = dg
                 //};
-                gridsTableWhereClass[gridName].dg = dg;
-                gridsTableWhereClass[gridName].tableOrArray = "table";
-                gridsTableWhereClass[gridName].tags = tagsAndHeaders.Keys.ToList();
-                gridsTableWhereClass[gridName].tableHndlNum = tableHndlNum;
-                gridsTableWhereClass[gridName].tableKey = tableKey;
-                gridsTableWhereClass[gridName].tagsAndTypes = tagsAndTypes;
-                gridsTableWhereClass[gridName].KeyClass = KeyClass;
-                gridsTableWhereClass[gridName].Script = Script;
+                Gui.Btrieve.gridsTableWhereClass[gridName].dg = dg;
+                Gui.Btrieve.gridsTableWhereClass[gridName].tableOrArray = "table";
+                Gui.Btrieve.gridsTableWhereClass[gridName].tags = tagsAndHeaders.Keys.ToList();
+                Gui.Btrieve.gridsTableWhereClass[gridName].tableHndlNum = tableHndlNum;
+                Gui.Btrieve.gridsTableWhereClass[gridName].tableKey = tableKey;
+                Gui.Btrieve.gridsTableWhereClass[gridName].tagsAndTypes = tagsAndTypes;
+                Gui.Btrieve.gridsTableWhereClass[gridName].KeyClass = KeyClass;
+                Gui.Btrieve.gridsTableWhereClass[gridName].Script = Script;
 
                 fillDataTable(gridName);
 
@@ -4414,24 +4414,24 @@ WHERE ID = {thisOpenv.currentRow}
 
             public void fillDataTable(string gridName)
             {
-                gridsDataTables[gridName].Rows.Clear();
+                Gui.Btrieve.gridsDataTables[gridName].Rows.Clear();
 
-                var tableHndlNum = gridsTableWhereClass[gridName].tableHndlNum;
-                var tableKey = gridsTableWhereClass[gridName].tableKey;
-                var KeyClass = gridsTableWhereClass[gridName].KeyClass;
-                var thisOpenv = OPENVs[gridsTableWhereClass[gridName].tableHndlNum];
+                var tableHndlNum = Gui.Btrieve.gridsTableWhereClass[gridName].tableHndlNum;
+                var tableKey = Gui.Btrieve.gridsTableWhereClass[gridName].tableKey;
+                var KeyClass = Gui.Btrieve.gridsTableWhereClass[gridName].KeyClass;
+                var thisOpenv = OPENVs[Gui.Btrieve.gridsTableWhereClass[gridName].tableHndlNum];
 
-                var joinString = gridsTableWhereClass[gridName].joinString;
-                var whereString = gridsTableWhereClass[gridName].whereString;
+                var joinString = Gui.Btrieve.gridsTableWhereClass[gridName].joinString;
+                var whereString = Gui.Btrieve.gridsTableWhereClass[gridName].whereString;
 
-                var Script = gridsTableWhereClass[gridName].Script;
+                var Script = Gui.Btrieve.gridsTableWhereClass[gridName].Script;
 
-                var tagsAndTypes = gridsTableWhereClass[gridName].tagsAndTypes;
+                var tagsAndTypes = Gui.Btrieve.gridsTableWhereClass[gridName].tagsAndTypes;
 
 
                 //---------------------------------------------------------------------------
 
-                gridsDataTables[gridName].Rows.Clear();
+                Gui.Btrieve.gridsDataTables[gridName].Rows.Clear();
 
 
                 StringBuilder columnsSB = new StringBuilder();
@@ -4479,8 +4479,8 @@ $@"EXECUTE sp_executesql N'
                             }
                             else
                             {
-                                gridsDataTables[gridName].Rows.Clear();
-                                gridsDataTables[gridName].Load(reader);
+                                Gui.Btrieve.gridsDataTables[gridName].Rows.Clear();
+                                Gui.Btrieve.gridsDataTables[gridName].Load(reader);
                             }
                         }
                     }
@@ -4819,7 +4819,7 @@ $@"EXECUTE sp_executesql N'
                 {
                     (sender as DataGrid).CommitEdit();
 
-                    var rowItemArray = gridsDataTables[gridName].Rows[rowIndex].ItemArray;
+                    var rowItemArray = Gui.Btrieve.gridsDataTables[gridName].Rows[rowIndex].ItemArray;
 
                     SaveRow(rowItemArray);
                 }
@@ -4997,8 +4997,8 @@ $@"EXECUTE sp_executesql N'
                 //whileString = Utils.GetSafeString(args, 4).ToLower();
                 //forString = Utils.GetSafeString(args, 5).ToLower();
 
-                if (!gridsTableClass.ContainsKey(gridName))
-                    gridsTableClass[gridName] = new DisplayTableClass();
+                if (!Gui.Btrieve.gridsTableClass.ContainsKey(gridName))
+                    Gui.Btrieve.gridsTableClass[gridName] = new DisplayTableClass();
 
 
                 //gridsTableClass[gridName].startString = script.GetTempScript(args[3].AsString()); //Utils.GetSafeString(args, 3);
@@ -5008,39 +5008,39 @@ $@"EXECUTE sp_executesql N'
                 var startStringVar = args.FirstOrDefault(p => p.CurrentAssign.ToLower() == "start");
                 if (startStringVar != null)
                 {
-                    gridsTableClass[gridName].startVar = startStringVar;
+                    Gui.Btrieve.gridsTableClass[gridName].startVar = startStringVar;
                 }
                 else
                 {
                     //gridsTableClass[gridName].startString = script.GetTempScript();
-                    gridsTableClass[gridName].startVar = new Variable("");
+                    Gui.Btrieve.gridsTableClass[gridName].startVar = new Variable("");
                 }
 
                 var whileStringVar = args.FirstOrDefault(p => p.CurrentAssign.ToLower() == "whilestring");
                 if (whileStringVar != null)
                 {
-                    gridsTableClass[gridName].whileString = script.GetTempScript(whileStringVar.AsString());
+                    Gui.Btrieve.gridsTableClass[gridName].whileString = script.GetTempScript(whileStringVar.AsString());
                 }
                 else
                 {
                     //gridsTableClass[gridName].whileString = script.GetTempScript();
-                    gridsTableClass[gridName].whileString = script.GetTempScript("true");
+                    Gui.Btrieve.gridsTableClass[gridName].whileString = script.GetTempScript("true");
                 }
 
                 var forStringVar = args.FirstOrDefault(p => p.CurrentAssign.ToLower() == "forstring");
                 if (forStringVar != null)
                 {
-                    gridsTableClass[gridName].forString = forStringVar.AsString();
+                    Gui.Btrieve.gridsTableClass[gridName].forString = forStringVar.AsString();
                 }
                 else
                 {
-                    gridsTableClass[gridName].forString = "";
+                    Gui.Btrieve.gridsTableClass[gridName].forString = "";
                 }
 
 
                 //------------------------------------------------------------------------
 
-                if (gridsTableClass.ContainsKey(gridName) && gridsTableClass[gridName].tagsAndTypes != null && gridsTableClass[gridName].tagsAndTypes.Count > 0)
+                if (Gui.Btrieve.gridsTableClass.ContainsKey(gridName) && Gui.Btrieve.gridsTableClass[gridName].tagsAndTypes != null && Gui.Btrieve.gridsTableClass[gridName].tagsAndTypes.Count > 0)
                 {
                     //Gui.DEFINES.TryGetValue(lineCntrVarName.String.ToLower(), out DefineVariable defCntrVar){
                     //    defCntrVar = 
@@ -5056,7 +5056,7 @@ $@"EXECUTE sp_executesql N'
 
                 thisOpenv = Btrieve.OPENVs[tableHndlNum];
 
-                gridsOpenvs[gridName.ToLower()] = thisOpenv;
+                Gui.Btrieve.gridsOpenvs[gridName.ToLower()] = thisOpenv;
 
                 if (!string.IsNullOrEmpty(tableKey))
                 {
@@ -5100,10 +5100,10 @@ $@"EXECUTE sp_executesql N'
                 //tagsAndTypes = new Dictionary<string, Type>();
                 //tagsAndHeaders = new Dictionary<string, string>();
 
-                if (gridsTableClass[gridName].tagsAndTypes == null)
-                    gridsTableClass[gridName].tagsAndTypes = new Dictionary<string, Type>();
-                if (gridsTableClass[gridName].tagsAndHeaders == null)
-                    gridsTableClass[gridName].tagsAndHeaders = new Dictionary<string, string>();
+                if (Gui.Btrieve.gridsTableClass[gridName].tagsAndTypes == null)
+                    Gui.Btrieve.gridsTableClass[gridName].tagsAndTypes = new Dictionary<string, Type>();
+                if (Gui.Btrieve.gridsTableClass[gridName].tagsAndHeaders == null)
+                    Gui.Btrieve.gridsTableClass[gridName].tagsAndHeaders = new Dictionary<string, string>();
 
                 var columns = dg.Columns;
                 for (int i = 0; i < columns.Count; i++)
@@ -5120,14 +5120,14 @@ $@"EXECUTE sp_executesql N'
                             var asgc = cell as ASGridCell;
                             if (asgc.FieldName != null)
                             {
-                                gridsTableClass[gridName].tagsAndTypes.Add(asgc.FieldName.ToString(), typeof(object));
-                                gridsTableClass[gridName].tagsAndHeaders.Add(asgc.FieldName.ToString(), dgtc.Header.ToString());
-                                gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[asgc.FieldName.ToString()] = asgc.EditLength;
-                                gridsTableClass[gridName].tagsAndNames[asgc.FieldName.ToString()] = asgc.Name;
+                                Gui.Btrieve.gridsTableClass[gridName].tagsAndTypes.Add(asgc.FieldName.ToString(), typeof(object));
+                                Gui.Btrieve.gridsTableClass[gridName].tagsAndHeaders.Add(asgc.FieldName.ToString(), dgtc.Header.ToString());
+                                Gui.Btrieve.gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[asgc.FieldName.ToString()] = asgc.EditLength;
+                                Gui.Btrieve.gridsTableClass[gridName].tagsAndNames[asgc.FieldName.ToString()] = asgc.Name;
                                 //tagsAndPositions[asgc.FieldName.ToString()] = i + 1;
-                                gridsTableClass[gridName].tagsAndEditors[asgc.FieldName.ToString()] = asgc.Editor;
-                                gridsTableClass[gridName].tagsAndWidths[asgc.FieldName.ToString()] = dgtc.ActualWidth;
-                                gridsTableClass[gridName].tagsAndHorizontalContentAlignment[asgc.FieldName.ToString()] = asgc.HorizontalContentAlignment;
+                                Gui.Btrieve.gridsTableClass[gridName].tagsAndEditors[asgc.FieldName.ToString()] = asgc.Editor;
+                                Gui.Btrieve.gridsTableClass[gridName].tagsAndWidths[asgc.FieldName.ToString()] = dgtc.ActualWidth;
+                                Gui.Btrieve.gridsTableClass[gridName].tagsAndHorizontalContentAlignment[asgc.FieldName.ToString()] = asgc.HorizontalContentAlignment;
 
                                 var decimalChrs = asgc.DecimalChrs;
                                 if (decimalChrs == null)
@@ -5141,16 +5141,16 @@ $@"EXECUTE sp_executesql N'
                                     }
                                 }
                                 if (decimalChrs != null)
-                                    gridsTableClass[gridName].tagsAndDecimalChrs[asgc.FieldName.ToString()] = decimalChrs;
+                                    Gui.Btrieve.gridsTableClass[gridName].tagsAndDecimalChrs[asgc.FieldName.ToString()] = decimalChrs;
 
-                                gridsTableClass[gridName].tagsAndSizes[asgc.FieldName.ToString()] = asgc.Size;
-                                gridsTableClass[gridName].tagsAndThousands[asgc.FieldName.ToString()] = asgc.Thousands;
+                                Gui.Btrieve.gridsTableClass[gridName].tagsAndSizes[asgc.FieldName.ToString()] = asgc.Size;
+                                Gui.Btrieve.gridsTableClass[gridName].tagsAndThousands[asgc.FieldName.ToString()] = asgc.Thousands;
                             }
                         }
                     }
                 }
 
-                gridsDataTables[gridName] = new DataTable();
+                Gui.Btrieve.gridsDataTables[gridName] = new DataTable();
 
                 var keys = new DataColumn[1];
 
@@ -5162,13 +5162,13 @@ $@"EXECUTE sp_executesql N'
                 //idColumn.AutoIncrement = true;
                 idColumn.DefaultValue = 0;
 
-                gridsDataTables[gridName].Columns.Add(idColumn);
+                Gui.Btrieve.gridsDataTables[gridName].Columns.Add(idColumn);
 
                 keys[0] = idColumn;
-                gridsDataTables[gridName].PrimaryKey = keys;
+                Gui.Btrieve.gridsDataTables[gridName].PrimaryKey = keys;
 
-                gridsTableClass[gridName].newTagsAndTypes = new Dictionary<string, Type>();
-                foreach (var item in gridsTableClass[gridName].tagsAndTypes)
+                Gui.Btrieve.gridsTableClass[gridName].newTagsAndTypes = new Dictionary<string, Type>();
+                foreach (var item in Gui.Btrieve.gridsTableClass[gridName].tagsAndTypes)
                 {
 
                     var newColumn = new DataColumn();
@@ -5184,32 +5184,32 @@ $@"EXECUTE sp_executesql N'
                             case "R":
                                 newColumn.DataType = typeof(int);
                                 //tagsAndTypes[item.Key] = typeof(int);
-                                gridsTableClass[gridName].newTagsAndTypes[item.Key] = typeof(int);
+                                Gui.Btrieve.gridsTableClass[gridName].newTagsAndTypes[item.Key] = typeof(int);
                                 break;
                             case "N":
                                 newColumn.DataType = typeof(double);
                                 //tagsAndTypes[item.Key] = typeof(double);
-                                gridsTableClass[gridName].newTagsAndTypes[item.Key] = typeof(double);
+                                Gui.Btrieve.gridsTableClass[gridName].newTagsAndTypes[item.Key] = typeof(double);
                                 break;
                             case "A":
                                 newColumn.DataType = typeof(string);
                                 //tagsAndTypes[item.Key] = typeof(string);
-                                gridsTableClass[gridName].newTagsAndTypes[item.Key] = typeof(string);
+                                Gui.Btrieve.gridsTableClass[gridName].newTagsAndTypes[item.Key] = typeof(string);
                                 break;
                             case "L":
                                 newColumn.DataType = typeof(bool);
                                 //tagsAndTypes[item.Key] = typeof(bool);
-                                gridsTableClass[gridName].newTagsAndTypes[item.Key] = typeof(bool);
+                                Gui.Btrieve.gridsTableClass[gridName].newTagsAndTypes[item.Key] = typeof(bool);
                                 break;
                             case "D":
                                 newColumn.DataType = typeof(DateTime);
                                 //tagsAndTypes[item.Key] = typeof(DateTime);
-                                gridsTableClass[gridName].newTagsAndTypes[item.Key] = typeof(DateTime);
+                                Gui.Btrieve.gridsTableClass[gridName].newTagsAndTypes[item.Key] = typeof(DateTime);
                                 break;
                             case "T":
                                 newColumn.DataType = typeof(TimeSpan);
                                 //tagsAndTypes[item.Key] = typeof(TimeSpan);
-                                gridsTableClass[gridName].newTagsAndTypes[item.Key] = typeof(TimeSpan);
+                                Gui.Btrieve.gridsTableClass[gridName].newTagsAndTypes[item.Key] = typeof(TimeSpan);
                                 break;
                             default:
                                 break;
@@ -5217,8 +5217,8 @@ $@"EXECUTE sp_executesql N'
                     }
 
 
-                    newColumn.Caption = gridsTableClass[gridName].tagsAndHeaders[item.Key];
-                    gridsDataTables[gridName].Columns.Add(newColumn);
+                    newColumn.Caption = Gui.Btrieve.gridsTableClass[gridName].tagsAndHeaders[item.Key];
+                    Gui.Btrieve.gridsDataTables[gridName].Columns.Add(newColumn);
                 }
 
                 //StringBuilder selectSb = new StringBuilder();
@@ -5276,14 +5276,14 @@ $@"EXECUTE sp_executesql N'
                 //{
                 //    dg = dg
                 //};
-                gridsTableClass[gridName].dg = dg;
-                gridsTableClass[gridName].tableOrArray = "table";
-                gridsTableClass[gridName].tags = gridsTableClass[gridName].tagsAndHeaders.Keys.ToList();
-                gridsTableClass[gridName].tableHndlNum = tableHndlNum;
-                gridsTableClass[gridName].tableKey = tableKey;
+                Gui.Btrieve.gridsTableClass[gridName].dg = dg;
+                Gui.Btrieve.gridsTableClass[gridName].tableOrArray = "table";
+                Gui.Btrieve.gridsTableClass[gridName].tags = Gui.Btrieve.gridsTableClass[gridName].tagsAndHeaders.Keys.ToList();
+                Gui.Btrieve.gridsTableClass[gridName].tableHndlNum = tableHndlNum;
+                Gui.Btrieve.gridsTableClass[gridName].tableKey = tableKey;
                 //gridsTableClass[gridName].tagsAndTypes = gridsTableClass[gridName].tagsAndTypes;
-                gridsTableClass[gridName].KeyClass = KeyClass;
-                gridsTableClass[gridName].Script = Script;
+                Gui.Btrieve.gridsTableClass[gridName].KeyClass = KeyClass;
+                Gui.Btrieve.gridsTableClass[gridName].Script = Script;
 
                 fillDataTable(gridName, Gui);
                 //fillDataTableQuery()
@@ -5291,7 +5291,7 @@ $@"EXECUTE sp_executesql N'
 
                 generateDataGridColumns(gridName);
 
-                dg.ItemsSource = gridsDataTables[gridName].AsDataView();
+                dg.ItemsSource = Gui.Btrieve.gridsDataTables[gridName].AsDataView();
 
                 return Variable.EmptyInstance;
             }
@@ -5432,20 +5432,20 @@ $@"EXECUTE sp_executesql N'
             public void fillDataTable(string gridName, CSCS_GUI Gui)
             {
 
-                gridsDataTables[gridName].Rows.Clear();
+                Gui.Btrieve.gridsDataTables[gridName].Rows.Clear();
 
-                var startVar = gridsTableClass[gridName].startVar;
-                var tableHndlNum = gridsTableClass[gridName].tableHndlNum;
-                var tableKey = gridsTableClass[gridName].tableKey;
-                var KeyClass = gridsTableClass[gridName].KeyClass;
-                var thisOpenv = OPENVs[gridsTableClass[gridName].tableHndlNum];
+                var startVar = Gui.Btrieve.gridsTableClass[gridName].startVar;
+                var tableHndlNum = Gui.Btrieve.gridsTableClass[gridName].tableHndlNum;
+                var tableKey = Gui.Btrieve.gridsTableClass[gridName].tableKey;
+                var KeyClass = Gui.Btrieve.gridsTableClass[gridName].KeyClass;
+                var thisOpenv = OPENVs[Gui.Btrieve.gridsTableClass[gridName].tableHndlNum];
 
-                var whileString = gridsTableClass[gridName].whileString;
-                var forString = gridsTableClass[gridName].forString;
+                var whileString = Gui.Btrieve.gridsTableClass[gridName].whileString;
+                var forString = Gui.Btrieve.gridsTableClass[gridName].forString;
 
-                var Script = gridsTableClass[gridName].Script;
+                var Script = Gui.Btrieve.gridsTableClass[gridName].Script;
 
-                var tagsAndTypes = gridsTableClass[gridName].tagsAndTypes;
+                var tagsAndTypes = Gui.Btrieve.gridsTableClass[gridName].tagsAndTypes;
 
                 if (startVar.Tuple != null && startVar.Tuple.Count > 0)
                 {
@@ -5519,7 +5519,7 @@ $@"EXECUTE sp_executesql N'
 
                 //---------------------------------------------------------------------------
 
-                gridsDataTables[gridName].Rows.Clear();
+                Gui.Btrieve.gridsDataTables[gridName].Rows.Clear();
 
                 bool whileIsSet = false;
                 if (!string.IsNullOrEmpty(whileString.String))
@@ -5542,7 +5542,7 @@ $@"EXECUTE sp_executesql N'
                         continue;
                     }
 
-                    var currentRow = gridsDataTables[gridName].NewRow();
+                    var currentRow = Gui.Btrieve.gridsDataTables[gridName].NewRow();
 
                     currentRow["ID"] = thisOpenv.currentRow;
 
@@ -5553,7 +5553,7 @@ $@"EXECUTE sp_executesql N'
                             currentRow[column.Key] = defVar.AsString();
                         }
                     }
-                    gridsDataTables[gridName].Rows.Add(currentRow);
+                    Gui.Btrieve.gridsDataTables[gridName].Rows.Add(currentRow);
 
 
                     new Btrieve.FINDVClass(Script, tableHndlNum, "n").FINDV();
@@ -5676,7 +5676,7 @@ $@"EXECUTE sp_executesql N'
 
             private void generateDataGridColumns(string gridName)
             {
-                gridsTableClass[gridName].dg.Columns?.Clear();
+                Gui.Btrieve.gridsTableClass[gridName].dg.Columns?.Clear();
 
                 //ID column
                 DataGridTemplateColumn idColumn = new DataGridTemplateColumn();
@@ -5697,9 +5697,9 @@ $@"EXECUTE sp_executesql N'
                 idColumn.CellTemplate = textBlockIDTemplate;
                 idColumn.CellEditingTemplate = textBlockIDTemplate;
 
-                gridsTableClass[gridName].dg.Columns.Add(idColumn);
+                Gui.Btrieve.gridsTableClass[gridName].dg.Columns.Add(idColumn);
 
-                foreach (DataColumn dataTableColumn in gridsDataTables[gridName].Columns)
+                foreach (DataColumn dataTableColumn in Gui.Btrieve.gridsDataTables[gridName].Columns)
                 {
                     //dataTableColumn
                     DataGridTemplateColumn newColumn = new DataGridTemplateColumn();
@@ -5711,7 +5711,7 @@ $@"EXECUTE sp_executesql N'
 
                     var realHeader = dataTableColumn.Caption;
                     var dataType = dataTableColumn.DataType;
-                    var horizontalContentAlignment = gridsTableClass[gridName].tagsAndHorizontalContentAlignment[tag];
+                    var horizontalContentAlignment = Gui.Btrieve.gridsTableClass[gridName].tagsAndHorizontalContentAlignment[tag];
 
                     switch (dataType.Name)
                     {
@@ -5736,11 +5736,11 @@ $@"EXECUTE sp_executesql N'
                             bindDateTime.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
 
                             string dateFormat = "";
-                            if (gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 8)
+                            if (Gui.Btrieve.gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 8)
                             {
                                 dateFormat = "dd/MM/yy";
                             }
-                            else if (gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 10)
+                            else if (Gui.Btrieve.gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 10)
                             {
                                 dateFormat = "dd/MM/yyyy";
                             }
@@ -5750,12 +5750,12 @@ $@"EXECUTE sp_executesql N'
                                 {
                                     if (defVar.DefType == "d")
                                     {
-                                        gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[tag] = defVar.Size;
-                                        if (gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 8)
+                                        Gui.Btrieve.gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[tag] = defVar.Size;
+                                        if (Gui.Btrieve.gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 8)
                                         {
                                             dateFormat = "dd/MM/yy";
                                         }
-                                        else if (gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 10)
+                                        else if (Gui.Btrieve.gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 10)
                                         {
                                             dateFormat = "dd/MM/yyyy";
                                         }
@@ -5767,14 +5767,14 @@ $@"EXECUTE sp_executesql N'
                             Thread.CurrentThread.CurrentCulture = ci;
 
                             bindDateTime.Converter = new ASDateEditerConverter();
-                            bindDateTime.ConverterParameter = gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[tag]; //size
+                            bindDateTime.ConverterParameter = Gui.Btrieve.gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[tag]; //size
                             bindDateTime.StringFormat = dateFormat;
 
 
                             // Create the TextBlock
                             FrameworkElementFactory textBlockDateTimeFactory = new FrameworkElementFactory(typeof(TextBlock));
                             textBlockDateTimeFactory.SetBinding(TextBlock.TextProperty, bindDateTime);
-                            textBlockDateTimeFactory.SetValue(ASDateEditer.NameProperty, gridsTableClass[gridName].tagsAndNames[tag]);
+                            textBlockDateTimeFactory.SetValue(ASDateEditer.NameProperty, Gui.Btrieve.gridsTableClass[gridName].tagsAndNames[tag]);
                             textBlockDateTimeFactory.SetValue(TextBlock.HorizontalAlignmentProperty, horizontalContentAlignment);
 
                             DataTemplate textBlockDateTimeTemplate = new DataTemplate();
@@ -5783,7 +5783,7 @@ $@"EXECUTE sp_executesql N'
                             // Create the DatePicker
                             FrameworkElementFactory datePickerFactory = new FrameworkElementFactory(typeof(ASDateEditer));
                             datePickerFactory.SetBinding(ASDateEditer.TextProperty, bindDateTime);
-                            datePickerFactory.SetValue(ASDateEditer.DisplaySizeProperty, gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[tag]);
+                            datePickerFactory.SetValue(ASDateEditer.DisplaySizeProperty, Gui.Btrieve.gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[tag]);
                             datePickerFactory.SetValue(ASDateEditer.ButtonWidthProperty, 17);
 
 
@@ -5806,12 +5806,12 @@ $@"EXECUTE sp_executesql N'
                             //Binding bind = new Binding("ItemArray[" + tagsAndPositions[e.Column.Header.ToString()] + "]");
                             bindTimeSpan.Mode = BindingMode.TwoWay;
                             bindTimeSpan.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-                            if (gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 5)
+                            if (Gui.Btrieve.gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 5)
                             {
                                 bindTimeSpan.Converter = new ASTimeEditerConverter();
                                 bindTimeSpan.ConverterParameter = 5;
                             }
-                            else if (gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 8)
+                            else if (Gui.Btrieve.gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 8)
                             {
                                 bindTimeSpan.Converter = new ASTimeEditerConverter();
                                 bindTimeSpan.ConverterParameter = 8;
@@ -5821,7 +5821,7 @@ $@"EXECUTE sp_executesql N'
                             FrameworkElementFactory textBlockTimeSpanFactory = new FrameworkElementFactory(typeof(TextBlock));
                             textBlockTimeSpanFactory.SetBinding(TextBlock.TextProperty, bindTimeSpan);
                             //textBlockTimeSpanFactory.AddHandler(TextBlock.GotKeyboardFocusEvent, new KeyboardFocusChangedEventHandler(textBlockGotKeyboardFocus));
-                            textBlockTimeSpanFactory.SetValue(ASDateEditer.NameProperty, gridsTableClass[gridName].tagsAndNames[tag]);
+                            textBlockTimeSpanFactory.SetValue(ASDateEditer.NameProperty, Gui.Btrieve.gridsTableClass[gridName].tagsAndNames[tag]);
                             textBlockTimeSpanFactory.SetValue(TextBlock.HorizontalAlignmentProperty, horizontalContentAlignment);
 
                             DataTemplate textBlockTimeSpanTemplate = new DataTemplate();
@@ -5830,7 +5830,7 @@ $@"EXECUTE sp_executesql N'
                             // Create the ASTimeEditer
                             FrameworkElementFactory timeEditerFactory = new FrameworkElementFactory(typeof(ASTimeEditer));
                             timeEditerFactory.SetBinding(ASTimeEditer.TextProperty, bindTimeSpan);
-                            timeEditerFactory.SetValue(ASTimeEditer.DisplaySizeProperty, gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[tag]);
+                            timeEditerFactory.SetValue(ASTimeEditer.DisplaySizeProperty, Gui.Btrieve.gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[tag]);
 
                             DataTemplate timeEditerTemplate = new DataTemplate();
                             timeEditerTemplate.VisualTree = timeEditerFactory;
@@ -5855,7 +5855,7 @@ $@"EXECUTE sp_executesql N'
                             // Create the TextBlock
                             FrameworkElementFactory textBlockStringFactory = new FrameworkElementFactory(typeof(TextBlock));
                             textBlockStringFactory.SetBinding(TextBlock.TextProperty, bindString);
-                            textBlockStringFactory.SetValue(ASDateEditer.NameProperty, gridsTableClass[gridName].tagsAndNames[tag]);
+                            textBlockStringFactory.SetValue(ASDateEditer.NameProperty, Gui.Btrieve.gridsTableClass[gridName].tagsAndNames[tag]);
                             textBlockStringFactory.SetValue(TextBlock.HorizontalAlignmentProperty, horizontalContentAlignment);
 
                             DataTemplate textBlockStringTemplate = new DataTemplate();
@@ -5889,7 +5889,7 @@ $@"EXECUTE sp_executesql N'
                             // Create the TextBlock
                             FrameworkElementFactory textBlockInt32Factory = new FrameworkElementFactory(typeof(TextBlock));
                             textBlockInt32Factory.SetBinding(TextBlock.TextProperty, bindInt32);
-                            textBlockInt32Factory.SetValue(ASDateEditer.NameProperty, gridsTableClass[gridName].tagsAndNames[tag]);
+                            textBlockInt32Factory.SetValue(ASDateEditer.NameProperty, Gui.Btrieve.gridsTableClass[gridName].tagsAndNames[tag]);
                             textBlockInt32Factory.SetValue(TextBlock.HorizontalAlignmentProperty, horizontalContentAlignment);
 
                             DataTemplate textBlockInt32Template = new DataTemplate();
@@ -5925,19 +5925,19 @@ $@"EXECUTE sp_executesql N'
                             {
                                 //set format
                                 //bindDouble.StringFormat = strFormat.Replace("%replace%", gridsTableClass[gridName].tagsAndDecimalChrs[tag].ToString());
-                                bindDouble.Converter = new ASNumericBoxConverter(strFormat, gridsTableClass[gridName].tagsAndDecimalChrs[tag]);
+                                bindDouble.Converter = new ASNumericBoxConverter(strFormat, Gui.Btrieve.gridsTableClass[gridName].tagsAndDecimalChrs[tag]);
                             }
                             else
                             {
                                 //default format
                                 //bindDouble.StringFormat = "{0:F" + gridsTableClass[gridName].tagsAndDecimalChrs[tag] + "}";
-                                bindDouble.Converter = new ASNumericBoxConverter("F", gridsTableClass[gridName].tagsAndDecimalChrs[tag]);
+                                bindDouble.Converter = new ASNumericBoxConverter("F", Gui.Btrieve.gridsTableClass[gridName].tagsAndDecimalChrs[tag]);
                             }
 
                             // Create the TextBlock
                             FrameworkElementFactory textBlockDoubleFactory = new FrameworkElementFactory(typeof(TextBlock));
                             textBlockDoubleFactory.SetBinding(TextBlock.TextProperty, bindDouble);
-                            textBlockDoubleFactory.SetValue(ASDateEditer.NameProperty, gridsTableClass[gridName].tagsAndNames[tag]);
+                            textBlockDoubleFactory.SetValue(ASDateEditer.NameProperty, Gui.Btrieve.gridsTableClass[gridName].tagsAndNames[tag]);
                             textBlockDoubleFactory.SetValue(TextBlock.HorizontalAlignmentProperty, horizontalContentAlignment);
 
                             DataTemplate textBlockDoubleTemplate = new DataTemplate();
@@ -5950,7 +5950,7 @@ $@"EXECUTE sp_executesql N'
                             Binding bindDouble2 = new Binding(tag);
                             bindDouble2.Mode = BindingMode.TwoWay;
                             bindDouble2.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-                            bindDouble2.Converter = new ASNumericBoxEditConverter(gridsTableClass[gridName].tagsAndDecimalChrs[tag]);
+                            bindDouble2.Converter = new ASNumericBoxEditConverter(Gui.Btrieve.gridsTableClass[gridName].tagsAndDecimalChrs[tag]);
                             bindDouble2.ConverterCulture = CultureInfo.CurrentCulture;
 
                             // Create the NumericBox
@@ -5958,11 +5958,11 @@ $@"EXECUTE sp_executesql N'
                             numericBoxDoubleFactory.SetBinding(ASNumericBox.ValueProperty, bindDouble2);
                             numericBoxDoubleFactory.SetValue(ASNumericBox.HorizontalContentAlignmentProperty, horizontalContentAlignment);
                             numericBoxDoubleFactory.SetValue(ASNumericBox.IsInGridProperty, true);
-                            numericBoxDoubleFactory.SetValue(ASNumericBox.NameProperty, gridsTableClass[gridName].tagsAndNames[tag]);
+                            numericBoxDoubleFactory.SetValue(ASNumericBox.NameProperty, Gui.Btrieve.gridsTableClass[gridName].tagsAndNames[tag]);
                             numericBoxDoubleFactory.AddHandler(ASNumericBox.ButtonClickEvent, new RoutedEventHandler(numBoxButtonClicked));
-                            numericBoxDoubleFactory.SetValue(ASNumericBox.ButtonSizeProperty, gridsTableClass[gridName].tagsAndEditors[tag] == "edEditBtn" ? 20 : 0);
-                            numericBoxDoubleFactory.SetValue(ASNumericBox.DecProperty, gridsTableClass[gridName].tagsAndDecimalChrs[tag]);
-                            numericBoxDoubleFactory.SetValue(ASNumericBox.SizeProperty, gridsTableClass[gridName].tagsAndSizes[tag]);
+                            numericBoxDoubleFactory.SetValue(ASNumericBox.ButtonSizeProperty, Gui.Btrieve.gridsTableClass[gridName].tagsAndEditors[tag] == "edEditBtn" ? 20 : 0);
+                            numericBoxDoubleFactory.SetValue(ASNumericBox.DecProperty, Gui.Btrieve.gridsTableClass[gridName].tagsAndDecimalChrs[tag]);
+                            numericBoxDoubleFactory.SetValue(ASNumericBox.SizeProperty, Gui.Btrieve.gridsTableClass[gridName].tagsAndSizes[tag]);
 
                             DataTemplate numericBoxDoubleTemplate = new DataTemplate();
                             numericBoxDoubleTemplate.VisualTree = numericBoxDoubleFactory;
@@ -5996,7 +5996,7 @@ $@"EXECUTE sp_executesql N'
                             checkBoxFactory.SetValue(CheckBox.FocusableProperty, false);
 
                             checkBoxFactory.SetValue(CheckBox.HorizontalAlignmentProperty, HorizontalAlignment.Center);
-                            checkBoxFactory.SetValue(CheckBox.NameProperty, gridsTableClass[gridName].tagsAndNames[tag]);
+                            checkBoxFactory.SetValue(CheckBox.NameProperty, Gui.Btrieve.gridsTableClass[gridName].tagsAndNames[tag]);
 
                             //editing
                             FrameworkElementFactory checkBoxEditingFactory = new FrameworkElementFactory(typeof(CheckBox));
@@ -6009,7 +6009,7 @@ $@"EXECUTE sp_executesql N'
                             //checkBoxEditingFactory.AddHandler(CheckBox.ClickEvent, new RoutedEventHandler(checkboxChecked));
 
                             checkBoxEditingFactory.SetValue(CheckBox.HorizontalAlignmentProperty, HorizontalAlignment.Center);
-                            checkBoxEditingFactory.SetValue(CheckBox.NameProperty, gridsTableClass[gridName].tagsAndNames[tag]);
+                            checkBoxEditingFactory.SetValue(CheckBox.NameProperty, Gui.Btrieve.gridsTableClass[gridName].tagsAndNames[tag]);
 
 
 
@@ -6035,12 +6035,12 @@ $@"EXECUTE sp_executesql N'
 
                     newColumn.Header = realHeader;
 
-                    newColumn.Width = gridsTableClass[gridName].tagsAndWidths[tag];
+                    newColumn.Width = Gui.Btrieve.gridsTableClass[gridName].tagsAndWidths[tag];
 
-                    gridsTableClass[gridName].dg.Columns.Add(newColumn);
+                    Gui.Btrieve.gridsTableClass[gridName].dg.Columns.Add(newColumn);
                 }
 
-                gridsTableClass[gridName].dg.AddHandler(GridViewColumnHeader.ClickEvent, new RoutedEventHandler(AddCSCSHeaderClickHandler));
+                Gui.Btrieve.gridsTableClass[gridName].dg.AddHandler(GridViewColumnHeader.ClickEvent, new RoutedEventHandler(AddCSCSHeaderClickHandler));
             }
 
             private void numBoxButtonClicked(object sender, RoutedEventArgs e)
@@ -6066,9 +6066,9 @@ $@"EXECUTE sp_executesql N'
                     var gridName = (sender as DataGrid).Name.ToLower();
 
                     var tag = e.Column.Header.ToString();
-                    var realHeader = gridsTableClass[gridName].tagsAndHeaders[tag];
+                    var realHeader = Gui.Btrieve.gridsTableClass[gridName].tagsAndHeaders[tag];
 
-                    var horizontalContentAlignment = gridsTableClass[gridName].tagsAndHorizontalContentAlignment[tag];
+                    var horizontalContentAlignment = Gui.Btrieve.gridsTableClass[gridName].tagsAndHorizontalContentAlignment[tag];
 
                     if (e.PropertyType == typeof(DateTime))
                     {
@@ -6091,11 +6091,11 @@ $@"EXECUTE sp_executesql N'
                         bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
 
                         string dateFormat = "";
-                        if (gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 8)
+                        if (Gui.Btrieve.gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 8)
                         {
                             dateFormat = "dd/MM/yy";
                         }
-                        else if (gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 10)
+                        else if (Gui.Btrieve.gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 10)
                         {
                             dateFormat = "dd/MM/yyyy";
                         }
@@ -6105,12 +6105,12 @@ $@"EXECUTE sp_executesql N'
                             {
                                 if(defVar.DefType == "d")
                                 {
-                                    gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] = defVar.Size;
-                                    if (gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 8)
+                                    Gui.Btrieve.gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] = defVar.Size;
+                                    if (Gui.Btrieve.gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 8)
                                     {
                                         dateFormat = "dd/MM/yy";
                                     }
-                                    else if (gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 10)
+                                    else if (Gui.Btrieve.gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 10)
                                     {
                                         dateFormat = "dd/MM/yyyy";
                                     }
@@ -6122,14 +6122,14 @@ $@"EXECUTE sp_executesql N'
                         Thread.CurrentThread.CurrentCulture = ci;
 
                         bind.Converter = new ASDateEditerConverter();
-                        bind.ConverterParameter = gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()]; //size
+                        bind.ConverterParameter = Gui.Btrieve.gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()]; //size
                         bind.StringFormat = dateFormat;
 
 
                         // Create the TextBlock
                         FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                         textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
-                        textBlockFactory.SetValue(ASDateEditer.NameProperty, gridsTableClass[gridName].tagsAndNames[tag]);
+                        textBlockFactory.SetValue(ASDateEditer.NameProperty, Gui.Btrieve.gridsTableClass[gridName].tagsAndNames[tag]);
                         textBlockFactory.SetValue(TextBlock.HorizontalAlignmentProperty, horizontalContentAlignment);
 
                         DataTemplate textBlockTemplate = new DataTemplate();
@@ -6138,7 +6138,7 @@ $@"EXECUTE sp_executesql N'
                         // Create the DatePicker
                         FrameworkElementFactory datePickerFactory = new FrameworkElementFactory(typeof(ASDateEditer));
                         datePickerFactory.SetBinding(ASDateEditer.TextProperty, bind);
-                        datePickerFactory.SetValue(ASDateEditer.DisplaySizeProperty, gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()]);
+                        datePickerFactory.SetValue(ASDateEditer.DisplaySizeProperty, Gui.Btrieve.gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()]);
 
 
                         DataTemplate datePickerTemplate = new DataTemplate();
@@ -6159,12 +6159,12 @@ $@"EXECUTE sp_executesql N'
                         //Binding bind = new Binding("ItemArray[" + tagsAndPositions[e.Column.Header.ToString()] + "]");
                         bind.Mode = BindingMode.TwoWay;
                         bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-                        if (gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 5)
+                        if (Gui.Btrieve.gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 5)
                         {
                             bind.Converter = new ASTimeEditerConverter();
                             bind.ConverterParameter = 5;
                         }
-                        else if (gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 8)
+                        else if (Gui.Btrieve.gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()] == 8)
                         {
                             bind.Converter = new ASTimeEditerConverter();
                             bind.ConverterParameter = 8;
@@ -6174,7 +6174,7 @@ $@"EXECUTE sp_executesql N'
                         FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                         textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
                         //textBlockFactory.AddHandler(TextBlock.GotKeyboardFocusEvent, new KeyboardFocusChangedEventHandler(textBlockGotKeyboardFocus));
-                        textBlockFactory.SetValue(ASDateEditer.NameProperty, gridsTableClass[gridName].tagsAndNames[tag]);
+                        textBlockFactory.SetValue(ASDateEditer.NameProperty, Gui.Btrieve.gridsTableClass[gridName].tagsAndNames[tag]);
                         textBlockFactory.SetValue(TextBlock.HorizontalAlignmentProperty, horizontalContentAlignment);
 
                         DataTemplate textBlockTemplate = new DataTemplate();
@@ -6183,7 +6183,7 @@ $@"EXECUTE sp_executesql N'
                         // Create the ASTimeEditer
                         FrameworkElementFactory timeEditerFactory = new FrameworkElementFactory(typeof(ASTimeEditer));
                         timeEditerFactory.SetBinding(ASTimeEditer.TextProperty, bind);
-                        timeEditerFactory.SetValue(ASTimeEditer.DisplaySizeProperty, gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()]);
+                        timeEditerFactory.SetValue(ASTimeEditer.DisplaySizeProperty, Gui.Btrieve.gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[e.Column.Header.ToString()]);
 
                         DataTemplate timeEditerTemplate = new DataTemplate();
                         timeEditerTemplate.VisualTree = timeEditerFactory;
@@ -6207,7 +6207,7 @@ $@"EXECUTE sp_executesql N'
                         // Create the TextBlock
                         FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                         textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
-                        textBlockFactory.SetValue(ASDateEditer.NameProperty, gridsTableClass[gridName].tagsAndNames[tag]);
+                        textBlockFactory.SetValue(ASDateEditer.NameProperty, Gui.Btrieve.gridsTableClass[gridName].tagsAndNames[tag]);
                         textBlockFactory.SetValue(TextBlock.HorizontalAlignmentProperty, horizontalContentAlignment);
 
                         DataTemplate textBlockTemplate = new DataTemplate();
@@ -6240,7 +6240,7 @@ $@"EXECUTE sp_executesql N'
                         // Create the TextBlock
                         FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                         textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
-                        textBlockFactory.SetValue(ASDateEditer.NameProperty, gridsTableClass[gridName].tagsAndNames[tag]);
+                        textBlockFactory.SetValue(ASDateEditer.NameProperty, Gui.Btrieve.gridsTableClass[gridName].tagsAndNames[tag]);
                         textBlockFactory.SetValue(TextBlock.HorizontalAlignmentProperty, horizontalContentAlignment);
 
                         DataTemplate textBlockTemplate = new DataTemplate();
@@ -6273,7 +6273,7 @@ $@"EXECUTE sp_executesql N'
                         // Create the TextBlock
                         FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                         textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
-                        textBlockFactory.SetValue(ASDateEditer.NameProperty, gridsTableClass[gridName].tagsAndNames[tag]);
+                        textBlockFactory.SetValue(ASDateEditer.NameProperty, Gui.Btrieve.gridsTableClass[gridName].tagsAndNames[tag]);
                         textBlockFactory.SetValue(TextBlock.HorizontalAlignmentProperty, horizontalContentAlignment);
 
                         DataTemplate textBlockTemplate = new DataTemplate();
@@ -6314,7 +6314,7 @@ $@"EXECUTE sp_executesql N'
                         checkBoxFactory.SetValue(CheckBox.FocusableProperty, false);
 
                         checkBoxFactory.SetValue(CheckBox.HorizontalAlignmentProperty, HorizontalAlignment.Center);
-                        checkBoxFactory.SetValue(CheckBox.NameProperty, gridsTableClass[gridName].tagsAndNames[tag]);
+                        checkBoxFactory.SetValue(CheckBox.NameProperty, Gui.Btrieve.gridsTableClass[gridName].tagsAndNames[tag]);
 
                         //editing
                         FrameworkElementFactory checkBoxEditingFactory = new FrameworkElementFactory(typeof(CheckBox));
@@ -6327,7 +6327,7 @@ $@"EXECUTE sp_executesql N'
                         //checkBoxEditingFactory.AddHandler(CheckBox.ClickEvent, new RoutedEventHandler(checkboxChecked));
 
                         checkBoxEditingFactory.SetValue(CheckBox.HorizontalAlignmentProperty, HorizontalAlignment.Center);
-                        checkBoxEditingFactory.SetValue(CheckBox.NameProperty, gridsTableClass[gridName].tagsAndNames[tag]);
+                        checkBoxEditingFactory.SetValue(CheckBox.NameProperty, Gui.Btrieve.gridsTableClass[gridName].tagsAndNames[tag]);
 
 
 
@@ -6346,7 +6346,7 @@ $@"EXECUTE sp_executesql N'
 
                     e.Column.Header = realHeader;
 
-                    e.Column.Width = gridsTableClass[gridName].tagsAndWidths[tag];
+                    e.Column.Width = Gui.Btrieve.gridsTableClass[gridName].tagsAndWidths[tag];
                 }
             }
 
@@ -6392,7 +6392,7 @@ $@"EXECUTE sp_executesql N'
                 (sender as DataGrid).AddHandler(GridViewColumnHeader.ClickEvent, new RoutedEventHandler(AddCSCSHeaderClickHandler));
 
                 var dataGrid = (sender as DataGrid);
-                gridsTableClass[dataGrid.Name.ToLower()].dg = dataGrid;
+                Gui.Btrieve.gridsTableClass[dataGrid.Name.ToLower()].dg = dataGrid;
             }
             private void AddCSCSHeaderClickHandler(object sender, RoutedEventArgs e)
             {
@@ -6457,7 +6457,7 @@ $@"EXECUTE sp_executesql N'
                                 {
                                     var currentItemAsDateTime = currentItemArray[i] as DateTime?;
                                     string initForDefine = "";
-                                    switch (gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[currRow.Table.Columns[i].ColumnName])
+                                    switch (Gui.Btrieve.gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[currRow.Table.Columns[i].ColumnName])
                                     {
                                         case 10:
                                             initForDefine = currentItemAsDateTime.Value.ToString("dd/MM/yyyy");
@@ -6496,7 +6496,7 @@ $@"EXECUTE sp_executesql N'
                                     Gui.OnVariableChange(currRow.Table.Columns[i].ColumnName.ToLower(), new Variable((TimeSpan)currentItemArray[i]), true);
                                 }
                             }
-                            gridsTableClass[gridName].selectedRowId = (int)currentItemArray[0];
+                            Gui.Btrieve.gridsTableClass[gridName].selectedRowId = (int)currentItemArray[0];
                             thisOpenv.currentRow = (int)currentItemArray[0];
                         }
                     }
@@ -6539,7 +6539,7 @@ $@"EXECUTE sp_executesql N'
                 {
                     (sender as DataGrid).CommitEdit();
 
-                    var rowItemArray = gridsDataTables[gridName].Rows[rowIndex].ItemArray;
+                    var rowItemArray = Gui.Btrieve.gridsDataTables[gridName].Rows[rowIndex].ItemArray;
 
                     SaveRow(rowItemArray);
                 }
@@ -6549,9 +6549,9 @@ $@"EXECUTE sp_executesql N'
 
                     //(sender as DataGrid).CancelEdit();
                     
-                    for (int i = 1; i < gridsDataTables[(sender as DataGrid).Name].Rows[rowIndex].ItemArray.Length; i++)
+                    for (int i = 1; i < Gui.Btrieve.gridsDataTables[(sender as DataGrid).Name].Rows[rowIndex].ItemArray.Length; i++)
                     {
-                        gridsDataTables[(sender as DataGrid).Name].Rows[rowIndex][i] = rowBeforeEdit[i];
+                        Gui.Btrieve.gridsDataTables[(sender as DataGrid).Name].Rows[rowIndex][i] = rowBeforeEdit[i];
                     }
 
                     (sender as DataGrid).SelectedCellsChanged += Dg_SelectedCellsChanged;
@@ -6581,7 +6581,7 @@ $@"EXECUTE sp_executesql N'
                 int i = 1;
 
                 dynamic newVariableInit = null;
-                foreach (var item in gridsTableClass[gridName].tagsAndTypes)
+                foreach (var item in Gui.Btrieve.gridsTableClass[gridName].tagsAndTypes)
                 {
                     switch (Gui.DEFINES[item.Key.ToLower()].Type)
                     {
@@ -6630,7 +6630,7 @@ $@"EXECUTE sp_executesql N'
                             }
                             else if (DateTime.TryParse(rowItemArray[i].ToString(), out DateTime newDateTime))
                             {
-                                switch (gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[item.Key])
+                                switch (Gui.Btrieve.gridsTableClass[gridName].timeAndDateEditerTagsAndSizes[item.Key])
                                 {
                                     case 10:
                                         newVariableInit = ((DateTime)rowItemArray[i]).ToString("dd/MM/yyyy");
@@ -6758,9 +6758,9 @@ $@"EXECUTE sp_executesql N'
             public ParsingScript Script;
         }
 
-        static Dictionary<string, DisplayArrayClass> gridsArrayClass = new Dictionary<string, DisplayArrayClass>();
-        static Dictionary<string, DisplayTableClass> gridsTableClass = new Dictionary<string, DisplayTableClass>();
-        static Dictionary<string, DisplayTableWhereClass> gridsTableWhereClass = new Dictionary<string, DisplayTableWhereClass>();
+        Dictionary<string, DisplayArrayClass> gridsArrayClass = new Dictionary<string, DisplayArrayClass>();
+        Dictionary<string, DisplayTableClass> gridsTableClass = new Dictionary<string, DisplayTableClass>();
+        Dictionary<string, DisplayTableWhereClass> gridsTableWhereClass = new Dictionary<string, DisplayTableWhereClass>();
         //static Dictionary<string, int> gridsLineCounters = new Dictionary<string, int>();
 
 
@@ -6781,10 +6781,10 @@ $@"EXECUTE sp_executesql N'
 
                     _selectedIndex = value;
 
-                    if (gridsArrayClass.TryGetValue(gridName, out DisplayArrayClass dac))
+                    if (Gui.Btrieve.gridsArrayClass.TryGetValue(gridName, out DisplayArrayClass dac))
                     {
                         // updates lineCntr variable
-                        if (gridsArrayClass[gridName].lineCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar))
+                        if (Gui.Btrieve.gridsArrayClass[gridName].lineCntrVarName != null && Gui.DEFINES.TryGetValue(Gui.Btrieve.gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar))
                         {
                             defVar.Value = value;
                         }
@@ -6841,13 +6841,13 @@ $@"EXECUTE sp_executesql N'
                 //actCntrVar = Utils.GetSafeVariable(args, 2);
                 //maxRowsVar = Utils.GetSafeVariable(args, 3);
 
-                if (!gridsArrayClass.ContainsKey(gridName))
-                    gridsArrayClass[gridName] = new DisplayArrayClass();
+                if (!Gui.Btrieve.gridsArrayClass.ContainsKey(gridName))
+                    Gui.Btrieve.gridsArrayClass[gridName] = new DisplayArrayClass();
 
                 var counterFldVar = args.FirstOrDefault(p => p.CurrentAssign.ToLower() == "counterfld");
                 if (counterFldVar != null)
                 {
-                    gridsArrayClass[gridName].lineCntrVar = counterFldVar;
+                    Gui.Btrieve.gridsArrayClass[gridName].lineCntrVar = counterFldVar;
                     lineCntrVarName = counterFldVar;
                 }
                 else
@@ -6858,7 +6858,7 @@ $@"EXECUTE sp_executesql N'
                 actCntrVar = args.FirstOrDefault(p => p.CurrentAssign.ToLower() == "activeelements");
                 if (actCntrVar != null)
                 {
-                    gridsArrayClass[gridName].actCntrVar = actCntrVar;
+                    Gui.Btrieve.gridsArrayClass[gridName].actCntrVar = actCntrVar;
                 }
                 else
                 {
@@ -6868,7 +6868,7 @@ $@"EXECUTE sp_executesql N'
                 maxRowsVar = args.FirstOrDefault(p => p.CurrentAssign.ToLower() == "maxelements");
                 if (maxRowsVar != null)
                 {
-                    gridsArrayClass[gridName].maxRowsVar = maxRowsVar;
+                    Gui.Btrieve.gridsArrayClass[gridName].maxRowsVar = maxRowsVar;
                 }
                 else
                 {
@@ -6877,7 +6877,7 @@ $@"EXECUTE sp_executesql N'
 
                 //------------------------------------------------------------------------
 
-                if (gridsArrayClass.ContainsKey(gridName) && gridsArrayClass[gridName].tagsAndTypes != null && gridsArrayClass[gridName].tagsAndTypes.Count > 0)
+                if (Gui.Btrieve.gridsArrayClass.ContainsKey(gridName) && Gui.Btrieve.gridsArrayClass[gridName].tagsAndTypes != null && Gui.Btrieve.gridsArrayClass[gridName].tagsAndTypes.Count > 0)
                 {
                     //Gui.DEFINES.TryGetValue(lineCntrVarName.String.ToLower(), out DefineVariable defCntrVar){
                     //    defCntrVar = 
@@ -6912,9 +6912,9 @@ $@"EXECUTE sp_executesql N'
 
 
 
-                gridsArrayClass[gridName].lineCntrVarName = lineCntrVarName.Type == Variable.VarType.STRING ? lineCntrVarName.String : null;
-                gridsArrayClass[gridName].actCntrVarName = actCntrVar.Type == Variable.VarType.STRING ? actCntrVar.String : null;
-                gridsArrayClass[gridName].maxElemsVarName = maxRowsVar.Type == Variable.VarType.STRING ? maxRowsVar.String : null;
+                Gui.Btrieve.gridsArrayClass[gridName].lineCntrVarName = lineCntrVarName.Type == Variable.VarType.STRING ? lineCntrVarName.String : null;
+                Gui.Btrieve.gridsArrayClass[gridName].actCntrVarName = actCntrVar.Type == Variable.VarType.STRING ? actCntrVar.String : null;
+                Gui.Btrieve.gridsArrayClass[gridName].maxElemsVarName = maxRowsVar.Type == Variable.VarType.STRING ? maxRowsVar.String : null;
 
                 //--------------------
 
@@ -6925,7 +6925,7 @@ $@"EXECUTE sp_executesql N'
                     {
                         if (defVar.Type == Variable.VarType.NUMBER)
                         {
-                            int.TryParse(defVar.Value.ToString(), out gridsArrayClass[gridName].maxElemsValue);
+                            int.TryParse(defVar.Value.ToString(), out Gui.Btrieve.gridsArrayClass[gridName].maxElemsValue);
                         }
                     }
                     else
@@ -6935,7 +6935,7 @@ $@"EXECUTE sp_executesql N'
                 }
                 else if (maxRowsVar.Type == Variable.VarType.NUMBER)
                 {
-                    gridsArrayClass[gridName].maxElemsValue = (int)maxRowsVar.Value;
+                    Gui.Btrieve.gridsArrayClass[gridName].maxElemsValue = (int)maxRowsVar.Value;
                 }
                 
 
@@ -6946,7 +6946,7 @@ $@"EXECUTE sp_executesql N'
                     {
                         if (defVar2.Type == Variable.VarType.NUMBER)
                         {
-                            int.TryParse(defVar2.Value.ToString(), out gridsArrayClass[gridName].actCntrValue);
+                            int.TryParse(defVar2.Value.ToString(), out Gui.Btrieve.gridsArrayClass[gridName].actCntrValue);
                         }
                     }
                     else
@@ -6956,7 +6956,7 @@ $@"EXECUTE sp_executesql N'
                 }
                 else if(actCntrVar.Type == Variable.VarType.NUMBER)
                 {
-                    gridsArrayClass[gridName].actCntrValue = (int)actCntrVar.Value;
+                    Gui.Btrieve.gridsArrayClass[gridName].actCntrValue = (int)actCntrVar.Value;
                 }
                 
 
@@ -6968,8 +6968,8 @@ $@"EXECUTE sp_executesql N'
                     return Variable.EmptyInstance;
                 }
 
-                gridsArrayClass[gridName].tagsAndTypes = new Dictionary<string, Type>();
-                gridsArrayClass[gridName].tagsAndHeaders = new Dictionary<string, string>();
+                Gui.Btrieve.gridsArrayClass[gridName].tagsAndTypes = new Dictionary<string, Type>();
+                Gui.Btrieve.gridsArrayClass[gridName].tagsAndHeaders = new Dictionary<string, string>();
 
                 var columns = dg.Columns;
                 for (int i = 0; i < columns.Count; i++)
@@ -6988,19 +6988,19 @@ $@"EXECUTE sp_executesql N'
                             {
                                 if (asgc.IsImage)
                                 {
-                                    gridsArrayClass[gridName].tagsAndTypes.Add(asgc.FieldName.ToString(), typeof(BitmapImage));
+                                    Gui.Btrieve.gridsArrayClass[gridName].tagsAndTypes.Add(asgc.FieldName.ToString(), typeof(BitmapImage));
                                 }
                                 else
                                 {
-                                    gridsArrayClass[gridName].tagsAndTypes.Add(asgc.FieldName.ToString(), typeof(object));
+                                    Gui.Btrieve.gridsArrayClass[gridName].tagsAndTypes.Add(asgc.FieldName.ToString(), typeof(object));
                                 }
-                                
-                                gridsArrayClass[gridName].tagsAndHeaders.Add(asgc.FieldName.ToString(), dgtc.Header.ToString());
-                                gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[asgc.FieldName.ToString()] = asgc.EditLength;
-                                gridsArrayClass[gridName].tagsAndEditors[asgc.FieldName.ToString()] = asgc.Editor;
-                                gridsArrayClass[gridName].tagsAndNames[asgc.FieldName.ToString()] = asgc.Name;
-                                gridsArrayClass[gridName].tagsAndWidths[asgc.FieldName.ToString()] = dgtc.ActualWidth;
-                                gridsArrayClass[gridName].tagsAndHorizontalContentAlignment[asgc.FieldName.ToString()] = asgc.HorizontalContentAlignment;
+
+                                Gui.Btrieve.gridsArrayClass[gridName].tagsAndHeaders.Add(asgc.FieldName.ToString(), dgtc.Header.ToString());
+                                Gui.Btrieve.gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[asgc.FieldName.ToString()] = asgc.EditLength;
+                                Gui.Btrieve.gridsArrayClass[gridName].tagsAndEditors[asgc.FieldName.ToString()] = asgc.Editor;
+                                Gui.Btrieve.gridsArrayClass[gridName].tagsAndNames[asgc.FieldName.ToString()] = asgc.Name;
+                                Gui.Btrieve.gridsArrayClass[gridName].tagsAndWidths[asgc.FieldName.ToString()] = dgtc.ActualWidth;
+                                Gui.Btrieve.gridsArrayClass[gridName].tagsAndHorizontalContentAlignment[asgc.FieldName.ToString()] = asgc.HorizontalContentAlignment;
                                 //gridsArrayClass[gridName].tagsAndStringFormats[asgc.FieldName.ToString()] = "";
 
                                 var decimalChrs = asgc.DecimalChrs;
@@ -7015,19 +7015,19 @@ $@"EXECUTE sp_executesql N'
                                     }
                                 }
                                 if(decimalChrs != null)
-                                    gridsArrayClass[gridName].tagsAndDecimalChrs[asgc.FieldName.ToString()] = decimalChrs;
+                                    Gui.Btrieve.gridsArrayClass[gridName].tagsAndDecimalChrs[asgc.FieldName.ToString()] = decimalChrs;
 
-                                gridsArrayClass[gridName].tagsAndSizes[asgc.FieldName.ToString()] = asgc.Size; 
-                                gridsArrayClass[gridName].tagsAndThousands[asgc.FieldName.ToString()] = asgc.Thousands; 
+                                Gui.Btrieve.gridsArrayClass[gridName].tagsAndSizes[asgc.FieldName.ToString()] = asgc.Size;
+                                Gui.Btrieve.gridsArrayClass[gridName].tagsAndThousands[asgc.FieldName.ToString()] = asgc.Thousands; 
                             }
                         }
                     }
                 }
 
-                gridsDataTables[gridName] = new DataTable();
+                Gui.Btrieve.gridsDataTables[gridName] = new DataTable();
 
-                gridsArrayClass[gridName].newTagsAndTypes = new Dictionary<string, Type>();
-                foreach (var item in gridsArrayClass[gridName].tagsAndTypes)
+                Gui.Btrieve.gridsArrayClass[gridName].newTagsAndTypes = new Dictionary<string, Type>();
+                foreach (var item in Gui.Btrieve.gridsArrayClass[gridName].tagsAndTypes)
                 {
                     var newColumn = new DataColumn();
                     newColumn.ColumnName = item.Key;
@@ -7035,7 +7035,7 @@ $@"EXECUTE sp_executesql N'
 
                     if (newColumn.DataType == typeof(BitmapImage))
                     {
-                        gridsArrayClass[gridName].newTagsAndTypes[item.Key] = typeof(BitmapImage);
+                        Gui.Btrieve.gridsArrayClass[gridName].newTagsAndTypes[item.Key] = typeof(BitmapImage);
                     }
                     else if (Gui.DEFINES.TryGetValue(item.Key.ToLower(), out DefineVariable defVariable))
                     {
@@ -7046,40 +7046,40 @@ $@"EXECUTE sp_executesql N'
                             case "R":
                                 newColumn.DataType = typeof(int);
                                 //tagsAndTypes[item.Key] = typeof(int);
-                                gridsArrayClass[gridName].newTagsAndTypes[item.Key] = typeof(int);
+                                Gui.Btrieve.gridsArrayClass[gridName].newTagsAndTypes[item.Key] = typeof(int);
                                 break;
                             case "N":
                                 newColumn.DataType = typeof(double);
                                 //tagsAndTypes[item.Key] = typeof(double);
-                                gridsArrayClass[gridName].newTagsAndTypes[item.Key] = typeof(double);
+                                Gui.Btrieve.gridsArrayClass[gridName].newTagsAndTypes[item.Key] = typeof(double);
                                 break;
                             case "A":
                                 newColumn.DataType = typeof(string);
                                 //tagsAndTypes[item.Key] = typeof(string);
-                                gridsArrayClass[gridName].newTagsAndTypes[item.Key] = typeof(string);
+                                Gui.Btrieve.gridsArrayClass[gridName].newTagsAndTypes[item.Key] = typeof(string);
                                 break;
                             case "L":
                                 newColumn.DataType = typeof(bool);
                                 //tagsAndTypes[item.Key] = typeof(bool);
-                                gridsArrayClass[gridName].newTagsAndTypes[item.Key] = typeof(bool);
+                                Gui.Btrieve.gridsArrayClass[gridName].newTagsAndTypes[item.Key] = typeof(bool);
                                 break;
                             case "D":
                                 newColumn.DataType = typeof(DateTime);
                                 //tagsAndTypes[item.Key] = typeof(DateTime);
-                                gridsArrayClass[gridName].newTagsAndTypes[item.Key] = typeof(DateTime);
+                                Gui.Btrieve.gridsArrayClass[gridName].newTagsAndTypes[item.Key] = typeof(DateTime);
                                 break;
                             case "T":
                                 newColumn.DataType = typeof(TimeSpan);
                                 //tagsAndTypes[item.Key] = typeof(TimeSpan);
-                                gridsArrayClass[gridName].newTagsAndTypes[item.Key] = typeof(TimeSpan);
+                                Gui.Btrieve.gridsArrayClass[gridName].newTagsAndTypes[item.Key] = typeof(TimeSpan);
                                 break;
                             default:
                                 break;
                         }
                     }
 
-                    newColumn.Caption = gridsArrayClass[gridName].tagsAndHeaders[item.Key];
-                    gridsDataTables[gridName].Columns.Add(newColumn);
+                    newColumn.Caption = Gui.Btrieve.gridsArrayClass[gridName].tagsAndHeaders[item.Key];
+                    Gui.Btrieve.gridsDataTables[gridName].Columns.Add(newColumn);
                 }
 
                 //---------------------------------------------------------------------------
@@ -7126,7 +7126,7 @@ $@"EXECUTE sp_executesql N'
                 dg.SetBinding(DataGrid.SelectedIndexProperty, bind);
                 //-------------------------------------------------------------------------------
 
-                
+
 
                 //dg.GetBindingExpression(DataGrid.ItemsSourceProperty).UpdateTarget();
                 //dg.AutoGenerateColumns = false;
@@ -7134,15 +7134,15 @@ $@"EXECUTE sp_executesql N'
                 //dg.Items.Refresh();
                 //dg.Focus();
 
-                gridsArrayClass[gridName].dg = dg;
-                gridsArrayClass[gridName].tags = gridsArrayClass[gridName].tagsAndHeaders.Keys.ToList();
-                gridsArrayClass[gridName].tableOrArray = "array";
+                Gui.Btrieve.gridsArrayClass[gridName].dg = dg;
+                Gui.Btrieve.gridsArrayClass[gridName].tags = Gui.Btrieve.gridsArrayClass[gridName].tagsAndHeaders.Keys.ToList();
+                Gui.Btrieve.gridsArrayClass[gridName].tableOrArray = "array";
 
                 fillDataTable(gridName, Gui);
 
                 generateDataGridColumns(gridName);
 
-                dg.ItemsSource = gridsDataTables[gridName].AsDataView();
+                dg.ItemsSource = Gui.Btrieve.gridsDataTables[gridName].AsDataView();
 
                 return Variable.EmptyInstance;
             }
@@ -7162,10 +7162,10 @@ $@"EXECUTE sp_executesql N'
             public void fillDataTable(string gridName, CSCS_GUI Gui)
             {
                 int lastArrayCount = 0;
-                for (int i = 0; i < gridsArrayClass[gridName].tagsAndTypes.Count; i++)
+                for (int i = 0; i < Gui.Btrieve.gridsArrayClass[gridName].tagsAndTypes.Count; i++)
                 {
                     var thisArrCount = 0;
-                    var arrName = gridsArrayClass[gridName].tagsAndTypes.Keys.ToArray()[i];
+                    var arrName = Gui.Btrieve.gridsArrayClass[gridName].tagsAndTypes.Keys.ToArray()[i];
                     if (Gui.DEFINES.TryGetValue(arrName.ToLower(), out DefineVariable defineVariable))
                     {
                         if (defineVariable.Type == Variable.VarType.ARRAY)
@@ -7186,13 +7186,13 @@ $@"EXECUTE sp_executesql N'
                 }
 
                 int maxElements;
-                if (gridsArrayClass[gridName].maxElemsVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable maxrows))
+                if (Gui.Btrieve.gridsArrayClass[gridName].maxElemsVarName != null && Gui.DEFINES.TryGetValue(Gui.Btrieve.gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable maxrows))
                 {
                     maxElements = (int)maxrows.Value;
                 }
                 else
                 {
-                    maxElements = gridsArrayClass[gridName].maxElemsValue;
+                    maxElements = Gui.Btrieve.gridsArrayClass[gridName].maxElemsValue;
                 }
 
                 int activeElements;
@@ -7200,27 +7200,27 @@ $@"EXECUTE sp_executesql N'
                 //{
                 //    activeElements = (int)actelems.Value;
                 //}
-                if((int)gridsArrayClass[gridName].actCntrVar.Value != 0)
+                if((int)Gui.Btrieve.gridsArrayClass[gridName].actCntrVar.Value != 0)
                 {
-                    activeElements = (int)gridsArrayClass[gridName].actCntrVar.Value;
+                    activeElements = (int)Gui.Btrieve.gridsArrayClass[gridName].actCntrVar.Value;
                 }
                 else
                 {
-                    if (gridsArrayClass[gridName].actCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable actelems))
+                    if (Gui.Btrieve.gridsArrayClass[gridName].actCntrVarName != null && Gui.DEFINES.TryGetValue(Gui.Btrieve.gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable actelems))
                     {
                         activeElements = (int)actelems.Value;
                     }
                     else
                     {
-                        activeElements = gridsArrayClass[gridName].actCntrValue;
+                        activeElements = Gui.Btrieve.gridsArrayClass[gridName].actCntrValue;
                     }
                 }
 
                 for (int i = 0; i < maxElements && i < lastArrayCount && i < activeElements; i++)
                 {
-                    var currentRow = gridsDataTables[gridName].NewRow();
+                    var currentRow = Gui.Btrieve.gridsDataTables[gridName].NewRow();
 
-                    foreach (var column in gridsArrayClass[gridName].newTagsAndTypes)
+                    foreach (var column in Gui.Btrieve.gridsArrayClass[gridName].newTagsAndTypes)
                     {
                         if (Gui.DEFINES.TryGetValue(column.Key.ToLower(), out DefineVariable defVar))
                         {
@@ -7281,15 +7281,15 @@ $@"EXECUTE sp_executesql N'
                         }
                     }
 
-                    gridsDataTables[gridName].Rows.Add(currentRow);
+                    Gui.Btrieve.gridsDataTables[gridName].Rows.Add(currentRow);
                 }
             }
 
             private void generateDataGridColumns(string gridName)
             {
-                gridsArrayClass[gridName].dg.Columns?.Clear();
+                Gui.Btrieve.gridsArrayClass[gridName].dg.Columns?.Clear();
 
-                foreach (DataColumn dataTableColumn in gridsDataTables[gridName].Columns)
+                foreach (DataColumn dataTableColumn in Gui.Btrieve.gridsDataTables[gridName].Columns)
                 {
                     //dataTableColumn
                     DataGridTemplateColumn newColumn = new DataGridTemplateColumn();
@@ -7298,7 +7298,7 @@ $@"EXECUTE sp_executesql N'
                     var tag = dataTableColumn.ColumnName;
                     var realHeader = dataTableColumn.Caption;
                     var dataType = dataTableColumn.DataType;
-                    var horizontalContentAlignment = gridsArrayClass[gridName].tagsAndHorizontalContentAlignment[tag];
+                    var horizontalContentAlignment = Gui.Btrieve.gridsArrayClass[gridName].tagsAndHorizontalContentAlignment[tag];
 
                     switch (dataType.Name)
                     {
@@ -7310,7 +7310,7 @@ $@"EXECUTE sp_executesql N'
                             Binding bindDateTime = new Binding(tag);
                             bindDateTime.Mode = BindingMode.TwoWay;
                             bindDateTime.UpdateSourceTrigger = UpdateSourceTrigger.LostFocus;
-                            if (gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 8)
+                            if (Gui.Btrieve.gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 8)
                             {
                                 CultureInfo ci = CultureInfo.CreateSpecificCulture(CultureInfo.CurrentCulture.Name);
                                 ci.DateTimeFormat.ShortDatePattern = "dd/MM/yy";
@@ -7321,7 +7321,7 @@ $@"EXECUTE sp_executesql N'
                                 bindDateTime.ConverterParameter = 8; //size
                                 bindDateTime.StringFormat = "dd/MM/yy";
                             }
-                            else if (gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 10)
+                            else if (Gui.Btrieve.gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 10)
                             {
                                 CultureInfo ci = CultureInfo.CreateSpecificCulture(CultureInfo.CurrentCulture.Name);
                                 ci.DateTimeFormat.ShortDatePattern = "dd/MM/yyyy";
@@ -7336,7 +7336,7 @@ $@"EXECUTE sp_executesql N'
                             // Create the TextBlock
                             FrameworkElementFactory textBlockDateTimeFactory = new FrameworkElementFactory(typeof(TextBlock));
                             textBlockDateTimeFactory.SetBinding(TextBlock.TextProperty, bindDateTime);
-                            textBlockDateTimeFactory.SetValue(ASDateEditer.NameProperty, gridsArrayClass[gridName].tagsAndNames[tag]);
+                            textBlockDateTimeFactory.SetValue(ASDateEditer.NameProperty, Gui.Btrieve.gridsArrayClass[gridName].tagsAndNames[tag]);
                             textBlockDateTimeFactory.SetValue(TextBlock.HorizontalAlignmentProperty, horizontalContentAlignment);
 
                             DataTemplate textBlockDateTimeTemplate = new DataTemplate();
@@ -7345,7 +7345,7 @@ $@"EXECUTE sp_executesql N'
                             // Create the DatePicker
                             FrameworkElementFactory datePickerFactory = new FrameworkElementFactory(typeof(ASDateEditer));
                             datePickerFactory.SetBinding(ASDateEditer.TextProperty, bindDateTime);
-                            datePickerFactory.SetValue(ASDateEditer.DisplaySizeProperty, gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag]);
+                            datePickerFactory.SetValue(ASDateEditer.DisplaySizeProperty, Gui.Btrieve.gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag]);
 
 
                             DataTemplate datePickerTemplate = new DataTemplate();
@@ -7366,12 +7366,12 @@ $@"EXECUTE sp_executesql N'
                             Binding bindTimeSpan = new Binding(tag);
                             bindTimeSpan.Mode = BindingMode.TwoWay;
                             bindTimeSpan.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-                            if (gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 5)
+                            if (Gui.Btrieve.gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 5)
                             {
                                 bindTimeSpan.Converter = new ASTimeEditerConverter();
                                 bindTimeSpan.ConverterParameter = 5;
                             }
-                            else if (gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 8)
+                            else if (Gui.Btrieve.gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 8)
                             {
                                 bindTimeSpan.Converter = new ASTimeEditerConverter();
                                 bindTimeSpan.ConverterParameter = 8;
@@ -7381,7 +7381,7 @@ $@"EXECUTE sp_executesql N'
                             FrameworkElementFactory textBlockTimeSpanFactory = new FrameworkElementFactory(typeof(TextBlock));
                             textBlockTimeSpanFactory.SetBinding(TextBlock.TextProperty, bindTimeSpan);
                             //textBlockFactory.AddHandler(TextBlock.GotKeyboardFocusEvent, new KeyboardFocusChangedEventHandler(textBlockGotKeyboardFocus));
-                            textBlockTimeSpanFactory.SetValue(ASDateEditer.NameProperty, gridsArrayClass[gridName].tagsAndNames[tag]);
+                            textBlockTimeSpanFactory.SetValue(ASDateEditer.NameProperty, Gui.Btrieve.gridsArrayClass[gridName].tagsAndNames[tag]);
                             textBlockTimeSpanFactory.SetValue(TextBlock.HorizontalAlignmentProperty, horizontalContentAlignment);
 
                             DataTemplate textBlockTimeSpanTemplate = new DataTemplate();
@@ -7390,7 +7390,7 @@ $@"EXECUTE sp_executesql N'
                             // Create the ASTimeEditer
                             FrameworkElementFactory timeEditerFactory = new FrameworkElementFactory(typeof(ASTimeEditer));
                             timeEditerFactory.SetBinding(ASTimeEditer.TextProperty, bindTimeSpan);
-                            timeEditerFactory.SetValue(ASTimeEditer.DisplaySizeProperty, gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag]);
+                            timeEditerFactory.SetValue(ASTimeEditer.DisplaySizeProperty, Gui.Btrieve.gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag]);
 
                             DataTemplate timeEditerTemplate = new DataTemplate();
                             timeEditerTemplate.VisualTree = timeEditerFactory;
@@ -7414,7 +7414,7 @@ $@"EXECUTE sp_executesql N'
                             // Create the TextBlock
                             FrameworkElementFactory textBlockStringFactory = new FrameworkElementFactory(typeof(TextBlock));
                             textBlockStringFactory.SetBinding(TextBlock.TextProperty, bindString);
-                            textBlockStringFactory.SetValue(ASDateEditer.NameProperty, gridsArrayClass[gridName].tagsAndNames[tag]);
+                            textBlockStringFactory.SetValue(ASDateEditer.NameProperty, Gui.Btrieve.gridsArrayClass[gridName].tagsAndNames[tag]);
                             textBlockStringFactory.SetValue(TextBlock.HorizontalAlignmentProperty, horizontalContentAlignment);
 
                             DataTemplate textBlockStringTemplate = new DataTemplate();
@@ -7447,7 +7447,7 @@ $@"EXECUTE sp_executesql N'
                             // Create the TextBlock
                             FrameworkElementFactory textBlockInt32Factory = new FrameworkElementFactory(typeof(TextBlock));
                             textBlockInt32Factory.SetBinding(TextBlock.TextProperty, bindInt32);
-                            textBlockInt32Factory.SetValue(ASDateEditer.NameProperty, gridsArrayClass[gridName].tagsAndNames[tag]);
+                            textBlockInt32Factory.SetValue(ASDateEditer.NameProperty, Gui.Btrieve.gridsArrayClass[gridName].tagsAndNames[tag]);
                             textBlockInt32Factory.SetValue(TextBlock.HorizontalAlignmentProperty, horizontalContentAlignment);
 
                             DataTemplate textBlockInt32Template = new DataTemplate();
@@ -7482,20 +7482,20 @@ $@"EXECUTE sp_executesql N'
                             {
                                 //set format
                                 //bindDouble.StringFormat = strFormat.Replace("%replace%", gridsArrayClass[gridName].tagsAndDecimalChrs[tag].ToString());
-                                bindDouble.Converter = new ASNumericBoxConverter(strFormat, gridsArrayClass[gridName].tagsAndDecimalChrs[tag]);
+                                bindDouble.Converter = new ASNumericBoxConverter(strFormat, Gui.Btrieve.gridsArrayClass[gridName].tagsAndDecimalChrs[tag]);
                             }
                             else
                             {
                                 //default format
                                 //bindDouble.StringFormat = "{0:F" + gridsArrayClass[gridName].tagsAndDecimalChrs[tag] + "}";
-                                bindDouble.Converter = new ASNumericBoxConverter("F", gridsArrayClass[gridName].tagsAndDecimalChrs[tag]);
+                                bindDouble.Converter = new ASNumericBoxConverter("F", Gui.Btrieve.gridsArrayClass[gridName].tagsAndDecimalChrs[tag]);
                             }
 
 
                             // Create the TextBlock
                             FrameworkElementFactory textBlockDoubleFactory = new FrameworkElementFactory(typeof(TextBlock));
                             textBlockDoubleFactory.SetBinding(TextBlock.TextProperty, bindDouble);
-                            textBlockDoubleFactory.SetValue(TextBlock.NameProperty, gridsArrayClass[gridName].tagsAndNames[tag]);
+                            textBlockDoubleFactory.SetValue(TextBlock.NameProperty, Gui.Btrieve.gridsArrayClass[gridName].tagsAndNames[tag]);
                             textBlockDoubleFactory.SetValue(TextBlock.HorizontalAlignmentProperty, horizontalContentAlignment);
 
                             ////Create the select-NumericBox
@@ -7519,7 +7519,7 @@ $@"EXECUTE sp_executesql N'
                             Binding bindDouble2 = new Binding(tag);
                             bindDouble2.Mode = BindingMode.TwoWay;
                             bindDouble2.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-                            bindDouble2.Converter = new ASNumericBoxEditConverter(gridsArrayClass[gridName].tagsAndDecimalChrs[tag]);
+                            bindDouble2.Converter = new ASNumericBoxEditConverter(Gui.Btrieve.gridsArrayClass[gridName].tagsAndDecimalChrs[tag]);
                             bindDouble2.ConverterCulture = CultureInfo.CurrentCulture;
 
                             // Create the NumericBox
@@ -7527,11 +7527,11 @@ $@"EXECUTE sp_executesql N'
                             numericBoxDoubleFactory.SetBinding(ASNumericBox.ValueProperty, bindDouble2);
                             numericBoxDoubleFactory.SetValue(ASNumericBox.HorizontalContentAlignmentProperty, horizontalContentAlignment);
                             numericBoxDoubleFactory.SetValue(ASNumericBox.IsInGridProperty, true);
-                            numericBoxDoubleFactory.SetValue(ASNumericBox.NameProperty, gridsArrayClass[gridName].tagsAndNames[tag]);
+                            numericBoxDoubleFactory.SetValue(ASNumericBox.NameProperty, Gui.Btrieve.gridsArrayClass[gridName].tagsAndNames[tag]);
                             numericBoxDoubleFactory.AddHandler(ASNumericBox.ButtonClickEvent, new RoutedEventHandler(numBoxButtonClicked));
-                            numericBoxDoubleFactory.SetValue(ASNumericBox.ButtonSizeProperty, gridsArrayClass[gridName].tagsAndEditors[tag] == "edEditBtn" ? 20 : 0);
-                            numericBoxDoubleFactory.SetValue(ASNumericBox.DecProperty, gridsArrayClass[gridName].tagsAndDecimalChrs[tag]);
-                            numericBoxDoubleFactory.SetValue(ASNumericBox.SizeProperty, gridsArrayClass[gridName].tagsAndSizes[tag]);
+                            numericBoxDoubleFactory.SetValue(ASNumericBox.ButtonSizeProperty, Gui.Btrieve.gridsArrayClass[gridName].tagsAndEditors[tag] == "edEditBtn" ? 20 : 0);
+                            numericBoxDoubleFactory.SetValue(ASNumericBox.DecProperty, Gui.Btrieve.gridsArrayClass[gridName].tagsAndDecimalChrs[tag]);
+                            numericBoxDoubleFactory.SetValue(ASNumericBox.SizeProperty, Gui.Btrieve.gridsArrayClass[gridName].tagsAndSizes[tag]);
 
                             DataTemplate numericBoxDoubleTemplate = new DataTemplate();
                             numericBoxDoubleTemplate.VisualTree = numericBoxDoubleFactory;
@@ -7564,7 +7564,7 @@ $@"EXECUTE sp_executesql N'
 
                             checkBoxFactory.SetValue(CheckBox.FocusableProperty, false);
                             checkBoxFactory.SetValue(CheckBox.HorizontalAlignmentProperty, HorizontalAlignment.Center);
-                            checkBoxFactory.SetValue(CheckBox.NameProperty, gridsArrayClass[gridName].tagsAndNames[tag]);
+                            checkBoxFactory.SetValue(CheckBox.NameProperty, Gui.Btrieve.gridsArrayClass[gridName].tagsAndNames[tag]);
 
 
                             FrameworkElementFactory checkBoxEditingFactory = new FrameworkElementFactory(typeof(CheckBox));
@@ -7577,7 +7577,7 @@ $@"EXECUTE sp_executesql N'
                             //checkBoxEditingFactory.AddHandler(CheckBox.ClickEvent, new RoutedEventHandler(checkboxChecked));
 
                             checkBoxEditingFactory.SetValue(CheckBox.HorizontalAlignmentProperty, HorizontalAlignment.Center);
-                            checkBoxEditingFactory.SetValue(CheckBox.NameProperty, gridsArrayClass[gridName].tagsAndNames[tag]);
+                            checkBoxEditingFactory.SetValue(CheckBox.NameProperty, Gui.Btrieve.gridsArrayClass[gridName].tagsAndNames[tag]);
 
 
                             DataTemplate checkBoxTemplate = new DataTemplate();
@@ -7627,13 +7627,13 @@ $@"EXECUTE sp_executesql N'
 
                     newColumn.Header = realHeader;
 
-                    newColumn.Width = gridsArrayClass[gridName].tagsAndWidths[tag];
+                    newColumn.Width = Gui.Btrieve.gridsArrayClass[gridName].tagsAndWidths[tag];
 
-                    gridsArrayClass[gridName].dg.Columns.Add(newColumn);
+                    Gui.Btrieve.gridsArrayClass[gridName].dg.Columns.Add(newColumn);
                 }
 
                 //(sender as DataGrid).AddHandler(GridViewColumnHeader.ClickEvent, new RoutedEventHandler(AddCSCSHeaderClickHandler));
-                gridsArrayClass[gridName].dg.AddHandler(GridViewColumnHeader.ClickEvent, new RoutedEventHandler(AddCSCSHeaderClickHandler));
+                Gui.Btrieve.gridsArrayClass[gridName].dg.AddHandler(GridViewColumnHeader.ClickEvent, new RoutedEventHandler(AddCSCSHeaderClickHandler));
 
                 //var dataGrid = (sender as DataGrid);
                 //gridsArrayClass[dataGrid.Name.ToLower()].dg = dataGrid;
@@ -7656,9 +7656,9 @@ $@"EXECUTE sp_executesql N'
                 var gridName = (sender as DataGrid).Name.ToLower();
 
                 var tag = e.Column.Header.ToString();
-                var realHeader = gridsArrayClass[gridName].tagsAndHeaders[tag];
+                var realHeader = Gui.Btrieve.gridsArrayClass[gridName].tagsAndHeaders[tag];
 
-                var horizontalContentAlignment = gridsArrayClass[gridName].tagsAndHorizontalContentAlignment[tag];
+                var horizontalContentAlignment = Gui.Btrieve.gridsArrayClass[gridName].tagsAndHorizontalContentAlignment[tag];
 
                 if (e.PropertyType == typeof(DateTime))
                 {
@@ -7668,7 +7668,7 @@ $@"EXECUTE sp_executesql N'
                     Binding bind = new Binding(tag);
                     bind.Mode = BindingMode.TwoWay;
                     bind.UpdateSourceTrigger = UpdateSourceTrigger.LostFocus;
-                    if (gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 8)
+                    if (Gui.Btrieve.gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 8)
                     {
                         CultureInfo ci = CultureInfo.CreateSpecificCulture(CultureInfo.CurrentCulture.Name);
                         ci.DateTimeFormat.ShortDatePattern = "dd/MM/yy";
@@ -7679,7 +7679,7 @@ $@"EXECUTE sp_executesql N'
                         bind.ConverterParameter = 8; //size
                         bind.StringFormat = "dd/MM/yy";
                     }
-                    else if (gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 10)
+                    else if (Gui.Btrieve.gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 10)
                     {
                         CultureInfo ci = CultureInfo.CreateSpecificCulture(CultureInfo.CurrentCulture.Name);
                         ci.DateTimeFormat.ShortDatePattern = "dd/MM/yyyy";
@@ -7694,7 +7694,7 @@ $@"EXECUTE sp_executesql N'
                     // Create the TextBlock
                     FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                     textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
-                    textBlockFactory.SetValue(ASDateEditer.NameProperty, gridsArrayClass[gridName].tagsAndNames[tag]);
+                    textBlockFactory.SetValue(ASDateEditer.NameProperty, Gui.Btrieve.gridsArrayClass[gridName].tagsAndNames[tag]);
                     textBlockFactory.SetValue(TextBlock.HorizontalAlignmentProperty, horizontalContentAlignment);
 
                     DataTemplate textBlockTemplate = new DataTemplate();
@@ -7703,7 +7703,7 @@ $@"EXECUTE sp_executesql N'
                     // Create the DatePicker
                     FrameworkElementFactory datePickerFactory = new FrameworkElementFactory(typeof(ASDateEditer));
                     datePickerFactory.SetBinding(ASDateEditer.TextProperty, bind);
-                    datePickerFactory.SetValue(ASDateEditer.DisplaySizeProperty, gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag]);
+                    datePickerFactory.SetValue(ASDateEditer.DisplaySizeProperty, Gui.Btrieve.gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag]);
 
 
                     DataTemplate datePickerTemplate = new DataTemplate();
@@ -7723,12 +7723,12 @@ $@"EXECUTE sp_executesql N'
                     Binding bind = new Binding(tag);
                     bind.Mode = BindingMode.TwoWay;
                     bind.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-                    if (gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 5)
+                    if (Gui.Btrieve.gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 5)
                     {
                         bind.Converter = new ASTimeEditerConverter();
                         bind.ConverterParameter = 5;
                     }
-                    else if (gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 8)
+                    else if (Gui.Btrieve.gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag] == 8)
                     {
                         bind.Converter = new ASTimeEditerConverter();
                         bind.ConverterParameter = 8;
@@ -7738,7 +7738,7 @@ $@"EXECUTE sp_executesql N'
                     FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                     textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
                     //textBlockFactory.AddHandler(TextBlock.GotKeyboardFocusEvent, new KeyboardFocusChangedEventHandler(textBlockGotKeyboardFocus));
-                    textBlockFactory.SetValue(ASDateEditer.NameProperty, gridsArrayClass[gridName].tagsAndNames[tag]);
+                    textBlockFactory.SetValue(ASDateEditer.NameProperty, Gui.Btrieve.gridsArrayClass[gridName].tagsAndNames[tag]);
                     textBlockFactory.SetValue(TextBlock.HorizontalAlignmentProperty, horizontalContentAlignment);
 
                     DataTemplate textBlockTemplate = new DataTemplate();
@@ -7747,7 +7747,7 @@ $@"EXECUTE sp_executesql N'
                     // Create the ASTimeEditer
                     FrameworkElementFactory timeEditerFactory = new FrameworkElementFactory(typeof(ASTimeEditer));
                     timeEditerFactory.SetBinding(ASTimeEditer.TextProperty, bind);
-                    timeEditerFactory.SetValue(ASTimeEditer.DisplaySizeProperty, gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag]);
+                    timeEditerFactory.SetValue(ASTimeEditer.DisplaySizeProperty, Gui.Btrieve.gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[tag]);
 
                     DataTemplate timeEditerTemplate = new DataTemplate();
                     timeEditerTemplate.VisualTree = timeEditerFactory;
@@ -7770,7 +7770,7 @@ $@"EXECUTE sp_executesql N'
                     // Create the TextBlock
                     FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                     textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
-                    textBlockFactory.SetValue(ASDateEditer.NameProperty, gridsArrayClass[gridName].tagsAndNames[tag]);
+                    textBlockFactory.SetValue(ASDateEditer.NameProperty, Gui.Btrieve.gridsArrayClass[gridName].tagsAndNames[tag]);
                     textBlockFactory.SetValue(TextBlock.HorizontalAlignmentProperty, horizontalContentAlignment);
 
                     DataTemplate textBlockTemplate = new DataTemplate();
@@ -7802,7 +7802,7 @@ $@"EXECUTE sp_executesql N'
                     // Create the TextBlock
                     FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                     textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
-                    textBlockFactory.SetValue(ASDateEditer.NameProperty, gridsArrayClass[gridName].tagsAndNames[tag]);
+                    textBlockFactory.SetValue(ASDateEditer.NameProperty, Gui.Btrieve.gridsArrayClass[gridName].tagsAndNames[tag]);
                     textBlockFactory.SetValue(TextBlock.HorizontalAlignmentProperty, horizontalContentAlignment);
 
                     DataTemplate textBlockTemplate = new DataTemplate();
@@ -7835,19 +7835,19 @@ $@"EXECUTE sp_executesql N'
                     if (FormatFunction.variablesStringFormats.TryGetValue(tag.ToLower(), out string strFormat))
                     {
                         //set format
-                        bind.StringFormat = strFormat.Replace("%replace%", gridsArrayClass[gridName].tagsAndDecimalChrs[tag].ToString());
+                        bind.StringFormat = strFormat.Replace("%replace%", Gui.Btrieve.gridsArrayClass[gridName].tagsAndDecimalChrs[tag].ToString());
                     }
                     else
                     {
                         //default format
-                        bind.StringFormat = "{0:F" + gridsArrayClass[gridName].tagsAndDecimalChrs[tag] + "}";
+                        bind.StringFormat = "{0:F" + Gui.Btrieve.gridsArrayClass[gridName].tagsAndDecimalChrs[tag] + "}";
                     }
                     
 
                     // Create the TextBlock
                     FrameworkElementFactory textBlockFactory = new FrameworkElementFactory(typeof(TextBlock));
                     textBlockFactory.SetBinding(TextBlock.TextProperty, bind);
-                    textBlockFactory.SetValue(ASDateEditer.NameProperty, gridsArrayClass[gridName].tagsAndNames[tag]);
+                    textBlockFactory.SetValue(ASDateEditer.NameProperty, Gui.Btrieve.gridsArrayClass[gridName].tagsAndNames[tag]);
                     textBlockFactory.SetValue(TextBlock.HorizontalAlignmentProperty, horizontalContentAlignment);
 
                     DataTemplate textBlockTemplate = new DataTemplate();
@@ -7887,7 +7887,7 @@ $@"EXECUTE sp_executesql N'
 
                     checkBoxFactory.SetValue(CheckBox.FocusableProperty, false);
                     checkBoxFactory.SetValue(CheckBox.HorizontalAlignmentProperty, HorizontalAlignment.Center);
-                    checkBoxFactory.SetValue(CheckBox.NameProperty, gridsArrayClass[gridName].tagsAndNames[tag]);
+                    checkBoxFactory.SetValue(CheckBox.NameProperty, Gui.Btrieve.gridsArrayClass[gridName].tagsAndNames[tag]);
 
 
                     FrameworkElementFactory checkBoxEditingFactory = new FrameworkElementFactory(typeof(CheckBox));
@@ -7900,7 +7900,7 @@ $@"EXECUTE sp_executesql N'
                     //checkBoxEditingFactory.AddHandler(CheckBox.ClickEvent, new RoutedEventHandler(checkboxChecked));
 
                     checkBoxEditingFactory.SetValue(CheckBox.HorizontalAlignmentProperty, HorizontalAlignment.Center);
-                    checkBoxEditingFactory.SetValue(CheckBox.NameProperty, gridsArrayClass[gridName].tagsAndNames[tag]);
+                    checkBoxEditingFactory.SetValue(CheckBox.NameProperty, Gui.Btrieve.gridsArrayClass[gridName].tagsAndNames[tag]);
 
 
                     DataTemplate checkBoxTemplate = new DataTemplate();
@@ -7921,7 +7921,7 @@ $@"EXECUTE sp_executesql N'
 
                 e.Column.Header = realHeader;
 
-                e.Column.Width = gridsArrayClass[gridName].tagsAndWidths[tag];
+                e.Column.Width = Gui.Btrieve.gridsArrayClass[gridName].tagsAndWidths[tag];
             }
 
             private void checkBoxClick(object sender, RoutedEventArgs e)
@@ -7976,7 +7976,7 @@ $@"EXECUTE sp_executesql N'
                 (sender as DataGrid).AddHandler(GridViewColumnHeader.ClickEvent, new RoutedEventHandler(AddCSCSHeaderClickHandler));
 
                 var dataGrid = (sender as DataGrid);
-                gridsArrayClass[dataGrid.Name.ToLower()].dg = dataGrid;
+                Gui.Btrieve.gridsArrayClass[dataGrid.Name.ToLower()].dg = dataGrid;
             }
 
             private void AddCSCSHeaderClickHandler(object sender, RoutedEventArgs e)
@@ -8026,9 +8026,9 @@ $@"EXECUTE sp_executesql N'
 
                 dg.BeginEdit();
 
-                if(gridsArrayClass[gridName].lineCntrVarName != null)
+                if(Gui.Btrieve.gridsArrayClass[gridName].lineCntrVarName != null)
                 {
-                    Gui.DEFINES[gridsArrayClass[gridName].lineCntrVarName.ToLower()].InitVariable(new Variable(currentRowIndex), Gui);
+                    Gui.DEFINES[Gui.Btrieve.gridsArrayClass[gridName].lineCntrVarName.ToLower()].InitVariable(new Variable(currentRowIndex), Gui);
                 }
             }
 
@@ -8065,22 +8065,22 @@ $@"EXECUTE sp_executesql N'
                 {
                     (sender as DataGrid).CommitEdit();
 
-                    var rowItemArray = gridsDataTables[gridName].Rows[rowIndex].ItemArray;
+                    var rowItemArray = Gui.Btrieve.gridsDataTables[gridName].Rows[rowIndex].ItemArray;
 
                     SaveRow(rowIndex, rowItemArray);
                 }
                 else
                 {
                     dg.SelectedCellsChanged -= Dg_SelectedCellsChanged;
-                    
+
                     //dg.CancelEdit();
-                    gridsDataTables[gridName].Rows[rowIndex].ItemArray = rowBeforeEdit;
+                    Gui.Btrieve.gridsDataTables[gridName].Rows[rowIndex].ItemArray = rowBeforeEdit;
 
                     dg.SelectedCellsChanged += Dg_SelectedCellsChanged;
                 }
                 (sender as DataGrid).RowEditEnding += Dg_RowEditEnding;
 
-                if (dg.Items.Count - 1 >= gridsArrayClass[gridName].maxElemsValue)
+                if (dg.Items.Count - 1 >= Gui.Btrieve.gridsArrayClass[gridName].maxElemsValue)
                 {
                     dg.CanUserAddRows = false;
                 }
@@ -8092,15 +8092,15 @@ $@"EXECUTE sp_executesql N'
 
             private void SaveRow(int rowIndex, object[] rowNewItemArray)
             {
-                for (int i = 0; i < gridsArrayClass[gridName].tagsAndTypes.Count; i++)
+                for (int i = 0; i < Gui.Btrieve.gridsArrayClass[gridName].tagsAndTypes.Count; i++)
                 {
-                    var arrName = gridsArrayClass[gridName].newTagsAndTypes.Keys.ToArray()[i];
+                    var arrName = Gui.Btrieve.gridsArrayClass[gridName].newTagsAndTypes.Keys.ToArray()[i];
                     if (Gui.DEFINES.TryGetValue(arrName.ToLower(), out DefineVariable defineVariable))
                     {
                         if (defineVariable.Type == Variable.VarType.ARRAY)
                         {
                             dynamic newDynamicVar;
-                            switch (gridsArrayClass[gridName].newTagsAndTypes.ElementAt(i).Value.Name)
+                            switch (Gui.Btrieve.gridsArrayClass[gridName].newTagsAndTypes.ElementAt(i).Value.Name)
                             {
                                 case "String":
                                     newDynamicVar = (string)rowNewItemArray[i];
@@ -8124,7 +8124,7 @@ $@"EXECUTE sp_executesql N'
                                     break;
                                 case "TimeSpan":
                                     newDynamicVar = "";
-                                    var size = gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[gridsArrayClass[gridName].newTagsAndTypes.ElementAt(i).Key];
+                                    var size = Gui.Btrieve.gridsArrayClass[gridName].timeAndDateEditerTagsAndSizes[Gui.Btrieve.gridsArrayClass[gridName].newTagsAndTypes.ElementAt(i).Key];
                                     if (size == 5)
                                     {
                                         newDynamicVar = ((TimeSpan)rowNewItemArray[i]).ToString("hh\\:mm");
@@ -8156,14 +8156,14 @@ $@"EXECUTE sp_executesql N'
             {
                 List<Variable> args = script.GetFunctionArgs();
                 Utils.CheckArgs(args.Count, 1, m_name);
-                var gui = CSCS_GUI.GetInstance(script);
+                var Gui = CSCS_GUI.GetInstance(script);
 
                 var gridName = Utils.GetSafeString(args, 0);
 
-                if (gridsArrayClass[gridName].lineCntrVarName != null && gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar))
+                if (Gui.Btrieve.gridsArrayClass[gridName].lineCntrVarName != null && Gui.DEFINES.TryGetValue(Gui.Btrieve.gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar))
                 {
-                    gridsArrayClass[gridName].dg.SelectedIndex = (int)defVar.Value;
-                    gridsArrayClass[gridName].dg.ScrollIntoView(gridsArrayClass[gridName].dg.SelectedItem);
+                    Gui.Btrieve.gridsArrayClass[gridName].dg.SelectedIndex = (int)defVar.Value;
+                    Gui.Btrieve.gridsArrayClass[gridName].dg.ScrollIntoView(Gui.Btrieve.gridsArrayClass[gridName].dg.SelectedItem);
                 }
 
                 return Variable.EmptyInstance;
@@ -8200,19 +8200,19 @@ $@"EXECUTE sp_executesql N'
                 {
                     case "updatecurrent":
 
-                        if (gridsArrayClass[gridName].lineCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable lineCntrDefVar))
+                        if (Gui.Btrieve.gridsArrayClass[gridName].lineCntrVarName != null && Gui.DEFINES.TryGetValue(Gui.Btrieve.gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable lineCntrDefVar))
                         {
-                            var itemArray = gridsDataTables[gridName].Rows[(int)lineCntrDefVar.Value].ItemArray;
+                            var itemArray = Gui.Btrieve.gridsDataTables[gridName].Rows[(int)lineCntrDefVar.Value].ItemArray;
                             for (int i = 0; i < itemArray.Length; i++)
                             {
 
-                                if (Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].tags[i].ToLower(), out DefineVariable defVar))
+                                if (Gui.DEFINES.TryGetValue(Gui.Btrieve.gridsArrayClass[gridName].tags[i].ToLower(), out DefineVariable defVar))
                                 {
                                     itemArray[i] = defVar.Tuple[(int)lineCntrDefVar.Value].AsString();
                                 }
                             }
 
-                            gridsDataTables[gridName].Rows[(int)lineCntrDefVar.Value].ItemArray = itemArray;
+                            Gui.Btrieve.gridsDataTables[gridName].Rows[(int)lineCntrDefVar.Value].ItemArray = itemArray;
                         }
 
                         break;
@@ -8235,7 +8235,7 @@ $@"EXECUTE sp_executesql N'
 
                         var currentIndex = dg.SelectedIndex;
 
-                        gridsDataTables[gridName].Rows.Clear();
+                        Gui.Btrieve.gridsDataTables[gridName].Rows.Clear();
                         new DisplayArraySetupFunction().fillDataTable(gridName, Gui);
 
 
@@ -8252,9 +8252,9 @@ $@"EXECUTE sp_executesql N'
                         break;
 
                     case "close":
-                        if (gridsDataTables.ContainsKey(gridName))
+                        if (Gui.Btrieve.gridsDataTables.ContainsKey(gridName))
                         {
-                            gridsDataTables[gridName].Rows.Clear();
+                            Gui.Btrieve.gridsDataTables[gridName].Rows.Clear();
                             //gridsArrayClass[gridName].lineCntrVar = new Variable(0);
                         }
                         break;
@@ -8348,13 +8348,13 @@ $@"EXECUTE sp_executesql N'
 
                         var currentIndex = dg.SelectedIndex;
 
-                        var currentID = gridsTableClass[gridName].selectedRowId;
+                        var currentID = Gui.Btrieve.gridsTableClass[gridName].selectedRowId;
 
-                        gridsDataTables[gridName].Rows.Clear();
+                        Gui.Btrieve.gridsDataTables[gridName].Rows.Clear();
                         new DisplayTableSetupFunction().fillDataTable(gridName, Gui);
 
-                        var currentDataRow = gridsDataTables[gridName].Rows.Find(currentID);
-                        var currentDataRowIndex = gridsDataTables[gridName].Rows.IndexOf(currentDataRow);
+                        var currentDataRow = Gui.Btrieve.gridsDataTables[gridName].Rows.Find(currentID);
+                        var currentDataRowIndex = Gui.Btrieve.gridsDataTables[gridName].Rows.IndexOf(currentDataRow);
                         //var currentDataRowIndex = dg.Items((object)currentDataRow.ItemArray);
 
                         DisplayTableSetupFunction.dataGridUpdated = true;
@@ -8400,28 +8400,28 @@ $@"EXECUTE sp_executesql N'
 
 
 
-                        var itemArray = gridsDataTables[gridName].Rows[dg.SelectedIndex].ItemArray;
+                        var itemArray = Gui.Btrieve.gridsDataTables[gridName].Rows[dg.SelectedIndex].ItemArray;
                         //itemArray[0] = gridsTableClass[gridName].selectedRowId;
 
                         for (int i = 1; i < itemArray.Length; i++)
                         {
 
-                            if (Gui.DEFINES.TryGetValue(gridsTableClass[gridName].tags[i - 1].ToLower(), out DefineVariable defVar))
+                            if (Gui.DEFINES.TryGetValue(Gui.Btrieve.gridsTableClass[gridName].tags[i - 1].ToLower(), out DefineVariable defVar))
                             {
                                 itemArray[i] = defVar.AsString();//[gridsTableClass[gridName].selectedRowId].AsString();
-                                gridsDataTables[gridName].Rows[dg.SelectedIndex].ItemArray[i] = itemArray[i];
+                                Gui.Btrieve.gridsDataTables[gridName].Rows[dg.SelectedIndex].ItemArray[i] = itemArray[i];
                                 
                             }
                         }
 
-                        gridsDataTables[gridName].Rows[dg.SelectedIndex].ItemArray = itemArray;
+                        Gui.Btrieve.gridsDataTables[gridName].Rows[dg.SelectedIndex].ItemArray = itemArray;
                         
 
                         break;
                     
                     case "close":
-                        if (gridsDataTables.ContainsKey(gridName))
-                            gridsDataTables[gridName].Rows.Clear();
+                        if (Gui.Btrieve.gridsDataTables.ContainsKey(gridName))
+                            Gui.Btrieve.gridsDataTables[gridName].Rows.Clear();
                         break;
 
                     default:
@@ -8457,7 +8457,7 @@ $@"EXECUTE sp_executesql N'
                         {
                             case "clear":
 
-                                if (gridsTableClass.Keys.Contains(gridName)) // -> wlistF
+                                if (Gui.Btrieve.gridsTableClass.Keys.Contains(gridName)) // -> wlistF
                                 {
 
                                     //// add new grid row
@@ -8468,7 +8468,7 @@ $@"EXECUTE sp_executesql N'
                                     ////dg.ScrollIntoView(dg.Items.GetItemAt(dg.Items.Count - 1));
                                     //dg.ScrollIntoView(dg.SelectedItem);
                                 }
-                                else if (gridsArrayClass.Keys.Contains(gridName)) // -> wlistM
+                                else if (Gui.Btrieve.gridsArrayClass.Keys.Contains(gridName)) // -> wlistM
                                 {
                                     //var currentRowCount = dg.Items.Count;
 
@@ -8535,22 +8535,22 @@ $@"EXECUTE sp_executesql N'
                             
                             case "addrow":
 
-                                if (gridsTableClass.Keys.Contains(gridName)) // -> wlistF
+                                if (Gui.Btrieve.gridsTableClass.Keys.Contains(gridName)) // -> wlistF
                                 {
                                     // add new grid row
-                                    var newRow = gridsDataTables[gridName].NewRow();
-                                    gridsDataTables[gridName].Rows.Add(newRow);
+                                    var newRow = Gui.Btrieve.gridsDataTables[gridName].NewRow();
+                                    Gui.Btrieve.gridsDataTables[gridName].Rows.Add(newRow);
 
                                     dg.SelectedIndex = dg.Items.Count - 1;
                                     //dg.ScrollIntoView(dg.Items.GetItemAt(dg.Items.Count - 1));
                                     dg.ScrollIntoView(dg.SelectedItem);
                                 }
-                                else if (gridsArrayClass.Keys.Contains(gridName)) // -> wlistM
+                                else if (Gui.Btrieve.gridsArrayClass.Keys.Contains(gridName)) // -> wlistM
                                 {
                                     var currentRowCount = dg.Items.Count;
 
                                     // check for max length
-                                    if (gridsArrayClass[gridName].maxElemsVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable defVar))
+                                    if (Gui.Btrieve.gridsArrayClass[gridName].maxElemsVarName != null && Gui.DEFINES.TryGetValue(Gui.Btrieve.gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable defVar))
                                     {
                                         if (currentRowCount + 1 > defVar.Value)
                                         {
@@ -8560,7 +8560,7 @@ $@"EXECUTE sp_executesql N'
                                     }
                                     else
                                     {
-                                        if (currentRowCount + 1 > gridsArrayClass[gridName].maxElemsValue)
+                                        if (currentRowCount + 1 > Gui.Btrieve.gridsArrayClass[gridName].maxElemsValue)
                                         {
                                             MessageBox.Show("Maximum elements reached.");
                                             return Variable.EmptyInstance;
@@ -8568,7 +8568,7 @@ $@"EXECUTE sp_executesql N'
                                     }
 
                                     // add new array item
-                                    foreach (var item in gridsArrayClass[gridName].tags)
+                                    foreach (var item in Gui.Btrieve.gridsArrayClass[gridName].tags)
                                     {
                                         var tagToLower = item.ToLower();
 
@@ -8587,22 +8587,22 @@ $@"EXECUTE sp_executesql N'
 
 
                                     // fill linCntr with new element index
-                                    if (gridsArrayClass[gridName].lineCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar3))
+                                    if (Gui.Btrieve.gridsArrayClass[gridName].lineCntrVarName != null && Gui.DEFINES.TryGetValue(Gui.Btrieve.gridsArrayClass[gridName].lineCntrVarName.ToLower(), out DefineVariable defVar3))
                                     {
                                         defVar3.InitVariable(new Variable(currentRowCount), Gui);
                                     }
 
                                     // increment active elements variable
-                                    if (gridsArrayClass[gridName].actCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar4))
+                                    if (Gui.Btrieve.gridsArrayClass[gridName].actCntrVarName != null && Gui.DEFINES.TryGetValue(Gui.Btrieve.gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar4))
                                     {
                                         defVar4.InitVariable(new Variable(defVar4.Value + 1), Gui);
                                     }
 
-                                    gridsArrayClass[gridName].actCntrValue++;
+                                    Gui.Btrieve.gridsArrayClass[gridName].actCntrValue++;
 
                                     // add new grid row
-                                    var newRow = gridsDataTables[gridName].NewRow();
-                                    gridsDataTables[gridName].Rows.Add(newRow);
+                                    var newRow = Gui.Btrieve.gridsDataTables[gridName].NewRow();
+                                    Gui.Btrieve.gridsDataTables[gridName].Rows.Add(newRow);
 
                                     dg.ScrollIntoView(dg.Items.GetItemAt(dg.Items.Count - 1));
                                     dg.SelectedIndex = dg.Items.Count - 1;
@@ -8612,19 +8612,19 @@ $@"EXECUTE sp_executesql N'
 
                             case "deleterow":
 
-                                if (gridsTableClass.Keys.Contains(gridName)) // -> wlistF
+                                if (Gui.Btrieve.gridsTableClass.Keys.Contains(gridName)) // -> wlistF
                                 {
-                                    if (deleteFromDB(gridsDataTables[gridName].Rows[dg.SelectedIndex].ItemArray[0].ToString(), gridsOpenvs[gridName]))
+                                    if (deleteFromDB(Gui.Btrieve.gridsDataTables[gridName].Rows[dg.SelectedIndex].ItemArray[0].ToString(), Gui.Btrieve.gridsOpenvs[gridName]))
                                     {
-                                        gridsDataTables[gridName].Rows.RemoveAt(dg.SelectedIndex);
+                                        Gui.Btrieve.gridsDataTables[gridName].Rows.RemoveAt(dg.SelectedIndex);
                                     }
                                 }
-                                else if (gridsArrayClass.Keys.Contains(gridName)) // -> wlistM
+                                else if (Gui.Btrieve.gridsArrayClass.Keys.Contains(gridName)) // -> wlistM
                                 {
-                                    if (deleteFromArrays(dg.SelectedIndex, gridsArrayClass[gridName]))
+                                    if (deleteFromArrays(dg.SelectedIndex, Gui.Btrieve.gridsArrayClass[gridName]))
                                     {
                                         var indexToDelete = dg.SelectedIndex;
-                                        gridsDataTables[gridName].Rows.RemoveAt(indexToDelete);
+                                        Gui.Btrieve.gridsDataTables[gridName].Rows.RemoveAt(indexToDelete);
                                         if (dg.Items.Count <= indexToDelete)
                                         {
                                             dg.SelectedIndex = indexToDelete - 1;
@@ -8633,11 +8633,11 @@ $@"EXECUTE sp_executesql N'
                                             else
                                             {// ...deleted the last item remained
                                                 //add first item do DataTable
-                                                var newRow2 = gridsDataTables[gridName].NewRow();
-                                                gridsDataTables[gridName].Rows.Add(newRow2);
+                                                var newRow2 = Gui.Btrieve.gridsDataTables[gridName].NewRow();
+                                                Gui.Btrieve.gridsDataTables[gridName].Rows.Add(newRow2);
 
                                                 // add new array item
-                                                foreach (var item in gridsArrayClass[gridName].tags)
+                                                foreach (var item in Gui.Btrieve.gridsArrayClass[gridName].tags)
                                                 {
                                                     var tagToLower = item.ToLower();
 
@@ -8657,7 +8657,7 @@ $@"EXECUTE sp_executesql N'
                                         }
 
                                         // decrement active elements variable
-                                        if (gridsArrayClass[gridName].actCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar5))
+                                        if (Gui.Btrieve.gridsArrayClass[gridName].actCntrVarName != null && Gui.DEFINES.TryGetValue(Gui.Btrieve.gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar5))
                                         {
                                             if ((int)defVar5.Value > 1)
                                             {
@@ -8665,9 +8665,9 @@ $@"EXECUTE sp_executesql N'
                                             }
                                         }
 
-                                        if (gridsArrayClass[gridName].actCntrValue > 1)
+                                        if (Gui.Btrieve.gridsArrayClass[gridName].actCntrValue > 1)
                                         {
-                                            gridsArrayClass[gridName].actCntrValue--;
+                                            Gui.Btrieve.gridsArrayClass[gridName].actCntrValue--;
                                         }
                                     }
                                 }
@@ -8676,14 +8676,14 @@ $@"EXECUTE sp_executesql N'
 
                             case "insertrow":
 
-                                if (gridsTableClass.Keys.Contains(gridName)) // -> wlistF
+                                if (Gui.Btrieve.gridsTableClass.Keys.Contains(gridName)) // -> wlistF
                                 {
                                     //
                                 }
-                                else if (gridsArrayClass.Keys.Contains(gridName)) // -> wlistM
+                                else if (Gui.Btrieve.gridsArrayClass.Keys.Contains(gridName)) // -> wlistM
                                 {
                                     // check for max length
-                                    if (gridsArrayClass[gridName].maxElemsVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable defVar6))
+                                    if (Gui.Btrieve.gridsArrayClass[gridName].maxElemsVarName != null && Gui.DEFINES.TryGetValue(Gui.Btrieve.gridsArrayClass[gridName].maxElemsVarName.ToLower(), out DefineVariable defVar6))
                                     {
                                         if (dg.Items.Count + 1 > defVar6.Value)
                                         {
@@ -8693,26 +8693,26 @@ $@"EXECUTE sp_executesql N'
                                     }
                                     else
                                     {
-                                        if (dg.Items.Count + 1 > gridsArrayClass[gridName].maxElemsValue)
+                                        if (dg.Items.Count + 1 > Gui.Btrieve.gridsArrayClass[gridName].maxElemsValue)
                                         {
                                             MessageBox.Show("Maximum elements reached.");
                                             return Variable.EmptyInstance;
                                         }
                                     }
 
-                                    if (gridsArrayClass[gridName].tableOrArray == "array")
+                                    if (Gui.Btrieve.gridsArrayClass[gridName].tableOrArray == "array")
                                     {
-                                        if (insertIntoArrays(dg.SelectedIndex + 1, gridsArrayClass[gridName]))
+                                        if (insertIntoArrays(dg.SelectedIndex + 1, Gui.Btrieve.gridsArrayClass[gridName]))
                                         {
-                                            gridsDataTables[gridName].Rows.InsertAt(gridsDataTables[gridName].NewRow(), dg.SelectedIndex + 1);
+                                            Gui.Btrieve.gridsDataTables[gridName].Rows.InsertAt(Gui.Btrieve.gridsDataTables[gridName].NewRow(), dg.SelectedIndex + 1);
 
                                             // increment active elements variable
-                                            if (gridsArrayClass[gridName].actCntrVarName != null && Gui.DEFINES.TryGetValue(gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar7))
+                                            if (Gui.Btrieve.gridsArrayClass[gridName].actCntrVarName != null && Gui.DEFINES.TryGetValue(Gui.Btrieve.gridsArrayClass[gridName].actCntrVarName.ToLower(), out DefineVariable defVar7))
                                             {
                                                 defVar7.InitVariable(new Variable(defVar7.Value + 1), Gui);
                                             }
 
-                                            gridsArrayClass[gridName].actCntrValue++;
+                                            Gui.Btrieve.gridsArrayClass[gridName].actCntrValue++;
 
                                             dg.SelectedIndex++;
                                             dg.ScrollIntoView(dg.SelectedItem);

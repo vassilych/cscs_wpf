@@ -1,15 +1,18 @@
-Import(strTrim(mpath()) + "CSCS.Math.dll");
-include(strTrim(tpath()) +"wxbiposa_inc_lists.cscs"); //look-up lists
-include(strTrim(tpath()) +"wxbiposa_inc_a.cscs"); //look-up lists
-include(strTrim(tpath()) +"wxbiposa_inc_b.cscs"); //look-up lists
-include(strTrim(tpath()) +"wxbiposa_inc_c.cscs"); //look-up lists
-CreateWindow(strTrim(tpath()) +"wxbiposa.xaml");
+//include(strTrim(tpath()) +"chainLib.cscs");
 
-// DEFINE var1, var2, var3 type i;
-// var1 = 100;
-// var2 = 90;
-// var3 = var1/var2;
-// MessageBox(var3); // 1.11111
+Import(strTrim(mpath()) + "CSCS.Math.dll");
+
+include(strTrim(tpath()) + "wxbiposa_inc_lists.cscs");
+include(strTrim(tpath()) + "wxbiposa_inc_a.cscs");
+include(strTrim(tpath()) + "wxbiposa_inc_b.cscs");
+include(strTrim(tpath()) + "wxbiposa_inc_c.cscs");
+// IncludeScript("wxbiposa_inc_lists.cscs"); //look-up lists
+// IncludeScript("wxbiposa_inc_a.cscs"); //look-up lists
+// IncludeScript("wxbiposa_inc_b.cscs"); //look-up lists
+// IncludeScript("wxbiposa_inc_c.cscs"); //look-up lists
+
+CreateWindow(strTrim(tpath()) + "wxbiposa.xaml");
+// CreateWindowXaml("wxbiposa.xaml");
 
 function Wxbiposa_onDisplay()
 {
@@ -129,6 +132,9 @@ function Wxbiposa_onDisplay()
     do_mjeseca = true;
     comboItems = {"SVI TIPOVI","STANDARDNI", "PREDUJAM", "STORNO"};
     AddWidgetData(cbTipRacuna, comboItems);
+    
+    today = Now("dd/MM/yyyy");
+
     pripremljeno = false;
     setFocus("gbPripremi");
     tip_racuna= "SVI TIPOVI";
@@ -159,6 +165,7 @@ function gbPripremi@clicked()
     setHorizontalBars();
     setWeekComparison();
     setCustomerAndInvoiceCounts();
+    setCash();
     setSalesRatio();
     pripremljeno = true;
     cursor("dflt");
@@ -674,6 +681,43 @@ function setCustomerAndInvoiceCounts()
     Format("br_naknadnoFiskalizirani", "nofd", recv: "br_naknadnoFiskalizirani_string");   
     HorizontalBar("HorizontalBarBrNaknadnoFiskalizirani", "Text", br_naknadnoFiskalizirani_string);
     HorizontalBar("HorizontalBarBrNaknadnoFiskalizirani", "Color", bojeArray);
+
+
+    //računi na čekanju
+    br_nacekanju = 0;    
+    sql_str = "SELECT count(distinct KS_IG_RACUN) as br_nacekanju";
+    sql_str += " FROM " + trenutnaGodinaBaza + ".dbo.NKKSINWG";
+    sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.NKKSINWL ON KS_IG_RACUN= KS_IL_RACUN";
+    sql_str += " LEFT JOIN "+trenutnaGodinaBaza+".dbo.nkmkarti ON KS_IL_PCODE= arti_artikl";
+    sql_str += " WHERE 1 = 1";
+    if(mjesec_h != "")
+    {
+        if(do_mjeseca)
+        {
+            sql_str += " AND month(KS_IG_DATUM)<= " + mjesec_h;
+            sql_str += " AND YEAR(KS_IG_DATUM)= " + ovagod_h;
+        }
+        else
+        {
+            sql_str += " AND month(KS_IG_DATUM)= " + mjesec_h;
+            sql_str += " AND YEAR(KS_IG_DATUM)= " + ovagod_h;
+        }
+    }
+    filterPart();
+    try	{
+		sqlResult = sqlQuery(sql_str);
+	}catch(exc){
+		MessageBox(exc);
+	}
+
+    if (Size(sqlResult) > 1)
+    {
+        br_nacekanju = sqlResult[1][0];
+    } 
+
+    Format("br_nacekanju", "nofd", recv: "br_nacekanju_string"); 
+    HorizontalBar("HorizontalBarBrNaCekanju", "Text", br_nacekanju_string);
+    //HorizontalBar("HorizontalBarBrNaCekanju", "Color", bojeArray);
 }
 
 
@@ -1019,6 +1063,72 @@ function setWeekComparison()
 	HorizontalBar("HorizontalBarLT", "Text", tot_ProsliTj_string);
 	HorizontalBar("HorizontalBarLT", "Color", bojeArrayTJ);
 	return;
+}
+
+function setCash(){
+    //ukupna primljena gotovina
+    sql_str = "SELECT isnull(ROUND(sum(CASE WHEN ks_upl_sif_pl= 'POG' THEN -1 ELSE 1 END * ks_upl_iznos), 2), 0) as gotovina ";
+    sql_str += " FROM dbo.NKKSINVG AS U";
+    sql_str += " LEFT JOIN dbo.nkksupla ON ks_ig_racun = KS_upl_racun";
+    sql_str += " LEFT JOIN dbo.nkkskasa ON ks_ks_sifra = ks_ig_kasa";
+    sql_str += " WHERE YEAR(KS_IG_DATUM)=" + ovagod_h + " AND ks_ig_obracun = 0 AND ks_upl_vrsta = 'G'";
+    if (posKasa != "")
+    {
+        // sql_str += " AND ks_ig_kasa IN (" +  + ")";
+        sql_str += " AND ks_ig_kasa = '" + posKasa + "'";
+    }
+    sql_str += " GROUP BY ks_upl_vrsta";
+    sql_str += " ORDER BY ks_upl_vrsta desc";
+    try
+    {
+        //SaveFile(sql_str);
+        queryResult = sqlquery(SQL_str);
+    }
+    catch(exc)
+    {
+        MessageBox(exc);
+    }
+
+    if(Size(queryResult) == 1){
+        UkupnaPrimljenaGotovina = 0;
+    }elif(Size(queryResult) == 2){
+        UkupnaPrimljenaGotovina = queryResult[1][0];
+    }
+
+    Format("UkupnaPrimljenaGotovina", "nofd", recv: "UkupnaPrimljenaGotovina_string");
+	HorizontalBar("HorizontalBarUkPrimGot", "Text", UkupnaPrimljenaGotovina_string);
+	//HorizontalBar("HorizontalBarUkPrimGot", "Color", bojeArrayTJ);
+
+    //pocetno stanje
+    sql_str = "SELECT SUM(ks_ks_pocsal) FROM dbo.nkkskasa WHERE ks_ks_rez2 <> 'D' ";
+    if (posKasa != "")
+    {
+        // sql_str += " AND AND ks_ks_sifra IN (" +  + ")";
+        sql_str += " AND ks_ks_sifra = '" + posKasa + "'";
+    }
+    try
+    {
+        //SaveFile(sql_str);
+        queryResult = sqlquery(SQL_str);
+    }
+    catch(exc)
+    {
+        MessageBox(exc);
+    }
+
+    if(Size(queryResult) == 2){
+        PocetnoStanje = queryResult[1][0];
+    }
+
+    Format("PocetnoStanje", "nofd", recv: "PocetnoStanje_string");
+	HorizontalBar("HorizontalBarPocStanje", "Text", PocetnoStanje_string);
+	//HorizontalBar("HorizontalBarPocStanje", "Color", bojeArrayTJ);
+
+    //X-Total
+    XTotal = UkupnaPrimljenaGotovina + PocetnoStanje;
+    Format("XTotal", "nofd", recv: "XTotal_string");
+	HorizontalBar("HorizontalBarXTotal", "Text", XTotal_string);
+	//HorizontalBar("HorizontalBarXTotal", "Color", bojeArrayTJ);
 }
 
 function setSalesRatio(){

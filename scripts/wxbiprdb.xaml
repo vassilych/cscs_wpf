@@ -257,6 +257,9 @@ Padding="-8"
 x:Name="gbPrint2"
 Background="gray"
 TabIndex="35"
+Foreground="#FFFDFDFD"
+Content="Ispis"
+FontSize="20"
 HorizontalAlignment="Right"
 Width="110">
                 <Button.Resources>
@@ -265,13 +268,6 @@ Width="110">
             Value="6" />
                     </Style>
                 </Button.Resources>
-                <Grid Grid.Column="1">
-                    <TextBlock FontSize="20"
-           Foreground="#FFFDFDFD"
-           VerticalAlignment="Center"
-           Text="Ispis"
-           HorizontalAlignment="Center" />
-                </Grid>
             </Button>
         </Grid>
     </Viewbox>

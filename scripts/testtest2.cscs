@@ -1,16 +1,4 @@
-//include(strTrim(tpath()) +"chainLib.cscs");
-
-Import(strTrim(mpath()) + "CSCS.Math.dll");
-
-include(strTrim(tpath()) + "wxbiprb_inc_lists.cscs");
-include(strTrim(tpath()) + "wxbiprb_inc_a.cscs");
-include(strTrim(tpath()) + "wxbiprb_inc_b.cscs");
-// IncludeScript("wxbiprb_inc_lists.cscs"); //look-up lists
-// IncludeScript("wxbiprb_inc_a.cscs"); //look-up lists
-// IncludeScript("wxbiprb_inc_b.cscs"); //look-up lists
-
-CreateWindow(strTrim(tpath()) + "wxbiprb.xaml");
-// CreateWindowXaml("wxbiprb.xaml");
+CreateWindow(strTrim(tpath()) +"wxbiprb.xaml");
 
 function Wxbiprb_onDisplay()
 {
