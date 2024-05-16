@@ -1,4 +1,7 @@
-astring = "abc";
+CreateWindow(strTrim(tpath()) +"wxbiprb.xaml");
 
 
-quit;
+function Wxbiprb_onDisplay()
+{
+    danas_h = Now("dd/MM/yyyy");
+}

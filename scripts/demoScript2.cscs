@@ -1,18 +1,29 @@
 CreateWindow(strTrim(tpath()) + "demoScript2.xaml");
 
-function demoScript2_onDisplay(){
-	PARAM(arg1,arg2);
+// OnInit event is fired before OnDisplay event at this moment the window is still not visible
+function demoScript2_onInit(){
+	// this function PARAM will recieve parameters sent from previous script.
+    // They will be named arg1 and arg2 in this script
+    PARAM(arg1,arg2);
+    // Show arguments
 	MessageBox(arg1 + arg2);
+}
 
+function demoScript2_onDisplay(){
+    // now display the data in line chart
     Chart("LineChart", "init");
-    Chart("LineChart", "seriesType", "lineSeries");
+    // x labels first, with font size of 12 px
     Chart("LineChart", "labels","x", 12,  {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"});
     Chart("LineChart", "SeparatorStep", 1);
-    Chart("LineChart", "values", {100, 512, 265, 300, 1000, 456, 365, 111, 900, 800}, "Sample data 1");
-    Chart("LineChart", "values", {30, 500, 345, 456, 567, 678, 789, 890, 500, 200}, "Sample data 2");
+    // set of values for the first line chart
+    Chart("LineChart", "values", "line", {100, 512, 265, 300, 1000, 456, 365, 111, 900, 800}, "Sample data 1");
+    // set of values for the second line chart
+    Chart("LineChart", "values", "line", {30, 500, 345, 456, 567, 678, 789, 890, 500, 200}, "Sample data 2");
+    // then you define colors of the first and the second line
     Chart("LineChart", "Color.Series", { "#0091D5", "red"}); 
 }
 
 function exitButton@clicked(){
+    // exit from the script and return to the previous(parent) script
     quit;
 }

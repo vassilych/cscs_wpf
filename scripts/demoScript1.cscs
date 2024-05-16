@@ -1,14 +1,18 @@
 CreateWindow(strTrim(tpath()) + "demoScript1.xaml");
 
 function demoScript1_onDisplay(){
+	// following are functions to describe pie chart with the name "dougnutChart1"
     PieChart("dougnutChart1", "init");
+	// following are values, labels and widths of doughnut's radial columns 
 	PieChart("dougnutChart1", "values", 50 , "label 1", 50);
 	PieChart("dougnutChart1", "values", 150 , "label 2", 50);
 	PieChart("dougnutChart1", "values", 250 , "label 3", 50);
 	PieChart("dougnutChart1", "values", 350 , "label 4", 50);
+	// colors of chart's sectors
 	PieChart("dougnutChart1", "colors", { "#1C4E80", "#EA6A47", "#5acc6b", "#34d2fa" });
 }
 
+// button clicked event, starts a new script and sends parameters("Hello" - constant and var1 - variable)
 function button1@clicked(){
     var1 = " World!";
     CHAIN strTrim(tpath())+"demoScript2.cscs" WITH "Hello" var1;

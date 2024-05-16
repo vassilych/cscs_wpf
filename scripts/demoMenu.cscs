@@ -1,18 +1,25 @@
+// Create main menu window; tpath gets the location of the scripts folder
 CreateWindow(strTrim(tpath()) + "demoMenuWindow.xaml");
 
+// if you like you can use implicit variable but in next line we will explicitly define a variable
 define mainMenuDC type a;
 
-function runScript(sender, load){
-    if(sender == "exit"){
-        exit;
-    }
-
-    CHAIN strTrim(tpath())+strTrim(sender);
-}
-
+// first event is OnDisplay window, then we add menu items
 function demoMenuWindow_OnDisplay(){
     AddMenuItem("mainMenuDC", "ScriptsDC", "Scripts");
 
+    // following lines are menu items of ScriptsDC dropdown menu
     AddMenuItem("ScriptsDC", "demoScript1.cscs", "Run script1", "runScript");
     AddMenuItem("ScriptsDC", "exit", "Exit", "runScript");
+}
+
+// function for starting scripts from main menu
+function runScript(sender, load){
+    if(sender == "exit"){
+        // exits the exe program
+        exit;
+    }
+
+    // execute a script from sender that may be "demoScript1.cscs" in our case
+    CHAIN strTrim(tpath())+strTrim(sender);
 }
