@@ -1,12 +1,23 @@
 CreateWindow(strTrim(tpath()) + "demoScript2.xaml");
 
+DEFINE aPointer type f; // pointer type
+DEFINE var1 type i size 10; // integer variable
+
 // OnInit event is fired before OnDisplay event at this moment the window is still not visible
 function demoScript2_onInit(){
-	// this function PARAM will recieve parameters sent from previous script.
+    // this function PARAM will recieve parameters sent from previous script.
     // They will be named arg1 and arg2 in this script
     PARAM(arg1,arg2);
     // Show arguments
 	MessageBox(arg1 + arg2);
+
+    // aPointer points to var1
+    aPointer -> var1;
+
+    var1 = 100;
+    MessageBox("var1 = " + var1 + ", &aPointer = " + &aPointer);
+    &aPointer = 200;
+    MessageBox("var1 = " + var1 + ", &aPointer = " + &aPointer);
 }
 
 function demoScript2_onDisplay(){

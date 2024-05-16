@@ -17,3 +17,9 @@ function button1@clicked(){
     var1 = " World!";
     CHAIN strTrim(tpath())+"demoScript2.cscs" WITH "Hello" var1;
 }
+
+// the same as function above but starts a script in a new process
+function button2@clicked(){
+    var1 = " World!(NEWRUNTIME)";
+    CHAIN strTrim(tpath())+"demoScript2.cscs" NEWRUNTIME WITH "Hello" var1;
+}
