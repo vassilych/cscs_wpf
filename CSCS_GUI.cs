@@ -1,6 +1,4 @@
 using CSCS.InterpreterManager;
-using DevExpress.XtraCharts.Printing;
-using DevExpress.XtraPrinting;
 using SplitAndMerge;
 using System;
 using System.Collections.Generic;
@@ -4144,19 +4142,21 @@ namespace WpfCSCS
 			else if (widget is ASDateEditer && !string.IsNullOrWhiteSpace(text))
 			{
 				var dateEditer = widget as ASDateEditer;
-				var format = text.Length == 10 ? "dd/MM/yyyy" : text.Length == 8 ? "dd/MM/yy" : "yyyy/MM/dd hh:mm:ss";
+                var dateStr = ProcessDateStr(text);
+                var format = dateStr.Length == 10 ? "dd/MM/yyyy" : dateStr.Length == 8 ? "dd/MM/yy" : "yyyy/MM/dd hh:mm:ss";
 				dispatcher.Invoke(new Action(() =>
 				{
-					dateEditer.SelectedDate = DateTime.ParseExact(text, format, CultureInfo.InvariantCulture);
+					dateEditer.SelectedDate = DateTime.ParseExact(dateStr, format, CultureInfo.InvariantCulture);
 				}));
 			}
 			else if (widget is ASDateEditer2 && !string.IsNullOrWhiteSpace(text))
 			{
 				var dateEditer = widget as ASDateEditer2;
-				var format = text.Length == 10 ? "dd/MM/yyyy" : text.Length == 8 ? "dd/MM/yy" : "yyyy/MM/dd hh:mm:ss";
+                var dateStr = ProcessDateStr(text);
+                var format = dateStr.Length == 10 ? "dd/MM/yyyy" : dateStr.Length == 8 ? "dd/MM/yy" : "yyyy/MM/dd hh:mm:ss";
 				dispatcher.Invoke(new Action(() =>
 				{
-					dateEditer.TempDate = DateTime.ParseExact(text, format, CultureInfo.InvariantCulture);
+					dateEditer.TempDate = DateTime.ParseExact(dateStr, format, CultureInfo.InvariantCulture);
 				}));
 			}
 			else if (widget is DatePicker && !string.IsNullOrWhiteSpace(text))
@@ -4175,7 +4175,38 @@ namespace WpfCSCS
 			}
 			return true;
 		}
-	}
+		public static string ProcessDateStr(string dateStr)
+		{
+            if (dateStr.Length >= 10)
+            {
+                return dateStr;
+            }
+            char sep = '/';
+            var parts = dateStr.Split(sep);
+			if (parts.Length == 1)
+			{
+				sep = '.';
+                parts = dateStr.Split(sep);
+            }
+            if (parts.Length <= 2)
+            {
+				return dateStr;
+            }
+            var first = parts[0];
+            var second = parts[1];
+            var third = parts[2];
+            if (first.Length == 1)
+			{
+				first = "0" + first;
+			}
+            if (second.Length == 1)
+            {
+                second = "0" + second;
+            }
+			var result = first + sep + second + sep + third;
+			return result;
+        }
+    }
 
 	public class MessageBoxFunction : ParserFunction
 	{
