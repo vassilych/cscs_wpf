@@ -7632,14 +7632,15 @@ namespace WpfCSCS
                 ProcessParentScript(script, m_name, varValue);
 				return result;
 			}
-			if (Mode == MODE.INCREMENT || Mode == MODE.DECREMENT)
+			var name = m_originalName.EndsWith("]") ? m_originalName : m_name;
+            if (Mode == MODE.INCREMENT || Mode == MODE.DECREMENT)
 			{
-				var result = IncrementDecrementFunction.ProcessAction(m_name, m_action, m_prefix, script);
+				var result = IncrementDecrementFunction.ProcessAction(name, m_action, m_prefix, script);
 				return result;
 			}
 			if (m_action.Length > 1)
 			{
-				var result = OperatorAssignFunction.ProcessOperator(m_name, m_action, script);
+				var result = OperatorAssignFunction.ProcessOperator(name, m_action, script);
 				return result;
 			}
 			return null;
