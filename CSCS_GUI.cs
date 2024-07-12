@@ -7121,36 +7121,59 @@ namespace WpfCSCS
 			Tuple = a;
 		}
 
-		static double CheckValue(string type, int size, Variable varValue)
+		static double CheckValue(string type, int size, int dec, Variable varValue)
 		{
-			double val = varValue.AsDouble();
+			if (varValue.Type != VarType.NONE && varValue.Type != VarType.NUMBER &&
+                (type == "n" || type == "b" || type == "i" || type == "r"))
+			{
+                throw new ArgumentException("Error: Variable type [" + varValue.Type + "], required [" + type + "]");
+            }
+            double val = varValue.AsDouble();
 			switch (type)
 			{
 				case "b":
 					if (val < Byte.MinValue || val > Byte.MaxValue)
 					{
-						return 0;
+                        throw new ArgumentException("Error: Incorrect value [" + varValue.String + "], required [" + type + "]");
 					}
 					break;
 				case "i":
 					if (val < short.MinValue || val > short.MaxValue)
 					{
-						return 0;
-					}
-					break;
+                        throw new ArgumentException("Error: Incorrect value [" + varValue.String + "], required [" + type + "]");
+                    }
+                    break;
 				case "r":
 					if (val < Int32.MinValue || val > Int32.MaxValue)
 					{
-						return 0;
-					}
-					break;
+                        throw new ArgumentException("Error: Incorrect value [" + varValue.String + "], required [" + type + "]");
+                    }
+                    break;
 			}
 			if (size > 0)
 			{
 				var strValue = val.ToString();
 				if (strValue.Length > size)
 				{
-					return 0;
+					var newVal = strValue.Substring(0, size);
+					if (newVal.EndsWith(".") || newVal.ToLower().EndsWith("e"))
+					{
+                        newVal = newVal.Substring(0, newVal.Length - 1);
+                    }
+					var ind = (newVal.Replace(",", ".").IndexOf("."));
+					var delta = newVal.Length - ind - dec - 1;
+                    if (ind >= 0 && delta > 0)
+					{
+                        newVal = newVal.Substring(0, newVal.Length - delta);
+                    }
+                    if (newVal.EndsWith(".") || newVal.ToLower().EndsWith("e"))
+                    {
+                        newVal = newVal.Substring(0, newVal.Length - 1);
+                    }
+					if (!Double.TryParse(newVal, out val))
+					{
+                        throw new ArgumentException("Error:Couldn't convert [" + newVal + "], to [" + type + "]");
+                    }
 				}
 			}
 			return val;
@@ -7212,7 +7235,7 @@ namespace WpfCSCS
 				case "n": // number
 				case "r": // small int
 				default:
-					Value = CheckValue(DefType, Size, init);
+					Value = CheckValue(DefType, Size, Dec, init);
 					Type = VarType.NUMBER;
 					break;
 			}
