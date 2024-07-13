@@ -7123,13 +7123,18 @@ namespace WpfCSCS
 
 		static double CheckValue(string type, int size, int dec, Variable varValue)
 		{
-			if (varValue.Type != VarType.NONE && varValue.Type != VarType.NUMBER &&
-                (type == "n" || type == "b" || type == "i" || type == "r"))
-			{
+            double val = Math.Round(varValue.AsDouble(), dec);
+            if (varValue.Type == VarType.NONE)
+            {
+				return val;
+            }
+            if (varValue.Type != VarType.NUMBER && 
+			    (type == "n" || type == "b" || type == "i" || type == "r") &&
+				!Double.TryParse(varValue.String, out val))
+            {
                 throw new ArgumentException("Error: Variable type [" + varValue.Type + "], required [" + type + "]");
             }
-            double val = varValue.AsDouble();
-			switch (type)
+            switch (type)
 			{
 				case "b":
 					if (val < Byte.MinValue || val > Byte.MaxValue)
@@ -7160,19 +7165,9 @@ namespace WpfCSCS
 					{
                         newVal = newVal.Substring(0, newVal.Length - 1);
                     }
-					var ind = (newVal.Replace(",", ".").IndexOf("."));
-					var delta = newVal.Length - ind - dec - 1;
-                    if (ind >= 0 && delta > 0)
-					{
-                        newVal = newVal.Substring(0, newVal.Length - delta);
-                    }
-                    if (newVal.EndsWith(".") || newVal.ToLower().EndsWith("e"))
-                    {
-                        newVal = newVal.Substring(0, newVal.Length - 1);
-                    }
 					if (!Double.TryParse(newVal, out val))
 					{
-                        throw new ArgumentException("Error:Couldn't convert [" + newVal + "], to [" + type + "]");
+                        throw new ArgumentException("Error: Couldn't convert [" + newVal + "], to [" + type + "]");
                     }
 				}
 			}
