@@ -6966,7 +6966,8 @@ namespace WpfCSCS
 			get;
 			set;
 		} = " ";
-		string TIME_FORMAT { get; set; } = "";
+		string TIME_FORMAT { get;
+			set; } = "";
 
 		public string Name { get; set; }
 		public string DefValue { get; set; }
@@ -7218,7 +7219,7 @@ namespace WpfCSCS
 					break;
 				case "d":
 				case "t":
-					DateTime = ToDateTime(init.AsString());
+					DateTime = ToDateTime(init);
 					Type = VarType.DATETIME;
 					break;
 				case "l": // "logic" (boolean)
@@ -7334,7 +7335,7 @@ namespace WpfCSCS
 			{
 				return TIME_FORMAT;
 			}
-			TIME_FORMAT = "dd/MM/yyyy";
+			TIME_FORMAT = "HH:mm:ss";
 			switch (Size)
 			{
 				case 3:
@@ -7365,10 +7366,16 @@ namespace WpfCSCS
 			return ch == 't' || ch == 'y' || ch == '1';
 		}
 
-		public DateTime ToDateTime(string strValue)
+		public DateTime ToDateTime(Variable val)
 		{
+            DateTime oldest = new DateTime(1900, 1, 1, 0, 0, 0);
+            DateTime dt = oldest;
+            if (val.Type == VarType.NONE || (val.Type == VarType.NUMBER && val.Value == 0.0))
+			{
+				return dt;
+			}
+			var strValue = val.AsString();
 			//DateTime dt = DateTime.MinValue;
-			DateTime dt = new DateTime(1900, 1, 1);
 			if (DefType == "d")
 			{
 				if (!string.IsNullOrWhiteSpace(strValue) &&
@@ -7386,10 +7393,10 @@ namespace WpfCSCS
 					else
 						throw new ArgumentException("Error: Couldn't parse [" + strValue + "] with format [" + GetDateFormat() + "]");
 				}
-				else if (dt.CompareTo(new DateTime(1900, 1, 1)) < 0)
+				else if (dt.CompareTo(oldest) < 0)
 				{
 					MessageBox.Show("Date range is out of limit: " + dt.ToString(GetDateFormat()) + "\nDate is set to 0");
-					dt = new DateTime(1900, 1, 1);
+					dt = oldest;
                 }
 			}
 			if (DefType == "t")
