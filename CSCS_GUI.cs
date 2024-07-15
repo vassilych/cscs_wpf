@@ -7196,18 +7196,18 @@ namespace WpfCSCS
 			{
 				case "a":
 					String = init.AsString();
-					Type = VarType.STRING;
+                    init.Type = Type = VarType.STRING;
 					if (Size > 0 && m_string.Length > Size)
 					{
-						m_string = m_string.Substring(0, Size);
+						init.String = m_string = m_string.Substring(0, Size);
 					}
 					if (Up)
 					{
-						m_string = m_string.ToUpper();
+                        init.String = m_string = m_string.ToUpper();
 					}
 					if (Down)
 					{
-						m_string = m_string.ToLower();
+                        init.String = m_string = m_string.ToLower();
 					}
 
 					break;
@@ -7215,24 +7215,25 @@ namespace WpfCSCS
 				case "p":
 				case "f":
 					Pointer = init.AsString();
-					Type = VarType.POINTER;
+                    init.Type = Type = VarType.POINTER;
 					break;
 				case "d":
 				case "t":
-					DateTime = ToDateTime(init);
-					Type = VarType.DATETIME;
+                    init.DateTime = DateTime = ToDateTime(init);
+					init.String = DefType == "d" ? GetDateFormat() : GetTimeFormat();
+                    init.Type = Type = VarType.DATETIME;
 					break;
 				case "l": // "logic" (boolean)
-					Value = ToBool(init.AsString()) ? 1 : 0;
-					Type = VarType.NUMBER;
+                    init.Value = Value = ToBool(init.AsString()) ? 1 : 0;
+                    init.Type = Type = VarType.NUMBER;
 					break;
 				case "b": // byte
 				case "i": // integer
 				case "n": // number
 				case "r": // small int
 				default:
-					Value = CheckValue(DefType, Size, Dec, init);
-					Type = VarType.NUMBER;
+                    init.Value = Value = CheckValue(DefType, Size, Dec, init);
+                    init.Type = Type = VarType.NUMBER;
 					break;
 			}
 
@@ -7244,17 +7245,18 @@ namespace WpfCSCS
 						  this.DeepClone() as DefineVariable : null;
 				if (Tuple == null || arrayIndex < 0)
 				{
-					Tuple = new List<Variable>(Array);
+                    init.Tuple = Tuple = new List<Variable>(Array);
 				}
 				if (missingElems > 0)
 				{
 					item.Array = 0;
 					Tuple.AddRange(System.Linq.Enumerable.Repeat(item, missingElems));
-				}
-				Type = VarType.ARRAY;
+					init.Tuple = Tuple;
+                }
+                init.Type = Type = VarType.ARRAY;
 				if (arrayIndex >= 0)
 				{
-					Tuple[arrayIndex] = init.Clone();
+                    init.Tuple[arrayIndex] = Tuple[arrayIndex] = init.Clone();
 				}
 			}
 
@@ -7303,13 +7305,13 @@ namespace WpfCSCS
 
 		public string GetDateFormat()
 		{
-			//return "dd/MM/yyyy";
 			if (!string.IsNullOrWhiteSpace(DATE_FORMAT))
 			{
 				return DATE_FORMAT;
 			}
+			// disable US date formatting for now
 			string sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
-			var usDate = !sysFormat.StartsWith("dd") && !sysFormat.EndsWith("dd");
+			var usDate = false;// !sysFormat.StartsWith("dd") && !sysFormat.EndsWith("dd");
 			DATE_FORMAT = "dd/MM/yyyy";
 			switch (Size)
 			{
@@ -7375,36 +7377,41 @@ namespace WpfCSCS
 				return dt;
 			}
 			var strValue = val.AsString();
-			//DateTime dt = DateTime.MinValue;
-			if (DefType == "d")
+			var format = DefType == "d" ? GetDateFormat() : GetTimeFormat();
+			var theValue = val.Type == VarType.DATETIME ? val.DateTime.ToString(format) : strValue;
+            if (DefType == "d")
 			{
-				if (!string.IsNullOrWhiteSpace(strValue) &&
-				    !DateTime.TryParseExact(strValue, GetDateFormat(), CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+				if (!string.IsNullOrWhiteSpace(theValue) &&
+				    !DateTime.TryParseExact(theValue, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
 				{
-					if(strValue.Length == 10 && GetDateFormat().Length == 8)
+					if(theValue.Length >= 10 && format.Length < 10 && format.Length >= 8)
 					{
-						var shortenedDate = strValue.Substring(0, 6) + strValue.Substring(8, 2);
+						var shortenedDate = theValue.Substring(0, 6) + theValue.Substring(8, 2);
 
-						if (!DateTime.TryParseExact(shortenedDate, GetDateFormat(), CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+						if (!DateTime.TryParseExact(shortenedDate, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
 						{
-							throw new ArgumentException("Error: Couldn't parse [" + strValue + "] with format [" + GetDateFormat() + "]");
+							throw new ArgumentException("Error: Couldn't parse [" + theValue + "] with format [" + format + "]");
 						}
                     }
 					else
-						throw new ArgumentException("Error: Couldn't parse [" + strValue + "] with format [" + GetDateFormat() + "]");
+						throw new ArgumentException("Error: Couldn't parse [" + theValue + "] with format [" + format + "]");
 				}
 				else if (dt.CompareTo(oldest) < 0)
 				{
-					MessageBox.Show("Date range is out of limit: " + dt.ToString(GetDateFormat()) + "\nDate is set to 0");
+					MessageBox.Show("Date range is out of limit: " + dt.ToString(format) + "\nDate is set to 0");
 					dt = oldest;
                 }
 			}
 			if (DefType == "t")
 			{
-				if (!string.IsNullOrWhiteSpace(strValue) &&
-				    !DateTime.TryParseExact(strValue, GetTimeFormat(), CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+                if (theValue.Length >= 8 && format.Length < 8 && format.Length >= 5)
+                {
+                    theValue = theValue.Substring(0, 5);
+                }
+                if (!string.IsNullOrWhiteSpace(theValue) &&
+				    !DateTime.TryParseExact(theValue, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
 				{
-					throw new ArgumentException("Error: Couldn't parse [" + strValue + "] with format [" + GetTimeFormat() + "]");
+					throw new ArgumentException("Error: Couldn't parse [" + theValue + "] with format [" + format + "]");
 				}
 				dt = dt.Subtract(new TimeSpan(dt.Date.Ticks));
 			}

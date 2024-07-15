@@ -729,7 +729,16 @@ namespace SplitAndMerge
             }
             if (Type == VarType.DATETIME)
             {
-                return DateTime.ToString();
+                var res = "";
+                try
+                {
+                    res = DateTime.ToString(String);
+                }
+                catch (Exception exc)
+                {
+                    res = DateTime.ToString();
+                }
+                return res;
             }
             if (Type == VarType.OBJECT)
             {
