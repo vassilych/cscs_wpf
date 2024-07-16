@@ -732,12 +732,14 @@ namespace SplitAndMerge
                 var res = "";
                 try
                 {
-                    res = DateTime.ToString(String);
+                    if (!string.IsNullOrEmpty(m_format))
+                    {
+                        res = DateTime.ToString(m_format);
+                        return res;
+                    }
                 }
-                catch (Exception exc)
-                {
-                    res = DateTime.ToString();
-                }
+                catch (Exception) { }
+                res = DateTime.ToString();
                 return res;
             }
             if (Type == VarType.OBJECT)
@@ -2184,6 +2186,11 @@ namespace SplitAndMerge
             get { return m_string; }
             set { m_string = value; Type = VarType.STRING; }
         }
+        public virtual string Format
+        {
+            get { return m_format; }
+            set { m_format = value; Type = VarType.STRING; }
+        }
 
         public object Object
         {
@@ -2275,6 +2282,7 @@ namespace SplitAndMerge
         protected string m_string;
         protected object m_object;
         protected DateTime m_datetime;
+        protected string m_format;
         CustomFunction m_customFunctionGet;
         CustomFunction m_customFunctionSet;
         protected List<Variable> m_tuple;

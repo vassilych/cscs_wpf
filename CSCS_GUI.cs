@@ -5908,7 +5908,7 @@ namespace WpfCSCS
 			}
 
 			var valueStr = value == null ? "" : value.AsString();
-			init = init == null ? Variable.EmptyInstance : init;
+			init = init == null ? Variable.NewEmpty() : init;
 
 			DefineVariable newVar = null;
 			var parts = name.Split(new char[] { ',' });
@@ -7125,7 +7125,8 @@ namespace WpfCSCS
 		static double CheckValue(string type, int size, int dec, Variable varValue)
 		{
             double val = Math.Round(varValue.AsDouble(), dec);
-            if (varValue.Type == VarType.NONE)
+            if (varValue.Type == VarType.NONE || varValue.Type == VarType.ARRAY ||
+				string.IsNullOrWhiteSpace(varValue.String))
             {
 				return val;
             }
@@ -7220,7 +7221,7 @@ namespace WpfCSCS
 				case "d":
 				case "t":
                     init.DateTime = DateTime = ToDateTime(init);
-					init.String = DefType == "d" ? GetDateFormat() : GetTimeFormat();
+					init.Format = DefType == "d" ? GetDateFormat() : GetTimeFormat();
                     init.Type = Type = VarType.DATETIME;
 					break;
 				case "l": // "logic" (boolean)
