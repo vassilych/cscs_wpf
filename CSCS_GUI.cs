@@ -1,3 +1,4 @@
+using CefSharp.DevTools.FedCm;
 using CSCS.InterpreterManager;
 using SplitAndMerge;
 using System;
@@ -7246,18 +7247,26 @@ namespace WpfCSCS
 						  this.DeepClone() as DefineVariable : null;
 				if (Tuple == null || arrayIndex < 0)
 				{
-                    init.Tuple = Tuple = new List<Variable>(Array);
+					Tuple = new List<Variable>(Array);
 				}
 				if (missingElems > 0)
 				{
 					item.Array = 0;
 					Tuple.AddRange(System.Linq.Enumerable.Repeat(item, missingElems));
-					init.Tuple = Tuple;
-                }
-                init.Type = Type = VarType.ARRAY;
+				}
+				Type = VarType.ARRAY;
 				if (arrayIndex >= 0)
 				{
-                    init.Tuple[arrayIndex] = Tuple[arrayIndex] = init.Clone();
+					Tuple[arrayIndex] = init.Clone();
+				}
+				if (init.Type == VarType.NONE)
+				{
+					init.Type = VarType.ARRAY;
+					init.Tuple = new List<Variable>(Array);
+					for (int i = 0; i < Tuple.Count; i++)
+					{
+						init.Tuple.Add(Tuple[i]);
+					}
 				}
 			}
 
@@ -7429,6 +7438,10 @@ namespace WpfCSCS
 				   bool sameLine = true,
 				   int maxCount = -1)
 		{
+			if (Array > 0)
+			{
+				return BaseAsString(isList, sameLine, maxCount);
+			}
 			if (DefType == "d")
 			{
 				return DateTime.ToString(GetDateFormat());
@@ -7455,7 +7468,13 @@ namespace WpfCSCS
 				m_string = m_string.Substring(0, Size);
 				return m_string;
 			}
+			return BaseAsString(isList, sameLine, maxCount);
+		}
 
+		string BaseAsString(bool isList = true,
+				   bool sameLine = true,
+				   int maxCount = -1)
+		{
 			string result = "";
 			try
 			{
@@ -7472,7 +7491,7 @@ namespace WpfCSCS
 			}
 		}
 
-		public override double AsDouble()
+        public override double AsDouble()
 		{
 			return base.AsDouble();
 		}
