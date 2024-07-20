@@ -473,8 +473,9 @@ namespace WpfCSCS
 		public static string DefaultDB { get; set; }
 		public static string CommonDB { get; set; }
 		public static int MaxCacheSize { get; set; }
+        public static string DefaultDateFormat { get; set; }
 
-		bool m_initialized;
+        bool m_initialized;
 
 		public Dictionary<string, FrameworkElement> Controls { get; set; } = new Dictionary<string, FrameworkElement>();
 		public Dictionary<FrameworkElement, Window> Control2Window { get; set; } = new Dictionary<FrameworkElement, Window>();
@@ -591,8 +592,9 @@ namespace WpfCSCS
 			RequireDEFINE = App.GetConfiguration("Require_Define", "false");
 			DefaultDB = App.GetConfiguration("DefaultDB", "ad");
 			CommonDB = App.GetConfiguration("CommonDB", "");
+            DefaultDateFormat = App.GetConfiguration("DateFormat", "dd/MM/yyyy");
 
-			if (int.TryParse(App.GetConfiguration("MaxCacheSize", "300"), out int cacheSize))
+            if (int.TryParse(App.GetConfiguration("MaxCacheSize", "300"), out int cacheSize))
 			{
 				MaxCacheSize = cacheSize;
 			}
@@ -7126,10 +7128,10 @@ namespace WpfCSCS
 		static double CheckValue(string type, int size, int dec, Variable varValue)
 		{
             double val = Math.Round(varValue.AsDouble(), dec);
-            if (varValue.Type == VarType.NONE || varValue.Type == VarType.ARRAY ||
-				string.IsNullOrWhiteSpace(varValue.String))
+            //if (varValue.Type == VarType.NONE || varValue.Type == VarType.ARRAY || string.IsNullOrWhiteSpace(varValue.String))
+            if (varValue.Type == VarType.NONE)
             {
-				return val;
+                 return val;
             }
             if (varValue.Type != VarType.NUMBER && 
 			    (type == "n" || type == "b" || type == "i" || type == "r") &&
@@ -7161,17 +7163,38 @@ namespace WpfCSCS
 			if (size > 0)
 			{
 				var strValue = val.ToString();
-				if (strValue.Length > size)
+				if (dec > 0)
+				{ // add missing 0s after decimal point.
+                    var decPt = strValue.Replace(",", ".").IndexOf(".");
+                    if (decPt < 0)
+                    {
+                        strValue += "." + new string('0', dec);
+                    }
+					else
+					{ // 1.2
+						var present = strValue.Length - decPt - 1;
+                        if (present < dec)
+                        {
+                            strValue += new string('0', dec - present);
+                        }
+                    }
+                }
+                if (strValue.Length > size)
 				{
-					var newVal = strValue.Substring(0, size);
-					if (newVal.EndsWith(".") || newVal.ToLower().EndsWith("e"))
+					/* old code:
+					bool isNeg = strValue.StartsWith("-"); // -12.346 --> -2.35 (for size 5, dec 2)
+					var newVal = isNeg ? strValue.Substring(strValue.Length - size + 1, size - 1) :
+                                         strValue.Substring(strValue.Length - size, size);
+					if (newVal.StartsWith("."))
 					{
-                        newVal = newVal.Substring(0, newVal.Length - 1);
+                        newVal = newVal.Substring(1, newVal.Length - 1);
                     }
-					if (!Double.TryParse(newVal, out val))
+                    newVal = isNeg ? "-" + newVal : newVal;
+                    if (!Double.TryParse(newVal, out val))
 					{
-                        throw new ArgumentException("Error: Couldn't convert [" + newVal + "], to [" + type + "]");
-                    }
+                        throw new ArgumentException("Error: Couldn't convert [" + strValue + "], to [" + type + "]");
+                    }*/
+					return 0;
 				}
 			}
 			return val;
@@ -7198,45 +7221,69 @@ namespace WpfCSCS
 			{
 				case "a":
 					String = init.AsString();
-                    init.Type = Type = VarType.STRING;
+                    Type = VarType.STRING;
 					if (Size > 0 && m_string.Length > Size)
 					{
-						init.String = m_string = m_string.Substring(0, Size);
+						m_string = m_string.Substring(0, Size);
 					}
 					if (Up)
 					{
-                        init.String = m_string = m_string.ToUpper();
+                        m_string = m_string.ToUpper();
 					}
 					if (Down)
 					{
-                        init.String = m_string = m_string.ToLower();
+                        m_string = m_string.ToLower();
 					}
+					if (init.Type != VarType.NONE)
+					{
+						init.String = m_string;
+                    }
 
 					break;
 
 				case "p":
 				case "f":
 					Pointer = init.AsString();
-                    init.Type = Type = VarType.POINTER;
-					break;
+                    Type = VarType.POINTER;
+                    if (init.Type != VarType.NONE)
+                    {
+                        init.Type = Type;
+                    }
+                    break;
 				case "d":
 				case "t":
-                    init.DateTime = DateTime = ToDateTime(init);
-					init.Format = DefType == "d" ? GetDateFormat() : GetTimeFormat();
-                    init.Type = Type = VarType.DATETIME;
-					break;
+                    DateTime = ToDateTime(init);
+					Format = DefType == "d" ? GetDateFormat() : GetTimeFormat();
+                    Type = VarType.DATETIME;
+                    if (init.Type != VarType.NONE)
+                    {
+                        init.DateTime = DateTime;
+                        init.Format = Format;
+                        init.Type = Type;
+                    }
+                    break;
 				case "l": // "logic" (boolean)
-                    init.Value = Value = ToBool(init.AsString()) ? 1 : 0;
-                    init.Type = Type = VarType.NUMBER;
-					break;
+                    Value = ToBool(init.AsString()) ? 1 : 0;
+                    Type = VarType.NUMBER;
+                    if (init.Type != VarType.NONE)
+                    {
+                        init.Value = Value;
+                        init.Type = Type;
+                    }
+                    break;
 				case "b": // byte
 				case "i": // integer
 				case "n": // number
 				case "r": // small int
 				default:
-                    init.Value = Value = CheckValue(DefType, Size, Dec, init);
-                    init.Type = Type = VarType.NUMBER;
-					break;
+                    Value = CheckValue(DefType, Size, Dec, init);
+                    Type = VarType.NUMBER;
+                    if (init.Type != VarType.NONE)
+                    {
+                        init.Value = Value;
+                        init.Type = Type;
+                    }
+                    break;
 			}
 
 			if (Array > 0)
@@ -7322,7 +7369,7 @@ namespace WpfCSCS
 			// disable US date formatting for now
 			string sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
 			var usDate = false;// !sysFormat.StartsWith("dd") && !sysFormat.EndsWith("dd");
-			DATE_FORMAT = "dd/MM/yyyy";
+			DATE_FORMAT = CSCS_GUI.DefaultDateFormat;
 			switch (Size)
 			{
 				case 5:
@@ -7380,7 +7427,7 @@ namespace WpfCSCS
 
 		public DateTime ToDateTime(Variable val)
 		{
-            DateTime oldest = new DateTime(1900, 1, 1, 0, 0, 0);
+			DateTime oldest = DateTime.MinValue;
             DateTime dt = oldest;
             if (val.Type == VarType.NONE || (val.Type == VarType.NUMBER && val.Value == 0.0))
 			{
@@ -7459,7 +7506,7 @@ namespace WpfCSCS
 				var strValue = Value.ToString();
 				if (strValue.Length > Size)
 				{
-					return "0";
+					return CheckValue(DefType, Size, Dec, this).ToString();
 				}
 				return strValue;
 			}
