@@ -2189,7 +2189,7 @@ namespace SplitAndMerge
         public virtual string Format
         {
             get { return m_format; }
-            set { m_format = value; Type = VarType.STRING; }
+            set { m_format = value; }
         }
 
         public object Object
