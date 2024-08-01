@@ -7456,6 +7456,12 @@ namespace WpfCSCS
 				return dt;
 			}
 
+			if ((DefType == "d" || DefType == "t") && val.Type == VarType.ARRAY &&
+				val.Tuple != null && val.Tuple.Count > 0)
+			{
+				return val.Tuple[0].DateTime;
+			}
+
 			var strValue = val.AsString();
 			var format = DefType == "d" ? (strValue.Length == 8 ? CSCS_GUI.DateFormat8 :
 										  strValue.Length == 10 ? CSCS_GUI.DateFormat10 :
