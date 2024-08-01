@@ -7140,12 +7140,6 @@ namespace WpfCSCS
 			{
 				return val;
 			}
-			if (varValue.Type != VarType.NUMBER &&
-				(type == "n" || type == "b" || type == "i" || type == "r") &&
-				!Double.TryParse(varValue.String, out val))
-			{
-				throw new ArgumentException("Error: Variable type [" + varValue.Type + "], required [" + type + "]");
-			}
 			switch (type)
 			{
 				case "b":
@@ -7186,7 +7180,7 @@ namespace WpfCSCS
 						}
 					}
 				}
-				if (strValue.Length > size)
+				if (strValue.Length > size || (dec > 0 && !Double.TryParse(strValue, out val)))
 				{
 					/* old code:
 					bool isNeg = strValue.StartsWith("-"); // -12.346 --> -2.35 (for size 5, dec 2)
@@ -7201,9 +7195,16 @@ namespace WpfCSCS
 					{
                         throw new ArgumentException("Error: Couldn't convert [" + strValue + "], to [" + type + "]");
                     }*/
-					return 0;
+					val = 0;
 				}
 			}
+			if ((varValue.Type != VarType.NUMBER && varValue.Type != VarType.ARRAY) &&
+				(type == "n" || type == "b" || type == "i" || type == "r") &&
+				!Double.TryParse(varValue.String, out val))
+			{
+				throw new ArgumentException("Error: Variable type [" + varValue.Type + "], required [" + type + "]");
+			}
+
 			return val;
 		}
 
